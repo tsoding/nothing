@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <string.h>
 
+#include <SDL2/SDL.h>
+
 #include "./platforms.h"
 
 struct platforms_t {
@@ -43,4 +45,27 @@ void destroy_platforms(struct platforms_t *platforms)
 
     free(platforms->rects);
     free(platforms);
+}
+
+int render_platforms(const struct platforms_t *platforms,
+                     SDL_Renderer *renderer)
+{
+    if (SDL_SetRenderDrawColor(renderer, 255, 96, 96, 255) < 0) {
+        return -1;
+    }
+
+    SDL_Rect rect;
+
+    for (size_t i = 0; i < platforms->rects_size; ++i) {
+        rect.x = roundf(platforms->rects[i].x);
+        rect.y = roundf(platforms->rects[i].y);
+        rect.w = roundf(platforms->rects[i].w);
+        rect.h = roundf(platforms->rects[i].h);
+
+        if (SDL_RenderFillRect(renderer, &rect) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
 }

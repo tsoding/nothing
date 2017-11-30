@@ -37,7 +37,7 @@ void destroy_player(struct player * player)
 int render_player(const struct player * player,
                   SDL_Renderer *renderer)
 {
-    if (SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255) < 0) {
+    if (SDL_SetRenderDrawColor(renderer, 96, 255, 96, 255) < 0) {
         return -1;
     }
 
