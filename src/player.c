@@ -75,7 +75,7 @@ void update_player(struct player * player,
         .h = PLAYER_HEIGHT
     };
 
-    /* TODO: Implement collision for the left/right sides */
+    /* TODO(#6): Implement collision for the left/right sides */
     if (platforms_rect_object_collide(platforms, &player_object)) {
         dy = -player->dy * 0.75;
         x = player->x + dx * d;
