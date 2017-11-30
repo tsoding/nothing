@@ -69,3 +69,18 @@ int render_platforms(const struct platforms_t *platforms,
 
     return 0;
 }
+
+int platforms_rect_object_collide(const struct platforms_t *platforms,
+                                  const struct rect_t *object)
+{
+    assert(platforms);
+    assert(object);
+
+    for (size_t i = 0; i < platforms->rects_size; ++i) {
+        if (rects_intersect(object, &platforms->rects[i])) {
+            return 1;
+        }
+    }
+
+    return 0;
+}

@@ -12,4 +12,7 @@ void destroy_platforms(struct platforms_t *platforms);
 int render_platforms(const struct platforms_t *platforms,
                      SDL_Renderer *renderer);
 
+int platforms_rect_object_collide(const struct platforms_t *platforms,
+                                  const struct rect_t *object);
+
 #endif  // PLATFORMS_H_

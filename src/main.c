@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
         goto sdl_create_renderer_fail;
     }
 
-    struct player *player = create_player(0.0f, GROUND_LEVEL);
+    struct player *player = create_player(100.0f, 0.0f);
     if (player == NULL) {
         perror("Could not create player");
         exit_code = -1;
@@ -49,7 +49,27 @@ int main(int argc, char *argv[])
     const struct rect_t platforms_rects[] = {
         { .x = 0.0f,
           .y = GROUND_LEVEL + 50.0f,
-          .w = SCREEN_WIDTH,
+          .w = 50.0f,
+          .h = 50.0f },
+        { .x = 150.0f,
+          .y = GROUND_LEVEL + 50.0f,
+          .w = SCREEN_WIDTH - 150.0f,
+          .h = 50.0f },
+        { .x = 0.0f,
+          .y = GROUND_LEVEL + 100.0f,
+          .w = 50.0f,
+          .h = 50.0f },
+        { .x = 150.0f,
+          .y = GROUND_LEVEL + 100.0f,
+          .w = 50.0f,
+          .h = 50.0f },
+        { .x = 0.0f,
+          .y = GROUND_LEVEL + 150.0f,
+          .w = 50.0f,
+          .h = 50.0f },
+        { .x = 150.0f,
+          .y = GROUND_LEVEL + 150.0f,
+          .w = 50.0f,
           .h = 50.0f }
     };
     struct platforms_t *platforms = create_platforms(
@@ -72,6 +92,13 @@ int main(int argc, char *argv[])
             case SDL_QUIT:
                 quit = 1;
                 break;
+
+            case SDL_KEYDOWN:
+                switch (e.key.keysym.sym) {
+                case SDLK_SPACE:
+                    player_jump(player);
+                    break;
+                }
             }
 
         }
@@ -84,7 +111,7 @@ int main(int argc, char *argv[])
             player_stop(player);
         }
 
-        update_player(player, delay_ms);
+        update_player(player, platforms, delay_ms);
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
