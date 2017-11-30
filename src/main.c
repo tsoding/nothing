@@ -3,10 +3,12 @@
 #include <SDL2/SDL.h>
 
 #include "./player.h"
+#include "./platforms.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 #define GAME_FPS 60
+#define GROUND_LEVEL 200.0f
 
 int main(int argc, char *argv[])
 {
@@ -37,11 +39,46 @@ int main(int argc, char *argv[])
         goto sdl_create_renderer_fail;
     }
 
-    struct player *player = create_player(0.0f, 200.0f);
+    struct player *player = create_player(100.0f, 0.0f);
     if (player == NULL) {
         perror("Could not create player");
         exit_code = -1;
         goto create_player_fail;
+    }
+
+    const struct rect_t platforms_rects[] = {
+        { .x = 0.0f,
+          .y = GROUND_LEVEL + 50.0f,
+          .w = 50.0f,
+          .h = 50.0f },
+        { .x = 150.0f,
+          .y = GROUND_LEVEL + 50.0f,
+          .w = SCREEN_WIDTH - 150.0f,
+          .h = 50.0f },
+        { .x = 0.0f,
+          .y = GROUND_LEVEL + 100.0f,
+          .w = 50.0f,
+          .h = 50.0f },
+        { .x = 150.0f,
+          .y = GROUND_LEVEL + 100.0f,
+          .w = 50.0f,
+          .h = 50.0f },
+        { .x = 0.0f,
+          .y = GROUND_LEVEL + 150.0f,
+          .w = 50.0f,
+          .h = 50.0f },
+        { .x = 150.0f,
+          .y = GROUND_LEVEL + 150.0f,
+          .w = 50.0f,
+          .h = 50.0f }
+    };
+    struct platforms_t *platforms = create_platforms(
+        platforms_rects,
+        sizeof(platforms_rects) / sizeof(struct rect_t));
+    if (platforms == NULL) {
+        perror("Could not create platforms");
+        exit_code = -1;
+        goto create_platforms_fail;
     }
 
     int quit = 0;
@@ -55,6 +92,13 @@ int main(int argc, char *argv[])
             case SDL_QUIT:
                 quit = 1;
                 break;
+
+            case SDL_KEYDOWN:
+                switch (e.key.keysym.sym) {
+                case SDLK_SPACE:
+                    player_jump(player);
+                    break;
+                }
             }
 
         }
@@ -67,15 +111,18 @@ int main(int argc, char *argv[])
             player_stop(player);
         }
 
-        update_player(player, delay_ms);
+        update_player(player, platforms, delay_ms);
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         render_player(player, renderer);
+        render_platforms(platforms, renderer);
         SDL_RenderPresent(renderer);
         SDL_Delay(delay_ms);
     }
 
+    destroy_platforms(platforms);
+create_platforms_fail:
     destroy_player(player);
 create_player_fail:
     SDL_DestroyRenderer(renderer);
