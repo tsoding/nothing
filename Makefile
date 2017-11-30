@@ -1,4 +1,4 @@
-OBJS = src/main.o src/player.o
+OBJS = src/main.o src/player.o src/platforms.o
 LIBS=$(shell pkg-config gl sdl2 --libs)
 CFLAGS=-Wall -Werror -std=c11 $(shell pkg-config gl sdl2 --cflags)
 
