@@ -6,6 +6,7 @@ with import <nixpkgs> {}; {
                         SDL2
                         mesa
                         pkgconfig
+                        cmake
                       ];
         LD_LIBRARY_PATH="${mesa}/lib";
     };
