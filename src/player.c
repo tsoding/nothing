@@ -10,14 +10,14 @@
 #define PLAYER_SPEED 500.0f
 #define PLAYER_GRAVITY 1500.0f
 
-struct player {
+struct player_t {
     float x, y;
     float dx, dy;
 };
 
-struct player *create_player(float x, float y)
+struct player_t *create_player(float x, float y)
 {
-    struct player *player = malloc(sizeof(struct player));
+    struct player_t *player = malloc(sizeof(struct player_t));
 
     if (player == NULL) {
         return NULL;
@@ -31,12 +31,12 @@ struct player *create_player(float x, float y)
     return player;
 }
 
-void destroy_player(struct player * player)
+void destroy_player(struct player_t * player)
 {
     free(player);
 }
 
-int render_player(const struct player * player,
+int render_player(const struct player_t * player,
                   SDL_Renderer *renderer)
 {
     if (SDL_SetRenderDrawColor(renderer, 96, 255, 96, 255) < 0) {
@@ -56,7 +56,7 @@ int render_player(const struct player * player,
     return 0;
 }
 
-void update_player(struct player * player,
+void update_player(struct player_t * player,
                    const struct platforms_t *platforms,
                    int delta_time)
 {
@@ -88,22 +88,22 @@ void update_player(struct player * player,
     player->y = y;
 }
 
-void player_move_left(struct player *player)
+void player_move_left(struct player_t *player)
 {
     player->dx = -PLAYER_SPEED;
 }
 
-void player_move_right(struct player *player)
+void player_move_right(struct player_t *player)
 {
     player->dx = PLAYER_SPEED;
 }
 
-void player_stop(struct player *player)
+void player_stop(struct player_t *player)
 {
     player->dx = 0.0f;
 }
 
-void player_jump(struct player *player)
+void player_jump(struct player_t *player)
 {
     player->dy = -500.0f;
 }
