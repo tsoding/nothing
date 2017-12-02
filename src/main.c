@@ -12,6 +12,9 @@
 
 int main(int argc, char *argv[])
 {
+    (void) argc;                /* unused */
+    (void) argv;                /* unused */
+
     int exit_code = 0;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
