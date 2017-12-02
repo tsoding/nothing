@@ -7,7 +7,7 @@
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
-#define GAME_FPS 60
+#define GAME_FPS 30
 #define GROUND_LEVEL 200.0f
 
 int main(int argc, char *argv[])
