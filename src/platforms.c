@@ -48,21 +48,15 @@ void destroy_platforms(struct platforms_t *platforms)
 }
 
 int render_platforms(const struct platforms_t *platforms,
-                     SDL_Renderer *renderer)
+                     SDL_Renderer *renderer,
+                     const camera_t *camera)
 {
     if (SDL_SetRenderDrawColor(renderer, 255, 96, 96, 255) < 0) {
         return -1;
     }
 
-    SDL_Rect rect;
-
     for (size_t i = 0; i < platforms->rects_size; ++i) {
-        rect.x = (int)roundf(platforms->rects[i].x);
-        rect.y = (int)roundf(platforms->rects[i].y);
-        rect.w = (int)roundf(platforms->rects[i].w);
-        rect.h = (int)roundf(platforms->rects[i].h);
-
-        if (SDL_RenderFillRect(renderer, &rect) < 0) {
+        if (camera_fill_rect(camera, renderer, &platforms->rects[i]) < 0) {
             return -1;
         }
     }

@@ -37,23 +37,21 @@ void destroy_player(struct player_t * player)
 }
 
 int render_player(const struct player_t * player,
-                  SDL_Renderer *renderer)
+                  SDL_Renderer *renderer,
+                  const camera_t *camera)
 {
     if (SDL_SetRenderDrawColor(renderer, 96, 255, 96, 255) < 0) {
         return -1;
     }
+    struct rect_t player_object = {
+        .x = player->x,
+        .y = player->y,
+        .w = PLAYER_WIDTH,
+        .h = PLAYER_HEIGHT
+    };
 
-    SDL_Rect rect;
-    rect.x = (int)roundf(player->x);
-    rect.y = (int)roundf(player->y);
-    rect.w = (int)roundf(PLAYER_WIDTH);
-    rect.h = (int)roundf(PLAYER_HEIGHT);
 
-    if (SDL_RenderFillRect(renderer, &rect) < 0) {
-        return -1;
-    }
-
-    return 0;
+    return camera_fill_rect(camera, renderer, &player_object);
 }
 
 void update_player(struct player_t * player,
@@ -77,7 +75,7 @@ void update_player(struct player_t * player,
 
     /* TODO(#6): Implement collision for the left/right sides */
     if (platforms_rect_object_collide(platforms, &player_object)) {
-        dy = -player->dy * 0.75f;
+        dy = 0.0f;//-player->dy * 0.75f;
         x = player->x + dx * d;
         y = fmodf(player->y + dy * d, 600.0f);
     }
@@ -105,5 +103,13 @@ void player_stop(struct player_t *player)
 
 void player_jump(struct player_t *player)
 {
-    player->dy = -500.0f;
+    player->dy = -1000.0f;
+}
+
+void player_focus_camera(struct player_t *player,
+                         camera_t *camera)
+{
+    camera_translate(camera,
+                     player->x - 800.0f * 0.5f + PLAYER_WIDTH * 0.5f,
+                     player->y - 600.0f * 0.5f + PLAYER_HEIGHT * 0.5f);
 }

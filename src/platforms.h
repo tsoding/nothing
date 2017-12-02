@@ -1,6 +1,7 @@
 #ifndef PLATFORMS_H_
 #define PLATFORMS_H_
 
+#include "./camera.h"
 #include "./rect.h"
 
 struct platforms_t;
@@ -10,7 +11,8 @@ struct platforms_t *create_platforms(const struct rect_t *rects, size_t rects_si
 void destroy_platforms(struct platforms_t *platforms);
 
 int render_platforms(const struct platforms_t *platforms,
-                     SDL_Renderer *renderer);
+                     SDL_Renderer *renderer,
+                     const camera_t *camera);
 
 int platforms_rect_object_collide(const struct platforms_t *platforms,
                                   const struct rect_t *object);
