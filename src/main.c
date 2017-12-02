@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
     int exit_code = 0;
 
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         fprintf(stderr, "Could not initialize SDL: %s", SDL_GetError());
         exit_code = -1;
         goto sdl_init_fail;
@@ -41,6 +41,29 @@ int main(int argc, char *argv[])
         exit_code = -1;
         goto sdl_create_renderer_fail;
     }
+
+    if (SDL_NumJoysticks() <= 0) {
+        fprintf(stderr, "Could not find any The Sticks of the Joy\n");
+        exit_code = -1;
+        goto sdl_num_joysticks_fail;
+    }
+
+    SDL_Joystick *the_stick_of_joy = SDL_JoystickOpen(0);
+    if (the_stick_of_joy == NULL) {
+        fprintf(stderr, "Could not open 0th Stick of the Joy\n");
+        exit_code = -1;
+        goto sdl_joystick_open_fail;
+    }
+
+    printf("Opened Joystick 0\n");
+    printf("Name: %s\n", SDL_JoystickNameForIndex(0));
+    printf("Number of Axes: %d\n", SDL_JoystickNumAxes(the_stick_of_joy));
+    printf("Number of Buttons: %d\n", SDL_JoystickNumButtons(the_stick_of_joy));
+    printf("Number of Balls: %d\n", SDL_JoystickNumBalls(the_stick_of_joy));
+
+    SDL_JoystickEventState(SDL_ENABLE);
+
+    // ------------------------------
 
     struct player_t *player = create_player(100.0f, 0.0f);
     if (player == NULL) {
@@ -102,6 +125,14 @@ int main(int argc, char *argv[])
                     player_jump(player);
                     break;
                 }
+                break;
+
+            case SDL_JOYBUTTONDOWN:
+                printf("Button: %d\n", e.jbutton.button);
+                if (e.jbutton.button == 1) {
+                    player_jump(player);
+                }
+                break;
             }
 
         }
@@ -109,6 +140,10 @@ int main(int argc, char *argv[])
         if (keyboard_state[SDL_SCANCODE_A]) {
             player_move_left(player);
         } else if (keyboard_state[SDL_SCANCODE_D]) {
+            player_move_right(player);
+        } else if (SDL_JoystickGetAxis(the_stick_of_joy, 0) < 0) {
+            player_move_left(player);
+        } else if (SDL_JoystickGetAxis(the_stick_of_joy, 0) > 0) {
             player_move_right(player);
         } else {
             player_stop(player);
@@ -128,6 +163,9 @@ int main(int argc, char *argv[])
 create_platforms_fail:
     destroy_player(player);
 create_player_fail:
+    SDL_JoystickClose(the_stick_of_joy);
+sdl_joystick_open_fail:
+sdl_num_joysticks_fail:
     SDL_DestroyRenderer(renderer);
 sdl_create_renderer_fail:
     SDL_DestroyWindow(window);
