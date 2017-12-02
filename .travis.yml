@@ -10,5 +10,5 @@ addons:
 script:
   - mkdir build/
   - cd build/
-  - cmake .. -DLOCAL_SDL2_MODULE=ON
+  - cmake ..
   - make
