@@ -4,6 +4,7 @@ addons:
   apt:
     packages:
       - cmake
+      - cmake-data
       - gcc
       - libsdl2-dev
 script:
