@@ -1,0 +1,14 @@
+dist: trusty
+language: c
+addons:
+  apt:
+    packages:
+      - cmake
+      - cmake-data
+      - gcc
+      - libsdl2-dev
+script:
+  - mkdir build/
+  - cd build/
+  - cmake .. -DLOCAL_SDL2_MODULE=ON
+  - make

@@ -57,10 +57,10 @@ int render_platforms(const struct platforms_t *platforms,
     SDL_Rect rect;
 
     for (size_t i = 0; i < platforms->rects_size; ++i) {
-        rect.x = roundf(platforms->rects[i].x);
-        rect.y = roundf(platforms->rects[i].y);
-        rect.w = roundf(platforms->rects[i].w);
-        rect.h = roundf(platforms->rects[i].h);
+        rect.x = (int)roundf(platforms->rects[i].x);
+        rect.y = (int)roundf(platforms->rects[i].y);
+        rect.w = (int)roundf(platforms->rects[i].w);
+        rect.h = (int)roundf(platforms->rects[i].h);
 
         if (SDL_RenderFillRect(renderer, &rect) < 0) {
             return -1;

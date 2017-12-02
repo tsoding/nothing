@@ -12,6 +12,9 @@
 
 int main(int argc, char *argv[])
 {
+    (void) argc;                /* unused */
+    (void) argv;                /* unused */
+
     int exit_code = 0;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -84,7 +87,7 @@ int main(int argc, char *argv[])
     int quit = 0;
 
     const Uint8 *keyboard_state = SDL_GetKeyboardState(NULL);
-    const int delay_ms = roundf(1000.0 / GAME_FPS);
+    const Uint32 delay_ms = (Uint32) roundf(1000.0f / GAME_FPS);
     SDL_Event e;
     while (!quit) {
         while (SDL_PollEvent(&e)) {
