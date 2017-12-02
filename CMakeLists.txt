@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.2)
 project(nothing)
 
+if (LOCAL_SDL2_MODULE)
+  set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+endif()
+
 find_package(SDL2 REQUIRED)
 
 include_directories(${SDL2_INCLUDE_DIR})
