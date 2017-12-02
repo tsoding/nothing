@@ -1,0 +1,13 @@
+dist: trusty
+language: c
+addons:
+  apt:
+    packages:
+      - cmake
+      - gcc
+      - libsdl2-dev
+script:
+  - mkdir build/
+  - cd build/
+  - cmake ..
+  - make
