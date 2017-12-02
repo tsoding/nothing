@@ -14,12 +14,15 @@ set(SOURCE_FILES
   src/player.c
   src/platforms.c
   src/rect.c
+  src/camera.c
 )
 
 set(HEADER_FILES
   src/player.h
   src/platforms.h
   src/rect.h
+  src/point.h
+  src/camera.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
