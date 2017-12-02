@@ -5,6 +5,10 @@
 
 #include "./camera.h"
 
+struct camera {
+    point_t translation;
+};
+
 camera_t *create_camera()
 {
     camera_t *camera = malloc(sizeof(camera_t));
@@ -42,4 +46,10 @@ int camera_fill_rect(const camera_t *camera,
     sdl_rect.h = (int) roundf(rect->h);
 
     return SDL_RenderFillRect(render, &sdl_rect);
+}
+
+void camera_translate(camera_t *camera, float x, float y)
+{
+    camera->translation.x = x;
+    camera->translation.y = y;
 }

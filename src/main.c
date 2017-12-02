@@ -7,7 +7,7 @@
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
-#define GAME_FPS 30
+#define GAME_FPS 60
 #define GROUND_LEVEL 200.0f
 
 int main(int argc, char *argv[])
@@ -107,6 +107,13 @@ int main(int argc, char *argv[])
         goto create_platforms_fail;
     }
 
+    camera_t *camera = create_camera();
+    if (camera == NULL) {
+        perror("Could not create camera");
+        exit_code = -1;
+        goto create_camera_fail;
+    }
+
     int quit = 0;
 
     const Uint8 *keyboard_state = SDL_GetKeyboardState(NULL);
@@ -150,15 +157,18 @@ int main(int argc, char *argv[])
         }
 
         update_player(player, platforms, delay_ms);
+        player_focus_camera(player, camera);
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-        render_player(player, renderer);
-        render_platforms(platforms, renderer);
+        render_player(player, renderer, camera);
+        render_platforms(platforms, renderer, camera);
         SDL_RenderPresent(renderer);
         SDL_Delay(delay_ms);
     }
 
+    destroy_camera(camera);
+create_camera_fail:
     destroy_platforms(platforms);
 create_platforms_fail:
     destroy_player(player);
