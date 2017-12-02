@@ -25,4 +25,4 @@ set(HEADER_FILES
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
-target_link_libraries(nothing ${SDL2_LIBRARIES})
+target_link_libraries(nothing ${SDL2_LIBRARY})
