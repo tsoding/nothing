@@ -15,7 +15,7 @@ int camera_fill_rect(const camera_t *camera,
 
 void camera_translate(camera_t *camera, float x, float y);
 
-// TODO: implement camera_center_at
+// TODO(#16): implement camera_center_at
 //
 // Camera should encapsulate size of the screen and use it to center
 // itself at a certain position
