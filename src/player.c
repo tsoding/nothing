@@ -44,10 +44,10 @@ int render_player(const struct player_t * player,
     }
 
     SDL_Rect rect;
-    rect.x = roundf(player->x);
-    rect.y = roundf(player->y);
-    rect.w = roundf(PLAYER_WIDTH);
-    rect.h = roundf(PLAYER_HEIGHT);
+    rect.x = (int)roundf(player->x);
+    rect.y = (int)roundf(player->y);
+    rect.w = (int)roundf(PLAYER_WIDTH);
+    rect.h = (int)roundf(PLAYER_HEIGHT);
 
     if (SDL_RenderFillRect(renderer, &rect) < 0) {
         return -1;
@@ -58,15 +58,15 @@ int render_player(const struct player_t * player,
 
 void update_player(struct player_t * player,
                    const struct platforms_t *platforms,
-                   int delta_time)
+                   Uint32 delta_time)
 {
-    float d = delta_time / 1000.0;
+    float d = (float) delta_time / 1000.0f;
 
     float dx = player->dx;
     float dy = player->dy + PLAYER_GRAVITY * d;
 
     float x = player->x + dx * d;
-    float y = fmod(player->y + dy * d, 600.0f);
+    float y = fmodf(player->y + dy * d, 600.0f);
 
     struct rect_t player_object = {
         .x = x,
@@ -77,9 +77,9 @@ void update_player(struct player_t * player,
 
     /* TODO(#6): Implement collision for the left/right sides */
     if (platforms_rect_object_collide(platforms, &player_object)) {
-        dy = -player->dy * 0.75;
+        dy = -player->dy * 0.75f;
         x = player->x + dx * d;
-        y = fmod(player->y + dy * d, 600.0f);
+        y = fmodf(player->y + dy * d, 600.0f);
     }
 
     player->dx = dx;

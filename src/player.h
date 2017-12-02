@@ -12,7 +12,7 @@ int render_player(const struct player_t * player,
                   SDL_Renderer *renderer);
 void update_player(struct player_t * player,
                    const struct platforms_t *platforms,
-                   int delta_time);
+                   Uint32 delta_time);
 
 void player_move_left(struct player_t *player);
 void player_move_right(struct player_t *player);
