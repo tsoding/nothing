@@ -5,4 +5,6 @@ typedef struct {
     float x, y;
 } point_t;
 
+typedef point_t vec_t;
+
 #endif  // POINT_H_

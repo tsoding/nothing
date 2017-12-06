@@ -11,8 +11,9 @@
 #define PLAYER_GRAVITY 1500.0f
 
 struct player_t {
-    point_t position;
-    point_t velocity;
+    vec_t position;
+    vec_t velocity;
+    vec_t movement;
 };
 
 player_t *create_player(float x, float y)
@@ -27,6 +28,8 @@ player_t *create_player(float x, float y)
     player->position.y = y;
     player->velocity.x = 0.0f;
     player->velocity.y = 0.0f;
+    player->movement.x = 0.0f;
+    player->movement.y = 0.0f;
 
     return player;
 }
@@ -63,8 +66,8 @@ void update_player(player_t * player,
     float dx = player->velocity.x;
     float dy = player->velocity.y + PLAYER_GRAVITY * d;
 
-    float x = player->position.x + dx * d;
-    float y = fmodf(player->position.y + dy * d, 600.0f);
+    float x = player->position.x + dx * d + player->movement.x * d;
+    float y = fmodf(player->position.y + dy * d + player->movement.y * d, 600.0f);
 
     rect_t player_object = {
         .x = x,
@@ -75,9 +78,9 @@ void update_player(player_t * player,
 
     /* TODO(#6): Implement collision for the left/right sides */
     if (platforms_rect_object_collide(platforms, &player_object)) {
-        dy = 0.0f;//-player->dy * 0.75f;
-        x = player->position.x + dx * d;
-        y = fmodf(player->position.y + dy * d, 600.0f);
+        dy = 0.0f;//-player->velocity.y * 0.75f;
+        x = player->position.x + dx * d + player->movement.x * d;
+        y = fmodf(player->position.y + dy * d + player->movement.y * d, 600.0f);
     }
 
     player->velocity.x = dx;
@@ -88,17 +91,20 @@ void update_player(player_t * player,
 
 void player_move_left(player_t *player)
 {
-    player->velocity.x = -PLAYER_SPEED;
+    player->movement.x = -PLAYER_SPEED;
+    player->movement.y = 0.0f;
 }
 
 void player_move_right(player_t *player)
 {
-    player->velocity.x = PLAYER_SPEED;
+    player->movement.x = PLAYER_SPEED;
+    player->movement.y = 0.0f;
 }
 
 void player_stop(player_t *player)
 {
-    player->velocity.x = 0.0f;
+    player->movement.x = 0.0f;
+    player->movement.y = 0.0f;
 }
 
 void player_jump(player_t *player)
