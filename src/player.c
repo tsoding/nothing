@@ -93,14 +93,20 @@ void update_player(player_t * player,
         player->movement.x = 0.0f;
     }
 
+    int hit_floor_ceiling = 0;
+
     if (sides[RECT_SIDE_TOP] || sides[RECT_SIDE_BOTTOM]) {
         player->velocity.y = 0.0f;
         player->movement.y = 0.0f;
+        hit_floor_ceiling = 0;
     }
 
     player->position.x += (player->velocity.x + player->movement.x) * d;
     player->position.y += (player->velocity.y + player->movement.y) * d;
-    player->velocity.y += PLAYER_GRAVITY * d;
+
+    if (!hit_floor_ceiling) {
+        player->velocity.y += PLAYER_GRAVITY * d;
+    }
 }
 
 void player_move_left(player_t *player)
