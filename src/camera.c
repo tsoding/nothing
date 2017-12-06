@@ -5,7 +5,7 @@
 
 #include "./camera.h"
 
-struct camera {
+struct camera_t {
     point_t translation;
 };
 

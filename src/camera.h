@@ -4,7 +4,7 @@
 #include "./rect.h"
 #include "./point.h"
 
-typedef struct camera camera_t;
+typedef struct camera_t camera_t;
 
 camera_t *create_camera();
 void destroy_camera(camera_t *camera);
