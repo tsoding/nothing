@@ -5,7 +5,7 @@
 
 #include "./camera.h"
 
-struct camera {
+struct camera_t {
     point_t translation;
 };
 
@@ -32,7 +32,7 @@ void destroy_camera(camera_t *camera)
 
 int camera_fill_rect(const camera_t *camera,
                      SDL_Renderer *render,
-                     const struct rect_t *rect)
+                     const rect_t *rect)
 {
     assert(camera);
     assert(render);

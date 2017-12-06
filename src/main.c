@@ -65,14 +65,14 @@ int main(int argc, char *argv[])
 
     // ------------------------------
 
-    struct player_t *player = create_player(100.0f, 0.0f);
+    player_t *player = create_player(100.0f, 0.0f);
     if (player == NULL) {
         perror("Could not create player");
         exit_code = -1;
         goto create_player_fail;
     }
 
-    const struct rect_t platforms_rects[] = {
+    const rect_t platforms_rects[] = {
         { .x = 0.0f,
           .y = GROUND_LEVEL + 50.0f,
           .w = 50.0f,
@@ -98,9 +98,9 @@ int main(int argc, char *argv[])
           .w = 50.0f,
           .h = 50.0f }
     };
-    struct platforms_t *platforms = create_platforms(
+    platforms_t *platforms = create_platforms(
         platforms_rects,
-        sizeof(platforms_rects) / sizeof(struct rect_t));
+        sizeof(platforms_rects) / sizeof(rect_t));
     if (platforms == NULL) {
         perror("Could not create platforms");
         exit_code = -1;
