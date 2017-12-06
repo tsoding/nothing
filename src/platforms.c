@@ -71,7 +71,7 @@ int platforms_rect_object_collide(const platforms_t *platforms,
     assert(object);
 
     for (size_t i = 0; i < platforms->rects_size; ++i) {
-        if (rects_intersect(object, &platforms->rects[i])) {
+        if (is_rect_int(object, &platforms->rects[i])) {
             return 1;
         }
     }
