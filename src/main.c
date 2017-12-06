@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
           .w = 50.0f,
           .h = 50.0f }
     };
-    struct platforms_t *platforms = create_platforms(
+    platforms_t *platforms = create_platforms(
         platforms_rects,
         sizeof(platforms_rects) / sizeof(struct rect_t));
     if (platforms == NULL) {

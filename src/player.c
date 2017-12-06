@@ -55,7 +55,7 @@ int render_player(const player_t * player,
 }
 
 void update_player(player_t * player,
-                   const struct platforms_t *platforms,
+                   const platforms_t *platforms,
                    Uint32 delta_time)
 {
     float d = (float) delta_time / 1000.0f;

@@ -12,11 +12,11 @@ struct platforms_t {
     size_t rects_size;
 };
 
-struct platforms_t *create_platforms(const struct rect_t *rects, size_t rects_size)
+platforms_t *create_platforms(const struct rect_t *rects, size_t rects_size)
 {
     assert(rects);
 
-    struct platforms_t *platforms = malloc(sizeof(struct platforms_t));
+    platforms_t *platforms = malloc(sizeof(platforms_t));
 
     if (platforms == NULL) {
         goto platforms_malloc_fail;
@@ -39,7 +39,7 @@ platforms_malloc_fail:
     return NULL;
 }
 
-void destroy_platforms(struct platforms_t *platforms)
+void destroy_platforms(platforms_t *platforms)
 {
     assert(platforms);
 
@@ -47,7 +47,7 @@ void destroy_platforms(struct platforms_t *platforms)
     free(platforms);
 }
 
-int render_platforms(const struct platforms_t *platforms,
+int render_platforms(const platforms_t *platforms,
                      SDL_Renderer *renderer,
                      const camera_t *camera)
 {
@@ -64,7 +64,7 @@ int render_platforms(const struct platforms_t *platforms,
     return 0;
 }
 
-int platforms_rect_object_collide(const struct platforms_t *platforms,
+int platforms_rect_object_collide(const platforms_t *platforms,
                                   const struct rect_t *object)
 {
     assert(platforms);

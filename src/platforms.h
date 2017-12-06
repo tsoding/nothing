@@ -4,17 +4,17 @@
 #include "./camera.h"
 #include "./rect.h"
 
-struct platforms_t;
-struct SDL_Renderer;
+typedef struct platforms_t platforms_t;
+typedef struct SDL_Renderer SDL_Renderer;
 
-struct platforms_t *create_platforms(const struct rect_t *rects, size_t rects_size);
-void destroy_platforms(struct platforms_t *platforms);
+platforms_t *create_platforms(const struct rect_t *rects, size_t rects_size);
+void destroy_platforms(platforms_t *platforms);
 
-int render_platforms(const struct platforms_t *platforms,
+int render_platforms(const platforms_t *platforms,
                      SDL_Renderer *renderer,
                      const camera_t *camera);
 
-int platforms_rect_object_collide(const struct platforms_t *platforms,
+int platforms_rect_object_collide(const platforms_t *platforms,
                                   const struct rect_t *object);
 
 #endif  // PLATFORMS_H_
