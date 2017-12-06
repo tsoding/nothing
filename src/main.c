@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 
     // ------------------------------
 
-    struct player_t *player = create_player(100.0f, 0.0f);
+    player_t *player = create_player(100.0f, 0.0f);
     if (player == NULL) {
         perror("Could not create player");
         exit_code = -1;

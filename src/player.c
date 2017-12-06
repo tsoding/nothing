@@ -15,9 +15,9 @@ struct player_t {
     float dx, dy;
 };
 
-struct player_t *create_player(float x, float y)
+player_t *create_player(float x, float y)
 {
-    struct player_t *player = malloc(sizeof(struct player_t));
+    player_t *player = malloc(sizeof(player_t));
 
     if (player == NULL) {
         return NULL;
@@ -31,12 +31,12 @@ struct player_t *create_player(float x, float y)
     return player;
 }
 
-void destroy_player(struct player_t * player)
+void destroy_player(player_t * player)
 {
     free(player);
 }
 
-int render_player(const struct player_t * player,
+int render_player(const player_t * player,
                   SDL_Renderer *renderer,
                   const camera_t *camera)
 {
@@ -54,7 +54,7 @@ int render_player(const struct player_t * player,
     return camera_fill_rect(camera, renderer, &player_object);
 }
 
-void update_player(struct player_t * player,
+void update_player(player_t * player,
                    const struct platforms_t *platforms,
                    Uint32 delta_time)
 {
@@ -86,27 +86,27 @@ void update_player(struct player_t * player,
     player->y = y;
 }
 
-void player_move_left(struct player_t *player)
+void player_move_left(player_t *player)
 {
     player->dx = -PLAYER_SPEED;
 }
 
-void player_move_right(struct player_t *player)
+void player_move_right(player_t *player)
 {
     player->dx = PLAYER_SPEED;
 }
 
-void player_stop(struct player_t *player)
+void player_stop(player_t *player)
 {
     player->dx = 0.0f;
 }
 
-void player_jump(struct player_t *player)
+void player_jump(player_t *player)
 {
     player->dy = -1000.0f;
 }
 
-void player_focus_camera(struct player_t *player,
+void player_focus_camera(player_t *player,
                          camera_t *camera)
 {
     camera_translate(camera,
