@@ -50,8 +50,6 @@ void rect_object_impact(const rect_t *object,
 
     rect_t int_area = rect_int_area(object, obstacle);
 
-    memset(sides, 0, sizeof(int) * RECT_SIDE_N);
-
     if (int_area.w * int_area.h > 0.0f) {
         for (int side = 0; side < RECT_SIDE_N; ++side) {
             line_t object_side = rect_side(object, side);

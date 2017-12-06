@@ -64,17 +64,14 @@ int render_platforms(const platforms_t *platforms,
     return 0;
 }
 
-int platforms_rect_object_collide(const platforms_t *platforms,
-                                  const rect_t *object)
+void platforms_rect_object_collide(const platforms_t *platforms,
+                                   const rect_t *object,
+                                   int *sides)
 {
     assert(platforms);
     assert(object);
 
     for (size_t i = 0; i < platforms->rects_size; ++i) {
-        if (is_rect_int(object, &platforms->rects[i])) {
-            return 1;
-        }
+        rect_object_impact(object, &platforms->rects[i], sides);
     }
-
-    return 0;
 }
