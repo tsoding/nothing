@@ -11,7 +11,7 @@ void destroy_camera(camera_t *camera);
 
 int camera_fill_rect(const camera_t *camera,
                      SDL_Renderer *render,
-                     const struct rect_t *rect);
+                     const rect_t *rect);
 
 void camera_translate(camera_t *camera, float x, float y);
 

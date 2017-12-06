@@ -1,8 +1,8 @@
 #include <math.h>
 #include "./rect.h"
 
-int rects_intersect(const struct rect_t *rect1,
-                    const struct rect_t *rect2)
+int rects_intersect(const rect_t *rect1,
+                    const rect_t *rect2)
 {
     float x1 = fmaxf(rect1->x, rect2->x);
     float y1 = fmaxf(rect1->y, rect2->y);

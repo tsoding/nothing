@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
         goto create_player_fail;
     }
 
-    const struct rect_t platforms_rects[] = {
+    const rect_t platforms_rects[] = {
         { .x = 0.0f,
           .y = GROUND_LEVEL + 50.0f,
           .w = 50.0f,
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
     };
     platforms_t *platforms = create_platforms(
         platforms_rects,
-        sizeof(platforms_rects) / sizeof(struct rect_t));
+        sizeof(platforms_rects) / sizeof(rect_t));
     if (platforms == NULL) {
         perror("Could not create platforms");
         exit_code = -1;

@@ -8,11 +8,11 @@
 #include "./platforms.h"
 
 struct platforms_t {
-    struct rect_t *rects;
+    rect_t *rects;
     size_t rects_size;
 };
 
-platforms_t *create_platforms(const struct rect_t *rects, size_t rects_size)
+platforms_t *create_platforms(const rect_t *rects, size_t rects_size)
 {
     assert(rects);
 
@@ -22,13 +22,13 @@ platforms_t *create_platforms(const struct rect_t *rects, size_t rects_size)
         goto platforms_malloc_fail;
     }
 
-    platforms->rects = malloc(sizeof(struct rect_t) * rects_size);
+    platforms->rects = malloc(sizeof(rect_t) * rects_size);
 
     if (platforms->rects == NULL) {
         goto platforms_rects_malloc_fail;
     }
 
-    platforms->rects = memcpy(platforms->rects, rects, sizeof(struct rect_t) * rects_size);
+    platforms->rects = memcpy(platforms->rects, rects, sizeof(rect_t) * rects_size);
     platforms->rects_size = rects_size;
 
     return platforms;
@@ -65,7 +65,7 @@ int render_platforms(const platforms_t *platforms,
 }
 
 int platforms_rect_object_collide(const platforms_t *platforms,
-                                  const struct rect_t *object)
+                                  const rect_t *object)
 {
     assert(platforms);
     assert(object);

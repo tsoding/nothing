@@ -43,7 +43,7 @@ int render_player(const player_t * player,
     if (SDL_SetRenderDrawColor(renderer, 96, 255, 96, 255) < 0) {
         return -1;
     }
-    struct rect_t player_object = {
+    rect_t player_object = {
         .x = player->x,
         .y = player->y,
         .w = PLAYER_WIDTH,
@@ -66,7 +66,7 @@ void update_player(player_t * player,
     float x = player->x + dx * d;
     float y = fmodf(player->y + dy * d, 600.0f);
 
-    struct rect_t player_object = {
+    rect_t player_object = {
         .x = x,
         .y = y,
         .w = PLAYER_WIDTH,
