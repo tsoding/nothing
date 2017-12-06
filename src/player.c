@@ -11,8 +11,8 @@
 #define PLAYER_GRAVITY 1500.0f
 
 struct player_t {
-    float x, y;
-    float dx, dy;
+    point_t position;
+    point_t velocity;
 };
 
 player_t *create_player(float x, float y)
@@ -23,10 +23,10 @@ player_t *create_player(float x, float y)
         return NULL;
     }
 
-    player->x = x;
-    player->y = y;
-    player->dx = 0.0f;
-    player->dy = 0.0f;
+    player->position.x = x;
+    player->position.y = y;
+    player->velocity.x = 0.0f;
+    player->velocity.y = 0.0f;
 
     return player;
 }
@@ -44,8 +44,8 @@ int render_player(const player_t * player,
         return -1;
     }
     rect_t player_object = {
-        .x = player->x,
-        .y = player->y,
+        .x = player->position.x,
+        .y = player->position.y,
         .w = PLAYER_WIDTH,
         .h = PLAYER_HEIGHT
     };
@@ -60,11 +60,11 @@ void update_player(player_t * player,
 {
     float d = (float) delta_time / 1000.0f;
 
-    float dx = player->dx;
-    float dy = player->dy + PLAYER_GRAVITY * d;
+    float dx = player->velocity.x;
+    float dy = player->velocity.y + PLAYER_GRAVITY * d;
 
-    float x = player->x + dx * d;
-    float y = fmodf(player->y + dy * d, 600.0f);
+    float x = player->position.x + dx * d;
+    float y = fmodf(player->position.y + dy * d, 600.0f);
 
     rect_t player_object = {
         .x = x,
@@ -76,40 +76,40 @@ void update_player(player_t * player,
     /* TODO(#6): Implement collision for the left/right sides */
     if (platforms_rect_object_collide(platforms, &player_object)) {
         dy = 0.0f;//-player->dy * 0.75f;
-        x = player->x + dx * d;
-        y = fmodf(player->y + dy * d, 600.0f);
+        x = player->position.x + dx * d;
+        y = fmodf(player->position.y + dy * d, 600.0f);
     }
 
-    player->dx = dx;
-    player->dy = dy;
-    player->x = x;
-    player->y = y;
+    player->velocity.x = dx;
+    player->velocity.y = dy;
+    player->position.x = x;
+    player->position.y = y;
 }
 
 void player_move_left(player_t *player)
 {
-    player->dx = -PLAYER_SPEED;
+    player->velocity.x = -PLAYER_SPEED;
 }
 
 void player_move_right(player_t *player)
 {
-    player->dx = PLAYER_SPEED;
+    player->velocity.x = PLAYER_SPEED;
 }
 
 void player_stop(player_t *player)
 {
-    player->dx = 0.0f;
+    player->velocity.x = 0.0f;
 }
 
 void player_jump(player_t *player)
 {
-    player->dy = -1000.0f;
+    player->velocity.y = -1000.0f;
 }
 
 void player_focus_camera(player_t *player,
                          camera_t *camera)
 {
     camera_translate(camera,
-                     player->x - 800.0f * 0.5f + PLAYER_WIDTH * 0.5f,
-                     player->y - 600.0f * 0.5f + PLAYER_HEIGHT * 0.5f);
+                     player->position.x - 800.0f * 0.5f + PLAYER_WIDTH * 0.5f,
+                     player->position.y - 600.0f * 0.5f + PLAYER_HEIGHT * 0.5f);
 }
