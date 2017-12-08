@@ -3,16 +3,12 @@
 #include <math.h>
 #include "./rect.h"
 
-rect_t rect_int_area(const rect_t *rect1,
-                     const rect_t *rect2)
+rect_t rect_int_area(rect_t rect1, rect_t rect2)
 {
-    assert(rect1);
-    assert(rect2);
-
-    float x1 = fmaxf(rect1->x, rect2->x);
-    float y1 = fmaxf(rect1->y, rect2->y);
-    float x2 = fminf(rect1->x + rect1->w, rect2->x + rect2->w);
-    float y2 = fminf(rect1->y + rect1->h, rect2->y + rect2->h);
+    float x1 = fmaxf(rect1.x, rect2.x);
+    float y1 = fmaxf(rect1.y, rect2.y);
+    float x2 = fminf(rect1.x + rect1.w, rect2.x + rect2.w);
+    float y2 = fminf(rect1.y + rect1.h, rect2.y + rect2.h);
 
     rect_t result = {
         .x = x1,
@@ -23,20 +19,16 @@ rect_t rect_int_area(const rect_t *rect1,
     return result;
 }
 
-int is_rect_int(const rect_t *rect1,
-                const rect_t *rect2)
+int is_rect_int(rect_t rect1, rect_t rect2)
 {
-    assert(rect1);
-    assert(rect2);
-
     rect_t int_area = rect_int_area(rect1, rect2);
     return int_area.w * int_area.h > 0.0f;
 }
 
-float line_length(const line_t *line)
+float line_length(line_t line)
 {
-    float dx = line->p1.x - line->p2.x;
-    float dy = line->p1.y - line->p2.y;
+    float dx = line.p1.x - line.p2.x;
+    float dy = line.p1.y - line.p2.y;
     return sqrtf(dx * dx + dy * dy);
 }
 
@@ -48,14 +40,14 @@ void rect_object_impact(const rect_t *object,
     assert(obstacle);
     assert(sides);
 
-    rect_t int_area = rect_int_area(object, obstacle);
+    rect_t int_area = rect_int_area(*object, *obstacle);
 
     if (int_area.w * int_area.h > 0.0f) {
         for (int side = 0; side < RECT_SIDE_N; ++side) {
-            line_t object_side = rect_side(object, side);
-            line_t int_side = rect_side(&int_area, side);
+            line_t object_side = rect_side(*object, side);
+            line_t int_side = rect_side(int_area, side);
 
-            if (line_length(&int_side) > 1.0f) {
+            if (line_length(int_side) > 1.0f) {
                 sides[side] =
                     (fabs(object_side.p1.x - object_side.p2.x) < 1e-6
                      && fabs(object_side.p1.x - int_side.p1.x) < 1e-6
@@ -68,16 +60,12 @@ void rect_object_impact(const rect_t *object,
     }
 }
 
-line_t rect_side(const rect_t *rect,
-                 enum rect_side_t side)
+line_t rect_side(rect_t rect, rect_side_t side)
 {
-    assert(rect);
-    assert(0 <= side && side < RECT_SIDE_N);
-
-    const float x1 = rect->x;
-    const float y1 = rect->y;
-    const float x2 = rect->x + rect->w;
-    const float y2 = rect->y + rect->h;
+    const float x1 = rect.x;
+    const float y1 = rect.y;
+    const float x2 = rect.x + rect.w;
+    const float y2 = rect.y + rect.h;
 
     line_t result;
 
