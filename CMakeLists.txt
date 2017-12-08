@@ -14,6 +14,7 @@ set(SOURCE_FILES
   src/player.c
   src/platforms.c
   src/rect.c
+  src/point.c
   src/camera.c
 )
 
