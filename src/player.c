@@ -16,17 +16,6 @@ struct player_t {
     vec_t movement;
 };
 
-/* static const vec_t impact_vecs[RECT_SIDE_N] = { */
-/*     /\* left *\/ */
-/*     { .x = 1.0f, .y = 0.0f }, */
-/*     /\* right *\/ */
-/*     { .x = -1.0f, .y = 0.0f }, */
-/*     /\* top *\/ */
-/*     { .x = 0.0f, .y = 1.0f }, */
-/*     /\* bottom *\/ */
-/*     { .x = 0.0f, .y = -1.0f } */
-/* }; */
-
 player_t *create_player(float x, float y)
 {
     player_t *player = malloc(sizeof(player_t));
