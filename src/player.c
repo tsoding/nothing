@@ -5,6 +5,7 @@
 
 #include "./player.h"
 #include "./platforms.h"
+#include "./point.h"
 
 #define PLAYER_WIDTH 50.0f
 #define PLAYER_HEIGHT 50.0f
@@ -71,15 +72,16 @@ void update_player(player_t *player,
 
     float d = (float) delta_time / 1000.0f;
 
-    float x = player->position.x;
-    float y = player->position.y;
-
-    rect_t player_object = {
-        .x = x + (player->velocity.x + player->movement.x) * d,
-        .y = y + (player->velocity.y + player->movement.y) * d,
-        .w = PLAYER_WIDTH,
-        .h = PLAYER_HEIGHT
-    };
+    rect_t player_object = rect_from_point(
+        vec_sum(
+            player->position,
+            vec_scala_mult(
+                vec_sum(
+                    player->velocity,
+                    player->movement),
+                d)),
+        PLAYER_WIDTH,
+        PLAYER_HEIGHT);
 
     int sides[4] = {0, 0, 0, 0};
 
@@ -95,8 +97,14 @@ void update_player(player_t *player,
         player->movement.y = 0.0f;
     }
 
-    player->position.x += (player->velocity.x + player->movement.x) * d;
-    player->position.y += (player->velocity.y + player->movement.y) * d;
+
+    vec_add(
+        &player->position,
+        vec_scala_mult(
+            vec_sum(
+                player->velocity,
+                player->movement),
+            d));
 
     player->velocity.y += PLAYER_GRAVITY * d;
 }

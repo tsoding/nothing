@@ -111,3 +111,15 @@ line_t rect_side(const rect_t *rect,
 
     return result;
 }
+
+rect_t rect_from_point(point_t p, float w, float h)
+{
+    rect_t result = {
+        .x = p.x,
+        .y = p.y,
+        .w = w,
+        .h = h
+    };
+
+    return result;
+}

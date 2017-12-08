@@ -34,4 +34,6 @@ void rect_object_impact(const rect_t *object,
 line_t rect_side(const rect_t *rect,
                  enum rect_side_t side);
 
+rect_t rect_from_point(point_t p, float w, float h);
+
 #endif  // RECT_H_
