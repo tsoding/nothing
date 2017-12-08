@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
@@ -43,6 +44,10 @@ int render_player(const player_t * player,
                   SDL_Renderer *renderer,
                   const camera_t *camera)
 {
+    assert(player);
+    assert(renderer);
+    assert(camera);
+
     if (SDL_SetRenderDrawColor(renderer, 96, 255, 96, 255) < 0) {
         return -1;
     }
@@ -57,10 +62,13 @@ int render_player(const player_t * player,
     return camera_fill_rect(camera, renderer, &player_object);
 }
 
-void update_player(player_t * player,
+void update_player(player_t *player,
                    const platforms_t *platforms,
                    Uint32 delta_time)
 {
+    assert(player);
+    assert(platforms);
+
     float d = (float) delta_time / 1000.0f;
 
     float x = player->position.x;
@@ -95,30 +103,41 @@ void update_player(player_t * player,
 
 void player_move_left(player_t *player)
 {
+    assert(player);
+
     player->movement.x = -PLAYER_SPEED;
     player->movement.y = 0.0f;
 }
 
 void player_move_right(player_t *player)
 {
+    assert(player);
+
     player->movement.x = PLAYER_SPEED;
     player->movement.y = 0.0f;
 }
 
 void player_stop(player_t *player)
 {
+    assert(player);
+
     player->movement.x = 0.0f;
     player->movement.y = 0.0f;
 }
 
 void player_jump(player_t *player)
 {
+    assert(player);
+
     player->velocity.y = -1000.0f;
 }
 
 void player_focus_camera(player_t *player,
                          camera_t *camera)
 {
+    assert(player);
+    assert(camera);
+
     camera_translate(camera,
                      player->position.x - 800.0f * 0.5f + PLAYER_WIDTH * 0.5f,
                      player->position.y - 600.0f * 0.5f + PLAYER_HEIGHT * 0.5f);
