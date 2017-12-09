@@ -14,8 +14,7 @@ int render_platforms(const platforms_t *platforms,
                      SDL_Renderer *renderer,
                      const camera_t *camera);
 
-void platforms_rect_object_collide(const platforms_t *platforms,
-                                   const rect_t *object,
-                                   int *sides);
+vec_t platforms_rect_object_collide(const platforms_t *platforms,
+                                    rect_t object);
 
 #endif  // PLATFORMS_H_
