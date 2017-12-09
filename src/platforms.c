@@ -54,6 +54,33 @@ void destroy_platforms(platforms_t *platforms)
     free(platforms);
 }
 
+int save_platforms_to_file(const platforms_t *platforms,
+                           const char *filename)
+{
+    int exit_code = 0;
+
+    FILE *platforms_file = fopen(filename, "w");
+
+    if (platforms_file == NULL) {
+        exit_code = -1;
+        goto fopen_failed;
+    }
+
+    for (size_t i = 0; i < platforms->rects_size; ++i) {
+        if (fprintf(platforms_file, "%f %f %f %f\n",
+                    platforms->rects[i].x, platforms->rects[i].y,
+                    platforms->rects[i].w, platforms->rects[i].h) < 0) {
+            exit_code = -1;
+            goto fprintf_failed;
+        }
+    }
+
+fprintf_failed:
+    if (fclose(platforms_file) != 0) { exit_code = -1; }
+fopen_failed:
+    return exit_code;
+}
+
 int render_platforms(const platforms_t *platforms,
                      SDL_Renderer *renderer,
                      const camera_t *camera)
