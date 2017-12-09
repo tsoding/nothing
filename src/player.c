@@ -146,7 +146,9 @@ void player_focus_camera(player_t *player,
     assert(player);
     assert(camera);
 
-    camera_translate(camera,
-                     player->position.x - 800.0f * 0.5f + PLAYER_WIDTH * 0.5f,
-                     player->position.y - 600.0f * 0.5f + PLAYER_HEIGHT * 0.5f);
+    camera_center_at(
+        camera,
+        vec_sum(
+            player->position,
+            vec(PLAYER_WIDTH * 0.5f, PLAYER_HEIGHT * 0.5f)));
 }

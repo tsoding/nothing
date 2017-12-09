@@ -6,18 +6,13 @@
 
 typedef struct camera_t camera_t;
 
-camera_t *create_camera();
+camera_t *create_camera(point_t position);
 void destroy_camera(camera_t *camera);
 
 int camera_fill_rect(const camera_t *camera,
                      SDL_Renderer *render,
                      const rect_t *rect);
 
-void camera_translate(camera_t *camera, float x, float y);
-
-// TODO(#16): implement camera_center_at
-//
-// Camera should encapsulate size of the screen and use it to center
-// itself at a certain position
+void camera_center_at(camera_t *camera, point_t position);
 
 #endif  // CAMERA_H_

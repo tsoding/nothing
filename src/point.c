@@ -1,5 +1,14 @@
 #include "./point.h"
 
+vec_t vec(float x, float y)
+{
+    vec_t result = {
+        .x = x,
+        .y = y
+    };
+    return result;
+}
+
 vec_t vec_sum(vec_t v1, vec_t v2)
 {
     vec_t result = {

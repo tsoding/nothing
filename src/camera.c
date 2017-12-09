@@ -6,10 +6,10 @@
 #include "./camera.h"
 
 struct camera_t {
-    point_t translation;
+    point_t position;
 };
 
-camera_t *create_camera()
+camera_t *create_camera(point_t position)
 {
     camera_t *camera = malloc(sizeof(camera_t));
 
@@ -17,8 +17,7 @@ camera_t *create_camera()
         return NULL;
     }
 
-    camera->translation.x = 0;
-    camera->translation.y = 0;
+    camera->position = position;
 
     return camera;
 }
@@ -38,18 +37,22 @@ int camera_fill_rect(const camera_t *camera,
     assert(render);
     assert(rect);
 
+    SDL_Rect view_port;
+
+    SDL_RenderGetViewport(render, &view_port);
+
     SDL_Rect sdl_rect;
 
-    sdl_rect.x = (int) roundf(rect->x - camera->translation.x);
-    sdl_rect.y = (int) roundf(rect->y - camera->translation.y);
+    sdl_rect.x = (int) roundf(rect->x - camera->position.x + (float) view_port.w * 0.5f);
+    sdl_rect.y = (int) roundf(rect->y - camera->position.y + (float) view_port.h * 0.5f);
     sdl_rect.w = (int) roundf(rect->w);
     sdl_rect.h = (int) roundf(rect->h);
 
     return SDL_RenderFillRect(render, &sdl_rect);
 }
 
-void camera_translate(camera_t *camera, float x, float y)
+void camera_center_at(camera_t *camera, point_t position)
 {
-    camera->translation.x = x;
-    camera->translation.y = y;
+    assert(camera);
+    camera->position = position;
 }
