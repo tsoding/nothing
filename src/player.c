@@ -41,6 +41,18 @@ void destroy_player(player_t * player)
     free(player);
 }
 
+rect_t player_hitbox(const player_t *player)
+{
+    rect_t hitbox = {
+        .x = player->position.x,
+        .y = player->position.y,
+        .w = PLAYER_WIDTH,
+        .h = PLAYER_HEIGHT
+    };
+
+    return hitbox;
+}
+
 int render_player(const player_t * player,
                   SDL_Renderer *renderer,
                   const camera_t *camera)
@@ -72,41 +84,41 @@ void update_player(player_t *player,
 
     float d = (float) delta_time / 1000.0f;
 
-    rect_t player_object = rect_from_point(
-        vec_sum(
-            player->position,
-            vec_scala_mult(
-                vec_sum(
-                    player->velocity,
-                    player->movement),
-                d)),
-        PLAYER_WIDTH,
-        PLAYER_HEIGHT);
-
-    int sides[4] = {0, 0, 0, 0};
-
-    platforms_rect_object_collide(platforms, &player_object, sides);
-
-    if (sides[RECT_SIDE_LEFT] || sides[RECT_SIDE_RIGHT]) {
-        player->velocity.x = 0.0f;
-        player->movement.x = 0.0f;
-    }
-
-    if (sides[RECT_SIDE_TOP] || sides[RECT_SIDE_BOTTOM]) {
-        player->velocity.y = 0.0f;
-        player->movement.y = 0.0f;
-    }
-
-
-    vec_add(
-        &player->position,
+    player->velocity.y += PLAYER_GRAVITY * d;
+    player->position = vec_sum(
+        player->position,
         vec_scala_mult(
             vec_sum(
                 player->velocity,
                 player->movement),
             d));
+    player->position.y = fmodf(player->position.y, 800.0f);
 
-    player->velocity.y += PLAYER_GRAVITY * d;
+    vec_t opposing_force = platforms_rect_object_collide(
+        platforms,
+        player_hitbox(player));
+
+    while (vec_length(opposing_force) > 1e-6) {
+        player->position = vec_sum(
+            player->position,
+            vec_scala_mult(
+                opposing_force,
+                1e-2f));
+
+        if (fabs(opposing_force.x) > 1e-6 && (opposing_force.x < 0.0f) != ((player->velocity.x + player->movement.x) < 0.0f)) {
+            player->velocity.x = 0.0f;
+            player->movement.x = 0.0f;
+        }
+
+        if (fabs(opposing_force.y) > 1e-6 && (opposing_force.y < 0.0f) != ((player->velocity.y + player->movement.y) < 0.0f)) {
+            player->velocity.y = 0.0f;
+            player->movement.y = 0.0f;
+        }
+
+        opposing_force = platforms_rect_object_collide(
+            platforms,
+            player_hitbox(player));
+    }
 }
 
 void player_move_left(player_t *player)
@@ -137,7 +149,7 @@ void player_jump(player_t *player)
 {
     assert(player);
 
-    player->velocity.y = -1000.0f;
+    player->velocity.y = -500.0f;
 }
 
 void player_focus_camera(player_t *player,
