@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
         goto create_platforms_fail;
     }
 
-    camera_t *camera = create_camera();
+    camera_t *camera = create_camera(vec(0.0f, 0.0f));
     if (camera == NULL) {
         perror("Could not create camera");
         exit_code = -1;
