@@ -42,26 +42,28 @@ int main(int argc, char *argv[])
         goto sdl_create_renderer_fail;
     }
 
-    if (SDL_NumJoysticks() <= 0) {
-        fprintf(stderr, "Could not find any The Sticks of the Joy\n");
-        exit_code = -1;
-        goto sdl_num_joysticks_fail;
+    SDL_Joystick *the_stick_of_joy = NULL;
+
+    if (SDL_NumJoysticks() > 0) {
+        the_stick_of_joy = SDL_JoystickOpen(0);
+
+        if (the_stick_of_joy == NULL) {
+            fprintf(stderr, "Could not open 0th Stick of the Joy\n");
+            exit_code = -1;
+            goto sdl_joystick_open_fail;
+        }
+
+        printf("Opened Joystick 0\n");
+        printf("Name: %s\n", SDL_JoystickNameForIndex(0));
+        printf("Number of Axes: %d\n", SDL_JoystickNumAxes(the_stick_of_joy));
+        printf("Number of Buttons: %d\n", SDL_JoystickNumButtons(the_stick_of_joy));
+        printf("Number of Balls: %d\n", SDL_JoystickNumBalls(the_stick_of_joy));
+
+        SDL_JoystickEventState(SDL_ENABLE);
+    } else {
+        fprintf(stderr, "[WARNING] Could not find any The Sticks of the Joy\n");
     }
 
-    SDL_Joystick *the_stick_of_joy = SDL_JoystickOpen(0);
-    if (the_stick_of_joy == NULL) {
-        fprintf(stderr, "Could not open 0th Stick of the Joy\n");
-        exit_code = -1;
-        goto sdl_joystick_open_fail;
-    }
-
-    printf("Opened Joystick 0\n");
-    printf("Name: %s\n", SDL_JoystickNameForIndex(0));
-    printf("Number of Axes: %d\n", SDL_JoystickNumAxes(the_stick_of_joy));
-    printf("Number of Buttons: %d\n", SDL_JoystickNumButtons(the_stick_of_joy));
-    printf("Number of Balls: %d\n", SDL_JoystickNumBalls(the_stick_of_joy));
-
-    SDL_JoystickEventState(SDL_ENABLE);
 
     // ------------------------------
 
@@ -152,9 +154,9 @@ int main(int argc, char *argv[])
             player_move_left(player);
         } else if (keyboard_state[SDL_SCANCODE_D]) {
             player_move_right(player);
-        } else if (SDL_JoystickGetAxis(the_stick_of_joy, 0) < 0) {
+        } else if (the_stick_of_joy && SDL_JoystickGetAxis(the_stick_of_joy, 0) < 0) {
             player_move_left(player);
-        } else if (SDL_JoystickGetAxis(the_stick_of_joy, 0) > 0) {
+        } else if (the_stick_of_joy && SDL_JoystickGetAxis(the_stick_of_joy, 0) > 0) {
             player_move_right(player);
         } else {
             player_stop(player);
@@ -177,9 +179,8 @@ create_camera_fail:
 create_platforms_fail:
     destroy_player(player);
 create_player_fail:
-    SDL_JoystickClose(the_stick_of_joy);
+    if (the_stick_of_joy) { SDL_JoystickClose(the_stick_of_joy); }
 sdl_joystick_open_fail:
-sdl_num_joysticks_fail:
     SDL_DestroyRenderer(renderer);
 sdl_create_renderer_fail:
     SDL_DestroyWindow(window);
