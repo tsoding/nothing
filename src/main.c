@@ -64,7 +64,6 @@ int main(int argc, char *argv[])
         fprintf(stderr, "[WARNING] Could not find any The Sticks of the Joy\n");
     }
 
-
     // ------------------------------
 
     player_t *player = create_player(100.0f, 0.0f);
@@ -74,41 +73,9 @@ int main(int argc, char *argv[])
         goto create_player_fail;
     }
 
-    const rect_t platforms_rects[] = {
-        { .x = 0.0f,
-          .y = GROUND_LEVEL + 50.0f,
-          .w = 50.0f,
-          .h = 50.0f },
-        { .x = 300.0f,
-          .y = GROUND_LEVEL,
-          .w = 50.0f,
-          .h = 50.0f },
-        { .x = 150.0f,
-          .y = GROUND_LEVEL + 50.0f,
-          .w = SCREEN_WIDTH - 150.0f,
-          .h = 50.0f },
-        { .x = 0.0f,
-          .y = GROUND_LEVEL + 100.0f,
-          .w = 50.0f,
-          .h = 50.0f },
-        { .x = 150.0f,
-          .y = GROUND_LEVEL + 100.0f,
-          .w = 50.0f,
-          .h = 50.0f },
-        { .x = 0.0f,
-          .y = GROUND_LEVEL + 150.0f,
-          .w = 50.0f,
-          .h = 50.0f },
-        { .x = 150.0f,
-          .y = GROUND_LEVEL + 150.0f,
-          .w = 50.0f,
-          .h = 50.0f }
-    };
-    platforms_t *platforms = create_platforms(
-        platforms_rects,
-        sizeof(platforms_rects) / sizeof(rect_t));
+    platforms_t *platforms = load_platforms_from_file("./platforms.txt");
     if (platforms == NULL) {
-        perror("Could not create platforms");
+        perror("Could not read platforms from ./platforms.txt");
         exit_code = -1;
         goto create_platforms_fail;
     }
@@ -136,6 +103,18 @@ int main(int argc, char *argv[])
                 switch (e.key.keysym.sym) {
                 case SDLK_SPACE:
                     player_jump(player);
+                    break;
+
+                case SDLK_q:
+                    printf("reloading...");
+
+                    destroy_platforms(platforms);
+                    platforms = load_platforms_from_file("./platforms.txt");
+
+                    if (platforms == NULL) {
+                        exit_code = -1;
+                        goto reload_platforms_failed;
+                    }
                     break;
                 }
                 break;
@@ -173,6 +152,7 @@ int main(int argc, char *argv[])
         SDL_Delay(delay_ms);
     }
 
+reload_platforms_failed:
     destroy_camera(camera);
 create_camera_fail:
     destroy_platforms(platforms);

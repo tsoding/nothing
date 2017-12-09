@@ -12,6 +12,7 @@ void destroy_platforms(platforms_t *platforms);
 
 int save_platforms_to_file(const platforms_t *platforms,
                            const char *filename);
+platforms_t *load_platforms_from_file(const char *filename);
 
 int render_platforms(const platforms_t *platforms,
                      SDL_Renderer *renderer,

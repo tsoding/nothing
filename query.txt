@@ -1,0 +1,8 @@
+declare namespace svg ="http://www.w3.org/2000/svg";
+
+let $rects := doc("./platforms.svg")//svg:svg/svg:rect
+return (
+  count($rects),
+  for $rect in $rects
+  return concat($rect/@x, " ", $rect/@y, " ", $rect/@width, " ", $rect/@height)
+)
