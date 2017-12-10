@@ -9,6 +9,7 @@
 #define SCREEN_HEIGHT 600
 #define GAME_FPS 60
 #define GROUND_LEVEL 200.0f
+#define LEVEL_FILE_NAME "./platforms.txt"
 
 int main(int argc, char *argv[])
 {
@@ -49,7 +50,7 @@ int main(int argc, char *argv[])
         the_stick_of_joy = SDL_JoystickOpen(0);
 
         if (the_stick_of_joy == NULL) {
-            fprintf(stderr, "Could not open 0th Stick of the Joy\n");
+            fprintf(stderr, "Could not open 0th Stick of the Joy: %s\n", SDL_GetError());
             exit_code = -1;
             goto sdl_joystick_open_fail;
         }
@@ -62,7 +63,7 @@ int main(int argc, char *argv[])
 
         SDL_JoystickEventState(SDL_ENABLE);
     } else {
-        fprintf(stderr, "[WARNING] Could not find any The Sticks of the Joy\n");
+        fprintf(stderr, "[WARNING] Could not find any Sticks of the Joy\n");
     }
 
     // ------------------------------
@@ -74,9 +75,9 @@ int main(int argc, char *argv[])
         goto create_player_fail;
     }
 
-    platforms_t *platforms = load_platforms_from_file("./platforms.txt");
+    platforms_t *platforms = load_platforms_from_file(LEVEL_FILE_NAME);
     if (platforms == NULL) {
-        perror("Could not read platforms from ./platforms.txt");
+        perror("Could not read platforms from " LEVEL_FILE_NAME);
         exit_code = -1;
         goto create_platforms_fail;
     }
@@ -107,10 +108,10 @@ int main(int argc, char *argv[])
                     break;
 
                 case SDLK_q:
-                    printf("reloading...");
+                    printf("Reloading the level from '%s'...", LEVEL_FILE_NAME);
 
                     destroy_platforms(platforms);
-                    platforms = load_platforms_from_file("./platforms.txt");
+                    platforms = load_platforms_from_file(LEVEL_FILE_NAME);
 
                     if (platforms == NULL) {
                         exit_code = -1;
@@ -121,7 +122,6 @@ int main(int argc, char *argv[])
                 break;
 
             case SDL_JOYBUTTONDOWN:
-                printf("Button: %d\n", e.jbutton.button);
                 if (e.jbutton.button == 1) {
                     player_jump(player);
                 }
