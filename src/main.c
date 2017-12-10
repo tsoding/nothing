@@ -9,7 +9,7 @@
 #define SCREEN_HEIGHT 600
 #define GAME_FPS 60
 #define GROUND_LEVEL 200.0f
-#define LEVEL_FILE_NAME "./platforms.txt"
+#define LEVEL_FILE_NAME "./levels/platforms.txt"
 
 int main(int argc, char *argv[])
 {
