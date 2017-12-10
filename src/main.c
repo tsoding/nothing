@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
 reload_platforms_failed:
     destroy_camera(camera);
 create_camera_fail:
-    destroy_platforms(platforms);
+    if (platforms) { destroy_platforms(platforms); }
 create_platforms_fail:
     destroy_player(player);
 create_player_fail:
