@@ -9,6 +9,7 @@
 #define SCREEN_HEIGHT 600
 #define GAME_FPS 60
 #define GROUND_LEVEL 200.0f
+#define LEVEL_FILE_NAME "./levels/platforms.txt"
 
 int main(int argc, char *argv[])
 {
@@ -23,19 +24,20 @@ int main(int argc, char *argv[])
         goto sdl_init_fail;
     }
 
-    SDL_Window *window = SDL_CreateWindow("Nothing",
-                                          100, 100,
-                                          SCREEN_WIDTH, SCREEN_HEIGHT,
-                                          SDL_WINDOW_SHOWN);
+    SDL_Window *const window = SDL_CreateWindow("Nothing",
+                                                100, 100,
+                                                SCREEN_WIDTH, SCREEN_HEIGHT,
+                                                SDL_WINDOW_SHOWN);
+
     if (window == NULL) {
         fprintf(stderr, "Could not create SDL window: %s", SDL_GetError());
         exit_code = -1;
         goto sdl_create_window_fail;
     }
 
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1,
-                                                SDL_RENDERER_ACCELERATED |
-                                                SDL_RENDERER_PRESENTVSYNC);
+    SDL_Renderer *const renderer = SDL_CreateRenderer(window, -1,
+                                                      SDL_RENDERER_ACCELERATED |
+                                                      SDL_RENDERER_PRESENTVSYNC);
     if (renderer == NULL) {
         fprintf(stderr, "Could not create SDL renderer: %s", SDL_GetError());
         exit_code = -1;
@@ -48,7 +50,7 @@ int main(int argc, char *argv[])
         the_stick_of_joy = SDL_JoystickOpen(0);
 
         if (the_stick_of_joy == NULL) {
-            fprintf(stderr, "Could not open 0th Stick of the Joy\n");
+            fprintf(stderr, "Could not open 0th Stick of the Joy: %s\n", SDL_GetError());
             exit_code = -1;
             goto sdl_joystick_open_fail;
         }
@@ -61,59 +63,26 @@ int main(int argc, char *argv[])
 
         SDL_JoystickEventState(SDL_ENABLE);
     } else {
-        fprintf(stderr, "[WARNING] Could not find any The Sticks of the Joy\n");
+        fprintf(stderr, "[WARNING] Could not find any Sticks of the Joy\n");
     }
-
 
     // ------------------------------
 
-    player_t *player = create_player(100.0f, 0.0f);
+    player_t *const player = create_player(100.0f, 0.0f);
     if (player == NULL) {
         perror("Could not create player");
         exit_code = -1;
         goto create_player_fail;
     }
 
-    const rect_t platforms_rects[] = {
-        { .x = 0.0f,
-          .y = GROUND_LEVEL + 50.0f,
-          .w = 50.0f,
-          .h = 50.0f },
-        { .x = 300.0f,
-          .y = GROUND_LEVEL,
-          .w = 50.0f,
-          .h = 50.0f },
-        { .x = 150.0f,
-          .y = GROUND_LEVEL + 50.0f,
-          .w = SCREEN_WIDTH - 150.0f,
-          .h = 50.0f },
-        { .x = 0.0f,
-          .y = GROUND_LEVEL + 100.0f,
-          .w = 50.0f,
-          .h = 50.0f },
-        { .x = 150.0f,
-          .y = GROUND_LEVEL + 100.0f,
-          .w = 50.0f,
-          .h = 50.0f },
-        { .x = 0.0f,
-          .y = GROUND_LEVEL + 150.0f,
-          .w = 50.0f,
-          .h = 50.0f },
-        { .x = 150.0f,
-          .y = GROUND_LEVEL + 150.0f,
-          .w = 50.0f,
-          .h = 50.0f }
-    };
-    platforms_t *platforms = create_platforms(
-        platforms_rects,
-        sizeof(platforms_rects) / sizeof(rect_t));
+    platforms_t *platforms = load_platforms_from_file(LEVEL_FILE_NAME);
     if (platforms == NULL) {
-        perror("Could not create platforms");
+        perror("Could not read platforms from " LEVEL_FILE_NAME);
         exit_code = -1;
         goto create_platforms_fail;
     }
 
-    camera_t *camera = create_camera(vec(0.0f, 0.0f));
+    camera_t *const camera = create_camera(vec(0.0f, 0.0f));
     if (camera == NULL) {
         perror("Could not create camera");
         exit_code = -1;
@@ -122,7 +91,7 @@ int main(int argc, char *argv[])
 
     int quit = 0;
 
-    const Uint8 *keyboard_state = SDL_GetKeyboardState(NULL);
+    const Uint8 *const keyboard_state = SDL_GetKeyboardState(NULL);
     const Uint32 delay_ms = (Uint32) roundf(1000.0f / GAME_FPS);
     SDL_Event e;
     while (!quit) {
@@ -137,11 +106,22 @@ int main(int argc, char *argv[])
                 case SDLK_SPACE:
                     player_jump(player);
                     break;
+
+                case SDLK_q:
+                    printf("Reloading the level from '%s'...", LEVEL_FILE_NAME);
+
+                    destroy_platforms(platforms);
+                    platforms = load_platforms_from_file(LEVEL_FILE_NAME);
+
+                    if (platforms == NULL) {
+                        exit_code = -1;
+                        goto reload_platforms_failed;
+                    }
+                    break;
                 }
                 break;
 
             case SDL_JOYBUTTONDOWN:
-                printf("Button: %d\n", e.jbutton.button);
                 if (e.jbutton.button == 1) {
                     player_jump(player);
                 }
@@ -173,9 +153,10 @@ int main(int argc, char *argv[])
         SDL_Delay(delay_ms);
     }
 
+reload_platforms_failed:
     destroy_camera(camera);
 create_camera_fail:
-    destroy_platforms(platforms);
+    if (platforms) { destroy_platforms(platforms); }
 create_platforms_fail:
     destroy_player(player);
 create_player_fail:

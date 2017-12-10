@@ -7,6 +7,7 @@ with import <nixpkgs> {}; {
                         mesa
                         pkgconfig
                         cmake
+                        xqilla
                       ];
         LD_LIBRARY_PATH="${mesa}/lib";
     };
