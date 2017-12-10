@@ -23,19 +23,20 @@ int main(int argc, char *argv[])
         goto sdl_init_fail;
     }
 
-    SDL_Window *window = SDL_CreateWindow("Nothing",
-                                          100, 100,
-                                          SCREEN_WIDTH, SCREEN_HEIGHT,
-                                          SDL_WINDOW_SHOWN);
+    SDL_Window *const window = SDL_CreateWindow("Nothing",
+                                                100, 100,
+                                                SCREEN_WIDTH, SCREEN_HEIGHT,
+                                                SDL_WINDOW_SHOWN);
+
     if (window == NULL) {
         fprintf(stderr, "Could not create SDL window: %s", SDL_GetError());
         exit_code = -1;
         goto sdl_create_window_fail;
     }
 
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1,
-                                                SDL_RENDERER_ACCELERATED |
-                                                SDL_RENDERER_PRESENTVSYNC);
+    SDL_Renderer *const renderer = SDL_CreateRenderer(window, -1,
+                                                      SDL_RENDERER_ACCELERATED |
+                                                      SDL_RENDERER_PRESENTVSYNC);
     if (renderer == NULL) {
         fprintf(stderr, "Could not create SDL renderer: %s", SDL_GetError());
         exit_code = -1;
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
 
     // ------------------------------
 
-    player_t *player = create_player(100.0f, 0.0f);
+    player_t *const player = create_player(100.0f, 0.0f);
     if (player == NULL) {
         perror("Could not create player");
         exit_code = -1;
@@ -80,7 +81,7 @@ int main(int argc, char *argv[])
         goto create_platforms_fail;
     }
 
-    camera_t *camera = create_camera(vec(0.0f, 0.0f));
+    camera_t *const camera = create_camera(vec(0.0f, 0.0f));
     if (camera == NULL) {
         perror("Could not create camera");
         exit_code = -1;
@@ -89,7 +90,7 @@ int main(int argc, char *argv[])
 
     int quit = 0;
 
-    const Uint8 *keyboard_state = SDL_GetKeyboardState(NULL);
+    const Uint8 *const keyboard_state = SDL_GetKeyboardState(NULL);
     const Uint32 delay_ms = (Uint32) roundf(1000.0f / GAME_FPS);
     SDL_Event e;
     while (!quit) {
