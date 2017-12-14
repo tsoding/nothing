@@ -34,7 +34,33 @@ add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(nothing ${SDL2_LIBRARY})
 
 if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "CLANG"))
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -Wextra -pedantic -Wconversion -std=c11")
+  set(CMAKE_C_FLAGS
+    "${CMAKE_C_FLAGS} \
+     -Wall \
+     -Werror \
+     -Wextra \
+     -Wconversion \
+     -Wunused \
+     -Wunused-function \
+     -Wunused-label \
+     -Wunused-macros \
+     -Wunused-parameter \
+     -Wunused-value \
+     -Wunused-variable \
+     -Wcast-align \
+     -Wcast-qual \
+     -Wmissing-declarations \
+     -Wredundant-decls \
+     -Wmissing-prototypes \
+     -Wnested-externs \
+     -Wpointer-arith \
+     -Wshadow \
+     -Wstrict-prototypes \
+     -Wwrite-strings \
+     -fno-common \
+     -pedantic \
+     -std=c11 \
+     -O3")
   target_link_libraries(nothing m)
 endif()
 if(WIN32)

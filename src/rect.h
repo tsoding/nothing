@@ -33,4 +33,6 @@ line_t rect_side(rect_t rect, rect_side_t side);
 
 rect_t rect_from_point(point_t p, float w, float h);
 
+float line_length(line_t line);
+
 #endif  // RECT_H_
