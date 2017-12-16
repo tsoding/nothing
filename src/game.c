@@ -121,20 +121,41 @@ int game_update(game_t *game, Uint32 delta_time)
         return 0;
     }
 
-    update_player(game->player, game->platforms, delta_time);
-    player_focus_camera(game->player, game->camera);
+    if (game->state == GAME_STATE_RUNNING) {
+        update_player(game->player, game->platforms, delta_time);
+        player_focus_camera(game->player, game->camera);
+    }
 
     return 0;
 }
 
-int game_event(game_t *game, const SDL_Event *event)
+
+static int game_event_pause(game_t *game, const SDL_Event *event)
 {
     assert(game);
     assert(event);
 
-    if (game->state == GAME_STATE_QUIT) {
-        return 0;
+    switch (event->type) {
+    case SDL_QUIT:
+        game->state = GAME_STATE_QUIT;
+        break;
+
+    case SDL_KEYDOWN:
+        switch (event->key.keysym.sym) {
+        case SDLK_p:
+            game->state = GAME_STATE_RUNNING;
+            break;
+        }
+        break;
     }
+
+    return 0;
+}
+
+static int game_event_running(game_t *game, const SDL_Event *event)
+{
+    assert(game);
+    assert(event);
 
     switch (event->type) {
     case SDL_QUIT:
@@ -159,6 +180,10 @@ int game_event(game_t *game, const SDL_Event *event)
                 return -1;
             }
             break;
+
+        case SDLK_p:
+            game->state = GAME_STATE_PAUSE;
+            break;
         }
         break;
 
@@ -172,6 +197,25 @@ int game_event(game_t *game, const SDL_Event *event)
     return 0;
 }
 
+int game_event(game_t *game, const SDL_Event *event)
+{
+    assert(game);
+    assert(event);
+
+    switch (game->state) {
+    case GAME_STATE_RUNNING:
+        return game_event_running(game, event);
+
+    case GAME_STATE_PAUSE:
+        return game_event_pause(game, event);
+
+    default: {}
+    }
+
+    return 0;
+}
+
+
 int game_input(game_t *game,
                const Uint8 *const keyboard_state,
                SDL_Joystick *the_stick_of_joy)
@@ -180,7 +224,7 @@ int game_input(game_t *game,
     assert(keyboard_state);
     assert(the_stick_of_joy);
 
-    if (game->state == GAME_STATE_QUIT) {
+    if (game->state == GAME_STATE_QUIT || game->state == GAME_STATE_PAUSE) {
         return 0;
     }
 
