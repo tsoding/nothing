@@ -5,6 +5,7 @@
 #include "./player.h"
 #include "./platforms.h"
 #include "./error.h"
+#include "./game.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -68,99 +69,47 @@ int main(int argc, char *argv[])
 
     // ------------------------------
 
-    player_t *const player = create_player(100.0f, 0.0f);
-    if (player == NULL) {
-        print_current_error_msg("Could not create player");
+    game_t *const game = create_game(LEVEL_FILE_NAME);
+    if (game == NULL) {
+        print_current_error_msg("Could not create the game object");
         exit_code = -1;
-        goto create_player_fail;
+        goto create_game_failed;
     }
-
-    platforms_t *platforms = load_platforms_from_file(LEVEL_FILE_NAME);
-    if (platforms == NULL) {
-        print_current_error_msg("Could not read platforms from");
-        exit_code = -1;
-        goto create_platforms_fail;
-    }
-
-    camera_t *const camera = create_camera(vec(0.0f, 0.0f));
-    if (camera == NULL) {
-        print_current_error_msg("Could not create camera");
-        exit_code = -1;
-        goto create_camera_fail;
-    }
-
-    int quit = 0;
 
     const Uint8 *const keyboard_state = SDL_GetKeyboardState(NULL);
     const Uint32 delay_ms = (Uint32) roundf(1000.0f / GAME_FPS);
     SDL_Event e;
-    while (!quit) {
-        while (SDL_PollEvent(&e)) {
-            switch (e.type) {
-            case SDL_QUIT:
-                quit = 1;
-                break;
-
-            case SDL_KEYDOWN:
-                switch (e.key.keysym.sym) {
-                case SDLK_SPACE:
-                    player_jump(player);
-                    break;
-
-                case SDLK_q:
-                    printf("Reloading the level from '%s'...", LEVEL_FILE_NAME);
-
-                    destroy_platforms(platforms);
-                    platforms = load_platforms_from_file(LEVEL_FILE_NAME);
-
-                    if (platforms == NULL) {
-                        print_current_error_msg("Could not reload the level from " LEVEL_FILE_NAME);
-                        exit_code = -1;
-                        goto reload_platforms_failed;
-                    }
-                    break;
-                }
-                break;
-
-            case SDL_JOYBUTTONDOWN:
-                if (e.jbutton.button == 1) {
-                    player_jump(player);
-                }
-                break;
+    while (!is_game_over(game)) {
+        while (!is_game_over(game) && SDL_PollEvent(&e)) {
+            if (game_event(game, &e) < 0) {
+                print_current_error_msg("Failed handling event");
+                exit_code = -1;
+                goto game_failed;
             }
-
         }
 
-        if (keyboard_state[SDL_SCANCODE_A]) {
-            player_move_left(player);
-        } else if (keyboard_state[SDL_SCANCODE_D]) {
-            player_move_right(player);
-        } else if (the_stick_of_joy && SDL_JoystickGetAxis(the_stick_of_joy, 0) < 0) {
-            player_move_left(player);
-        } else if (the_stick_of_joy && SDL_JoystickGetAxis(the_stick_of_joy, 0) > 0) {
-            player_move_right(player);
-        } else {
-            player_stop(player);
+        if (game_input(game, keyboard_state, the_stick_of_joy) < 0) {
+            print_current_error_msg("Failed handling input");
+            exit_code = -1;
+            goto game_failed;
         }
 
-        update_player(player, platforms, delay_ms);
-        player_focus_camera(player, camera);
+        if (game_update(game, delay_ms) < 0) {
+            print_current_error_msg("Failed handling updating");
+            exit_code = -1;
+            goto game_failed;
+        }
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-        render_player(player, renderer, camera);
-        render_platforms(platforms, renderer, camera);
-        SDL_RenderPresent(renderer);
-        SDL_Delay(delay_ms);
+        if (game_render(game, renderer) < 0) {
+            print_current_error_msg("Failed rendering the game");
+            exit_code = -1;
+            goto game_failed;
+        }
     }
 
-reload_platforms_failed:
-    destroy_camera(camera);
-create_camera_fail:
-    if (platforms) { destroy_platforms(platforms); }
-create_platforms_fail:
-    destroy_player(player);
-create_player_fail:
+game_failed:
+    destroy_game(game);
+create_game_failed:
     if (the_stick_of_joy) { SDL_JoystickClose(the_stick_of_joy); }
 sdl_joystick_open_fail:
     SDL_DestroyRenderer(renderer);

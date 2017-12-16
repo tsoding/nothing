@@ -85,6 +85,10 @@ int game_render(const game_t *game, SDL_Renderer *renderer)
     assert(game);
     assert(renderer);
 
+    if (game->state == GAME_STATE_QUIT) {
+        return 0;
+    }
+
     if (SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
@@ -113,6 +117,10 @@ int game_update(game_t *game, Uint32 delta_time)
     assert(game);
     assert(delta_time > 0);
 
+    if (game->state == GAME_STATE_QUIT) {
+        return 0;
+    }
+
     update_player(game->player, game->platforms, delta_time);
     player_focus_camera(game->player, game->camera);
 
@@ -123,6 +131,10 @@ int game_event(game_t *game, const SDL_Event *event)
 {
     assert(game);
     assert(event);
+
+    if (game->state == GAME_STATE_QUIT) {
+        return 0;
+    }
 
     switch (event->type) {
     case SDL_QUIT:
@@ -143,6 +155,7 @@ int game_event(game_t *game, const SDL_Event *event)
 
             if (game->platforms == NULL) {
                 print_current_error_msg("Could not reload the level");
+                game->state = GAME_STATE_QUIT;
                 return -1;
             }
             break;
@@ -166,6 +179,10 @@ int game_input(game_t *game,
     assert(game);
     assert(keyboard_state);
     assert(the_stick_of_joy);
+
+    if (game->state == GAME_STATE_QUIT) {
+        return 0;
+    }
 
     if (keyboard_state[SDL_SCANCODE_A]) {
         player_move_left(game->player);
