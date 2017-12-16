@@ -4,6 +4,7 @@
 
 #include "./player.h"
 #include "./platforms.h"
+#include "./error.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -18,7 +19,7 @@ int main(int argc, char *argv[])
     int exit_code = 0;
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-        fprintf(stderr, "Could not initialize SDL: %s", SDL_GetError());
+        print_error_msg(ERROR_TYPE_SDL2, "Could not initialize SDL");
         exit_code = -1;
         goto sdl_init_fail;
     }
@@ -29,7 +30,7 @@ int main(int argc, char *argv[])
                                                 SDL_WINDOW_SHOWN);
 
     if (window == NULL) {
-        fprintf(stderr, "Could not create SDL window: %s", SDL_GetError());
+        print_error_msg(ERROR_TYPE_SDL2, "Could not create SDL window");
         exit_code = -1;
         goto sdl_create_window_fail;
     }
@@ -38,7 +39,7 @@ int main(int argc, char *argv[])
                                                       SDL_RENDERER_ACCELERATED |
                                                       SDL_RENDERER_PRESENTVSYNC);
     if (renderer == NULL) {
-        fprintf(stderr, "Could not create SDL renderer: %s", SDL_GetError());
+        print_error_msg(ERROR_TYPE_SDL2, "Could not create SDL renderer");
         exit_code = -1;
         goto sdl_create_renderer_fail;
     }
@@ -49,7 +50,7 @@ int main(int argc, char *argv[])
         the_stick_of_joy = SDL_JoystickOpen(0);
 
         if (the_stick_of_joy == NULL) {
-            fprintf(stderr, "Could not open 0th Stick of the Joy: %s\n", SDL_GetError());
+            print_error_msg(ERROR_TYPE_SDL2, "Could not open 0th Stick of the Joy: %s\n");
             exit_code = -1;
             goto sdl_joystick_open_fail;
         }
@@ -69,21 +70,21 @@ int main(int argc, char *argv[])
 
     player_t *const player = create_player(100.0f, 0.0f);
     if (player == NULL) {
-        perror("Could not create player");
+        print_current_error_msg("Could not create player");
         exit_code = -1;
         goto create_player_fail;
     }
 
     platforms_t *platforms = load_platforms_from_file(LEVEL_FILE_NAME);
     if (platforms == NULL) {
-        perror("Could not read platforms from " LEVEL_FILE_NAME);
+        print_current_error_msg("Could not read platforms from");
         exit_code = -1;
         goto create_platforms_fail;
     }
 
     camera_t *const camera = create_camera(vec(0.0f, 0.0f));
     if (camera == NULL) {
-        perror("Could not create camera");
+        print_current_error_msg("Could not create camera");
         exit_code = -1;
         goto create_camera_fail;
     }
@@ -113,6 +114,7 @@ int main(int argc, char *argv[])
                     platforms = load_platforms_from_file(LEVEL_FILE_NAME);
 
                     if (platforms == NULL) {
+                        print_current_error_msg("Could not reload the level from " LEVEL_FILE_NAME);
                         exit_code = -1;
                         goto reload_platforms_failed;
                     }

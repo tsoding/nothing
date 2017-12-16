@@ -6,6 +6,7 @@
 #include "./player.h"
 #include "./platforms.h"
 #include "./point.h"
+#include "./error.h"
 
 #define PLAYER_WIDTH 50.0f
 #define PLAYER_HEIGHT 50.0f
@@ -23,6 +24,7 @@ player_t *create_player(float x, float y)
     player_t *player = malloc(sizeof(player_t));
 
     if (player == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
         return NULL;
     }
 
@@ -62,6 +64,7 @@ int render_player(const player_t * player,
     assert(camera);
 
     if (SDL_SetRenderDrawColor(renderer, 96, 255, 96, 255) < 0) {
+        throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
     rect_t player_object = {
