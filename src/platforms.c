@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 
 #include "./platforms.h"
+#include "./error.h"
 
 struct platforms_t {
     rect_t *rects;
@@ -26,12 +27,14 @@ platforms_t *create_platforms(const rect_t *rects, size_t rects_size)
     platforms_t *platforms = malloc(sizeof(platforms_t));
 
     if (platforms == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
         goto platforms_malloc_fail;
     }
 
     platforms->rects = malloc(sizeof(rect_t) * rects_size);
 
     if (platforms->rects == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
         goto platforms_rects_malloc_fail;
     }
 
@@ -66,6 +69,7 @@ int save_platforms_to_file(const platforms_t *platforms,
 
     if (platforms_file == NULL) {
         exit_code = -1;
+        throw_error(ERROR_TYPE_LIBC);
         goto fopen_failed;
     }
 
@@ -74,6 +78,7 @@ int save_platforms_to_file(const platforms_t *platforms,
                     platforms->rects[i].x, platforms->rects[i].y,
                     platforms->rects[i].w, platforms->rects[i].h) < 0) {
             exit_code = -1;
+            throw_error(ERROR_TYPE_LIBC);
             goto fprintf_failed;
         }
     }
@@ -91,23 +96,27 @@ platforms_t *load_platforms_from_file(const char *filename)
     FILE *platforms_file = fopen(filename, "r");
 
     if (platforms_file == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
         goto fopen_failed;
     }
 
     platforms_t *platforms = malloc(sizeof(platforms_t));
 
     if (platforms == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
         goto platforms_malloc_fail;
     }
 
     platforms->rects_size = 0;
     if (fscanf(platforms_file, "%lu", &platforms->rects_size) == EOF) {
+        throw_error(ERROR_TYPE_LIBC);
         goto scanf_rects_count_failed;
     }
 
     platforms->rects = malloc(sizeof(rect_t) * platforms->rects_size);
 
     if (platforms->rects == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
         goto platforms_rects_malloc_fail;
     }
 
@@ -115,6 +124,7 @@ platforms_t *load_platforms_from_file(const char *filename)
         if (fscanf(platforms_file, "%f%f%f%f\n",
                    &platforms->rects[i].x, &platforms->rects[i].y,
                    &platforms->rects[i].w, &platforms->rects[i].h) < 0) {
+            throw_error(ERROR_TYPE_LIBC);
             goto scanf_rect_failed;
         }
     }
@@ -137,11 +147,13 @@ int render_platforms(const platforms_t *platforms,
                      const camera_t *camera)
 {
     if (SDL_SetRenderDrawColor(renderer, 255, 96, 96, 255) < 0) {
+        throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
 
     for (size_t i = 0; i < platforms->rects_size; ++i) {
         if (camera_fill_rect(camera, renderer, &platforms->rects[i]) < 0) {
+            throw_error(ERROR_TYPE_SDL2);
             return -1;
         }
     }
