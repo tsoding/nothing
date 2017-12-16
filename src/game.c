@@ -63,6 +63,26 @@ int game_render(const game_t *game, SDL_Renderer *renderer)
     assert(game);
     assert(renderer);
 
+    if (SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255) < 0) {
+        throw_error(ERROR_TYPE_SDL2);
+        return -1;
+    }
+
+    if (SDL_RenderClear(renderer) < 0) {
+        throw_error(ERROR_TYPE_SDL2);
+        return -1;
+    }
+
+    if (render_player(game->player, renderer, game->camera) < 0) {
+        return -1;
+    }
+
+    if (render_platforms(game->platforms, renderer, game->camera) < 0) {
+        return -1;
+    }
+
+    SDL_RenderPresent(renderer);
+
     return 0;
 }
 
