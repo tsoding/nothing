@@ -91,6 +91,9 @@ int game_update(game_t *game, Uint32 delta_time)
     assert(game);
     assert(delta_time > 0);
 
+    update_player(game->player, game->platforms, delta_time);
+    player_focus_camera(game->player, game->camera);
+
     return 0;
 }
 
