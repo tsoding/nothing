@@ -44,7 +44,9 @@ void destroy_lt(lt_t *lt)
     assert(lt);
 
     while (lt->size-- > 0) {
-        destroy_lt_slot(lt->frames[lt->size]);
+        if (lt->frames[lt->size]) {
+            destroy_lt_slot(lt->frames[lt->size]);
+        }
     }
 
     free(lt->frames);
@@ -56,7 +58,6 @@ void *lt_push(lt_t *lt, void *resource, lt_destroy_t resource_destroy)
     assert(lt);
     assert(resource_destroy);
     assert(lt != resource);
-    assert(resource_destroy != (lt_destroy_t) destroy_lt);
 
     if (resource == NULL) {
         return NULL;
@@ -92,4 +93,20 @@ void* lt_reset(lt_t *lt, void *old_resource, void *new_resource)
     }
 
     return old_resource;
+}
+
+void *lt_release(lt_t *lt, void *resource)
+{
+    assert(lt);
+    assert(resource);
+
+    for (size_t i = 0; i < lt->size; ++i) {
+        if (lt_slot_contains_resource(lt->frames[i], resource)) {
+            release_lt_slot(lt->frames[i]);
+            lt->frames[i] = NULL;
+            return resource;
+        }
+    }
+
+    return resource;
 }

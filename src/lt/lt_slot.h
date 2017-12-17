@@ -6,6 +6,7 @@
 typedef struct lt_slot_t lt_slot_t;
 
 lt_slot_t *create_lt_slot(void *resource, lt_destroy_t resource_destroy);
+void *release_lt_slot(lt_slot_t *lt_slot);
 void destroy_lt_slot(lt_slot_t *lt_slot);
 
 void lt_slot_reset_resource(lt_slot_t *lt_slot, void *resource);

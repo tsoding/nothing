@@ -166,7 +166,7 @@ static int game_event_running(game_t *game, const SDL_Event *event)
             break;
 
         case SDLK_q:
-            printf("Reloading the level from '%s'...", game->level_file_path);
+            printf("Reloading the level from '%s'...\n", game->level_file_path);
 
             game->platforms = RESET_LT(
                 game->lt,

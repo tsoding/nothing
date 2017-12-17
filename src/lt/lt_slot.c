@@ -27,6 +27,15 @@ lt_slot_t *create_lt_slot(void *resource, lt_destroy_t resource_destroy)
     return lt_slot;
 }
 
+void *release_lt_slot(lt_slot_t *lt_slot)
+{
+    assert(lt_slot);
+
+    void *resource = lt_slot->resource;
+    free(lt_slot);
+    return resource;
+}
+
 void destroy_lt_slot(lt_slot_t *lt_slot)
 {
     assert(lt_slot);
