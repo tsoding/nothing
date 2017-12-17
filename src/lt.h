@@ -7,9 +7,13 @@
 #define RESET_LT(lt, old_resource, new_resource)    \
     lt_reset(lt, (void*)old_resource, (void*)new_resource)
 
-#define RETURN_LT(lt, ...)                  \
+#define RETURN_LT(lt, result)               \
     destroy_lt(lt);                         \
-    return __VA_ARGS__
+    return result
+
+#define RETURN_LT0(lt)                          \
+    destroy_lt(lt);                             \
+    return
 
 typedef struct lt_t lt_t;
 typedef void (*lt_destroy_t)(void*);
