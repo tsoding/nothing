@@ -5,7 +5,7 @@
 #include "./lt.h"
 #include "./lt/lt_slot.h"
 
-#define INITIAL_FRAME_BUFFER_SIZE 2
+#define INITIAL_FRAME_BUFFER_SIZE 16
 
 struct lt_t
 {
