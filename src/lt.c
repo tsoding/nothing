@@ -51,8 +51,11 @@ void destroy_lt(lt_t *lt)
 void *lt_push(lt_t *lt, void *resource, lt_destroy_t resource_destroy)
 {
     assert(lt);
-    assert(resource);
     assert(resource_destroy);
+
+    if (resource == NULL) {
+        return NULL;
+    }
 
     if (lt->size >= lt->capacity) {
         lt->capacity *= 2;

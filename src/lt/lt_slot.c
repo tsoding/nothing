@@ -22,6 +22,7 @@ lt_slot_t *create_lt_slot(void *resource, lt_destroy_t resource_destroy)
     lt_slot->resource = resource;
     lt_slot->resource_destroy = resource_destroy;
 
+    printf("LT: created slot\n");
     return lt_slot;
 }
 
@@ -31,6 +32,7 @@ void destroy_lt_slot(lt_slot_t *lt_slot)
 
     lt_slot->resource_destroy(lt_slot->resource);
     free(lt_slot);
+    printf("LT: remove slot\n");
 }
 
 void lt_slot_reset_resource(lt_slot_t *lt_slot, void *resource)
