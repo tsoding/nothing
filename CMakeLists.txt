@@ -22,6 +22,8 @@ set(SOURCE_FILES
   src/camera.c
   src/error.c
   src/game.c
+  src/lt.c
+  src/lt/lt_slot.c
 )
 
 set(HEADER_FILES
@@ -32,6 +34,8 @@ set(HEADER_FILES
   src/camera.h
   src/error.h
   src/game.h
+  src/lt.h
+  src/lt/lt_slot.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
