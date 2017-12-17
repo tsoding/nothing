@@ -8,6 +8,7 @@ with import <nixpkgs> {}; {
                         pkgconfig
                         cmake
                         xqilla
+                        valgrind
                       ];
         LD_LIBRARY_PATH="${mesa}/lib";
     };

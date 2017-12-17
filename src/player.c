@@ -102,8 +102,6 @@ void update_player(player_t *player,
         player_hitbox(player));
 
     for (int i = 0; i < 1000 && vec_length(opposing_force) > 1e-6; ++i) {
-        printf("opposing force: %f %f\n", opposing_force.x, opposing_force.y);
-
         player->position = vec_sum(
             player->position,
             vec_scala_mult(

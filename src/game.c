@@ -7,6 +7,7 @@
 #include "./camera.h"
 #include "./game.h"
 #include "./error.h"
+#include "./lt.h"
 
 typedef enum game_state_t {
     GAME_STATE_RUNNING = 0,
@@ -17,6 +18,8 @@ typedef enum game_state_t {
 } game_state_t;
 
 typedef struct game_t {
+    lt_t *lt;
+
     game_state_t state;
     player_t *player;
     platforms_t *platforms;
@@ -28,56 +31,50 @@ game_t *create_game(const char *level_file_path)
 {
     assert(level_file_path);
 
-    game_t *game = malloc(sizeof(game_t));
+    lt_t *const lt = create_lt();
+    if (lt == NULL) {
+        return NULL;
+    }
+
+    game_t *game = PUSH_LT(lt, malloc(sizeof(game_t)), free);
     if (game == NULL) {
         throw_error(ERROR_TYPE_LIBC);
-        goto malloc_game_failed;
+        RETURN_LT(lt, NULL);
     }
 
-    if ((game->player = create_player(100.0f, 0.0f)) == NULL) {
-        goto create_player_failed;
+    game->player = PUSH_LT(lt, create_player(100.0f, 0.0f), destroy_player);
+    if (game->player == NULL) {
+        RETURN_LT(lt, NULL);
     }
 
-    if ((game->platforms = load_platforms_from_file(level_file_path)) == NULL) {
-        goto create_platforms_failed;
+    game->platforms = PUSH_LT(lt, load_platforms_from_file(level_file_path), destroy_platforms);
+    if (game->platforms == NULL) {
+        RETURN_LT(lt, NULL);
     }
 
-    if ((game->camera = create_camera(vec(0.0f, 0.0f))) == NULL) {
-        goto create_camera_failed;
+    game->camera = PUSH_LT(lt, create_camera(vec(0.0f, 0.0f)), destroy_camera);
+    if (game->camera == NULL) {
+        RETURN_LT(lt, NULL);
     }
 
-    if ((game->level_file_path = malloc(sizeof(char) * strlen(level_file_path))) == NULL) {
-        goto malloc_level_file_name_failed;
+    game->level_file_path = PUSH_LT(lt, malloc(sizeof(char) * (strlen(level_file_path) + 1)), free);
+    if (game->level_file_path == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
     }
 
     strcpy(game->level_file_path, level_file_path);
 
     game->state = GAME_STATE_RUNNING;
+    game->lt = lt;
 
     return game;
-
-malloc_level_file_name_failed:
-    free(game->camera);
-create_camera_failed:
-    free(game->platforms);
-create_platforms_failed:
-    free(game->player);
-create_player_failed:
-    free(game);
-malloc_game_failed:
-    return NULL;
 }
 
 void destroy_game(game_t *game)
 {
     assert(game);
-
-    if (game->level_file_path) { free(game->level_file_path); }
-    if (game->camera) { free(game->camera); }
-    if (game->platforms) { free(game->platforms); }
-    if (game->player) { free(game->player); }
-
-    free(game);
+    RETURN_LT0(game->lt);
 }
 
 int game_render(const game_t *game, SDL_Renderer *renderer)
@@ -169,10 +166,12 @@ static int game_event_running(game_t *game, const SDL_Event *event)
             break;
 
         case SDLK_q:
-            printf("Reloading the level from '%s'...", game->level_file_path);
+            printf("Reloading the level from '%s'...\n", game->level_file_path);
 
-            destroy_platforms(game->platforms);
-            game->platforms = load_platforms_from_file(game->level_file_path);
+            game->platforms = RESET_LT(
+                game->lt,
+                game->platforms,
+                load_platforms_from_file(game->level_file_path));
 
             if (game->platforms == NULL) {
                 print_current_error_msg("Could not reload the level");

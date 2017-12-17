@@ -6,54 +6,60 @@
 #include "./platforms.h"
 #include "./error.h"
 #include "./game.h"
+#include "./lt.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 #define GAME_FPS 60
 #define LEVEL_FILE_NAME "./levels/platforms.txt"
 
+/* LT module adapter for SDL_Quit */
+static void SDL_Quit_lt(void* ignored)
+{
+    (void) ignored;
+    SDL_Quit();
+}
+
 int main(int argc, char *argv[])
 {
     (void) argc;                /* unused */
     (void) argv;                /* unused */
 
-    int exit_code = 0;
+    lt_t *const lt = create_lt();
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         print_error_msg(ERROR_TYPE_SDL2, "Could not initialize SDL");
-        exit_code = -1;
-        goto sdl_init_fail;
+        RETURN_LT(lt, -1);
     }
+    PUSH_LT(lt, 42, SDL_Quit_lt);
 
-    SDL_Window *const window = SDL_CreateWindow("Nothing",
-                                                100, 100,
-                                                SCREEN_WIDTH, SCREEN_HEIGHT,
-                                                SDL_WINDOW_SHOWN);
+    SDL_Window *const window = PUSH_LT(
+        lt,
+        SDL_CreateWindow("Nothing", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN),
+        SDL_DestroyWindow);
 
     if (window == NULL) {
         print_error_msg(ERROR_TYPE_SDL2, "Could not create SDL window");
-        exit_code = -1;
-        goto sdl_create_window_fail;
+        RETURN_LT(lt, -1);
     }
 
-    SDL_Renderer *const renderer = SDL_CreateRenderer(window, -1,
-                                                      SDL_RENDERER_ACCELERATED |
-                                                      SDL_RENDERER_PRESENTVSYNC);
+    SDL_Renderer *const renderer = PUSH_LT(
+        lt,
+        SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC),
+        SDL_DestroyRenderer);
     if (renderer == NULL) {
         print_error_msg(ERROR_TYPE_SDL2, "Could not create SDL renderer");
-        exit_code = -1;
-        goto sdl_create_renderer_fail;
+        RETURN_LT(lt, -1);
     }
 
     SDL_Joystick *the_stick_of_joy = NULL;
 
     if (SDL_NumJoysticks() > 0) {
-        the_stick_of_joy = SDL_JoystickOpen(0);
+        the_stick_of_joy = PUSH_LT(lt, SDL_JoystickOpen(0), SDL_JoystickClose);
 
         if (the_stick_of_joy == NULL) {
             print_error_msg(ERROR_TYPE_SDL2, "Could not open 0th Stick of the Joy: %s\n");
-            exit_code = -1;
-            goto sdl_joystick_open_fail;
+            RETURN_LT(lt, -1);
         }
 
         printf("Opened Joystick 0\n");
@@ -69,11 +75,10 @@ int main(int argc, char *argv[])
 
     // ------------------------------
 
-    game_t *const game = create_game(LEVEL_FILE_NAME);
+    game_t *const game = PUSH_LT(lt, create_game(LEVEL_FILE_NAME), destroy_game);
     if (game == NULL) {
         print_current_error_msg("Could not create the game object");
-        exit_code = -1;
-        goto create_game_failed;
+        RETURN_LT(lt, -1);
     }
 
     const Uint8 *const keyboard_state = SDL_GetKeyboardState(NULL);
@@ -83,40 +88,25 @@ int main(int argc, char *argv[])
         while (!is_game_over(game) && SDL_PollEvent(&e)) {
             if (game_event(game, &e) < 0) {
                 print_current_error_msg("Failed handling event");
-                exit_code = -1;
-                goto game_failed;
+                RETURN_LT(lt, -1);
             }
         }
 
         if (game_input(game, keyboard_state, the_stick_of_joy) < 0) {
             print_current_error_msg("Failed handling input");
-            exit_code = -1;
-            goto game_failed;
+            RETURN_LT(lt, -1);
         }
 
         if (game_update(game, delay_ms) < 0) {
             print_current_error_msg("Failed handling updating");
-            exit_code = -1;
-            goto game_failed;
+            RETURN_LT(lt, -1);
         }
 
         if (game_render(game, renderer) < 0) {
             print_current_error_msg("Failed rendering the game");
-            exit_code = -1;
-            goto game_failed;
+            RETURN_LT(lt, -1);
         }
     }
 
-game_failed:
-    destroy_game(game);
-create_game_failed:
-    if (the_stick_of_joy) { SDL_JoystickClose(the_stick_of_joy); }
-sdl_joystick_open_fail:
-    SDL_DestroyRenderer(renderer);
-sdl_create_renderer_fail:
-    SDL_DestroyWindow(window);
-sdl_create_window_fail:
-    SDL_Quit();
-sdl_init_fail:
-    return exit_code;
+    RETURN_LT(lt, 0);
 }
