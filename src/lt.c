@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include "./error.h"
 #include "./lt.h"
 #include "./lt/lt_slot.h"
 
-#define INITIAL_FRAME_BUFFER_SIZE 16
+#define INITIAL_FRAME_BUFFER_SIZE 2
 
 struct lt_t
 {
@@ -17,11 +18,13 @@ lt_t *create_lt()
 {
     lt_t *lt = malloc(sizeof(lt_t));
     if(lt == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
         goto malloc_lt_fail;
     }
 
     lt->frames = malloc(sizeof(lt_slot_t*) * INITIAL_FRAME_BUFFER_SIZE);
     if (lt->frames == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
         goto malloc_lt_slots_fail;
     }
 
@@ -52,6 +55,8 @@ void *lt_push(lt_t *lt, void *resource, lt_destroy_t resource_destroy)
 {
     assert(lt);
     assert(resource_destroy);
+    assert(lt != resource);
+    assert(resource_destroy != (lt_destroy_t) destroy_lt);
 
     if (resource == NULL) {
         return NULL;
@@ -59,7 +64,8 @@ void *lt_push(lt_t *lt, void *resource, lt_destroy_t resource_destroy)
 
     if (lt->size >= lt->capacity) {
         lt->capacity *= 2;
-        if ((lt->frames = realloc(lt->frames, lt->capacity)) == NULL) {
+        if ((lt->frames = realloc(lt->frames, sizeof(lt_slot_t*) * lt->capacity)) == NULL) {
+            throw_error(ERROR_TYPE_LIBC);
             return NULL;
         }
     }
@@ -73,6 +79,11 @@ void *lt_push(lt_t *lt, void *resource, lt_destroy_t resource_destroy)
 
 void* lt_reset(lt_t *lt, void *old_resource, void *new_resource)
 {
+    assert(lt);
+    assert(old_resource);
+    assert(new_resource);
+    assert(old_resource != new_resource);
+
     for (size_t i = 0; i < lt->size; ++i) {
         if (lt_slot_contains_resource(lt->frames[i], old_resource)) {
             lt_slot_reset_resource(lt->frames[i], new_resource);
