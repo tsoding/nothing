@@ -29,37 +29,37 @@ int main(int argc, char *argv[])
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         print_error_msg(ERROR_TYPE_SDL2, "Could not initialize SDL");
-        LT_RETURN(lt, -1);
+        RETURN_LT(lt, -1);
     }
-    LT_PUSH(lt, 42, SDL_Quit_lt);
+    PUSH_LT(lt, 42, SDL_Quit_lt);
 
-    SDL_Window *const window = LT_PUSH(
+    SDL_Window *const window = PUSH_LT(
         lt,
         SDL_CreateWindow("Nothing", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN),
         SDL_DestroyWindow);
 
     if (window == NULL) {
         print_error_msg(ERROR_TYPE_SDL2, "Could not create SDL window");
-        LT_RETURN(lt, -1);
+        RETURN_LT(lt, -1);
     }
 
-    SDL_Renderer *const renderer = LT_PUSH(
+    SDL_Renderer *const renderer = PUSH_LT(
         lt,
         SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC),
         SDL_DestroyRenderer);
     if (renderer == NULL) {
         print_error_msg(ERROR_TYPE_SDL2, "Could not create SDL renderer");
-        LT_RETURN(lt, -1);
+        RETURN_LT(lt, -1);
     }
 
     SDL_Joystick *the_stick_of_joy = NULL;
 
     if (SDL_NumJoysticks() > 0) {
-        the_stick_of_joy = LT_PUSH(lt, SDL_JoystickOpen(0), SDL_JoystickClose);
+        the_stick_of_joy = PUSH_LT(lt, SDL_JoystickOpen(0), SDL_JoystickClose);
 
         if (the_stick_of_joy == NULL) {
             print_error_msg(ERROR_TYPE_SDL2, "Could not open 0th Stick of the Joy: %s\n");
-            LT_RETURN(lt, -1);
+            RETURN_LT(lt, -1);
         }
 
         printf("Opened Joystick 0\n");
@@ -75,10 +75,10 @@ int main(int argc, char *argv[])
 
     // ------------------------------
 
-    game_t *const game = LT_PUSH(lt, create_game(LEVEL_FILE_NAME), destroy_game);
+    game_t *const game = PUSH_LT(lt, create_game(LEVEL_FILE_NAME), destroy_game);
     if (game == NULL) {
         print_current_error_msg("Could not create the game object");
-        LT_RETURN(lt, -1);
+        RETURN_LT(lt, -1);
     }
 
     const Uint8 *const keyboard_state = SDL_GetKeyboardState(NULL);
@@ -88,25 +88,25 @@ int main(int argc, char *argv[])
         while (!is_game_over(game) && SDL_PollEvent(&e)) {
             if (game_event(game, &e) < 0) {
                 print_current_error_msg("Failed handling event");
-                LT_RETURN(lt, -1);
+                RETURN_LT(lt, -1);
             }
         }
 
         if (game_input(game, keyboard_state, the_stick_of_joy) < 0) {
             print_current_error_msg("Failed handling input");
-            LT_RETURN(lt, -1);
+            RETURN_LT(lt, -1);
         }
 
         if (game_update(game, delay_ms) < 0) {
             print_current_error_msg("Failed handling updating");
-            LT_RETURN(lt, -1);
+            RETURN_LT(lt, -1);
         }
 
         if (game_render(game, renderer) < 0) {
             print_current_error_msg("Failed rendering the game");
-            LT_RETURN(lt, -1);
+            RETURN_LT(lt, -1);
         }
     }
 
-    LT_RETURN(lt, 0);
+    RETURN_LT(lt, 0);
 }

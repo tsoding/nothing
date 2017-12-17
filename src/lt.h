@@ -1,13 +1,13 @@
 #ifndef LT_H_
 #define LT_H_
 
-#define LT_PUSH(lt, resource, resource_destroy) \
+#define PUSH_LT(lt, resource, resource_destroy) \
     lt_push(lt, (void*)resource, (lt_destroy_t)resource_destroy)
 
-#define LT_RESET(lt, old_resource, new_resource)    \
+#define RESET_LT(lt, old_resource, new_resource)    \
     lt_reset(lt, (void*)old_resource, (void*)new_resource)
 
-#define LT_RETURN(lt, ...)                  \
+#define RETURN_LT(lt, ...)                  \
     destroy_lt(lt);                         \
     return __VA_ARGS__
 
