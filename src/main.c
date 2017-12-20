@@ -11,7 +11,6 @@
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 #define GAME_FPS 60
-#define LEVEL_FILE_NAME "./levels/platforms.txt"
 
 /* LT module adapter for SDL_Quit */
 static void SDL_Quit_lt(void* ignored)
@@ -20,12 +19,19 @@ static void SDL_Quit_lt(void* ignored)
     SDL_Quit();
 }
 
+static void print_usage(FILE *stream)
+{
+    fprintf(stream, "Usage: nothing <level-file>\n");
+}
+
 int main(int argc, char *argv[])
 {
-    (void) argc;                /* unused */
-    (void) argv;                /* unused */
-
     lt_t *const lt = create_lt();
+
+    if (argc < 2) {
+        print_usage(stderr);
+        RETURN_LT(lt, -1);
+    }
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         print_error_msg(ERROR_TYPE_SDL2, "Could not initialize SDL");
@@ -75,7 +81,7 @@ int main(int argc, char *argv[])
 
     // ------------------------------
 
-    game_t *const game = PUSH_LT(lt, create_game(LEVEL_FILE_NAME), destroy_game);
+    game_t *const game = PUSH_LT(lt, create_game(argv[1]), destroy_game);
     if (game == NULL) {
         print_current_error_msg("Could not create the game object");
         RETURN_LT(lt, -1);
