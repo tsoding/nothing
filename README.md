@@ -12,8 +12,7 @@ $ mkdir build
 $ cd build/
 $ cmake ..
 $ make
-$ cd ..
-$ ./nothing
+$ ./nothing <level-file>
 ```
 
 ## Build on Windows
