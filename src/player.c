@@ -98,6 +98,7 @@ void update_player(player_t *player,
     player->position.y = fmodf(player->position.y, 800.0f);
 
     player->height = fminf(player->height + PLAYER_INFLATION * d, PLAYER_HEIGHT);
+    player->width = (PLAYER_WIDTH * PLAYER_HEIGHT) / player->height;
 
     vec_t opposing_force = platforms_rect_object_collide(
         platforms,
@@ -167,9 +168,5 @@ void player_focus_camera(player_t *player,
     assert(player);
     assert(camera);
 
-    camera_center_at(
-        camera,
-        vec_sum(
-            player->position,
-            vec(player->width * 0.5f, player->height * 0.5f)));
+    camera_center_at(camera, player->position);
 }
