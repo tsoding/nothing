@@ -12,11 +12,13 @@
 #define PLAYER_HEIGHT 50.0f
 #define PLAYER_SPEED 500.0f
 #define PLAYER_GRAVITY 1500.0f
+#define PLAYER_INFLATION 100.0f
 
 struct player_t {
     vec_t position;
     vec_t velocity;
     vec_t movement;
+    float height;
 };
 
 player_t *create_player(float x, float y)
@@ -34,6 +36,7 @@ player_t *create_player(float x, float y)
     player->velocity.y = 0.0f;
     player->movement.x = 0.0f;
     player->movement.y = 0.0f;
+    player->height = PLAYER_HEIGHT / 2;
 
     return player;
 }
@@ -46,10 +49,10 @@ void destroy_player(player_t * player)
 rect_t player_hitbox(const player_t *player)
 {
     rect_t hitbox = {
-        .x = player->position.x,
-        .y = player->position.y,
+        .x = player->position.x - PLAYER_WIDTH / 2,
+        .y = player->position.y - player->height,
         .w = PLAYER_WIDTH,
-        .h = PLAYER_HEIGHT
+        .h = player->height
     };
 
     return hitbox;
@@ -67,12 +70,7 @@ int render_player(const player_t * player,
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
-    rect_t player_object = {
-        .x = player->position.x,
-        .y = player->position.y,
-        .w = PLAYER_WIDTH,
-        .h = PLAYER_HEIGHT
-    };
+    rect_t player_object = player_hitbox(player);
 
 
     return camera_fill_rect(camera, renderer, &player_object);
@@ -97,9 +95,15 @@ void update_player(player_t *player,
             d));
     player->position.y = fmodf(player->position.y, 800.0f);
 
+    player->height = fminf(player->height + PLAYER_INFLATION * d, PLAYER_HEIGHT);
+
     vec_t opposing_force = platforms_rect_object_collide(
         platforms,
         player_hitbox(player));
+
+    if (opposing_force.y < 0.0f && (player->velocity.y + player->movement.y) > 800.0f) {
+        player->height = PLAYER_HEIGHT / 2;
+    }
 
     for (int i = 0; i < 1000 && vec_length(opposing_force) > 1e-6; ++i) {
         player->position = vec_sum(
