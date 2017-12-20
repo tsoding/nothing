@@ -19,6 +19,7 @@ struct player_t {
     vec_t velocity;
     vec_t movement;
     float height;
+    float width;
 };
 
 player_t *create_player(float x, float y)
@@ -36,7 +37,8 @@ player_t *create_player(float x, float y)
     player->velocity.y = 0.0f;
     player->movement.x = 0.0f;
     player->movement.y = 0.0f;
-    player->height = PLAYER_HEIGHT / 2;
+    player->height = PLAYER_HEIGHT;
+    player->width = PLAYER_WIDTH;
 
     return player;
 }
@@ -49,9 +51,9 @@ void destroy_player(player_t * player)
 rect_t player_hitbox(const player_t *player)
 {
     rect_t hitbox = {
-        .x = player->position.x - PLAYER_WIDTH / 2,
+        .x = player->position.x - player->width / 2,
         .y = player->position.y - player->height,
-        .w = PLAYER_WIDTH,
+        .w = player->width,
         .h = player->height
     };
 
@@ -169,5 +171,5 @@ void player_focus_camera(player_t *player,
         camera,
         vec_sum(
             player->position,
-            vec(PLAYER_WIDTH * 0.5f, PLAYER_HEIGHT * 0.5f)));
+            vec(player->width * 0.5f, player->height * 0.5f)));
 }
