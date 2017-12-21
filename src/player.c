@@ -22,6 +22,41 @@ struct player_t {
     float width;
 };
 
+static const vec_t opposing_rect_side_forces[RECT_SIDE_N] = {
+    { .x = 1.0f,  .y =  0.0f  },  /* RECT_SIDE_LEFT = 0, */
+    { .x = -1.0f, .y =  0.0f  },  /* RECT_SIDE_RIGHT, */
+    { .x = 0.0f,  .y =  1.0f, },  /* RECT_SIDE_TOP, */
+    { .x = 0.0f,  .y = -1.0f, }   /* RECT_SIDE_BOTTOM, */
+};
+
+static vec_t opposing_force_by_sides(int sides[RECT_SIDE_N])
+{
+    vec_t opposing_force = {
+        .x = 0.0f,
+        .y = 0.0f
+    };
+
+    for (rect_side_t side = 0; side < RECT_SIDE_N; ++side) {
+        if (sides[side]) {
+            vec_add(
+                &opposing_force,
+                opposing_rect_side_forces[side]);
+        }
+    }
+
+    return opposing_force;
+}
+
+static int squishing_horizontal_force(int sides[RECT_SIDE_N])
+{
+    return sides[RECT_SIDE_LEFT] && sides[RECT_SIDE_RIGHT];
+}
+
+static int squishing_vertical_force(int sides[RECT_SIDE_N])
+{
+    return sides[RECT_SIDE_TOP] && sides[RECT_SIDE_BOTTOM];
+}
+
 player_t *create_player(float x, float y)
 {
     player_t *player = malloc(sizeof(player_t));
@@ -100,15 +135,20 @@ void update_player(player_t *player,
     player->height = fminf(player->height + PLAYER_INFLATION * d, PLAYER_HEIGHT);
     player->width = (PLAYER_WIDTH * PLAYER_HEIGHT) / player->height;
 
-    vec_t opposing_force = platforms_rect_object_collide(
-        platforms,
-        player_hitbox(player));
+
+    int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
+
+    platforms_rect_object_collide(platforms, player_hitbox(player), sides);
+    vec_t opposing_force = opposing_force_by_sides(sides);
 
     if (opposing_force.y < 0.0f && (player->velocity.y + player->movement.y) > 800.0f) {
         player->height = PLAYER_HEIGHT / 2;
     }
 
-    for (int i = 0; i < 1000 && vec_length(opposing_force) > 1e-6; ++i) {
+    for (int i = 0; i < 1000
+                    && (vec_length(opposing_force) > 1e-6
+                        || squishing_vertical_force(sides)
+                        || squishing_horizontal_force(sides)); ++i) {
         player->position = vec_sum(
             player->position,
             vec_scala_mult(
@@ -125,9 +165,21 @@ void update_player(player_t *player,
             player->movement.y = 0.0f;
         }
 
-        opposing_force = platforms_rect_object_collide(
+        if (squishing_vertical_force(sides)) {
+            player->height -= 1e-2f;
+            /* player->width = (PLAYER_WIDTH * PLAYER_HEIGHT) / player->height; */
+        }
+
+        if (squishing_horizontal_force(sides)) {
+           player->width -= 1e-2f;
+           /* player->height = (PLAYER_WIDTH * PLAYER_HEIGHT) / player->width; */
+        }
+
+        platforms_rect_object_collide(
             platforms,
-            player_hitbox(player));
+            player_hitbox(player),
+            sides);
+        opposing_force = opposing_force_by_sides(sides);
     }
 }
 

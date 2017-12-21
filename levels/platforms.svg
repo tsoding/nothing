@@ -22,8 +22,8 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1916"
-     inkscape:window-height="1041"
+     inkscape:window-width="956"
+     inkscape:window-height="1023"
      id="namedview13"
      showgrid="false"
      inkscape:snap-bbox="true"
@@ -32,10 +32,10 @@
      inkscape:snap-bbox-midpoints="true"
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:zoom="2"
-     inkscape:cx="282.86631"
-     inkscape:cy="332.49893"
-     inkscape:window-x="0"
-     inkscape:window-y="18"
+     inkscape:cx="439.36631"
+     inkscape:cy="336.49893"
+     inkscape:window-x="960"
+     inkscape:window-y="36"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg16" />
   <metadata
@@ -137,11 +137,4 @@
      width="50"
      y="200"
      x="350" />
-  <rect
-     id="rect4-7"
-     style="fill:#0000ff;stroke-width:1"
-     height="25"
-     width="50"
-     y="200"
-     x="400" />
 </svg>

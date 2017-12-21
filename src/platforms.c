@@ -16,13 +16,6 @@ struct platforms_t {
     size_t rects_size;
 };
 
-static const vec_t opposing_rect_side_forces[RECT_SIDE_N] = {
-    { .x = 1.0f,  .y =  0.0f  },  /* RECT_SIDE_LEFT = 0, */
-    { .x = -1.0f, .y =  0.0f  },  /* RECT_SIDE_RIGHT, */
-    { .x = 0.0f,  .y =  1.0f, },  /* RECT_SIDE_TOP, */
-    { .x = 0.0f,  .y = -1.0f,  }    /* RECT_SIDE_BOTTOM, */
-};
-
 platforms_t *create_platforms(const rect_t *rects, size_t rects_size)
 {
     assert(rects);
@@ -156,30 +149,15 @@ int render_platforms(const platforms_t *platforms,
     return 0;
 }
 
-vec_t platforms_rect_object_collide(const platforms_t *platforms,
-                                    rect_t object)
+void platforms_rect_object_collide(const platforms_t *platforms,
+                                   rect_t object,
+                                   int sides[RECT_SIDE_N])
 {
     assert(platforms);
 
-    int sides[4];
-    memset(sides, 0, sizeof(sides));
+    memset(sides, 0, sizeof(int) * RECT_SIDE_N);
 
     for (size_t i = 0; i < platforms->rects_size; ++i) {
         rect_object_impact(&object, &platforms->rects[i], sides);
     }
-
-    vec_t opposing_force = {
-        .x = 0.0f,
-        .y = 0.0f
-    };
-
-    for (rect_side_t side = 0; side < RECT_SIDE_N; ++side) {
-        if (sides[side]) {
-            vec_add(
-                &opposing_force,
-                opposing_rect_side_forces[side]);
-        }
-    }
-
-    return opposing_force;
 }

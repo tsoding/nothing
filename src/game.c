@@ -221,7 +221,6 @@ int game_input(game_t *game,
 {
     assert(game);
     assert(keyboard_state);
-    assert(the_stick_of_joy);
 
     if (game->state == GAME_STATE_QUIT || game->state == GAME_STATE_PAUSE) {
         return 0;
