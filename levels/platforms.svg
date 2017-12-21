@@ -32,8 +32,8 @@
      inkscape:snap-bbox-midpoints="true"
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:zoom="2"
-     inkscape:cx="427.36631"
-     inkscape:cy="411.99893"
+     inkscape:cx="439.36631"
+     inkscape:cy="336.49893"
      inkscape:window-x="960"
      inkscape:window-y="36"
      inkscape:window-maximized="0"
@@ -69,11 +69,11 @@
      x="0.000000" />
   <rect
      id="rect4"
-     style="fill:rgb(0,0,255)"
-     height="50.000000"
-     width="50.000000"
-     y="200.000000"
-     x="300.000000" />
+     style="fill:#0000ff;stroke-width:1"
+     height="25"
+     width="50"
+     y="200"
+     x="300" />
   <rect
      id="rect6"
      style="fill:rgb(0,0,255)"
@@ -130,4 +130,11 @@
      width="50"
      y="100"
      x="300" />
+  <rect
+     id="rect4-6"
+     style="fill:#0000ff;stroke-width:1"
+     height="25"
+     width="50"
+     y="200"
+     x="350" />
 </svg>
