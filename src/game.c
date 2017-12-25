@@ -183,6 +183,10 @@ static int game_event_running(game_t *game, const SDL_Event *event)
         case SDLK_p:
             game->state = GAME_STATE_PAUSE;
             break;
+
+        case SDLK_l:
+            camera_toggle_debug_mode(game->camera);
+            break;
         }
         break;
 

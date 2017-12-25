@@ -7,6 +7,7 @@
 #include "./error.h"
 
 struct camera_t {
+    int debug_mode;
     point_t position;
 };
 
@@ -20,6 +21,7 @@ camera_t *create_camera(point_t position)
     }
 
     camera->position = position;
+    camera->debug_mode = 0;
 
     return camera;
 }
@@ -50,9 +52,16 @@ int camera_fill_rect(const camera_t *camera,
     sdl_rect.w = (int) roundf(rect->w);
     sdl_rect.h = (int) roundf(rect->h);
 
-    if (SDL_RenderFillRect(render, &sdl_rect) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
-        return -1;
+    if (camera->debug_mode) {
+        if (SDL_RenderDrawRect(render, &sdl_rect) < 0) {
+            throw_error(ERROR_TYPE_SDL2);
+            return -1;
+        }
+    } else {
+        if (SDL_RenderFillRect(render, &sdl_rect) < 0) {
+            throw_error(ERROR_TYPE_SDL2);
+            return -1;
+        }
     }
 
     return 0;
@@ -62,4 +71,10 @@ void camera_center_at(camera_t *camera, point_t position)
 {
     assert(camera);
     camera->position = position;
+}
+
+void camera_toggle_debug_mode(camera_t *camera)
+{
+    assert(camera);
+    camera->debug_mode = !camera->debug_mode;
 }

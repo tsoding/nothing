@@ -15,4 +15,6 @@ int camera_fill_rect(const camera_t *camera,
 
 void camera_center_at(camera_t *camera, point_t position);
 
+void camera_toggle_debug_mode(camera_t *camera);
+
 #endif  // CAMERA_H_
