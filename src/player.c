@@ -12,7 +12,6 @@
 #define PLAYER_HEIGHT 50.0f
 #define PLAYER_SPEED 500.0f
 #define PLAYER_GRAVITY 1500.0f
-#define PLAYER_INFLATION 100.0f
 
 struct player_t {
     vec_t position;
@@ -45,16 +44,6 @@ static vec_t opposing_force_by_sides(int sides[RECT_SIDE_N])
     }
 
     return opposing_force;
-}
-
-static int squishing_horizontal_force(int sides[RECT_SIDE_N])
-{
-    return sides[RECT_SIDE_LEFT] && sides[RECT_SIDE_RIGHT];
-}
-
-static int squishing_vertical_force(int sides[RECT_SIDE_N])
-{
-    return sides[RECT_SIDE_TOP] && sides[RECT_SIDE_BOTTOM];
 }
 
 player_t *create_player(float x, float y)
@@ -132,23 +121,12 @@ void update_player(player_t *player,
             d));
     player->position.y = fmodf(player->position.y, 800.0f);
 
-    player->height = fminf(player->height + PLAYER_INFLATION * d, PLAYER_HEIGHT);
-    player->width = (PLAYER_WIDTH * PLAYER_HEIGHT) / player->height;
-
-
     int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
 
     platforms_rect_object_collide(platforms, player_hitbox(player), sides);
     vec_t opposing_force = opposing_force_by_sides(sides);
 
-    if (opposing_force.y < 0.0f && (player->velocity.y + player->movement.y) > 800.0f) {
-        player->height = PLAYER_HEIGHT / 2;
-    }
-
-    for (int i = 0; i < 1000
-                    && (vec_length(opposing_force) > 1e-6
-                        || squishing_vertical_force(sides)
-                        || squishing_horizontal_force(sides)); ++i) {
+    for (int i = 0; i < 1000 && vec_length(opposing_force) > 1e-6; ++i) {
         player->position = vec_sum(
             player->position,
             vec_scala_mult(
@@ -163,16 +141,6 @@ void update_player(player_t *player,
         if (fabs(opposing_force.y) > 1e-6 && (opposing_force.y < 0.0f) != ((player->velocity.y + player->movement.y) < 0.0f)) {
             player->velocity.y = 0.0f;
             player->movement.y = 0.0f;
-        }
-
-        if (squishing_vertical_force(sides)) {
-            player->height -= 1e-2f;
-            /* player->width = (PLAYER_WIDTH * PLAYER_HEIGHT) / player->height; */
-        }
-
-        if (squishing_horizontal_force(sides)) {
-           player->width -= 1e-2f;
-           /* player->height = (PLAYER_WIDTH * PLAYER_HEIGHT) / player->width; */
         }
 
         platforms_rect_object_collide(
