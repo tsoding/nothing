@@ -19,6 +19,7 @@ struct player_t {
     vec_t movement;
     float height;
     float width;
+    int jump_count;
 };
 
 static const vec_t opposing_rect_side_forces[RECT_SIDE_N] = {
@@ -63,6 +64,7 @@ player_t *create_player(float x, float y)
     player->movement.y = 0.0f;
     player->height = PLAYER_HEIGHT;
     player->width = PLAYER_WIDTH;
+    player->jump_count = 2;
 
     return player;
 }
@@ -126,6 +128,10 @@ void update_player(player_t *player,
     platforms_rect_object_collide(platforms, player_hitbox(player), sides);
     vec_t opposing_force = opposing_force_by_sides(sides);
 
+    if (sides[RECT_SIDE_BOTTOM]) {
+        player->jump_count = 2;
+    }
+
     for (int i = 0; i < 1000 && vec_length(opposing_force) > 1e-6; ++i) {
         player->position = vec_sum(
             player->position,
@@ -179,7 +185,10 @@ void player_jump(player_t *player)
 {
     assert(player);
 
-    player->velocity.y = -500.0f;
+    if (player->jump_count > 0) {
+        player->velocity.y = -500.0f;
+        --player->jump_count;
+    }
 }
 
 void player_focus_camera(player_t *player,

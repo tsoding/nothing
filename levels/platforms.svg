@@ -22,8 +22,8 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="956"
-     inkscape:window-height="1023"
+     inkscape:window-width="1916"
+     inkscape:window-height="1041"
      id="namedview13"
      showgrid="false"
      inkscape:snap-bbox="true"
@@ -31,13 +31,21 @@
      inkscape:bbox-nodes="true"
      inkscape:snap-bbox-midpoints="true"
      inkscape:snap-bbox-edge-midpoints="true"
-     inkscape:zoom="2"
-     inkscape:cx="439.36631"
-     inkscape:cy="336.49893"
-     inkscape:window-x="960"
-     inkscape:window-y="36"
+     inkscape:zoom="4"
+     inkscape:cx="576.29169"
+     inkscape:cy="355.28551"
+     inkscape:window-x="0"
+     inkscape:window-y="18"
      inkscape:window-maximized="0"
-     inkscape:current-layer="svg16" />
+     inkscape:current-layer="svg16"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <sodipodi:guide
+       position="581.5,377"
+       orientation="0,1"
+       id="guide188"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
   <metadata
      id="metadata22">
     <rdf:RDF>
@@ -137,4 +145,53 @@
      width="50"
      y="200"
      x="350" />
+  <rect
+     id="rect4-6-5"
+     style="fill:#0000ff;stroke-width:1"
+     height="9"
+     width="50"
+     y="241"
+     x="481.5" />
+  <rect
+     id="rect4-6-5-3"
+     style="fill:#0000ff;stroke-width:1"
+     height="9"
+     width="50"
+     y="241"
+     x="531.5" />
+  <rect
+     id="rect4-6-5-5"
+     style="fill:#0000ff;stroke-width:1"
+     height="9"
+     width="50"
+     y="232"
+     x="531.5" />
+  <rect
+     id="rect4-6-5-6"
+     style="fill:#0000ff;stroke-width:1"
+     height="9"
+     width="50"
+     y="241"
+     x="581.5" />
+  <rect
+     id="rect4-6-5-6-2"
+     style="fill:#0000ff;stroke-width:1"
+     height="9"
+     width="50"
+     y="232"
+     x="581.5" />
+  <rect
+     id="rect4-6-5-6-9"
+     style="fill:#0000ff;stroke-width:1"
+     height="9"
+     width="50"
+     y="223"
+     x="581.5" />
+  <rect
+     id="rect4-6-5-6-1"
+     style="fill:#0000ff;stroke-width:1"
+     height="27"
+     width="50"
+     y="223"
+     x="714" />
 </svg>
