@@ -9,6 +9,7 @@ with import <nixpkgs> {}; {
                         cmake
                         xqilla
                         valgrind
+                        racket
                       ];
         LD_LIBRARY_PATH="${mesa}/lib";
     };
