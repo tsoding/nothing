@@ -48,7 +48,7 @@ void rect_object_impact(const rect_t *object,
             line_t int_side = rect_side(int_area, side);
 
             if (line_length(int_side) > 10.0f) {
-                sides[side] =
+                sides[side] = sides[side] ||
                     (fabs(object_side.p1.x - object_side.p2.x) < 1e-6
                      && fabs(object_side.p1.x - int_side.p1.x) < 1e-6
                      && fabs(object_side.p1.x - int_side.p2.x) < 1e-6)
