@@ -70,6 +70,10 @@ level_t *create_level_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
 
+    level->lt = lt;
+
+    fclose(RELEASE_LT(lt, level_file));
+
     return level;
 }
 

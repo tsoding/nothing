@@ -42,19 +42,9 @@ game_t *create_game(const char *level_file_path)
         RETURN_LT(lt, NULL);
     }
 
-    player_t *const player = PUSH_LT(lt, create_player(100.0f, 0.0f), destroy_player);
-    if (player == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    platforms_t *const platforms = PUSH_LT(lt, load_platforms_from_file(level_file_path), destroy_platforms);
-    if (platforms == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
     game->level = PUSH_LT(
         lt,
-        create_level(RELEASE_LT(lt, player), RELEASE_LT(lt, platforms)),
+        create_level_from_file(level_file_path),
         destroy_level);
     if (game->level == NULL) {
         RETURN_LT(lt, NULL);
@@ -170,7 +160,12 @@ static int game_event_running(game_t *game, const SDL_Event *event)
         case SDLK_q:
             printf("Reloading the level from '%s'...\n", game->level_file_path);
 
-            if (level_reload_platforms(game->level, game->level_file_path) < 0) {
+            game->level = RESET_LT(
+                game->lt,
+                game->level,
+                create_level_from_file(game->level_file_path));
+
+            if (game->level == NULL) {
                 print_current_error_msg("Could not reload the level");
                 game->state = GAME_STATE_QUIT;
                 return -1;
