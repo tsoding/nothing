@@ -1,19 +1,48 @@
 #include <assert.h>
 #include <SDL2/SDL.h>
 
+#include "./lt.h"
+#include "./player.h"
+#include "./platforms.h"
 #include "./level.h"
+#include "./error.h"
+
+struct level_t
+{
+    lt_t *lt;
+    player_t *player;
+    platforms_t *platforms;
+};
 
 level_t *create_level(player_t *player,
                       platforms_t *platforms)
 {
     assert(player);
     assert(platforms);
+
+    lt_t *const lt = create_lt();
+    if (lt == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        return NULL;
+    }
+
+    level_t *const level = PUSH_LT(lt, malloc(sizeof(level_t)), free);
+    if (level == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
+    level->player = PUSH_LT(lt, player, destroy_player);
+    level->platforms = PUSH_LT(lt, platforms, destroy_platforms);
+    level->lt = lt;
+
     return NULL;
 }
 
 void destroy_level(level_t *level)
 {
     assert(level);
+    RETURN_LT0(level->lt);
 }
 
 int level_render(const level_t *level, SDL_Renderer *renderer)
