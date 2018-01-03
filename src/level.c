@@ -156,17 +156,3 @@ int level_input(level_t *level,
 
     return 0;
 }
-
-int level_reload_platforms(level_t *level, const char *file_name)
-{
-    level->platforms = RESET_LT(
-        level->lt,
-        level->platforms,
-        load_platforms_from_file(file_name));
-
-    if (level->platforms == NULL) {
-        return -1;
-    }
-
-    return 0;
-}

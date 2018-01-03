@@ -21,6 +21,5 @@ int level_event(level_t *level, const SDL_Event *event);
 int level_input(level_t *level,
                 const Uint8 *const keyboard_state,
                 SDL_Joystick *the_stick_of_joy);
-int level_reload_platforms(level_t *level, const char *file_name);
 
 #endif  // LEVEL_H_
