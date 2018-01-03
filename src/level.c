@@ -23,7 +23,6 @@ level_t *create_level(player_t *player,
 
     lt_t *const lt = create_lt();
     if (lt == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         return NULL;
     }
 
@@ -36,6 +35,40 @@ level_t *create_level(player_t *player,
     level->player = PUSH_LT(lt, player, destroy_player);
     level->platforms = PUSH_LT(lt, platforms, destroy_platforms);
     level->lt = lt;
+
+    return level;
+}
+
+level_t *create_level_from_file(const char *file_name)
+{
+    assert(file_name);
+
+    lt_t *const lt = create_lt();
+    if (lt == NULL) {
+        return NULL;
+    }
+
+    level_t *const level = PUSH_LT(lt, malloc(sizeof(level_t)), free);
+    if (level == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
+    FILE *level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose);
+    if (level_file == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
+    level->player = PUSH_LT(lt, create_player_from_stream(level_file), destroy_player);
+    if (level->player == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level->platforms = PUSH_LT(lt, create_platforms_from_stream(level_file), destroy_platforms);
+    if (level->platforms == NULL) {
+        RETURN_LT(lt, NULL);
+    }
 
     return level;
 }

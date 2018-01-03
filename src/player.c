@@ -69,6 +69,18 @@ player_t *create_player(float x, float y)
     return player;
 }
 
+player_t *create_player_from_stream(FILE *stream)
+{
+    float x = 0.0f, y = 0.0f;
+
+    if (fscanf(stream, "%f%f", &x, &y) == EOF) {
+        throw_error(ERROR_TYPE_LIBC);
+        return NULL;
+    }
+
+    return create_player(x, y);
+}
+
 void destroy_player(player_t * player)
 {
     free(player);

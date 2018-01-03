@@ -11,6 +11,7 @@ typedef struct camera_t camera_t;
 
 level_t *create_level(player_t *player,
                       platforms_t *platforms);
+level_t *create_level_from_file(const char *file_name);
 void destroy_level(level_t *level);
 
 int level_render(const level_t *level, camera_t *camera, SDL_Renderer *renderer);
