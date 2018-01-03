@@ -5,7 +5,7 @@ let $player := for $rect in $rects where $rect/@id = "player" return $rect
 let $platforms := for $rect in $rects where $rect/@id != "player" return $rect
 return (
   for $rect in $player
-  return concat($rect/@x, " ", $rect/@y, " ", $rect/@width, " ", $rect/@height),
+  return concat($rect/@x, " ", $rect/@y),
   count($platforms),
   for $rect in $platforms
   where $rect/@id != "player"
