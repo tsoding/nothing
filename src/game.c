@@ -7,6 +7,7 @@
 #include "./camera.h"
 #include "./game.h"
 #include "./error.h"
+#include "./level.h"
 #include "./lt.h"
 
 typedef enum game_state_t {
@@ -21,8 +22,7 @@ typedef struct game_t {
     lt_t *lt;
 
     game_state_t state;
-    player_t *player;
-    platforms_t *platforms;
+    level_t *level;
     camera_t *camera;
     char *level_file_path;
 } game_t;
@@ -42,13 +42,21 @@ game_t *create_game(const char *level_file_path)
         RETURN_LT(lt, NULL);
     }
 
-    game->player = PUSH_LT(lt, create_player(100.0f, 0.0f), destroy_player);
-    if (game->player == NULL) {
+    player_t *const player = PUSH_LT(lt, create_player(100.0f, 0.0f), destroy_player);
+    if (player == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    game->platforms = PUSH_LT(lt, load_platforms_from_file(level_file_path), destroy_platforms);
-    if (game->platforms == NULL) {
+    platforms_t *const platforms = PUSH_LT(lt, load_platforms_from_file(level_file_path), destroy_platforms);
+    if (platforms == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    game->level = PUSH_LT(
+        lt,
+        create_level(RELEASE_LT(lt, player), RELEASE_LT(lt, platforms)),
+        destroy_level);
+    if (game->level == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -96,11 +104,7 @@ int game_render(const game_t *game, SDL_Renderer *renderer)
         return -1;
     }
 
-    if (render_player(game->player, renderer, game->camera) < 0) {
-        return -1;
-    }
-
-    if (render_platforms(game->platforms, renderer, game->camera) < 0) {
+    if (level_render(game->level, game->camera, renderer) < 0) {
         return -1;
     }
 
@@ -119,8 +123,7 @@ int game_update(game_t *game, Uint32 delta_time)
     }
 
     if (game->state == GAME_STATE_RUNNING) {
-        update_player(game->player, game->platforms, delta_time);
-        player_focus_camera(game->player, game->camera);
+        return level_update(game->level, game->camera, delta_time);
     }
 
     return 0;
@@ -149,7 +152,7 @@ static int game_event_pause(game_t *game, const SDL_Event *event)
         break;
     }
 
-    return 0;
+    return level_event(game->level, event);
 }
 
 static int game_event_running(game_t *game, const SDL_Event *event)
@@ -164,19 +167,10 @@ static int game_event_running(game_t *game, const SDL_Event *event)
 
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
-        case SDLK_SPACE:
-            player_jump(game->player);
-            break;
-
         case SDLK_q:
             printf("Reloading the level from '%s'...\n", game->level_file_path);
 
-            game->platforms = RESET_LT(
-                game->lt,
-                game->platforms,
-                load_platforms_from_file(game->level_file_path));
-
-            if (game->platforms == NULL) {
+            if (level_reload_platforms(game->level, game->level_file_path) < 0) {
                 print_current_error_msg("Could not reload the level");
                 game->state = GAME_STATE_QUIT;
                 return -1;
@@ -193,14 +187,9 @@ static int game_event_running(game_t *game, const SDL_Event *event)
         }
         break;
 
-    case SDL_JOYBUTTONDOWN:
-        if (event->jbutton.button == 1) {
-            player_jump(game->player);
-        }
-        break;
     }
 
-    return 0;
+    return level_event(game->level, event);
 }
 
 int game_event(game_t *game, const SDL_Event *event)
@@ -233,19 +222,7 @@ int game_input(game_t *game,
         return 0;
     }
 
-    if (keyboard_state[SDL_SCANCODE_A]) {
-        player_move_left(game->player);
-    } else if (keyboard_state[SDL_SCANCODE_D]) {
-        player_move_right(game->player);
-    } else if (the_stick_of_joy && SDL_JoystickGetAxis(the_stick_of_joy, 0) < 0) {
-        player_move_left(game->player);
-    } else if (the_stick_of_joy && SDL_JoystickGetAxis(the_stick_of_joy, 0) > 0) {
-        player_move_right(game->player);
-    } else {
-        player_stop(game->player);
-    }
-
-    return 0;
+    return level_input(game->level, keyboard_state, the_stick_of_joy);
 }
 
 int is_game_over(const game_t *game)
