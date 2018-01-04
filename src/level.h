@@ -10,7 +10,8 @@ typedef union SDL_Event SDL_Event;
 typedef struct camera_t camera_t;
 
 level_t *create_level(player_t *player,
-                      platforms_t *platforms);
+                      platforms_t *platforms,
+                      camera_t *camera);
 level_t *create_level_from_file(const char *file_name);
 void destroy_level(level_t *level);
 

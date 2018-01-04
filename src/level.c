@@ -13,10 +13,12 @@ struct level_t
     lt_t *lt;
     player_t *player;
     platforms_t *platforms;
+    camera_t *camera;
 };
 
 level_t *create_level(player_t *player,
-                      platforms_t *platforms)
+                      platforms_t *platforms,
+                      camera_t *camera)
 {
     assert(player);
     assert(platforms);
@@ -34,6 +36,7 @@ level_t *create_level(player_t *player,
 
     level->player = PUSH_LT(lt, player, destroy_player);
     level->platforms = PUSH_LT(lt, platforms, destroy_platforms);
+    level->camera = PUSH_LT(lt, camera, destroy_camera);
     level->lt = lt;
 
     return level;
@@ -67,6 +70,11 @@ level_t *create_level_from_file(const char *file_name)
 
     level->platforms = PUSH_LT(lt, create_platforms_from_stream(level_file), destroy_platforms);
     if (level->platforms == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level->camera = PUSH_LT(lt, create_camera(vec(0.0f, 0.0f)), destroy_camera);
+    if (level->camera == NULL) {
         RETURN_LT(lt, NULL);
     }
 
