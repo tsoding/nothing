@@ -164,3 +164,8 @@ int level_input(level_t *level,
 
     return 0;
 }
+
+void level_toggle_debug_mode(level_t *level)
+{
+    camera_toggle_debug_mode(level->camera);
+}

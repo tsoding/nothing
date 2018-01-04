@@ -4,7 +4,6 @@
 
 #include "./player.h"
 #include "./platforms.h"
-#include "./camera.h"
 #include "./game.h"
 #include "./error.h"
 #include "./level.h"
@@ -23,7 +22,6 @@ typedef struct game_t {
 
     game_state_t state;
     level_t *level;
-    camera_t *camera;
     char *level_file_path;
 } game_t;
 
@@ -47,11 +45,6 @@ game_t *create_game(const char *level_file_path)
         create_level_from_file(level_file_path),
         destroy_level);
     if (game->level == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    game->camera = PUSH_LT(lt, create_camera(vec(0.0f, 0.0f)), destroy_camera);
-    if (game->camera == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -136,7 +129,7 @@ static int game_event_pause(game_t *game, const SDL_Event *event)
             game->state = GAME_STATE_RUNNING;
             break;
         case SDLK_l:
-            camera_toggle_debug_mode(game->camera);
+            level_toggle_debug_mode(game->level);
             break;
         }
         break;
@@ -177,7 +170,7 @@ static int game_event_running(game_t *game, const SDL_Event *event)
             break;
 
         case SDLK_l:
-            camera_toggle_debug_mode(game->camera);
+            level_toggle_debug_mode(game->level);
             break;
         }
         break;

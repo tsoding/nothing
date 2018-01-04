@@ -23,4 +23,6 @@ int level_input(level_t *level,
                 const Uint8 *const keyboard_state,
                 SDL_Joystick *the_stick_of_joy);
 
+void level_toggle_debug_mode(level_t *level);
+
 #endif  // LEVEL_H_
