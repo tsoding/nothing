@@ -94,7 +94,7 @@ int game_render(const game_t *game, SDL_Renderer *renderer)
         return -1;
     }
 
-    if (level_render(game->level, game->camera, renderer) < 0) {
+    if (level_render(game->level, renderer) < 0) {
         return -1;
     }
 
@@ -113,7 +113,7 @@ int game_update(game_t *game, Uint32 delta_time)
     }
 
     if (game->state == GAME_STATE_RUNNING) {
-        return level_update(game->level, game->camera, delta_time);
+        return level_update(game->level, delta_time);
     }
 
     return 0;

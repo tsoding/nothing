@@ -91,29 +91,29 @@ void destroy_level(level_t *level)
     RETURN_LT0(level->lt);
 }
 
-int level_render(const level_t *level, camera_t *camera, SDL_Renderer *renderer)
+int level_render(const level_t *level, SDL_Renderer *renderer)
 {
     assert(level);
     assert(renderer);
 
-    if (render_player(level->player, renderer, camera) < 0) {
+    if (render_player(level->player, renderer, level->camera) < 0) {
         return -1;
     }
 
-    if (render_platforms(level->platforms, renderer, camera) < 0) {
+    if (render_platforms(level->platforms, renderer, level->camera) < 0) {
         return -1;
     }
 
     return 0;
 }
 
-int level_update(level_t *level, camera_t *camera, Uint32 delta_time)
+int level_update(level_t *level, Uint32 delta_time)
 {
     assert(level);
     assert(delta_time > 0);
 
     update_player(level->player, level->platforms, delta_time);
-    player_focus_camera(level->player, camera);
+    player_focus_camera(level->player, level->camera);
 
     return 0;
 }
