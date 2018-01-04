@@ -86,6 +86,26 @@ platforms_t *create_platforms_from_stream(FILE *stream)
     return platforms;
 }
 
+platforms_t *create_platforms_from_file(const char *filename)
+{
+    assert(filename);
+
+    FILE *platforms_file = fopen(filename, "r");
+    if (platforms_file == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        return NULL;
+    }
+
+    platforms_t *platforms = create_platforms_from_stream(platforms_file);
+    if (platforms != NULL) {
+        fclose(platforms_file);
+        return NULL;
+    }
+
+    fclose(platforms_file);
+    return platforms;
+}
+
 void destroy_platforms(platforms_t *platforms)
 {
     assert(platforms);
@@ -120,26 +140,6 @@ int save_platforms_to_file(const platforms_t *platforms,
     }
 
     RETURN_LT(lt, 0);
-}
-
-platforms_t *load_platforms_from_file(const char *filename)
-{
-    assert(filename);
-
-    FILE *platforms_file = fopen(filename, "r");
-    if (platforms_file == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
-        return NULL;
-    }
-
-    platforms_t *platforms = create_platforms_from_stream(platforms_file);
-    if (platforms != NULL) {
-        fclose(platforms_file);
-        return NULL;
-    }
-
-    fclose(platforms_file);
-    return platforms;
 }
 
 int render_platforms(const platforms_t *platforms,
