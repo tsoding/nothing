@@ -8,6 +8,7 @@ typedef struct platforms_t platforms_t;
 typedef struct SDL_Renderer SDL_Renderer;
 
 player_t *create_player(float x, float y);
+player_t *create_player_from_stream(FILE *stream);
 void destroy_player(player_t * player);
 
 int render_player(const player_t * player,

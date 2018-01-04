@@ -45,6 +45,67 @@ platforms_t *create_platforms(const rect_t *rects, size_t rects_size)
     return platforms;
 }
 
+platforms_t *create_platforms_from_stream(FILE *stream)
+{
+    assert(stream);
+
+    lt_t *const lt = create_lt();
+    if (lt == NULL) {
+        return NULL;
+    }
+
+    platforms_t *platforms = PUSH_LT(lt, malloc(sizeof(platforms_t)), free);
+    if (platforms == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
+    platforms->rects_size = 0;
+    if (fscanf(stream, "%lu", &platforms->rects_size) == EOF) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
+    platforms->rects = PUSH_LT(lt, malloc(sizeof(rect_t) * platforms->rects_size), free);
+    if (platforms->rects == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
+    for (size_t i = 0; i < platforms->rects_size; ++i) {
+        if (fscanf(stream, "%f%f%f%f\n",
+                   &platforms->rects[i].x, &platforms->rects[i].y,
+                   &platforms->rects[i].w, &platforms->rects[i].h) < 0) {
+            throw_error(ERROR_TYPE_LIBC);
+            RETURN_LT(lt, NULL);
+        }
+    }
+
+    platforms->lt = lt;
+
+    return platforms;
+}
+
+platforms_t *create_platforms_from_file(const char *filename)
+{
+    assert(filename);
+
+    FILE *platforms_file = fopen(filename, "r");
+    if (platforms_file == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        return NULL;
+    }
+
+    platforms_t *platforms = create_platforms_from_stream(platforms_file);
+    if (platforms != NULL) {
+        fclose(platforms_file);
+        return NULL;
+    }
+
+    fclose(platforms_file);
+    return platforms;
+}
+
 void destroy_platforms(platforms_t *platforms)
 {
     assert(platforms);
@@ -79,55 +140,6 @@ int save_platforms_to_file(const platforms_t *platforms,
     }
 
     RETURN_LT(lt, 0);
-}
-
-platforms_t *load_platforms_from_file(const char *filename)
-{
-    assert(filename);
-
-    lt_t *const lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
-
-    FILE *platforms_file = PUSH_LT(lt, fopen(filename, "r"), fclose);
-    if (platforms_file == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
-        RETURN_LT(lt, NULL);
-    }
-
-    platforms_t *platforms = PUSH_LT(lt, malloc(sizeof(platforms_t)), free);
-    if (platforms == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
-        RETURN_LT(lt, NULL);
-    }
-
-    platforms->rects_size = 0;
-    if (fscanf(platforms_file, "%lu", &platforms->rects_size) == EOF) {
-        throw_error(ERROR_TYPE_LIBC);
-        RETURN_LT(lt, NULL);
-    }
-
-    platforms->rects = PUSH_LT(lt, malloc(sizeof(rect_t) * platforms->rects_size), free);
-    if (platforms->rects == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
-        RETURN_LT(lt, NULL);
-    }
-
-    for (size_t i = 0; i < platforms->rects_size; ++i) {
-        if (fscanf(platforms_file, "%f%f%f%f\n",
-                   &platforms->rects[i].x, &platforms->rects[i].y,
-                   &platforms->rects[i].w, &platforms->rects[i].h) < 0) {
-            throw_error(ERROR_TYPE_LIBC);
-            RETURN_LT(lt, NULL);
-        }
-    }
-
-    fclose(RELEASE_LT(lt, platforms_file));
-
-    platforms->lt = lt;
-
-    return platforms;
 }
 
 int render_platforms(const platforms_t *platforms,

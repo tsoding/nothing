@@ -24,6 +24,7 @@ set(SOURCE_FILES
   src/game.c
   src/lt.c
   src/lt/lt_slot.c
+  src/level.c
 )
 
 set(HEADER_FILES
@@ -36,6 +37,7 @@ set(HEADER_FILES
   src/game.h
   src/lt.h
   src/lt/lt_slot.h
+  src/level.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
