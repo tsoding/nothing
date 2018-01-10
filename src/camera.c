@@ -9,6 +9,7 @@
 struct camera_t {
     int debug_mode;
     point_t position;
+    float scale;
 };
 
 camera_t *create_camera(point_t position)
@@ -22,6 +23,7 @@ camera_t *create_camera(point_t position)
 
     camera->position = position;
     camera->debug_mode = 0;
+    camera->scale = 2.0f;
 
     return camera;
 }
@@ -47,10 +49,10 @@ int camera_fill_rect(const camera_t *camera,
 
     SDL_Rect sdl_rect;
 
-    sdl_rect.x = (int) roundf(rect->x - camera->position.x + (float) view_port.w * 0.5f);
-    sdl_rect.y = (int) roundf(rect->y - camera->position.y + (float) view_port.h * 0.5f);
-    sdl_rect.w = (int) roundf(rect->w);
-    sdl_rect.h = (int) roundf(rect->h);
+    sdl_rect.x = (int) roundf((rect->x - camera->position.x) * camera->scale + (float) view_port.w * 0.5f);
+    sdl_rect.y = (int) roundf((rect->y - camera->position.y) * camera->scale + (float) view_port.h * 0.5f);
+    sdl_rect.w = (int) roundf(rect->w * camera->scale);
+    sdl_rect.h = (int) roundf(rect->h * camera->scale);
 
     if (camera->debug_mode) {
         if (SDL_RenderDrawRect(render, &sdl_rect) < 0) {
@@ -77,4 +79,14 @@ void camera_toggle_debug_mode(camera_t *camera)
 {
     assert(camera);
     camera->debug_mode = !camera->debug_mode;
+}
+
+void camera_zoom_in(camera_t * camera)
+{
+    camera->scale = fminf(camera->scale + 0.1f, 2.0f);
+}
+
+void camera_zoom_out(camera_t * camera)
+{
+    camera->scale = fmaxf(camera->scale - 0.1f, 0.1f);
 }
