@@ -150,7 +150,7 @@ static int game_event_running(game_t *game, const SDL_Event *event)
 
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
-        case SDLK_q:
+        case SDLK_r:
             printf("Reloading the level from '%s'...\n", game->level_file_path);
 
             game->level = RESET_LT(
@@ -159,6 +159,15 @@ static int game_event_running(game_t *game, const SDL_Event *event)
                 create_level_from_file(game->level_file_path));
 
             if (game->level == NULL) {
+                print_current_error_msg("Could not reload the level");
+                game->state = GAME_STATE_QUIT;
+                return -1;
+            }
+            break;
+
+        case SDLK_q:
+            printf("Reloading the level's platforms from '%s'...\n", game->level_file_path);
+            if (level_reload_platforms(game->level, game->level_file_path) < 0) {
                 print_current_error_msg("Could not reload the level");
                 game->state = GAME_STATE_QUIT;
                 return -1;

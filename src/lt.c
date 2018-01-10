@@ -86,7 +86,7 @@ void* lt_reset(lt_t *lt, void *old_resource, void *new_resource)
     assert(old_resource != new_resource);
 
     for (size_t i = 0; i < lt->size; ++i) {
-        if (lt_slot_contains_resource(lt->frames[i], old_resource)) {
+        if (lt->frames[i] && lt_slot_contains_resource(lt->frames[i], old_resource)) {
             lt_slot_reset_resource(lt->frames[i], new_resource);
             return new_resource;
         }
@@ -101,7 +101,7 @@ void *lt_release(lt_t *lt, void *resource)
     assert(resource);
 
     for (size_t i = 0; i < lt->size; ++i) {
-        if (lt_slot_contains_resource(lt->frames[i], resource)) {
+        if (lt->frames[i] && lt_slot_contains_resource(lt->frames[i], resource)) {
             release_lt_slot(lt->frames[i]);
             lt->frames[i] = NULL;
             return resource;

@@ -169,3 +169,32 @@ void level_toggle_debug_mode(level_t *level)
 {
     camera_toggle_debug_mode(level->camera);
 }
+
+int level_reload_platforms(level_t *level, const char *file_name)
+{
+    lt_t *lt = create_lt();
+    if (lt == NULL) {
+        return -1;
+    }
+
+    FILE *level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose);
+    if (level_file == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, -1);
+    }
+
+    player_t *skipped_player = create_player_from_stream(level_file);
+    if (skipped_player == NULL) {
+        RETURN_LT(lt, -1);
+    }
+    destroy_player(skipped_player);
+
+    platforms_t *platforms = create_platforms_from_stream(level_file);
+    if (platforms == NULL) {
+        RETURN_LT(lt, -1);
+    }
+
+    level->platforms = RESET_LT(level->lt, level->platforms, platforms);
+
+    RETURN_LT(lt, 0);
+}
