@@ -150,7 +150,7 @@ static int game_event_running(game_t *game, const SDL_Event *event)
 
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
-        case SDLK_q:
+        case SDLK_r:
             printf("Reloading the level from '%s'...\n", game->level_file_path);
 
             game->level = RESET_LT(
