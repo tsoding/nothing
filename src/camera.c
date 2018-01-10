@@ -49,7 +49,7 @@ int camera_fill_rect(const camera_t *camera,
 
     SDL_Rect sdl_rect;
 
-    /* TODO: make the scale depend on the view port.
+    /* TODO(#55): make the scale depend on the view port.
      *
      * So the game looks the same regardless of the size of the window */
     sdl_rect.x = (int) roundf((rect->x - camera->position.x) * camera->scale + (float) view_port.w * 0.5f);
