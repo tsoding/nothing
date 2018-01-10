@@ -10,6 +10,7 @@ with import <nixpkgs> {}; {
                         xqilla
                         valgrind
                         racket
+                        inotifyTools
                       ];
         LD_LIBRARY_PATH="${mesa}/lib";
     };
