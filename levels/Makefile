@@ -6,7 +6,14 @@ all: $(TXTS)
 %.txt: %.svg
 	xqilla ../scripts/svg2rects.xqe -i $< -o $@
 
-.PHONY: clean
+.PHONY: clean watch
 
 clean:
 	rm -rfv $(TXTS)
+
+watch:
+	@echo "Watching for changes to ${SVGS} ..."
+	@inotifywait -m -q -e modify,move_self ${SVGS} | \
+	while read -r filename event; do \
+		make; \
+	done
