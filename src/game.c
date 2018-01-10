@@ -165,6 +165,15 @@ static int game_event_running(game_t *game, const SDL_Event *event)
             }
             break;
 
+        case SDLK_q:
+            printf("Reloading the level's platforms from '%s'...\n", game->level_file_path);
+            if (level_reload_platforms(game->level, game->level_file_path) < 0) {
+                print_current_error_msg("Could not reload the level");
+                game->state = GAME_STATE_QUIT;
+                return -1;
+            }
+            break;
+
         case SDLK_p:
             game->state = GAME_STATE_PAUSE;
             break;
