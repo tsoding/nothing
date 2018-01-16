@@ -7,6 +7,7 @@ typedef struct goals_t goals_t;
 typedef struct SDL_Renderer SDL_Renderer;
 
 // TODO: implement goal hiding mechanism
+// TODO: add some glow to the goal to make it stand out
 
 goals_t *create_goals_from_stream(FILE *stream);
 void destroy_goals(goals_t *goals);
