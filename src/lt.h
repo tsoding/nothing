@@ -11,12 +11,16 @@
     lt_release(lt, (void*) resource)
 
 #define RETURN_LT(lt, result)               \
-    destroy_lt(lt);                         \
-    return result
+    do {                                    \
+        destroy_lt(lt);                     \
+        return result;                      \
+    } while (0)
 
 #define RETURN_LT0(lt)                          \
-    destroy_lt(lt);                             \
-    return
+    do {                                        \
+        destroy_lt(lt);                         \
+        return;                                 \
+    } while (0)
 
 typedef struct lt_t lt_t;
 typedef void (*lt_destroy_t)(void*);
