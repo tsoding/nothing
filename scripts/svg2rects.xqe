@@ -2,12 +2,15 @@ declare namespace svg ="http://www.w3.org/2000/svg";
 
 let $rects := //svg:svg/svg:rect
 let $player := for $rect in $rects where $rect/@id = "player" return $rect
-let $platforms := for $rect in $rects where $rect/@id != "player" return $rect
+let $platforms := for $rect in $rects where matches($rect/@id, "rect.*") return $rect
+let $goals := for $rect in $rects where matches($rect/@id, "goal.*") return $rect
 return (
   for $rect in $player
   return concat($rect/@x, " ", $rect/@y),
   count($platforms),
   for $rect in $platforms
-  where $rect/@id != "player"
-  return concat($rect/@x, " ", $rect/@y, " ", $rect/@width, " ", $rect/@height)
+  return concat($rect/@x, " ", $rect/@y, " ", $rect/@width, " ", $rect/@height),
+  count($goals),
+  for $rect in $goals
+  return concat($rect/@x, " ", $rect/@y)
 )

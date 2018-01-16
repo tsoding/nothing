@@ -15,34 +15,8 @@ struct level_t
     player_t *player;
     platforms_t *platforms;
     camera_t *camera;
+    goals_t *goals;
 };
-
-level_t *create_level(player_t *player,
-                      platforms_t *platforms,
-                      camera_t *camera)
-{
-    assert(player);
-    assert(platforms);
-
-    lt_t *const lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
-
-    level_t *const level = PUSH_LT(lt, malloc(sizeof(level_t)), free);
-    if (level == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
-        RETURN_LT(lt, NULL);
-    }
-
-    level->player = PUSH_LT(lt, player, destroy_player);
-    level->platforms = PUSH_LT(lt, platforms, destroy_platforms);
-    level->camera = PUSH_LT(lt, camera, destroy_camera);
-
-    level->lt = lt;
-
-    return level;
-}
 
 level_t *create_level_from_file(const char *file_name)
 {
@@ -72,6 +46,11 @@ level_t *create_level_from_file(const char *file_name)
 
     level->platforms = PUSH_LT(lt, create_platforms_from_stream(level_file), destroy_platforms);
     if (level->platforms == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level->goals = PUSH_LT(lt, create_goals_from_stream(level_file), destroy_goals);
+    if (level->goals == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -106,6 +85,10 @@ int level_render(const level_t *level, SDL_Renderer *renderer)
         return -1;
     }
 
+    if (goals_render(level->goals, renderer, level->camera) < 0) {
+        return -1;
+    }
+
     return 0;
 }
 
@@ -115,6 +98,7 @@ int level_update(level_t *level, Uint32 delta_time)
     assert(delta_time > 0);
 
     update_player(level->player, level->platforms, delta_time);
+    goals_update(level->goals, delta_time);
     player_focus_camera(level->player, level->camera);
 
     return 0;
@@ -172,7 +156,7 @@ void level_toggle_debug_mode(level_t *level)
     camera_toggle_debug_mode(level->camera);
 }
 
-int level_reload_platforms(level_t *level, const char *file_name)
+int level_reload_preserve_player(level_t *level, const char *file_name)
 {
     lt_t *lt = create_lt();
     if (lt == NULL) {
@@ -195,8 +179,13 @@ int level_reload_platforms(level_t *level, const char *file_name)
     if (platforms == NULL) {
         RETURN_LT(lt, -1);
     }
-
     level->platforms = RESET_LT(level->lt, level->platforms, platforms);
+
+    goals_t *goals = create_goals_from_stream(level_file);
+    if (goals == NULL) {
+        RETURN_LT(lt, -1);
+    }
+    level->goals = RESET_LT(level->lt, level->goals, goals);
 
     RETURN_LT(lt, 0);
 }

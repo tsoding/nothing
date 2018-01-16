@@ -75,7 +75,7 @@ int goals_render(const goals_t *goals,
     assert(renderer);
     assert(camera);
 
-    if (SDL_SetRenderDrawColor(renderer, 255, 255, 96, 255) < 0) {
+    if (SDL_SetRenderDrawColor(renderer, 255, 255, 50, 255) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
