@@ -25,7 +25,7 @@ set(SOURCE_FILES
   src/lt.c
   src/lt/lt_slot.c
   src/level.c
-  src/goal.c
+  src/goals.c
 )
 
 set(HEADER_FILES
@@ -39,7 +39,7 @@ set(HEADER_FILES
   src/lt.h
   src/lt/lt_slot.h
   src/level.h
-  src/goal.h
+  src/goals.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})

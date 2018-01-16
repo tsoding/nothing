@@ -7,7 +7,7 @@
 #include "./level.h"
 #include "./camera.h"
 #include "./error.h"
-#include "./goal.h"
+#include "./goals.h"
 
 struct level_t
 {
@@ -15,7 +15,7 @@ struct level_t
     player_t *player;
     platforms_t *platforms;
     camera_t *camera;
-    goal_t *goal;
+    goals_t *goals;
 };
 
 level_t *create_level(player_t *player,
@@ -40,8 +40,8 @@ level_t *create_level(player_t *player,
     level->platforms = PUSH_LT(lt, platforms, destroy_platforms);
     level->camera = PUSH_LT(lt, camera, destroy_camera);
 
-    level->goal = PUSH_LT(lt, create_goal(200.0f, 100.0f), destroy_goal);
-    if (level->goal == NULL) {
+    level->goals = PUSH_LT(lt, create_goals(200.0f, 100.0f), destroy_goals);
+    if (level->goals == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -86,8 +86,8 @@ level_t *create_level_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
 
-    level->goal = PUSH_LT(lt, create_goal(200.0f, 600.0f), destroy_goal);
-    if (level->goal == NULL) {
+    level->goals = PUSH_LT(lt, create_goals(200.0f, 600.0f), destroy_goals);
+    if (level->goals == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -117,7 +117,7 @@ int level_render(const level_t *level, SDL_Renderer *renderer)
         return -1;
     }
 
-    if (goal_render(level->goal, renderer, level->camera) < 0) {
+    if (goals_render(level->goals, renderer, level->camera) < 0) {
         return -1;
     }
 
@@ -130,7 +130,7 @@ int level_update(level_t *level, Uint32 delta_time)
     assert(delta_time > 0);
 
     update_player(level->player, level->platforms, delta_time);
-    goal_update(level->goal, delta_time);
+    goals_update(level->goals, delta_time);
     player_focus_camera(level->player, level->camera);
 
     return 0;
