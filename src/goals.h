@@ -6,7 +6,7 @@
 typedef struct goals_t goals_t;
 typedef struct SDL_Renderer SDL_Renderer;
 
-goals_t *create_goals(float x, float y);
+goals_t *create_goals_from_stream(FILE *stream);
 void destroy_goals(goals_t *goals);
 
 rect_t goals_hitbox(const goals_t *goals);

@@ -15,7 +15,6 @@ struct level_t
     player_t *player;
     platforms_t *platforms;
     camera_t *camera;
-    goals_t *goals;
 };
 
 level_t *create_level(player_t *player,
@@ -39,11 +38,6 @@ level_t *create_level(player_t *player,
     level->player = PUSH_LT(lt, player, destroy_player);
     level->platforms = PUSH_LT(lt, platforms, destroy_platforms);
     level->camera = PUSH_LT(lt, camera, destroy_camera);
-
-    level->goals = PUSH_LT(lt, create_goals(200.0f, 100.0f), destroy_goals);
-    if (level->goals == NULL) {
-        RETURN_LT(lt, NULL);
-    }
 
     level->lt = lt;
 
@@ -86,11 +80,6 @@ level_t *create_level_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
 
-    level->goals = PUSH_LT(lt, create_goals(200.0f, 600.0f), destroy_goals);
-    if (level->goals == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
     level->lt = lt;
 
     fclose(RELEASE_LT(lt, level_file));
@@ -117,10 +106,6 @@ int level_render(const level_t *level, SDL_Renderer *renderer)
         return -1;
     }
 
-    if (goals_render(level->goals, renderer, level->camera) < 0) {
-        return -1;
-    }
-
     return 0;
 }
 
@@ -130,7 +115,6 @@ int level_update(level_t *level, Uint32 delta_time)
     assert(delta_time > 0);
 
     update_player(level->player, level->platforms, delta_time);
-    goals_update(level->goals, delta_time);
     player_focus_camera(level->player, level->camera);
 
     return 0;
