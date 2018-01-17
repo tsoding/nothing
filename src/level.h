@@ -9,9 +9,6 @@ typedef struct SDL_Renderer SDL_Renderer;
 typedef union SDL_Event SDL_Event;
 typedef struct camera_t camera_t;
 
-level_t *create_level(player_t *player,
-                      platforms_t *platforms,
-                      camera_t *camera);
 level_t *create_level_from_file(const char *file_name);
 void destroy_level(level_t *level);
 
@@ -22,8 +19,8 @@ int level_event(level_t *level, const SDL_Event *event);
 int level_input(level_t *level,
                 const Uint8 *const keyboard_state,
                 SDL_Joystick *the_stick_of_joy);
-int level_reload_platforms(level_t *level,
-                           const char *file_name);
+int level_reload_preserve_player(level_t *level,
+                                 const char *file_name);
 
 void level_toggle_debug_mode(level_t *level);
 
