@@ -58,3 +58,13 @@ vec_t vec_entry_mult(vec_t v1, vec_t v2)
 
     return result;
 }
+
+vec_t vec_entry_div(vec_t v1, vec_t v2)
+{
+    vec_t result = {
+        .x = v1.x / v2.x,
+        .y = v1.y / v2.y
+    };
+
+    return result;
+}

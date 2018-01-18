@@ -14,5 +14,6 @@ void vec_add(vec_t *v1, vec_t v2);
 float vec_length(vec_t v);
 vec_t vec_scala_mult(vec_t v, float scalar);
 vec_t vec_entry_mult(vec_t v1, vec_t v2);
+vec_t vec_entry_div(vec_t v1, vec_t v2);
 
 #endif  // POINT_H_
