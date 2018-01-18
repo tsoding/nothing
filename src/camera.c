@@ -45,6 +45,13 @@ static vec_t effective_ratio(const SDL_Rect *view_port)
     }
 }
 
+static vec_t effective_scale(const SDL_Rect *view_port)
+{
+    return vec_entry_div(
+        vec((float) view_port->w, (float) view_port->h),
+        vec_scala_mult(effective_ratio(view_port), 50.0f));
+}
+
 int camera_fill_rect(const camera_t *camera,
                      SDL_Renderer *render,
                      const rect_t *rect)
@@ -57,16 +64,13 @@ int camera_fill_rect(const camera_t *camera,
 
     SDL_RenderGetViewport(render, &view_port);
 
-    const vec_t scale = vec_entry_div(
-        vec((float) view_port.w, (float) view_port.h),
-        vec_scala_mult(effective_ratio(&view_port), 50.0f));
-
-    SDL_Rect sdl_rect;
-
-    sdl_rect.x = (int) roundf((rect->x - camera->position.x) * scale.x + (float) view_port.w * 0.5f);
-    sdl_rect.y = (int) roundf((rect->y - camera->position.y) * scale.y + (float) view_port.h * 0.5f);
-    sdl_rect.w = (int) roundf(rect->w * scale.x);
-    sdl_rect.h = (int) roundf(rect->h * scale.y);
+    const vec_t scale = effective_scale(&view_port);
+    const SDL_Rect sdl_rect = {
+        .x = (int) roundf((rect->x - camera->position.x) * scale.x + (float) view_port.w * 0.5f),
+        .y = (int) roundf((rect->y - camera->position.y) * scale.y + (float) view_port.h * 0.5f),
+        .w = (int) roundf(rect->w * scale.x),
+        .h = (int) roundf(rect->h * scale.y)
+    };
 
     if (camera->debug_mode) {
         if (SDL_RenderDrawRect(render, &sdl_rect) < 0) {
