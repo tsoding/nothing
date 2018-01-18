@@ -87,6 +87,34 @@ int camera_fill_rect(const camera_t *camera,
     return 0;
 }
 
+int camera_draw_rect(const camera_t * camera,
+                     SDL_Renderer *render,
+                     const rect_t *rect)
+{
+    assert(camera);
+    assert(render);
+    assert(rect);
+
+    SDL_Rect view_port;
+
+    SDL_RenderGetViewport(render, &view_port);
+
+    const vec_t scale = effective_scale(&view_port);
+    const SDL_Rect sdl_rect = {
+        .x = (int) roundf((rect->x - camera->position.x) * scale.x + (float) view_port.w * 0.5f),
+        .y = (int) roundf((rect->y - camera->position.y) * scale.y + (float) view_port.h * 0.5f),
+        .w = (int) roundf(rect->w * scale.x),
+        .h = (int) roundf(rect->h * scale.y)
+    };
+
+    if (SDL_RenderDrawRect(render, &sdl_rect) < 0) {
+        throw_error(ERROR_TYPE_SDL2);
+        return -1;
+    }
+
+    return 0;
+}
+
 void camera_center_at(camera_t *camera, point_t position)
 {
     assert(camera);
