@@ -6,6 +6,9 @@
 #include "./camera.h"
 #include "./error.h"
 
+#define RATIO_X 16.0f
+#define RATIO_Y 9.0f
+
 struct camera_t {
     int debug_mode;
     point_t position;
@@ -33,6 +36,22 @@ void destroy_camera(camera_t *camera)
     free(camera);
 }
 
+static vec_t effective_ratio(const SDL_Rect *view_port)
+{
+    if ((float) view_port->w / RATIO_X > (float) view_port->h / RATIO_Y) {
+        return vec(RATIO_X, (float) view_port->h / ((float) view_port->w / RATIO_X));
+    } else {
+        return vec((float) view_port->w / ((float) view_port->h / RATIO_Y), RATIO_Y);
+    }
+}
+
+static vec_t effective_scale(const SDL_Rect *view_port)
+{
+    return vec_entry_div(
+        vec((float) view_port->w, (float) view_port->h),
+        vec_scala_mult(effective_ratio(view_port), 50.0f));
+}
+
 int camera_fill_rect(const camera_t *camera,
                      SDL_Renderer *render,
                      const rect_t *rect)
@@ -45,21 +64,13 @@ int camera_fill_rect(const camera_t *camera,
 
     SDL_RenderGetViewport(render, &view_port);
 
-    const float khooy_x = 16.0f;
-    const float khooy_y = (float) view_port.h / ((float) view_port.w / khooy_x);
-
-    const float scale_x = (float) view_port.w / (khooy_x * 50.0f);
-    const float scale_y = (float) view_port.h / (khooy_y * 50.0f);
-
-    SDL_Rect sdl_rect;
-
-    /* TODO(#55): make the scale depend on the view port.
-     *
-     * So the game looks the same regardless of the size of the window */
-    sdl_rect.x = (int) roundf((rect->x - camera->position.x) * scale_x + (float) view_port.w * 0.5f);
-    sdl_rect.y = (int) roundf((rect->y - camera->position.y) * scale_y + (float) view_port.h * 0.5f);
-    sdl_rect.w = (int) roundf(rect->w * scale_x);
-    sdl_rect.h = (int) roundf(rect->h * scale_y);
+    const vec_t scale = effective_scale(&view_port);
+    const SDL_Rect sdl_rect = {
+        .x = (int) roundf((rect->x - camera->position.x) * scale.x + (float) view_port.w * 0.5f),
+        .y = (int) roundf((rect->y - camera->position.y) * scale.y + (float) view_port.h * 0.5f),
+        .w = (int) roundf(rect->w * scale.x),
+        .h = (int) roundf(rect->h * scale.y)
+    };
 
     if (camera->debug_mode) {
         if (SDL_RenderDrawRect(render, &sdl_rect) < 0) {

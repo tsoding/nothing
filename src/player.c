@@ -209,5 +209,5 @@ void player_focus_camera(player_t *player,
     assert(player);
     assert(camera);
 
-    camera_center_at(camera, player->position);
+    camera_center_at(camera, vec_sum(player->position, vec(0.0f, -PLAYER_WIDTH * 3.0f)));
 }

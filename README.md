@@ -2,7 +2,7 @@
 
 # Nothing
 
-![](https://i.imgur.com/06VwEk3.gif)
+![](https://i.imgur.com/TvlQBPb.gif)
 
 ## Quick Start
 
