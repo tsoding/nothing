@@ -57,6 +57,10 @@ int main(int argc, char *argv[])
         print_error_msg(ERROR_TYPE_SDL2, "Could not create SDL renderer");
         RETURN_LT(lt, -1);
     }
+    if (SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND) < 0) {
+        print_error_msg(ERROR_TYPE_SDL2, "Could not set up blending mode for the renderer");
+        RETURN_LT(lt, -1);
+    }
 
     SDL_Joystick *the_stick_of_joy = NULL;
 
