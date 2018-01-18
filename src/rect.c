@@ -111,3 +111,9 @@ rect_t rect_from_point(point_t p, float w, float h)
 
     return result;
 }
+
+int rect_contains_point(rect_t rect, point_t p)
+{
+    return rect.x <= p.x && p.x <= rect.x + rect.w
+        && rect.y <= p.y && p.y <= rect.y + rect.h;
+}

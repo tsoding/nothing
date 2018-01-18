@@ -23,6 +23,8 @@ typedef struct line_t {
 
 rect_t rect_int_area(rect_t rect1, rect_t rect2);
 
+int rect_contains_point(rect_t rect, point_t p);
+
 int is_rect_int(rect_t rect1, rect_t rect2);
 
 void rect_object_impact(const rect_t *object,

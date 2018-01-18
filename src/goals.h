@@ -17,6 +17,9 @@ rect_t goals_hitbox(const goals_t *goals);
 int goals_render(const goals_t *goals,
                 SDL_Renderer *renderer,
                 const camera_t *camera);
-void goals_update(goals_t *goals, Uint32 delta_time);
+void goals_update(goals_t *goals,
+                  Uint32 delta_time);
+void goals_hide(goals_t *goals,
+                vec_t player_position);
 
 #endif  // GOALS_H_

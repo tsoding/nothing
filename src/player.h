@@ -1,6 +1,7 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
+#include "./goals.h"
 #include "./camera.h"
 
 typedef struct player_t player_t;
@@ -27,5 +28,7 @@ void player_jump(player_t *player);
 
 void player_focus_camera(player_t *player,
                          camera_t *camera);
+void player_hide_goals(const player_t *player,
+                       goals_t *goal);
 
 #endif  // PLAYER_H_

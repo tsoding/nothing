@@ -100,6 +100,7 @@ int level_update(level_t *level, Uint32 delta_time)
     update_player(level->player, level->platforms, delta_time);
     goals_update(level->goals, delta_time);
     player_focus_camera(level->player, level->camera);
+    player_hide_goals(level->player, level->goals);
 
     return 0;
 }
