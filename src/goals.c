@@ -150,7 +150,7 @@ void goals_update(goals_t *goals,
     float d = (float) delta_time / 1000.0f;
 
     goals->angle = fmodf(goals->angle + 2.0f * d, 2.0f * PI);
-    goals->wave = fmodf(goals->wave + 0.35f * d, 2.0f);
+    goals->wave = fmodf(goals->wave + 0.35f * d, 1.5f);
 }
 
 void goals_hide(goals_t *goals,
