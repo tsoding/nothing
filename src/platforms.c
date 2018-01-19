@@ -146,7 +146,7 @@ int render_platforms(const platforms_t *platforms,
                      SDL_Renderer *renderer,
                      const camera_t *camera)
 {
-    if (SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255) < 0) {
+    if (SDL_SetRenderDrawColor(renderer, 50, 50, 55, 255) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }

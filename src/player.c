@@ -11,6 +11,7 @@
 #define PLAYER_WIDTH 50.0f
 #define PLAYER_HEIGHT 50.0f
 #define PLAYER_SPEED 500.0f
+#define PLAYER_JUMP 550.0f
 #define PLAYER_GRAVITY 1500.0f
 
 struct player_t {
@@ -198,7 +199,7 @@ void player_jump(player_t *player)
     assert(player);
 
     if (player->jump_count > 0) {
-        player->velocity.y = -500.0f;
+        player->velocity.y = -PLAYER_JUMP;
         --player->jump_count;
     }
 }
@@ -209,5 +210,13 @@ void player_focus_camera(player_t *player,
     assert(player);
     assert(camera);
 
-    camera_center_at(camera, vec_sum(player->position, vec(0.0f, -PLAYER_WIDTH * 3.0f)));
+    camera_center_at(camera, vec_sum(player->position, vec(0.0f, -player->height * 0.5f)));
+}
+
+void player_hide_goals(const player_t *player,
+                       goals_t *goals)
+{
+    assert(player);
+    assert(goals);
+    goals_hide(goals, player->position);
 }
