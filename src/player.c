@@ -198,7 +198,7 @@ void player_jump(player_t *player)
     assert(player);
 
     if (player->jump_count > 0) {
-        player->velocity.y = -500.0f;
+        player->velocity.y = -550.0f;
         --player->jump_count;
     }
 }
