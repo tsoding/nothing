@@ -85,9 +85,61 @@ void destroy_goals(goals_t *goals)
     RETURN_LT0(goals->lt);
 }
 
+static int goals_render_core(const goals_t *goals,
+                             size_t goal_index,
+                             SDL_Renderer *renderer,
+                             const camera_t *camera)
+{
+    if (SDL_SetRenderDrawColor(renderer, 255, 255, 50, 255) < 0) {
+        throw_error(ERROR_TYPE_SDL2);
+        return -1;
+    }
+
+    const rect_t hitbox = {
+        .x = goals->points[goal_index].x - GOALS_WIDTH / 2.0f,
+        .y = goals->points[goal_index].y - GOALS_HEIGHT / 2.0f + sinf(goals->angle) * 10.0f,
+        .w = GOALS_WIDTH,
+        .h = GOALS_HEIGHT
+    };
+
+    if (camera_fill_rect(camera, renderer, &hitbox) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
+static int goals_render_wave(const goals_t *goals,
+                             size_t goal_index,
+                             SDL_Renderer *renderer,
+                             const camera_t *camera)
+{
+    const Uint8 alpha = (Uint8) (roundf(255.0f * (1.0f - fminf(goals->wave, 1.0f))) * 0.5f);
+
+    if (SDL_SetRenderDrawColor(renderer, 255, 255, 50, alpha) < 0) {
+        throw_error(ERROR_TYPE_SDL2);
+        return -1;
+    }
+
+    const float wave_scale_factor = fminf(goals->wave, 1.0f) * 10.0f;
+
+    const rect_t wavebox = {
+        .x = goals->points[goal_index].x - GOALS_WIDTH * wave_scale_factor / 2.0f,
+        .y = goals->points[goal_index].y - GOALS_HEIGHT * wave_scale_factor / 2.0f + sinf(goals->angle) * 10.0f,
+        .w = GOALS_WIDTH * wave_scale_factor,
+        .h = GOALS_HEIGHT * wave_scale_factor
+    };
+
+    if (camera_draw_rect(camera, renderer, &wavebox) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
 int goals_render(const goals_t *goals,
-                SDL_Renderer *renderer,
-                const camera_t *camera)
+                 SDL_Renderer *renderer,
+                 const camera_t *camera)
 
 {
     assert(goals);
@@ -96,43 +148,11 @@ int goals_render(const goals_t *goals,
 
     for (size_t i = 0; i < goals->goals_count; ++i) {
         if (!rect_contains_point(goals->regions[i], goals->player_position)) {
-            /* Core */
-
-            if (SDL_SetRenderDrawColor(renderer, 255, 255, 50, 255) < 0) {
-                throw_error(ERROR_TYPE_SDL2);
+            if (goals_render_core(goals, i, renderer, camera) < 0) {
                 return -1;
             }
 
-            const rect_t hitbox = {
-                .x = goals->points[i].x - GOALS_WIDTH / 2.0f,
-                .y = goals->points[i].y - GOALS_HEIGHT / 2.0f + sinf(goals->angle) * 10.0f,
-                .w = GOALS_WIDTH,
-                .h = GOALS_HEIGHT
-            };
-
-            if (camera_fill_rect(camera, renderer, &hitbox) < 0) {
-                return -1;
-            }
-
-            /* Wave */
-
-            const Uint8 alpha = (Uint8) (roundf(255.0f * (1.0f - fminf(goals->wave, 1.0f))) * 0.5f);
-
-            if (SDL_SetRenderDrawColor(renderer, 255, 255, 50, alpha) < 0) {
-                throw_error(ERROR_TYPE_SDL2);
-                return -1;
-            }
-
-            const float wave_scale_factor = fminf(goals->wave, 1.0f) * 10.0f;
-
-            const rect_t wavebox = {
-                .x = goals->points[i].x - GOALS_WIDTH * wave_scale_factor / 2.0f,
-                .y = goals->points[i].y - GOALS_HEIGHT * wave_scale_factor / 2.0f + sinf(goals->angle) * 10.0f,
-                .w = GOALS_WIDTH * wave_scale_factor,
-                .h = GOALS_HEIGHT * wave_scale_factor
-            };
-
-            if (camera_draw_rect(camera, renderer, &wavebox) < 0) {
+            if (goals_render_wave(goals, i, renderer, camera) < 0) {
                 return -1;
             }
         }
