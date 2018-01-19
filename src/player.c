@@ -11,6 +11,7 @@
 #define PLAYER_WIDTH 50.0f
 #define PLAYER_HEIGHT 50.0f
 #define PLAYER_SPEED 500.0f
+#define PLAYER_JUMP 550.0f
 #define PLAYER_GRAVITY 1500.0f
 
 struct player_t {
@@ -198,7 +199,7 @@ void player_jump(player_t *player)
     assert(player);
 
     if (player->jump_count > 0) {
-        player->velocity.y = -550.0f;
+        player->velocity.y = -PLAYER_JUMP;
         --player->jump_count;
     }
 }
