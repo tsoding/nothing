@@ -209,7 +209,7 @@ void player_focus_camera(player_t *player,
     assert(player);
     assert(camera);
 
-    camera_center_at(camera, vec_sum(player->position, vec(0.0f, -PLAYER_WIDTH * 3.0f)));
+    camera_center_at(camera, vec_sum(player->position, vec(0.0f, -player->height * 0.5f)));
 }
 
 void player_hide_goals(const player_t *player,
