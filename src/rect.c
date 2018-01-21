@@ -19,10 +19,12 @@ rect_t rects_overlap_area(rect_t rect1, rect_t rect2)
     return result;
 }
 
-int is_rect_int(rect_t rect1, rect_t rect2)
+int rects_overlap(rect_t rect1, rect_t rect2)
 {
-    rect_t int_area = rects_overlap_area(rect1, rect2);
-    return int_area.w * int_area.h > 0.0f;
+    return rect1.x + rect1.w >= rect2.x
+        && rect2.x + rect2.w >= rect1.x
+        && rect2.y + rect2.h >= rect1.y
+        && rect1.y + rect1.h >= rect2.y;
 }
 
 float line_length(line_t line)
