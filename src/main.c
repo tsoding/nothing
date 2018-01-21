@@ -94,8 +94,8 @@ int main(int argc, char *argv[])
     const Uint8 *const keyboard_state = SDL_GetKeyboardState(NULL);
     const Uint32 delay_ms = (Uint32) roundf(1000.0f / GAME_FPS);
     SDL_Event e;
-    while (!is_game_over(game)) {
-        while (!is_game_over(game) && SDL_PollEvent(&e)) {
+    while (!game_over_check(game)) {
+        while (!game_over_check(game) && SDL_PollEvent(&e)) {
             if (game_event(game, &e) < 0) {
                 print_current_error_msg("Failed handling event");
                 RETURN_LT(lt, -1);
