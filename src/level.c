@@ -97,7 +97,7 @@ int level_update(level_t *level, Uint32 delta_time)
     assert(level);
     assert(delta_time > 0);
 
-    update_player(level->player, level->platforms, delta_time);
+    player_update(level->player, level->platforms, delta_time);
     goals_update(level->goals, delta_time);
     player_focus_camera(level->player, level->camera);
     player_hide_goals(level->player, level->goals);

@@ -15,7 +15,7 @@ void destroy_player(player_t * player);
 int player_render(const player_t * player,
                   SDL_Renderer *renderer,
                   const camera_t *camera);
-void update_player(player_t * player,
+void player_update(player_t * player,
                    const platforms_t *platforms,
                    Uint32 delta_time);
 

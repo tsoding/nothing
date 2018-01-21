@@ -117,7 +117,7 @@ int player_render(const player_t * player,
     return camera_fill_rect(camera, renderer, &player_object);
 }
 
-void update_player(player_t *player,
+void player_update(player_t *player,
                    const platforms_t *platforms,
                    Uint32 delta_time)
 {
