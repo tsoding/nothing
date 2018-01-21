@@ -112,7 +112,7 @@ void destroy_platforms(platforms_t *platforms)
     RETURN_LT0(platforms->lt);
 }
 
-int save_platforms_to_file(const platforms_t *platforms,
+int platforms_save_to_file(const platforms_t *platforms,
                            const char *filename)
 {
     assert(platforms);
