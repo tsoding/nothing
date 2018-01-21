@@ -224,5 +224,5 @@ void player_hide_goals(const player_t *player,
 {
     assert(player);
     assert(goals);
-    goals_hide(goals, player->position);
+    goals_hide(goals, player_hitbox(player));
 }
