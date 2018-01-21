@@ -81,7 +81,7 @@ int level_render(const level_t *level, SDL_Renderer *renderer)
         return -1;
     }
 
-    if (render_platforms(level->platforms, renderer, level->camera) < 0) {
+    if (platforms_render(level->platforms, renderer, level->camera) < 0) {
         return -1;
     }
 

@@ -142,7 +142,7 @@ int platforms_save_to_file(const platforms_t *platforms,
     RETURN_LT(lt, 0);
 }
 
-int render_platforms(const platforms_t *platforms,
+int platforms_render(const platforms_t *platforms,
                      SDL_Renderer *renderer,
                      const camera_t *camera)
 {
