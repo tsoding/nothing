@@ -15,6 +15,6 @@ int game_input(game_t *game,
                const Uint8 *const keyboard_state,
                SDL_Joystick *the_stick_of_joy);
 
-int is_game_over(const game_t *game);
+int game_over_check(const game_t *game);
 
 #endif  // GAME_H_

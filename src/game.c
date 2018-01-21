@@ -222,7 +222,7 @@ int game_input(game_t *game,
     return level_input(game->level, keyboard_state, the_stick_of_joy);
 }
 
-int is_game_over(const game_t *game)
+int game_over_check(const game_t *game)
 {
     return game->state == GAME_STATE_QUIT;
 }
