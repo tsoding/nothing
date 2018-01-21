@@ -77,7 +77,7 @@ int level_render(const level_t *level, SDL_Renderer *renderer)
     assert(level);
     assert(renderer);
 
-    if (render_player(level->player, renderer, level->camera) < 0) {
+    if (player_render(level->player, renderer, level->camera) < 0) {
         return -1;
     }
 

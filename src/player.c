@@ -99,7 +99,7 @@ rect_t player_hitbox(const player_t *player)
     return hitbox;
 }
 
-int render_player(const player_t * player,
+int player_render(const player_t * player,
                   SDL_Renderer *renderer,
                   const camera_t *camera)
 {
