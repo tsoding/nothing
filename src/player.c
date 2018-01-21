@@ -89,7 +89,9 @@ void destroy_player(player_t * player)
 
 rect_t player_hitbox(const player_t *player)
 {
-    rect_t hitbox = {
+    assert(player);
+
+    const rect_t hitbox = {
         .x = player->position.x - player->width / 2,
         .y = player->position.y - player->height,
         .w = player->width,
@@ -111,10 +113,14 @@ int player_render(const player_t * player,
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
-    rect_t player_object = player_hitbox(player);
 
+    const rect_t player_object = player_hitbox(player);
 
-    return camera_fill_rect(camera, renderer, &player_object);
+    if (camera_fill_rect(camera, renderer, &player_object) < 0) {
+        return -1;
+    }
+
+    return 0;
 }
 
 void player_update(player_t *player,
@@ -218,5 +224,5 @@ void player_hide_goals(const player_t *player,
 {
     assert(player);
     assert(goals);
-    goals_hide(goals, player->position);
+    goals_hide(goals, player_hitbox(player));
 }

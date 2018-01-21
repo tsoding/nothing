@@ -16,7 +16,7 @@ struct goals_t {
     point_t *points;
     rect_t *regions;
     size_t goals_count;
-    point_t player_position;
+    rect_t player_hitbox;
     float angle;
     float wave;
 };
@@ -147,7 +147,7 @@ int goals_render(const goals_t *goals,
     assert(camera);
 
     for (size_t i = 0; i < goals->goals_count; ++i) {
-        if (!rect_contains_point(goals->regions[i], goals->player_position)) {
+        if (!rects_overlap(goals->regions[i], goals->player_hitbox)) {
             if (goals_render_core(goals, i, renderer, camera) < 0) {
                 return -1;
             }
@@ -174,7 +174,8 @@ void goals_update(goals_t *goals,
 }
 
 void goals_hide(goals_t *goals,
-                vec_t player_position)
+                rect_t player_hitbox)
 {
-    goals->player_position = player_position;
+    goals->player_hitbox = player_hitbox;
+
 }

@@ -20,6 +20,6 @@ int goals_render(const goals_t *goals,
 void goals_update(goals_t *goals,
                   Uint32 delta_time);
 void goals_hide(goals_t *goals,
-                vec_t player_position);
+                rect_t player_hitbox);
 
 #endif  // GOALS_H_
