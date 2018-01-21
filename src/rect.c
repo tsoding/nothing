@@ -3,7 +3,7 @@
 #include <math.h>
 #include "./rect.h"
 
-rect_t rect_int_area(rect_t rect1, rect_t rect2)
+rect_t rects_overlap_area(rect_t rect1, rect_t rect2)
 {
     float x1 = fmaxf(rect1.x, rect2.x);
     float y1 = fmaxf(rect1.y, rect2.y);
@@ -21,7 +21,7 @@ rect_t rect_int_area(rect_t rect1, rect_t rect2)
 
 int is_rect_int(rect_t rect1, rect_t rect2)
 {
-    rect_t int_area = rect_int_area(rect1, rect2);
+    rect_t int_area = rects_overlap_area(rect1, rect2);
     return int_area.w * int_area.h > 0.0f;
 }
 
@@ -40,7 +40,7 @@ void rect_object_impact(const rect_t *object,
     assert(obstacle);
     assert(sides);
 
-    rect_t int_area = rect_int_area(*object, *obstacle);
+    rect_t int_area = rects_overlap_area(*object, *obstacle);
 
     if (int_area.w * int_area.h > 0.0f) {
         for (int side = 0; side < RECT_SIDE_N; ++side) {
