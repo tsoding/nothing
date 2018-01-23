@@ -95,14 +95,21 @@ static int goals_render_core(const goals_t *goals,
         return -1;
     }
 
-    const rect_t hitbox = {
-        .x = goals->points[goal_index].x - GOALS_WIDTH / 2.0f,
-        .y = goals->points[goal_index].y - GOALS_HEIGHT / 2.0f + sinf(goals->angle) * 10.0f,
-        .w = GOALS_WIDTH,
-        .h = GOALS_HEIGHT
-    };
 
-    if (camera_fill_rect(camera, renderer, &hitbox) < 0) {
+    const point_t position =
+        vec_sum(
+            goals->points[goal_index],
+            vec(0.0f, sinf(goals->angle) * 10.0f));
+
+    if (camera_fill_triangle(
+            camera,
+            renderer,
+            vec_sum(position, vec(0.0f,
+                                  -GOALS_HEIGHT * 0.5f)),
+            vec_sum(position, vec(-GOALS_WIDTH * 0.5f,
+                                  GOALS_HEIGHT * 0.5f)),
+            vec_sum(position, vec(GOALS_WIDTH * 0.5f,
+                                  GOALS_HEIGHT * 0.5f))) < 0) {
         return -1;
     }
 
@@ -121,16 +128,22 @@ static int goals_render_wave(const goals_t *goals,
         return -1;
     }
 
+    const point_t position =
+        vec_sum(
+            goals->points[goal_index],
+            vec(0.0f, sinf(goals->angle) * 10.0f));
+
     const float wave_scale_factor = fminf(goals->wave, 1.0f) * 10.0f;
 
-    const rect_t wavebox = {
-        .x = goals->points[goal_index].x - GOALS_WIDTH * wave_scale_factor / 2.0f,
-        .y = goals->points[goal_index].y - GOALS_HEIGHT * wave_scale_factor / 2.0f + sinf(goals->angle) * 10.0f,
-        .w = GOALS_WIDTH * wave_scale_factor,
-        .h = GOALS_HEIGHT * wave_scale_factor
-    };
-
-    if (camera_draw_rect(camera, renderer, &wavebox) < 0) {
+    if (camera_draw_triangle(
+            camera,
+            renderer,
+            vec_sum(position, vec(0.0f,
+                                  -GOALS_HEIGHT * 0.5f * wave_scale_factor)),
+            vec_sum(position, vec(-GOALS_WIDTH * 0.5f * wave_scale_factor,
+                                  GOALS_HEIGHT * 0.5f * wave_scale_factor)),
+            vec_sum(position, vec(GOALS_WIDTH * 0.5f * wave_scale_factor,
+                                  GOALS_HEIGHT * 0.5f * wave_scale_factor))) < 0) {
         return -1;
     }
 

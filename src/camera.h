@@ -16,6 +16,18 @@ int camera_draw_rect(const camera_t * camera,
                      SDL_Renderer *render,
                      const rect_t *rect);
 
+int camera_draw_triangle(const camera_t *camera,
+                         SDL_Renderer *render,
+                         point_t p1,
+                         point_t p2,
+                         point_t p3);
+
+int camera_fill_triangle(const camera_t *camera,
+                         SDL_Renderer *render,
+                         point_t p1,
+                         point_t p2,
+                         point_t p3);
+
 void camera_center_at(camera_t *camera, point_t position);
 
 void camera_toggle_debug_mode(camera_t *camera);
