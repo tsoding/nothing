@@ -45,6 +45,6 @@ int fill_triangle(SDL_Renderer *render,
                   point_t p2,
                   point_t p3)
 {
-    /* TODO: implement fill_triangle */
+    /* TODO(#79): implement fill_triangle */
     return draw_triangle(render, p1, p2, p3);
 }

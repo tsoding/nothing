@@ -130,7 +130,7 @@ int camera_draw_triangle(const camera_t *camera,
     const vec_t scale = effective_scale(&view_port);
 
     if (draw_triangle(render,
-                      /* TODO: abstract out the point transformation */
+                      /* TODO(#78): abstract out the camera point transformations */
                       vec_sum(
                           vec_entry_mult(
                               vec_sum(p1, vec_neg(camera->position)),
