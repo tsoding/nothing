@@ -5,6 +5,7 @@
 
 #include "./camera.h"
 #include "./error.h"
+#include "./renderer.h"
 
 #define RATIO_X 16.0f
 #define RATIO_Y 9.0f
@@ -96,7 +97,6 @@ int camera_draw_rect(const camera_t * camera,
     assert(rect);
 
     SDL_Rect view_port;
-
     SDL_RenderGetViewport(render, &view_port);
 
     const vec_t scale = effective_scale(&view_port);
@@ -109,6 +109,85 @@ int camera_draw_rect(const camera_t * camera,
 
     if (SDL_RenderDrawRect(render, &sdl_rect) < 0) {
         throw_error(ERROR_TYPE_SDL2);
+        return -1;
+    }
+
+    return 0;
+}
+
+int camera_draw_triangle(const camera_t *camera,
+                         SDL_Renderer *render,
+                         point_t p1,
+                         point_t p2,
+                         point_t p3)
+{
+    assert(camera);
+    assert(render);
+
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(render, &view_port);
+
+    const vec_t scale = effective_scale(&view_port);
+
+    if (draw_triangle(render,
+                      /* TODO: abstract out the point transformation */
+                      vec_sum(
+                          vec_entry_mult(
+                              vec_sum(p1, vec_neg(camera->position)),
+                              scale),
+                          vec((float) view_port.w * 0.5f,
+                              (float) view_port.h * 0.5f)),
+                      vec_sum(
+                          vec_entry_mult(
+                              vec_sum(p2, vec_neg(camera->position)),
+                              scale),
+                          vec((float) view_port.w * 0.5f,
+                              (float) view_port.h * 0.5f)),
+                      vec_sum(
+                          vec_entry_mult(
+                              vec_sum(p3, vec_neg(camera->position)),
+                              scale),
+                          vec((float) view_port.w * 0.5f,
+                              (float) view_port.h * 0.5f))) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
+int camera_fill_triangle(const camera_t *camera,
+                         SDL_Renderer *render,
+                         point_t p1,
+                         point_t p2,
+                         point_t p3)
+{
+    assert(camera);
+    assert(render);
+
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(render, &view_port);
+
+    const vec_t scale = effective_scale(&view_port);
+
+    if (fill_triangle(render,
+                      vec_sum(
+                          vec_entry_mult(
+                              vec_sum(p1, vec_neg(camera->position)),
+                              scale),
+                          vec((float) view_port.w * 0.5f,
+                              (float) view_port.h * 0.5f)),
+                      vec_sum(
+                          vec_entry_mult(
+                              vec_sum(p2, vec_neg(camera->position)),
+                              scale),
+                          vec((float) view_port.w * 0.5f,
+                              (float) view_port.h * 0.5f)),
+                      vec_sum(
+                          vec_entry_mult(
+                              vec_sum(p3, vec_neg(camera->position)),
+                              scale),
+                          vec((float) view_port.w * 0.5f,
+                              (float) view_port.h * 0.5f))) < 0) {
         return -1;
     }
 
