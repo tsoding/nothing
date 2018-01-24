@@ -17,6 +17,9 @@ struct camera_t {
 
 static vec_t effective_ratio(const SDL_Rect *view_port);
 static vec_t effective_scale(const SDL_Rect *view_port);
+static vec_t camera_point(const camera_t *camera,
+                          const SDL_Rect *view_port,
+                          const vec_t p);
 
 camera_t *create_camera(point_t position)
 {
@@ -115,28 +118,10 @@ int camera_draw_triangle(const camera_t *camera,
     SDL_Rect view_port;
     SDL_RenderGetViewport(render, &view_port);
 
-    const vec_t scale = effective_scale(&view_port);
-
     if (draw_triangle(render,
-                      /* TODO(#78): abstract out the camera point transformations */
-                      vec_sum(
-                          vec_entry_mult(
-                              vec_sum(p1, vec_neg(camera->position)),
-                              scale),
-                          vec((float) view_port.w * 0.5f,
-                              (float) view_port.h * 0.5f)),
-                      vec_sum(
-                          vec_entry_mult(
-                              vec_sum(p2, vec_neg(camera->position)),
-                              scale),
-                          vec((float) view_port.w * 0.5f,
-                              (float) view_port.h * 0.5f)),
-                      vec_sum(
-                          vec_entry_mult(
-                              vec_sum(p3, vec_neg(camera->position)),
-                              scale),
-                          vec((float) view_port.w * 0.5f,
-                              (float) view_port.h * 0.5f))) < 0) {
+                      camera_point(camera, &view_port, p1),
+                      camera_point(camera, &view_port, p2),
+                      camera_point(camera, &view_port, p3)) < 0) {
         return -1;
     }
 
@@ -155,27 +140,10 @@ int camera_fill_triangle(const camera_t *camera,
     SDL_Rect view_port;
     SDL_RenderGetViewport(render, &view_port);
 
-    const vec_t scale = effective_scale(&view_port);
-
     if (fill_triangle(render,
-                      vec_sum(
-                          vec_entry_mult(
-                              vec_sum(p1, vec_neg(camera->position)),
-                              scale),
-                          vec((float) view_port.w * 0.5f,
-                              (float) view_port.h * 0.5f)),
-                      vec_sum(
-                          vec_entry_mult(
-                              vec_sum(p2, vec_neg(camera->position)),
-                              scale),
-                          vec((float) view_port.w * 0.5f,
-                              (float) view_port.h * 0.5f)),
-                      vec_sum(
-                          vec_entry_mult(
-                              vec_sum(p3, vec_neg(camera->position)),
-                              scale),
-                          vec((float) view_port.w * 0.5f,
-                              (float) view_port.h * 0.5f))) < 0) {
+                      camera_point(camera, &view_port, p1),
+                      camera_point(camera, &view_port, p2),
+                      camera_point(camera, &view_port, p3)) < 0) {
         return -1;
     }
 
@@ -210,4 +178,17 @@ static vec_t effective_scale(const SDL_Rect *view_port)
     return vec_entry_div(
         vec((float) view_port->w, (float) view_port->h),
         vec_scala_mult(effective_ratio(view_port), 50.0f));
+}
+
+static vec_t camera_point(const camera_t *camera,
+                          const SDL_Rect *view_port,
+                          const vec_t p)
+
+{
+    return vec_sum(
+        vec_entry_mult(
+            vec_sum(p, vec_neg(camera->position)),
+            effective_scale(view_port)),
+        vec((float) view_port->w * 0.5f,
+            (float) view_port->h * 0.5f));
 }
