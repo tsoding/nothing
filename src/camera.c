@@ -15,6 +15,9 @@ struct camera_t {
     point_t position;
 };
 
+static vec_t effective_ratio(const SDL_Rect *view_port);
+static vec_t effective_scale(const SDL_Rect *view_port);
+
 camera_t *create_camera(point_t position)
 {
     camera_t *camera = malloc(sizeof(camera_t));
@@ -37,21 +40,6 @@ void destroy_camera(camera_t *camera)
     free(camera);
 }
 
-static vec_t effective_ratio(const SDL_Rect *view_port)
-{
-    if ((float) view_port->w / RATIO_X > (float) view_port->h / RATIO_Y) {
-        return vec(RATIO_X, (float) view_port->h / ((float) view_port->w / RATIO_X));
-    } else {
-        return vec((float) view_port->w / ((float) view_port->h / RATIO_Y), RATIO_Y);
-    }
-}
-
-static vec_t effective_scale(const SDL_Rect *view_port)
-{
-    return vec_entry_div(
-        vec((float) view_port->w, (float) view_port->h),
-        vec_scala_mult(effective_ratio(view_port), 50.0f));
-}
 
 int camera_fill_rect(const camera_t *camera,
                      SDL_Renderer *render,
@@ -204,4 +192,22 @@ void camera_toggle_debug_mode(camera_t *camera)
 {
     assert(camera);
     camera->debug_mode = !camera->debug_mode;
+}
+
+/* ---------- Private Function ---------- */
+
+static vec_t effective_ratio(const SDL_Rect *view_port)
+{
+    if ((float) view_port->w / RATIO_X > (float) view_port->h / RATIO_Y) {
+        return vec(RATIO_X, (float) view_port->h / ((float) view_port->w / RATIO_X));
+    } else {
+        return vec((float) view_port->w / ((float) view_port->h / RATIO_Y), RATIO_Y);
+    }
+}
+
+static vec_t effective_scale(const SDL_Rect *view_port)
+{
+    return vec_entry_div(
+        vec((float) view_port->w, (float) view_port->h),
+        vec_scala_mult(effective_ratio(view_port), 50.0f));
 }
