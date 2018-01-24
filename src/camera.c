@@ -20,6 +20,9 @@ static vec_t effective_scale(const SDL_Rect *view_port);
 static vec_t camera_point(const camera_t *camera,
                           const SDL_Rect *view_port,
                           const vec_t p);
+static rect_t camera_rect(const camera_t *camera,
+                          const SDL_Rect *view_port,
+                          const rect_t rect);
 
 camera_t *create_camera(point_t position)
 {
@@ -53,16 +56,10 @@ int camera_fill_rect(const camera_t *camera,
     assert(rect);
 
     SDL_Rect view_port;
-
     SDL_RenderGetViewport(render, &view_port);
 
-    const vec_t scale = effective_scale(&view_port);
-    const SDL_Rect sdl_rect = {
-        .x = (int) roundf((rect->x - camera->position.x) * scale.x + (float) view_port.w * 0.5f),
-        .y = (int) roundf((rect->y - camera->position.y) * scale.y + (float) view_port.h * 0.5f),
-        .w = (int) roundf(rect->w * scale.x),
-        .h = (int) roundf(rect->h * scale.y)
-    };
+    const SDL_Rect sdl_rect = rect_for_sdl(
+        camera_rect(camera, &view_port, *rect));
 
     if (camera->debug_mode) {
         if (SDL_RenderDrawRect(render, &sdl_rect) < 0) {
@@ -90,13 +87,8 @@ int camera_draw_rect(const camera_t * camera,
     SDL_Rect view_port;
     SDL_RenderGetViewport(render, &view_port);
 
-    const vec_t scale = effective_scale(&view_port);
-    const SDL_Rect sdl_rect = {
-        .x = (int) roundf((rect->x - camera->position.x) * scale.x + (float) view_port.w * 0.5f),
-        .y = (int) roundf((rect->y - camera->position.y) * scale.y + (float) view_port.h * 0.5f),
-        .w = (int) roundf(rect->w * scale.x),
-        .h = (int) roundf(rect->h * scale.y)
-    };
+    const SDL_Rect sdl_rect = rect_for_sdl(
+        camera_rect(camera, &view_port, *rect));
 
     if (SDL_RenderDrawRect(render, &sdl_rect) < 0) {
         throw_error(ERROR_TYPE_SDL2);
@@ -191,4 +183,26 @@ static vec_t camera_point(const camera_t *camera,
             effective_scale(view_port)),
         vec((float) view_port->w * 0.5f,
             (float) view_port->h * 0.5f));
+}
+
+static rect_t camera_rect(const camera_t *camera,
+                          const SDL_Rect *view_port,
+                          const rect_t rect)
+{
+    const point_t position =
+        camera_point(
+            camera,
+            view_port,
+            vec(rect.x, rect.y));
+
+    const vec_t scale = effective_scale(view_port);
+
+    const rect_t cam_rect = {
+        .x = position.x,
+        .y = position.y,
+        .w = roundf(rect.w * scale.x),
+        .h = roundf(rect.h * scale.y)
+    };
+
+    return cam_rect;
 }

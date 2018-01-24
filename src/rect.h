@@ -3,6 +3,8 @@
 
 #include "./point.h"
 
+typedef struct SDL_Rect SDL_Rect;
+
 typedef enum rect_side_t {
     RECT_SIDE_LEFT = 0,
     RECT_SIDE_RIGHT,
@@ -36,5 +38,7 @@ line_t rect_side(rect_t rect, rect_side_t side);
 rect_t rect_from_point(point_t p, float w, float h);
 
 float line_length(line_t line);
+
+SDL_Rect rect_for_sdl(rect_t rect);
 
 #endif  // RECT_H_
