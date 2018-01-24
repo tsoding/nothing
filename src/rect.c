@@ -1,6 +1,9 @@
 #include <string.h>
 #include <assert.h>
 #include <math.h>
+
+#include <SDL2/SDL.h>
+
 #include "./rect.h"
 
 rect_t rects_overlap_area(rect_t rect1, rect_t rect2)
@@ -118,4 +121,16 @@ int rect_contains_point(rect_t rect, point_t p)
 {
     return rect.x <= p.x && p.x <= rect.x + rect.w
         && rect.y <= p.y && p.y <= rect.y + rect.h;
+}
+
+SDL_Rect rect_for_sdl(rect_t rect)
+{
+    const SDL_Rect result = {
+        .x = (int) roundf(rect.x),
+        .y = (int) roundf(rect.y),
+        .w = (int) roundf(rect.w),
+        .h = (int) roundf(rect.h)
+    };
+
+    return result;
 }
