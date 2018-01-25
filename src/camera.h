@@ -16,7 +16,7 @@ int camera_draw_rect(const camera_t * camera,
                      SDL_Renderer *render,
                      const rect_t *rect);
 
-// TODO: make all of the triangle rendering functions accept triangle_t
+// TODO(#87): make all of the triangle rendering functions accept triangle_t
 //
 // The list of functions:
 // - camera_draw_triangle
