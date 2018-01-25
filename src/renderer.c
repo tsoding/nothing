@@ -57,7 +57,6 @@ static int fill_bottom_flat_triangle(SDL_Renderer *render,
     const float invslope1 = (p2.x - p1.x) / (p2.y - p1.y);
     const float invslope2 = (p3.x - p1.x) / (p3.y - p1.y);
 
-    /* TODO: try to get rid of curx vars */
     float curx1 = p1.x;
     float curx2 = p1.x;
 
