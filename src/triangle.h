@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TRIANGLE_H_
+#define TRIANGLE_H_
 
 #include "./point.h"
 
@@ -7,3 +8,5 @@ typedef struct triangle_t {
 } triangle_t;
 
 triangle_t equilateral_triangle(point_t position, float radius, float angle);
+
+#endif  // TRIANGLE_H_
