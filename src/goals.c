@@ -6,10 +6,10 @@
 #include "./lt.h"
 #include "./goals.h"
 #include "./error.h"
+#include "./pi.h"
+#include "./triangle.h"
 
-#define PI 3.14159265359f
-#define GOALS_WIDTH 10.0f
-#define GOALS_HEIGHT 10.0f
+#define GOAL_RADIUS 10.0f
 
 struct goals_t {
     lt_t *lt;
@@ -101,15 +101,14 @@ static int goals_render_core(const goals_t *goals,
             goals->points[goal_index],
             vec(0.0f, sinf(goals->angle) * 10.0f));
 
+    const triangle_t core = equilateral_triangle(position, GOAL_RADIUS, PI * -0.5f + goals->angle);
+
     if (camera_fill_triangle(
             camera,
             renderer,
-            vec_sum(position, vec(0.0f,
-                                  -GOALS_HEIGHT * 0.5f)),
-            vec_sum(position, vec(-GOALS_WIDTH * 0.5f,
-                                  GOALS_HEIGHT * 0.5f)),
-            vec_sum(position, vec(GOALS_WIDTH * 0.5f,
-                                  GOALS_HEIGHT * 0.5f))) < 0) {
+            core.p1,
+            core.p2,
+            core.p3) < 0) {
         return -1;
     }
 
@@ -134,16 +133,14 @@ static int goals_render_wave(const goals_t *goals,
             vec(0.0f, sinf(goals->angle) * 10.0f));
 
     const float wave_scale_factor = fminf(goals->wave, 1.0f) * 10.0f;
+    const triangle_t core = equilateral_triangle(position, GOAL_RADIUS * wave_scale_factor, PI * -0.5f + goals->angle);
 
     if (camera_draw_triangle(
             camera,
             renderer,
-            vec_sum(position, vec(0.0f,
-                                  -GOALS_HEIGHT * 0.5f * wave_scale_factor)),
-            vec_sum(position, vec(-GOALS_WIDTH * 0.5f * wave_scale_factor,
-                                  GOALS_HEIGHT * 0.5f * wave_scale_factor)),
-            vec_sum(position, vec(GOALS_WIDTH * 0.5f * wave_scale_factor,
-                                  GOALS_HEIGHT * 0.5f * wave_scale_factor))) < 0) {
+            core.p1,
+            core.p2,
+            core.p3) < 0) {
         return -1;
     }
 

@@ -91,7 +91,7 @@ static int fill_top_flat_triangle(SDL_Renderer *render,
     float curx2 = p3.x;
 
     for (int scanlineY = (int) roundf(p3.y);
-         scanlineY >= (int) roundf(p1.y);
+         scanlineY > (int) roundf(p1.y);
          --scanlineY) {
         if (SDL_RenderDrawLine(render,
                                (int) roundf(curx1),
