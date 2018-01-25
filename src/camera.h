@@ -16,6 +16,14 @@ int camera_draw_rect(const camera_t * camera,
                      SDL_Renderer *render,
                      const rect_t *rect);
 
+// TODO: make all of the triangle rendering functions accept triangle_t
+//
+// The list of functions:
+// - camera_draw_triangle
+// - camera_fill_triangle
+// - draw_triangle
+// - fill_triangle
+
 int camera_draw_triangle(const camera_t *camera,
                          SDL_Renderer *render,
                          point_t p1,
