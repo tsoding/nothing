@@ -18,7 +18,6 @@ struct goals_t {
     size_t goals_count;
     rect_t player_hitbox;
     float angle;
-    float wave;
 };
 
 goals_t *create_goals_from_stream(FILE *stream)
@@ -74,7 +73,6 @@ goals_t *create_goals_from_stream(FILE *stream)
 
     goals->lt = lt;
     goals->angle = 0.0f;
-    goals->wave = 0.0f;
 
     return goals;
 }
@@ -115,38 +113,6 @@ static int goals_render_core(const goals_t *goals,
     return 0;
 }
 
-static int goals_render_wave(const goals_t *goals,
-                             size_t goal_index,
-                             SDL_Renderer *renderer,
-                             const camera_t *camera)
-{
-    const Uint8 alpha = (Uint8) (roundf(255.0f * (1.0f - fminf(goals->wave, 1.0f))) * 0.5f);
-
-    if (SDL_SetRenderDrawColor(renderer, 255, 255, 50, alpha) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
-        return -1;
-    }
-
-    const point_t position =
-        vec_sum(
-            goals->points[goal_index],
-            vec(0.0f, sinf(goals->angle) * 10.0f));
-
-    const float wave_scale_factor = fminf(goals->wave, 1.0f) * 10.0f;
-    const triangle_t core = equilateral_triangle(position, GOAL_RADIUS * wave_scale_factor, PI * -0.5f + goals->angle);
-
-    if (camera_draw_triangle(
-            camera,
-            renderer,
-            core.p1,
-            core.p2,
-            core.p3) < 0) {
-        return -1;
-    }
-
-    return 0;
-}
-
 int goals_render(const goals_t *goals,
                  SDL_Renderer *renderer,
                  const camera_t *camera)
@@ -159,10 +125,6 @@ int goals_render(const goals_t *goals,
     for (size_t i = 0; i < goals->goals_count; ++i) {
         if (!rects_overlap(goals->regions[i], goals->player_hitbox)) {
             if (goals_render_core(goals, i, renderer, camera) < 0) {
-                return -1;
-            }
-
-            if (goals_render_wave(goals, i, renderer, camera) < 0) {
                 return -1;
             }
         }
@@ -180,7 +142,6 @@ void goals_update(goals_t *goals,
     float d = (float) delta_time / 1000.0f;
 
     goals->angle = fmodf(goals->angle + 2.0f * d, 2.0f * PI);
-    goals->wave = fmodf(goals->wave + 0.35f * d, 1.5f);
 }
 
 void goals_hide(goals_t *goals,
