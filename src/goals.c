@@ -18,7 +18,6 @@ struct goals_t {
     size_t goals_count;
     rect_t player_hitbox;
     float angle;
-    float wave;
 };
 
 goals_t *create_goals_from_stream(FILE *stream)
@@ -74,7 +73,6 @@ goals_t *create_goals_from_stream(FILE *stream)
 
     goals->lt = lt;
     goals->angle = 0.0f;
-    goals->wave = 0.0f;
 
     return goals;
 }
@@ -144,7 +142,6 @@ void goals_update(goals_t *goals,
     float d = (float) delta_time / 1000.0f;
 
     goals->angle = fmodf(goals->angle + 2.0f * d, 2.0f * PI);
-    goals->wave = fmodf(goals->wave + 0.35f * d, 1.5f);
 }
 
 void goals_hide(goals_t *goals,
