@@ -3,6 +3,7 @@
 
 #include "./rect.h"
 #include "./point.h"
+#include "./triangle.h"
 
 typedef struct camera_t camera_t;
 
@@ -16,25 +17,13 @@ int camera_draw_rect(const camera_t * camera,
                      SDL_Renderer *render,
                      const rect_t *rect);
 
-// TODO(#87): make all of the triangle rendering functions accept triangle_t
-//
-// The list of functions:
-// - camera_draw_triangle
-// - camera_fill_triangle
-// - draw_triangle
-// - fill_triangle
-
 int camera_draw_triangle(const camera_t *camera,
                          SDL_Renderer *render,
-                         point_t p1,
-                         point_t p2,
-                         point_t p3);
+                         triangle_t t);
 
 int camera_fill_triangle(const camera_t *camera,
                          SDL_Renderer *render,
-                         point_t p1,
-                         point_t p2,
-                         point_t p3);
+                         triangle_t t);
 
 void camera_center_at(camera_t *camera, point_t position);
 

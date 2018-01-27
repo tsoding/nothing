@@ -23,6 +23,9 @@ static vec_t camera_point(const camera_t *camera,
 static rect_t camera_rect(const camera_t *camera,
                           const SDL_Rect *view_port,
                           const rect_t rect);
+static triangle_t camera_triangle(const camera_t *camera,
+                                  const SDL_Rect *view_port,
+                                  const triangle_t t);
 
 camera_t *create_camera(point_t position)
 {
@@ -100,9 +103,7 @@ int camera_draw_rect(const camera_t * camera,
 
 int camera_draw_triangle(const camera_t *camera,
                          SDL_Renderer *render,
-                         point_t p1,
-                         point_t p2,
-                         point_t p3)
+                         triangle_t t)
 {
     assert(camera);
     assert(render);
@@ -110,10 +111,7 @@ int camera_draw_triangle(const camera_t *camera,
     SDL_Rect view_port;
     SDL_RenderGetViewport(render, &view_port);
 
-    if (draw_triangle(render,
-                      camera_point(camera, &view_port, p1),
-                      camera_point(camera, &view_port, p2),
-                      camera_point(camera, &view_port, p3)) < 0) {
+    if (draw_triangle(render, camera_triangle(camera, &view_port, t)) < 0) {
         return -1;
     }
 
@@ -122,9 +120,7 @@ int camera_draw_triangle(const camera_t *camera,
 
 int camera_fill_triangle(const camera_t *camera,
                          SDL_Renderer *render,
-                         point_t p1,
-                         point_t p2,
-                         point_t p3)
+                         triangle_t t)
 {
     assert(camera);
     assert(render);
@@ -132,10 +128,7 @@ int camera_fill_triangle(const camera_t *camera,
     SDL_Rect view_port;
     SDL_RenderGetViewport(render, &view_port);
 
-    if (fill_triangle(render,
-                      camera_point(camera, &view_port, p1),
-                      camera_point(camera, &view_port, p2),
-                      camera_point(camera, &view_port, p3)) < 0) {
+    if (fill_triangle(render, camera_triangle(camera, &view_port, t)) < 0) {
         return -1;
     }
 
@@ -183,6 +176,15 @@ static vec_t camera_point(const camera_t *camera,
             effective_scale(view_port)),
         vec((float) view_port->w * 0.5f,
             (float) view_port->h * 0.5f));
+}
+
+static triangle_t camera_triangle(const camera_t *camera,
+                                  const SDL_Rect *view_port,
+                                  const triangle_t t)
+{
+    return triangle(camera_point(camera, view_port, t.p1),
+                    camera_point(camera, view_port, t.p2),
+                    camera_point(camera, view_port, t.p3));
 }
 
 static rect_t camera_rect(const camera_t *camera,

@@ -99,14 +99,14 @@ static int goals_render_core(const goals_t *goals,
             goals->points[goal_index],
             vec(0.0f, sinf(goals->angle) * 10.0f));
 
-    const triangle_t core = equilateral_triangle(position, GOAL_RADIUS, PI * -0.5f + goals->angle);
 
     if (camera_fill_triangle(
             camera,
             renderer,
-            core.p1,
-            core.p2,
-            core.p3) < 0) {
+            equilateral_triangle(
+                position,
+                GOAL_RADIUS,
+                PI * -0.5f + goals->angle)) < 0) {
         return -1;
     }
 

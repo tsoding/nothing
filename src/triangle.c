@@ -3,6 +3,17 @@
 #include "./pi.h"
 #include "./triangle.h"
 
+triangle_t triangle(point_t p1, point_t p2, point_t p3)
+{
+    const triangle_t result = {
+        .p1 = p1,
+        .p2 = p2,
+        .p3 = p3
+    };
+
+    return result;
+}
+
 triangle_t equilateral_triangle(point_t position, float radius, float angle)
 {
     const float d = PI_2 / 3.0f;
@@ -14,4 +25,20 @@ triangle_t equilateral_triangle(point_t position, float radius, float angle)
     };
 
     return result;
+}
+
+static void swap_points(point_t *p1, point_t *p2)
+{
+    point_t t = *p1;
+    *p1 = *p2;
+    *p2 = t;
+}
+
+triangle_t triangle_sorted_by_y(triangle_t t)
+{
+    if (t.p1.y > t.p2.y) { swap_points(&t.p1, &t.p2); }
+    if (t.p2.y > t.p3.y) { swap_points(&t.p2, &t.p3); }
+    if (t.p1.y > t.p2.y) { swap_points(&t.p1, &t.p2); }
+
+    return t;
 }
