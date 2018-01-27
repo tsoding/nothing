@@ -23,5 +23,6 @@ int level_reload_preserve_player(level_t *level,
                                  const char *file_name);
 
 void level_toggle_debug_mode(level_t *level);
+void level_toggle_pause_mode(level_t *level);
 
 #endif  // LEVEL_H_

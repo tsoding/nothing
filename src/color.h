@@ -10,4 +10,6 @@ typedef struct color_t {
 color_t color(float r, float g, float b, float a);
 SDL_Color color_for_sdl(color_t color);
 
+color_t color_desaturate(color_t color);
+
 #endif  // COLOR_H_

@@ -25,3 +25,9 @@ SDL_Color color_for_sdl(color_t color)
 
     return result;
 }
+
+color_t color_desaturate(color_t c)
+{
+    const float k = (c.r + c.g + c.b) / 3.0f;
+    return color(k, k, k, c.a);
+}

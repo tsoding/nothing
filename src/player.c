@@ -109,14 +109,14 @@ int player_render(const player_t * player,
     assert(renderer);
     assert(camera);
 
-    if (SDL_SetRenderDrawColor(renderer, 96, 255, 96, 255) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
-        return -1;
-    }
-
-    const rect_t player_object = player_hitbox(player);
-
-    if (camera_fill_rect(camera, renderer, player_object) < 0) {
+    if (camera_fill_rect(
+            camera,
+            renderer,
+            player_hitbox(player),
+            color(96.0f / 255.0f,
+                  255.0f / 255.0f,
+                  96.0f / 255.0f,
+                  255.0f / 255.0f)) < 0) {
         return -1;
     }
 

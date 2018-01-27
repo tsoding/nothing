@@ -88,29 +88,23 @@ static int goals_render_core(const goals_t *goals,
                              SDL_Renderer *renderer,
                              const camera_t *camera)
 {
-    if (SDL_SetRenderDrawColor(renderer, 255, 255, 50, 255) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
-        return -1;
-    }
+    assert(goals);
+    assert(renderer);
+    assert(camera);
 
-
-    const point_t position =
-        vec_sum(
-            goals->points[goal_index],
-            vec(0.0f, sinf(goals->angle) * 10.0f));
-
-
-    if (camera_fill_triangle(
-            camera,
-            renderer,
-            equilateral_triangle(
-                position,
-                GOAL_RADIUS,
-                PI * -0.5f + goals->angle)) < 0) {
-        return -1;
-    }
-
-    return 0;
+    return camera_fill_triangle(
+        camera,
+        renderer,
+        equilateral_triangle(
+            vec_sum(
+                goals->points[goal_index],
+                vec(0.0f, sinf(goals->angle) * 10.0f)),
+            GOAL_RADIUS,
+            PI * -0.5f + goals->angle),
+        color(255.0f / 255.0f,
+              255.0f / 255.0f,
+              50.0f / 255.0f,
+              255.0f / 255.0f));
 }
 
 int goals_render(const goals_t *goals,
