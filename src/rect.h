@@ -23,6 +23,9 @@ typedef struct line_t {
     point_t p2;
 } line_t;
 
+rect_t rect(float x, float y, float w, float h);
+rect_t rect_from_vecs(point_t position, vec_t size);
+
 rect_t rects_overlap_area(rect_t rect1, rect_t rect2);
 
 int rect_contains_point(rect_t rect, point_t p);

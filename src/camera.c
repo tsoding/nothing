@@ -220,29 +220,22 @@ static triangle_t camera_triangle(const camera_t *camera,
                                   const SDL_Rect *view_port,
                                   const triangle_t t)
 {
-    return triangle(camera_point(camera, view_port, t.p1),
-                    camera_point(camera, view_port, t.p2),
-                    camera_point(camera, view_port, t.p3));
+    return triangle(
+        camera_point(camera, view_port, t.p1),
+        camera_point(camera, view_port, t.p2),
+        camera_point(camera, view_port, t.p3));
 }
 
 static rect_t camera_rect(const camera_t *camera,
                           const SDL_Rect *view_port,
                           const rect_t rect)
 {
-    const point_t position =
+    return rect_from_vecs(
         camera_point(
             camera,
             view_port,
-            vec(rect.x, rect.y));
-
-    const vec_t scale = effective_scale(view_port);
-
-    const rect_t cam_rect = {
-        .x = position.x,
-        .y = position.y,
-        .w = roundf(rect.w * scale.x),
-        .h = roundf(rect.h * scale.y)
-    };
-
-    return cam_rect;
+            vec(rect.x, rect.y)),
+        vec_entry_mult(
+            effective_scale(view_port),
+            vec(rect.w, rect.h)));
 }
