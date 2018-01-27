@@ -6,6 +6,23 @@
 
 #include "./rect.h"
 
+rect_t rect(float x, float y, float w, float h)
+{
+    const rect_t result = {
+        .x = x,
+        .y = y,
+        .w = w,
+        .h = h
+    };
+
+    return result;
+}
+
+rect_t rect_from_vecs(point_t position, vec_t size)
+{
+    return rect(position.x, position.y, size.x, size.y);
+}
+
 rect_t rects_overlap_area(rect_t rect1, rect_t rect2)
 {
     float x1 = fmaxf(rect1.x, rect2.x);

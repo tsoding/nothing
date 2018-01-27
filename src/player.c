@@ -91,14 +91,11 @@ rect_t player_hitbox(const player_t *player)
 {
     assert(player);
 
-    const rect_t hitbox = {
-        .x = player->position.x - player->width / 2,
-        .y = player->position.y - player->height,
-        .w = player->width,
-        .h = player->height
-    };
-
-    return hitbox;
+    return rect(
+        player->position.x - player->width / 2,
+        player->position.y - player->height,
+        player->width,
+        player->height);
 }
 
 int player_render(const player_t * player,
@@ -216,7 +213,11 @@ void player_focus_camera(player_t *player,
     assert(player);
     assert(camera);
 
-    camera_center_at(camera, vec_sum(player->position, vec(0.0f, -player->height * 0.5f)));
+    camera_center_at(
+        camera,
+        vec_sum(
+            player->position,
+            vec(0.0f, -player->height * 0.5f)));
 }
 
 void player_hide_goals(const player_t *player,
