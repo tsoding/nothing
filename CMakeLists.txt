@@ -28,6 +28,7 @@ set(SOURCE_FILES
   src/goals.c
   src/renderer.c
   src/triangle.c
+  src/color.c
 )
 
 set(HEADER_FILES
@@ -45,6 +46,7 @@ set(HEADER_FILES
   src/renderer.h
   src/triangle.h
   src/pi.h
+  src/color.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
