@@ -146,13 +146,15 @@ int platforms_render(const platforms_t *platforms,
                      SDL_Renderer *renderer,
                      const camera_t *camera)
 {
-    if (SDL_SetRenderDrawColor(renderer, 50, 50, 55, 255) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
-        return -1;
-    }
-
     for (size_t i = 0; i < platforms->rects_size; ++i) {
-        if (camera_fill_rect(camera, renderer, &platforms->rects[i]) < 0) {
+        if (camera_fill_rect(
+                camera,
+                renderer,
+                platforms->rects[i],
+                color(50.0f / 255.0f,
+                      50.0f / 255.0f,
+                      60.0f / 255.0f,
+                      255.0f / 255.0f)) < 0) {
             throw_error(ERROR_TYPE_SDL2);
             return -1;
         }

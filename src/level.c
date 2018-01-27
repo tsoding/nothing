@@ -157,6 +157,11 @@ void level_toggle_debug_mode(level_t *level)
     camera_toggle_debug_mode(level->camera);
 }
 
+void level_toggle_pause_mode(level_t *level)
+{
+    camera_toggle_blackwhite_mode(level->camera);
+}
+
 int level_reload_preserve_player(level_t *level, const char *file_name)
 {
     lt_t *lt = create_lt();
