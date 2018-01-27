@@ -12,10 +12,11 @@ void destroy_camera(camera_t *camera);
 
 int camera_fill_rect(const camera_t *camera,
                      SDL_Renderer *render,
-                     const rect_t *rect);
+                     rect_t rect);
+
 int camera_draw_rect(const camera_t * camera,
                      SDL_Renderer *render,
-                     const rect_t *rect);
+                     rect_t rect);
 
 int camera_draw_triangle(const camera_t *camera,
                          SDL_Renderer *render,

@@ -152,7 +152,7 @@ int platforms_render(const platforms_t *platforms,
     }
 
     for (size_t i = 0; i < platforms->rects_size; ++i) {
-        if (camera_fill_rect(camera, renderer, &platforms->rects[i]) < 0) {
+        if (camera_fill_rect(camera, renderer, platforms->rects[i]) < 0) {
             throw_error(ERROR_TYPE_SDL2);
             return -1;
         }

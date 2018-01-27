@@ -52,17 +52,16 @@ void destroy_camera(camera_t *camera)
 
 int camera_fill_rect(const camera_t *camera,
                      SDL_Renderer *render,
-                     const rect_t *rect)
+                     rect_t rect)
 {
     assert(camera);
     assert(render);
-    assert(rect);
 
     SDL_Rect view_port;
     SDL_RenderGetViewport(render, &view_port);
 
     const SDL_Rect sdl_rect = rect_for_sdl(
-        camera_rect(camera, &view_port, *rect));
+        camera_rect(camera, &view_port, rect));
 
     if (camera->debug_mode) {
         if (SDL_RenderDrawRect(render, &sdl_rect) < 0) {
@@ -81,17 +80,16 @@ int camera_fill_rect(const camera_t *camera,
 
 int camera_draw_rect(const camera_t * camera,
                      SDL_Renderer *render,
-                     const rect_t *rect)
+                     rect_t rect)
 {
     assert(camera);
     assert(render);
-    assert(rect);
 
     SDL_Rect view_port;
     SDL_RenderGetViewport(render, &view_port);
 
     const SDL_Rect sdl_rect = rect_for_sdl(
-        camera_rect(camera, &view_port, *rect));
+        camera_rect(camera, &view_port, rect));
 
     if (SDL_RenderDrawRect(render, &sdl_rect) < 0) {
         throw_error(ERROR_TYPE_SDL2);

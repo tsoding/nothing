@@ -116,7 +116,7 @@ int player_render(const player_t * player,
 
     const rect_t player_object = player_hitbox(player);
 
-    if (camera_fill_rect(camera, renderer, &player_object) < 0) {
+    if (camera_fill_rect(camera, renderer, player_object) < 0) {
         return -1;
     }
 
