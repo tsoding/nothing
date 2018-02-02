@@ -25,7 +25,8 @@ let $goals := for $rect in $rects where matches($rect/@id, "goal.*") return (
     $goal_region[1]/@x, " ",
     $goal_region[1]/@y, " ",
     $goal_region[1]/@width, " ",
-    $goal_region[1]/@height
+    $goal_region[1]/@height, " ",
+    replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
   )
 )
 let $background := for $rect in $rects where $rect/@id = "background"

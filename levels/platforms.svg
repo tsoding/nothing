@@ -22,7 +22,7 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="956"
+     inkscape:window-width="1916"
      inkscape:window-height="1023"
      id="namedview13"
      showgrid="false"
@@ -31,9 +31,9 @@
      inkscape:bbox-nodes="true"
      inkscape:snap-bbox-midpoints="true"
      inkscape:snap-bbox-edge-midpoints="true"
-     inkscape:zoom="1.4142136"
-     inkscape:cx="208.14528"
-     inkscape:cy="188.70605"
+     inkscape:zoom="0.70710678"
+     inkscape:cx="750.85419"
+     inkscape:cy="331.56606"
      inkscape:window-x="0"
      inkscape:window-y="36"
      inkscape:window-maximized="0"
@@ -102,7 +102,7 @@
      x="0" />
   <rect
      id="player"
-     style="fill:#3b882d;stroke-width:1;fill-opacity:1"
+     style="fill:#b58900;stroke-width:1;fill-opacity:1"
      height="26.414213"
      width="27.01903"
      y="417.59192"
@@ -124,7 +124,7 @@
      x="895.57068" />
   <rect
      id="goal2"
-     style="fill:#ffdd55;stroke-width:1"
+     style="fill:#d33682;stroke-width:1;fill-opacity:1"
      height="20"
      width="20"
      y="631.06897"
@@ -251,7 +251,7 @@
      x="1768.5708" />
   <rect
      id="goal3"
-     style="fill:#ffdd55;stroke-width:1"
+     style="fill:#d33682;stroke-width:1;fill-opacity:1"
      height="20"
      width="20"
      y="-136.98125"
