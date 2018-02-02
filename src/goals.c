@@ -15,6 +15,7 @@ struct goals_t {
     lt_t *lt;
     point_t *points;
     rect_t *regions;
+    color_t *colors;
     size_t goals_count;
     rect_t player_hitbox;
     float angle;
@@ -53,22 +54,26 @@ goals_t *create_goals_from_stream(FILE *stream)
         RETURN_LT(lt, NULL);
     }
 
-    for (size_t i = 0; i < goals->goals_count; ++i) {
-        if (fscanf(stream, "%f%f",
-                   &goals->points[i].x,
-                   &goals->points[i].y) < 0) {
-            throw_error(ERROR_TYPE_LIBC);
-            RETURN_LT(lt, NULL);
-        }
+    goals->colors = PUSH_LT(lt, malloc(sizeof(color_t) * goals->goals_count), free);
+    if (goals->colors == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
 
-        if (fscanf(stream, "%f%f%f%f\n",
+    char color[7];
+    for (size_t i = 0; i < goals->goals_count; ++i) {
+        if (fscanf(stream, "%f%f%f%f%f%f%6s",
+                   &goals->points[i].x,
+                   &goals->points[i].y,
                    &goals->regions[i].x,
                    &goals->regions[i].y,
                    &goals->regions[i].w,
-                   &goals->regions[i].h) < 0) {
+                   &goals->regions[i].h,
+                   color) < 0) {
             throw_error(ERROR_TYPE_LIBC);
             RETURN_LT(lt, NULL);
         }
+        goals->colors[i] = color_from_hexstr(color);
     }
 
     goals->lt = lt;
@@ -101,7 +106,7 @@ static int goals_render_core(const goals_t *goals,
                 vec(0.0f, sinf(goals->angle) * 10.0f)),
             GOAL_RADIUS,
             PI * -0.5f + goals->angle),
-        color256(0, 0, 0, 255));
+        goals->colors[goal_index]);
 }
 
 int goals_render(const goals_t *goals,

@@ -21,6 +21,7 @@ struct player_t {
     float height;
     float width;
     int jump_count;
+    color_t color;
 };
 
 static const vec_t opposing_rect_side_forces[RECT_SIDE_N] = {
@@ -48,7 +49,7 @@ static vec_t opposing_force_by_sides(int sides[RECT_SIDE_N])
     return opposing_force;
 }
 
-player_t *create_player(float x, float y)
+player_t *create_player(float x, float y, color_t color)
 {
     player_t *player = malloc(sizeof(player_t));
 
@@ -66,6 +67,7 @@ player_t *create_player(float x, float y)
     player->height = PLAYER_HEIGHT;
     player->width = PLAYER_WIDTH;
     player->jump_count = 2;
+    player->color = color;
 
     return player;
 }
@@ -74,12 +76,13 @@ player_t *create_player_from_stream(FILE *stream)
 {
     float x = 0.0f, y = 0.0f;
 
-    if (fscanf(stream, "%f%f", &x, &y) == EOF) {
+    char color[7];
+    if (fscanf(stream, "%f%f%6s", &x, &y, color) == EOF) {
         throw_error(ERROR_TYPE_LIBC);
         return NULL;
     }
 
-    return create_player(x, y);
+    return create_player(x, y, color_from_hexstr(color));
 }
 
 void destroy_player(player_t * player)
@@ -110,7 +113,7 @@ int player_render(const player_t * player,
             camera,
             renderer,
             player_hitbox(player),
-            color(0.0f, 0.0f, 0.0f, 1.0f)) < 0) {
+            player->color) < 0) {
         return -1;
     }
 

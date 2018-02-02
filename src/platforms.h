@@ -7,7 +7,6 @@
 typedef struct platforms_t platforms_t;
 typedef struct SDL_Renderer SDL_Renderer;
 
-platforms_t *create_platforms(const rect_t *rects, size_t rects_size);
 platforms_t *create_platforms_from_stream(FILE *stream);
 platforms_t *create_platforms_from_file(const char *filename);
 void destroy_platforms(platforms_t *platforms);

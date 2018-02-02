@@ -1,8 +1,20 @@
 declare namespace svg ="http://www.w3.org/2000/svg";
 
 let $rects := //svg:svg/svg:rect
-let $player := for $rect in $rects where $rect/@id = "player" return $rect
-let $platforms := for $rect in $rects where matches($rect/@id, "rect.*") return $rect
+let $player := for $rect in $rects where $rect/@id = "player"
+  return concat (
+    $rect/@x, " ",
+    $rect/@y, " ",
+    replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
+  )
+let $platforms := for $rect in $rects where matches($rect/@id, "rect.*")
+  return concat (
+    $rect/@x, " ",
+    $rect/@y, " ",
+    $rect/@width, " ",
+    $rect/@height, " ",
+    replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
+  )
 let $regions := for $rect in $rects where matches($rect/@id, "region.*") return $rect
 let $goals := for $rect in $rects where matches($rect/@id, "goal.*") return (
   let $goal_id := replace($rect/@id, "goal(.*)", "$1")
@@ -13,15 +25,17 @@ let $goals := for $rect in $rects where matches($rect/@id, "goal.*") return (
     $goal_region[1]/@x, " ",
     $goal_region[1]/@y, " ",
     $goal_region[1]/@width, " ",
-    $goal_region[1]/@height
+    $goal_region[1]/@height, " ",
+    replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
   )
 )
+let $background := for $rect in $rects where $rect/@id = "background"
+return replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
 return (
-  for $rect in $player
-  return concat($rect/@x, " ", $rect/@y),
+  $background,
+  $player,
   count($platforms),
-  for $rect in $platforms
-  return concat($rect/@x, " ", $rect/@y, " ", $rect/@width, " ", $rect/@height),
+  $platforms,
   count($goals),
   $goals
 )

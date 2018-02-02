@@ -13,37 +13,9 @@ struct platforms_t {
     lt_t *lt;
 
     rect_t *rects;
+    color_t *colors;
     size_t rects_size;
 };
-
-platforms_t *create_platforms(const rect_t *rects, size_t rects_size)
-{
-    assert(rects);
-    assert(rects_size > 0);
-
-    lt_t *const lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
-
-    platforms_t *platforms = PUSH_LT(lt, malloc(sizeof(platforms_t)), free);
-    if (platforms == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
-        RETURN_LT(lt, NULL);
-    }
-
-    platforms->rects = PUSH_LT(lt, malloc(sizeof(rect_t) * rects_size), free);
-    if (platforms->rects == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
-        RETURN_LT(lt, NULL);
-    }
-
-    platforms->rects = memcpy(platforms->rects, rects, sizeof(rect_t) * rects_size);
-    platforms->rects_size = rects_size;
-    platforms->lt = lt;
-
-    return platforms;
-}
 
 platforms_t *create_platforms_from_stream(FILE *stream)
 {
@@ -72,13 +44,22 @@ platforms_t *create_platforms_from_stream(FILE *stream)
         RETURN_LT(lt, NULL);
     }
 
+    platforms->colors = PUSH_LT(lt, malloc(sizeof(color_t) * platforms->rects_size), free);
+    if (platforms->colors == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
+    char color[7];
     for (size_t i = 0; i < platforms->rects_size; ++i) {
-        if (fscanf(stream, "%f%f%f%f\n",
+        if (fscanf(stream, "%f%f%f%f%6s\n",
                    &platforms->rects[i].x, &platforms->rects[i].y,
-                   &platforms->rects[i].w, &platforms->rects[i].h) < 0) {
+                   &platforms->rects[i].w, &platforms->rects[i].h,
+                   color) < 0) {
             throw_error(ERROR_TYPE_LIBC);
             RETURN_LT(lt, NULL);
         }
+        platforms->colors[i] = color_from_hexstr(color);
     }
 
     platforms->lt = lt;
@@ -151,7 +132,7 @@ int platforms_render(const platforms_t *platforms,
                 camera,
                 renderer,
                 platforms->rects[i],
-                color(0.00f, 0.0f, 0.0f, 1.0f)) < 0) {
+                platforms->colors[i]) < 0) {
             throw_error(ERROR_TYPE_SDL2);
             return -1;
         }
