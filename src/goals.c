@@ -101,10 +101,7 @@ static int goals_render_core(const goals_t *goals,
                 vec(0.0f, sinf(goals->angle) * 10.0f)),
             GOAL_RADIUS,
             PI * -0.5f + goals->angle),
-        color(255.0f / 255.0f,
-              255.0f / 255.0f,
-              50.0f / 255.0f,
-              255.0f / 255.0f));
+        color256(0, 0, 0, 255));
 }
 
 int goals_render(const goals_t *goals,

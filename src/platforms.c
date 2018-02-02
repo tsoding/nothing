@@ -151,7 +151,7 @@ int platforms_render(const platforms_t *platforms,
                 camera,
                 renderer,
                 platforms->rects[i],
-                color(0.0f, 0.0f, 0.0f, 1.0f)) < 0) {
+                color(0.00f, 0.0f, 0.0f, 1.0f)) < 0) {
             throw_error(ERROR_TYPE_SDL2);
             return -1;
         }
