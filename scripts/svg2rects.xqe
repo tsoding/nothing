@@ -1,7 +1,12 @@
 declare namespace svg ="http://www.w3.org/2000/svg";
 
 let $rects := //svg:svg/svg:rect
-let $player := for $rect in $rects where $rect/@id = "player" return $rect
+let $player := for $rect in $rects where $rect/@id = "player"
+  return concat (
+    $rect/@x, " ",
+    $rect/@y, " ",
+    replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
+  )
 let $platforms := for $rect in $rects where matches($rect/@id, "rect.*")
   return concat (
     $rect/@x, " ",
@@ -27,8 +32,7 @@ let $background := for $rect in $rects where $rect/@id = "background"
 return replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
 return (
   $background,
-  for $rect in $player
-  return concat($rect/@x, " ", $rect/@y),
+  $player,
   count($platforms),
   $platforms,
   count($goals),
