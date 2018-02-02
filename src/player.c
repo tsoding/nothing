@@ -8,8 +8,8 @@
 #include "./point.h"
 #include "./error.h"
 
-#define PLAYER_WIDTH 50.0f
-#define PLAYER_HEIGHT 50.0f
+#define PLAYER_WIDTH 25.0f
+#define PLAYER_HEIGHT 25.0f
 #define PLAYER_SPEED 500.0f
 #define PLAYER_JUMP 550.0f
 #define PLAYER_GRAVITY 1500.0f
