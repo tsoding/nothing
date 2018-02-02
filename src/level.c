@@ -77,6 +77,16 @@ int level_render(const level_t *level, SDL_Renderer *renderer)
     assert(level);
     assert(renderer);
 
+    if (SDL_SetRenderDrawColor(renderer, 157, 144, 96, 255) < 0) {
+        throw_error(ERROR_TYPE_SDL2);
+        return -1;
+    }
+
+    if (SDL_RenderClear(renderer) < 0) {
+        throw_error(ERROR_TYPE_SDL2);
+        return -1;
+    }
+
     if (player_render(level->player, renderer, level->camera) < 0) {
         return -1;
     }
