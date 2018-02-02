@@ -110,10 +110,7 @@ int player_render(const player_t * player,
             camera,
             renderer,
             player_hitbox(player),
-            color(96.0f / 255.0f,
-                  255.0f / 255.0f,
-                  96.0f / 255.0f,
-                  255.0f / 255.0f)) < 0) {
+            color256(151, 72, 55, 255)) < 0) {
         return -1;
     }
 

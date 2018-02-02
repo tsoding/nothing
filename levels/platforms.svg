@@ -14,7 +14,7 @@
    sodipodi:docname="platforms.svg"
    inkscape:version="0.92.0 r15299">
   <sodipodi:namedview
-     pagecolor="#181818"
+     pagecolor="#9d9060"
      bordercolor="#666666"
      borderopacity="1"
      objecttolerance="10"
@@ -22,8 +22,8 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="956"
-     inkscape:window-height="1023"
+     inkscape:window-width="1916"
+     inkscape:window-height="1041"
      id="namedview13"
      showgrid="false"
      inkscape:snap-bbox="true"
@@ -31,11 +31,11 @@
      inkscape:bbox-nodes="true"
      inkscape:snap-bbox-midpoints="true"
      inkscape:snap-bbox-edge-midpoints="true"
-     inkscape:zoom="4"
-     inkscape:cx="954.55308"
-     inkscape:cy="69.304994"
+     inkscape:zoom="1"
+     inkscape:cx="454.22701"
+     inkscape:cy="193.41513"
      inkscape:window-x="0"
-     inkscape:window-y="36"
+     inkscape:window-y="18"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg16"
      showguides="true"
@@ -54,7 +54,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -86,14 +86,14 @@
      inkscape:label="#rect4-3-3-7-5-3-6-37-3" />
   <rect
      id="rect6"
-     style="fill:#c8b7b7;stroke-width:1"
-     height="50"
+     style="fill:#000000;stroke-width:1"
+     height="1014.819"
      width="1818.5707"
      y="658.81897"
      x="0" />
   <rect
      id="player"
-     style="fill:#00ff00;stroke-width:1"
+     style="fill:#483737;stroke-width:1"
      height="26.414213"
      width="27.01903"
      y="417.59192"
@@ -101,14 +101,14 @@
      inkscape:label="#rect4-6-3" />
   <rect
      id="rect4-3-3"
-     style="fill:#c8b7b7;stroke-width:1"
-     height="683.81897"
-     width="50"
+     style="fill:#000000;stroke-width:0.99999988"
+     height="1673.6379"
+     width="1659.375"
      y="0"
-     x="0" />
+     x="-1609.375" />
   <rect
      id="rect4-3-3-7"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="680.31897"
      width="50"
      y="0"
@@ -123,130 +123,123 @@
      inkscape:label="#rect4-3-3-7-5" />
   <rect
      id="rect4-3-3-7-5-3"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="20"
      width="65.961945"
      y="585.28345"
      x="829.6087" />
   <rect
      id="rect4-3-3-7-5-3-6"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="20"
      width="65.961945"
      y="508.79398"
      x="669.13647" />
   <rect
      id="rect4-3-3-7-5-3-5"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="20"
      width="65.961945"
      y="443.09402"
      x="829.6087" />
   <rect
      id="rect4-3-3-7-5-3-6-3"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="20"
      width="65.961945"
      y="366.60455"
      x="669.13654" />
   <rect
      id="rect4-3-3-7-5-3-56"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="20"
      width="65.961945"
      y="288.23764"
      x="829.6087" />
   <rect
      id="rect4-3-3-7-5-3-6-2"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="20"
      width="65.961945"
      y="211.74818"
      x="669.13654" />
   <rect
      id="rect4-3-3-7-5-3-9"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="20"
      width="65.961945"
      y="129.84573"
      x="829.6087" />
   <rect
      id="rect4-3-3-7-5-3-6-1"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="20"
      width="65.961945"
      y="53.356262"
      x="669.13654" />
   <rect
      id="rect4-3-3-7-5-3-2"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="20"
      width="65.961945"
      y="585.78259"
      x="945.57068" />
   <rect
      id="rect4-3-3-7-5-3-6-37"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="20"
      width="65.961945"
      y="509.29309"
      x="1088.0984" />
   <rect
      id="rect4-3-3-7-5-3-5-5"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="20"
      width="65.961945"
      y="443.59314"
      x="945.57068" />
   <rect
      id="rect4-3-3-7-5-3-6-3-9"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="20"
      width="65.961945"
      y="367.1037"
      x="1088.0985" />
   <rect
      id="rect4-3-3-7-5-3-56-2"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="20"
      width="65.961945"
      y="288.73676"
      x="945.57068" />
   <rect
      id="rect4-3-3-7-5-3-6-2-2"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="20"
      width="65.961945"
      y="212.24731"
      x="1088.0985" />
   <rect
      id="rect4-3-3-7-5-3-9-8"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="20"
      width="65.961945"
      y="130.34485"
      x="945.57068" />
   <rect
      id="rect4-3-3-7-5-3-6-1-9"
-     style="fill:#c8b7b7;stroke-width:1"
+     style="fill:#000000;stroke-width:1"
      height="20"
      width="65.961945"
      y="53.855385"
      x="1088.0985" />
   <rect
      id="rect4-3-3-7-7"
-     style="fill:#c8b7b7;stroke-width:0.99999994"
-     height="1815.1898"
-     width="50"
+     style="fill:#000000;stroke-width:1"
+     height="2805.0088"
+     width="1356"
      y="-1131.3708"
-     x="1768.5707" />
-  <rect
-     id="rect6-3"
-     style="fill:#c8b7b7;stroke-width:1"
-     height="50"
-     width="1843.5708"
-     y="0"
-     x="-1818.5708" />
+     x="1768.5708" />
   <rect
      id="goal3"
      style="fill:#ffdd55;stroke-width:1"
