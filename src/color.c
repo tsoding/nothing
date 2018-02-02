@@ -14,6 +14,15 @@ color_t color(float r, float g, float b, float a)
     return result;
 }
 
+color_t color256(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+{
+    return color(
+        (float) r / 255.0f,
+        (float) g / 255.0f,
+        (float) b / 255.0f,
+        (float) a / 255.0f);
+}
+
 SDL_Color color_for_sdl(color_t color)
 {
     const SDL_Color result = {

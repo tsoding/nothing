@@ -8,8 +8,8 @@
 #include "./point.h"
 #include "./error.h"
 
-#define PLAYER_WIDTH 50.0f
-#define PLAYER_HEIGHT 50.0f
+#define PLAYER_WIDTH 25.0f
+#define PLAYER_HEIGHT 25.0f
 #define PLAYER_SPEED 500.0f
 #define PLAYER_JUMP 550.0f
 #define PLAYER_GRAVITY 1500.0f
@@ -110,10 +110,7 @@ int player_render(const player_t * player,
             camera,
             renderer,
             player_hitbox(player),
-            color(96.0f / 255.0f,
-                  255.0f / 255.0f,
-                  96.0f / 255.0f,
-                  255.0f / 255.0f)) < 0) {
+            color(0.0f, 0.0f, 0.0f, 1.0f)) < 0) {
         return -1;
     }
 

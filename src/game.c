@@ -77,7 +77,7 @@ int game_render(const game_t *game, SDL_Renderer *renderer)
         return 0;
     }
 
-    if (SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255) < 0) {
+    if (SDL_SetRenderDrawColor(renderer, 157, 144, 96, 255) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
