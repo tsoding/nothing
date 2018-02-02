@@ -16,6 +16,7 @@ struct level_t
     platforms_t *platforms;
     camera_t *camera;
     goals_t *goals;
+    color_t background_color;
 };
 
 level_t *create_level_from_file(const char *file_name)
@@ -38,6 +39,13 @@ level_t *create_level_from_file(const char *file_name)
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
+
+    char color[7];
+    if (fscanf(level_file, "%6s", color) == EOF) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+    level->background_color = color_from_hexstr(color);
 
     level->player = PUSH_LT(lt, create_player_from_stream(level_file), destroy_player);
     if (level->player == NULL) {
@@ -77,7 +85,13 @@ int level_render(const level_t *level, SDL_Renderer *renderer)
     assert(level);
     assert(renderer);
 
-    if (SDL_SetRenderDrawColor(renderer, 157, 144, 96, 255) < 0) {
+    SDL_Color sdl_background_color = color_for_sdl(level->background_color);
+
+    if (SDL_SetRenderDrawColor(renderer,
+                               sdl_background_color.r,
+                               sdl_background_color.g,
+                               sdl_background_color.b,
+                               sdl_background_color.a) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
@@ -179,11 +193,20 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
         return -1;
     }
 
+    /* TODO: duplicate code in create_level_from_file and level_reload_preserve_player */
+
     FILE *level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose);
     if (level_file == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, -1);
     }
+
+    char color[7];
+    if (fscanf(level_file, "%6s", color) == EOF) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, -1);
+    }
+    level->background_color = color_from_hexstr(color);
 
     player_t *skipped_player = create_player_from_stream(level_file);
     if (skipped_player == NULL) {

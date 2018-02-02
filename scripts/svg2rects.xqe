@@ -16,7 +16,10 @@ let $goals := for $rect in $rects where matches($rect/@id, "goal.*") return (
     $goal_region[1]/@height
   )
 )
+let $background := for $rect in $rects where $rect/@id = "background"
+return replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
 return (
+  $background,
   for $rect in $player
   return concat($rect/@x, " ", $rect/@y),
   count($platforms),

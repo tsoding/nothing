@@ -1,3 +1,4 @@
+#include <string.h>
 #include <SDL2/SDL.h>
 
 #include "./color.h"
@@ -21,6 +22,41 @@ color_t color256(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
         (float) g / 255.0f,
         (float) b / 255.0f,
         (float) a / 255.0f);
+}
+
+static Uint8 hex2dec_digit(char c)
+{
+    if (c >= '0' && c <= '9') {
+        return (Uint8) (c - '0');
+    }
+
+    if (c >= 'A' && c <= 'F') {
+        return (Uint8) (10 + c - 'A');
+    }
+
+    if (c >= 'a' && c <= 'f') {
+        return (Uint8) (10 + c - 'a');
+    }
+
+    return 0;
+}
+
+static Uint8 parse_color_component(const char *component)
+{
+    return (Uint8) (hex2dec_digit(component[0]) * 16 + hex2dec_digit(component[1]));
+}
+
+color_t color_from_hexstr(const char *hexstr)
+{
+    if (strlen(hexstr) != 6) {
+        return color(0.0f, 0.0f, 0.0f, 1.0f);
+    }
+
+    return color256(
+        parse_color_component(hexstr),
+        parse_color_component(hexstr + 2),
+        parse_color_component(hexstr + 4),
+        255);
 }
 
 SDL_Color color_for_sdl(color_t color)
