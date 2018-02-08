@@ -19,8 +19,6 @@ void player_update(player_t * player,
                    const platforms_t *platforms,
                    Uint32 delta_time);
 
-rect_t player_hitbox(const player_t *player);
-
 void player_move_left(player_t *player);
 void player_move_right(player_t *player);
 void player_stop(player_t *player);
