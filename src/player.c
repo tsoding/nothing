@@ -18,7 +18,7 @@
 struct player_t {
     lt_t *lt;
     rigid_rect_t *player_body;
-    /* TODO: fix player jump_count */
+    /* TODO(#105): fix player jump_count */
     int jump_count;
 };
 
