@@ -193,7 +193,7 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
         return -1;
     }
 
-    /* TODO: duplicate code in create_level_from_file and level_reload_preserve_player */
+    /* TODO(#104): duplicate code in create_level_from_file and level_reload_preserve_player */
 
     FILE *level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose);
     if (level_file == NULL) {

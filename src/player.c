@@ -3,71 +3,51 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
+#include "./lt.h"
 #include "./player.h"
 #include "./platforms.h"
 #include "./point.h"
 #include "./error.h"
+#include "./rigid_rect.h"
 
 #define PLAYER_WIDTH 25.0f
 #define PLAYER_HEIGHT 25.0f
 #define PLAYER_SPEED 500.0f
 #define PLAYER_JUMP 550.0f
-#define PLAYER_GRAVITY 1500.0f
 
 struct player_t {
-    vec_t position;
-    vec_t velocity;
-    vec_t movement;
-    float height;
-    float width;
+    lt_t *lt;
+    rigid_rect_t *player_body;
+    /* TODO(#105): fix player jump_count */
     int jump_count;
-    color_t color;
 };
-
-static const vec_t opposing_rect_side_forces[RECT_SIDE_N] = {
-    { .x = 1.0f,  .y =  0.0f  },  /* RECT_SIDE_LEFT = 0, */
-    { .x = -1.0f, .y =  0.0f  },  /* RECT_SIDE_RIGHT, */
-    { .x = 0.0f,  .y =  1.0f, },  /* RECT_SIDE_TOP, */
-    { .x = 0.0f,  .y = -1.0f, }   /* RECT_SIDE_BOTTOM, */
-};
-
-static vec_t opposing_force_by_sides(int sides[RECT_SIDE_N])
-{
-    vec_t opposing_force = {
-        .x = 0.0f,
-        .y = 0.0f
-    };
-
-    for (rect_side_t side = 0; side < RECT_SIDE_N; ++side) {
-        if (sides[side]) {
-            vec_add(
-                &opposing_force,
-                opposing_rect_side_forces[side]);
-        }
-    }
-
-    return opposing_force;
-}
 
 player_t *create_player(float x, float y, color_t color)
 {
-    player_t *player = malloc(sizeof(player_t));
+    lt_t *lt = create_lt();
 
-    if (player == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
+    if (lt == NULL) {
         return NULL;
     }
 
-    player->position.x = x;
-    player->position.y = y;
-    player->velocity.x = 0.0f;
-    player->velocity.y = 0.0f;
-    player->movement.x = 0.0f;
-    player->movement.y = 0.0f;
-    player->height = PLAYER_HEIGHT;
-    player->width = PLAYER_WIDTH;
-    player->jump_count = 2;
-    player->color = color;
+    player_t *player = PUSH_LT(lt, malloc(sizeof(player_t)), free);
+    if (player == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
+    player->player_body = PUSH_LT(
+        lt,
+        create_rigid_rect(
+            rect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT),
+            color),
+        destroy_rigid_rect);
+    if (player->player_body == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    player->lt = lt;
+    player->jump_count = 0;
 
     return player;
 }
@@ -87,18 +67,7 @@ player_t *create_player_from_stream(FILE *stream)
 
 void destroy_player(player_t * player)
 {
-    free(player);
-}
-
-rect_t player_hitbox(const player_t *player)
-{
-    assert(player);
-
-    return rect(
-        player->position.x - player->width / 2,
-        player->position.y - player->height,
-        player->width,
-        player->height);
+    RETURN_LT0(player->lt);
 }
 
 int player_render(const player_t * player,
@@ -108,16 +77,7 @@ int player_render(const player_t * player,
     assert(player);
     assert(renderer);
     assert(camera);
-
-    if (camera_fill_rect(
-            camera,
-            renderer,
-            player_hitbox(player),
-            player->color) < 0) {
-        return -1;
-    }
-
-    return 0;
+    return rigid_rect_render(player->player_body, renderer, camera);
 }
 
 void player_update(player_t *player,
@@ -126,85 +86,33 @@ void player_update(player_t *player,
 {
     assert(player);
     assert(platforms);
-
-    float d = (float) delta_time / 1000.0f;
-
-    player->velocity.y += PLAYER_GRAVITY * d;
-    player->position = vec_sum(
-        player->position,
-        vec_scala_mult(
-            vec_sum(
-                player->velocity,
-                player->movement),
-            d));
-    player->position.y = fmodf(player->position.y, 800.0f);
-
-    int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
-
-    platforms_rect_object_collide(platforms, player_hitbox(player), sides);
-    vec_t opposing_force = opposing_force_by_sides(sides);
-
-    if (sides[RECT_SIDE_BOTTOM]) {
-        player->jump_count = 2;
-    }
-
-    for (int i = 0; i < 1000 && vec_length(opposing_force) > 1e-6; ++i) {
-        player->position = vec_sum(
-            player->position,
-            vec_scala_mult(
-                opposing_force,
-                1e-2f));
-
-        if (fabs(opposing_force.x) > 1e-6 && (opposing_force.x < 0.0f) != ((player->velocity.x + player->movement.x) < 0.0f)) {
-            player->velocity.x = 0.0f;
-            player->movement.x = 0.0f;
-        }
-
-        if (fabs(opposing_force.y) > 1e-6 && (opposing_force.y < 0.0f) != ((player->velocity.y + player->movement.y) < 0.0f)) {
-            player->velocity.y = 0.0f;
-            player->movement.y = 0.0f;
-        }
-
-        platforms_rect_object_collide(
-            platforms,
-            player_hitbox(player),
-            sides);
-        opposing_force = opposing_force_by_sides(sides);
-    }
+    rigid_rect_update(player->player_body, platforms, delta_time);
 }
 
 void player_move_left(player_t *player)
 {
     assert(player);
-
-    player->movement.x = -PLAYER_SPEED;
-    player->movement.y = 0.0f;
+    rigid_rect_move(player->player_body, vec(-PLAYER_SPEED, 0.0f));
 }
 
 void player_move_right(player_t *player)
 {
     assert(player);
 
-    player->movement.x = PLAYER_SPEED;
-    player->movement.y = 0.0f;
+    rigid_rect_move(player->player_body, vec(PLAYER_SPEED, 0.0f));
 }
 
 void player_stop(player_t *player)
 {
     assert(player);
 
-    player->movement.x = 0.0f;
-    player->movement.y = 0.0f;
+    rigid_rect_move(player->player_body, vec(0.0f, 0.0f));
 }
 
 void player_jump(player_t *player)
 {
     assert(player);
-
-    if (player->jump_count > 0) {
-        player->velocity.y = -PLAYER_JUMP;
-        --player->jump_count;
-    }
+    rigid_rect_jump(player->player_body, PLAYER_JUMP);
 }
 
 void player_focus_camera(player_t *player,
@@ -213,11 +121,13 @@ void player_focus_camera(player_t *player,
     assert(player);
     assert(camera);
 
+    const rect_t player_hitbox = rigid_rect_hitbox(player->player_body);
+
     camera_center_at(
         camera,
         vec_sum(
-            player->position,
-            vec(0.0f, -player->height * 0.5f)));
+            vec(player_hitbox.x, player_hitbox.y),
+            vec(0.0f, -player_hitbox.h * 0.5f)));
 }
 
 void player_hide_goals(const player_t *player,
@@ -225,5 +135,5 @@ void player_hide_goals(const player_t *player,
 {
     assert(player);
     assert(goals);
-    goals_hide(goals, player_hitbox(player));
+    goals_hide(goals, rigid_rect_hitbox(player->player_body));
 }
