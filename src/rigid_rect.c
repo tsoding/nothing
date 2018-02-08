@@ -15,6 +15,7 @@ struct rigid_rect_t {
     vec_t movement;
     vec_t size;
     color_t color;
+    int touches_ground;
 };
 
 static const vec_t opposing_rect_side_forces[RECT_SIDE_N] = {
@@ -62,6 +63,7 @@ rigid_rect_t *create_rigid_rect(rect_t rect, color_t color)
     rigid_rect->movement = vec(0.0f, 0.0f);
     rigid_rect->size = vec(rect.w, rect.h);
     rigid_rect->color = color;
+    rigid_rect->touches_ground = 0;
 
     return rigid_rect;
 }
@@ -90,6 +92,8 @@ int rigid_rect_update(rigid_rect_t * rigid_rect,
     assert(rigid_rect);
     assert(platforms);
 
+    rigid_rect->touches_ground = 0;
+
     float d = (float) delta_time / 1000.0f;
 
     rigid_rect->velocity.y += RIGID_RECT_GRAVITY * d;
@@ -104,6 +108,11 @@ int rigid_rect_update(rigid_rect_t * rigid_rect,
     int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
 
     platforms_rect_object_collide(platforms, rigid_rect_hitbox(rigid_rect), sides);
+
+    if (sides[RECT_SIDE_BOTTOM]) {
+        rigid_rect->touches_ground = 1;
+    }
+
     vec_t opposing_force = opposing_force_by_sides(sides);
 
     for (int i = 0; i < 1000 && vec_length(opposing_force) > 1e-6; ++i) {
@@ -150,4 +159,9 @@ void rigid_rect_jump(rigid_rect_t *rigid_rect,
                      float force)
 {
     rigid_rect->velocity.y = -force;
+}
+
+int rigid_rect_touches_ground(const rigid_rect_t *rigid_rect)
+{
+    return rigid_rect->touches_ground;
 }

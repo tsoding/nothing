@@ -18,7 +18,6 @@
 struct player_t {
     lt_t *lt;
     rigid_rect_t *player_body;
-    /* TODO(#105): fix player jump_count */
     int jump_count;
 };
 
@@ -86,7 +85,12 @@ void player_update(player_t *player,
 {
     assert(player);
     assert(platforms);
+
     rigid_rect_update(player->player_body, platforms, delta_time);
+
+    if (rigid_rect_touches_ground(player->player_body)) {
+        player->jump_count = 0;
+    }
 }
 
 void player_move_left(player_t *player)
@@ -112,7 +116,10 @@ void player_stop(player_t *player)
 void player_jump(player_t *player)
 {
     assert(player);
-    rigid_rect_jump(player->player_body, PLAYER_JUMP);
+    if (player->jump_count < 2) {
+        rigid_rect_jump(player->player_body, PLAYER_JUMP);
+        player->jump_count++;
+    }
 }
 
 void player_focus_camera(player_t *player,
