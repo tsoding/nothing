@@ -32,7 +32,7 @@ struct player_t {
     int jump_count;
     color_t color;
 
-    /* TODO: introduce checkpoints */
+    /* TODO(#110): introduce checkpoints */
     vec_t checkpoint;
 };
 
