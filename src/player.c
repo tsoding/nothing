@@ -31,7 +31,8 @@ struct player_t {
 
     int jump_count;
     color_t color;
-    vec_t initial_position;
+
+    vec_t resurrection_position;
 };
 
 player_t *create_player(float x, float y, color_t color)
@@ -74,7 +75,7 @@ player_t *create_player(float x, float y, color_t color)
     player->lt = lt;
     player->jump_count = 0;
     player->color = color;
-    player->initial_position = vec(x, y);
+    player->resurrection_position = vec(x, y);
 
     return player;
 }
@@ -156,7 +157,7 @@ void player_update(player_t *player,
                 player->alive_body,
                 create_rigid_rect(
                     rect_from_vecs(
-                        player->initial_position,
+                        player->resurrection_position,
                         vec(PLAYER_WIDTH, PLAYER_HEIGHT)),
                     player->color));
             player->state = PLAYER_STATE_ALIVE;
