@@ -32,6 +32,7 @@ struct player_t {
     int jump_count;
     color_t color;
 
+    /* TODO: introduce checkpoints */
     vec_t resurrection_position;
 };
 
