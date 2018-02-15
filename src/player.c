@@ -15,8 +15,14 @@
 #define PLAYER_SPEED 500.0f
 #define PLAYER_JUMP 550.0f
 
+typedef enum player_state_t {
+    PLAYER_STATE_ALIVE = 0,
+    PLAYER_STATE_DYING
+} player_state_t;
+
 struct player_t {
     lt_t *lt;
+    player_state_t state;
     rigid_rect_t *player_body;
     int jump_count;
 };
@@ -35,6 +41,7 @@ player_t *create_player(float x, float y, color_t color)
         RETURN_LT(lt, NULL);
     }
 
+    player->state = PLAYER_STATE_ALIVE;
     player->player_body = PUSH_LT(
         lt,
         create_rigid_rect(
