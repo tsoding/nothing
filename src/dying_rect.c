@@ -47,7 +47,7 @@ void destroy_dying_rect(dying_rect_t *dying_rect)
     RETURN_LT0(dying_rect->lt);
 }
 
-/* TODO: Dying Rect animation is too boring */
+/* TODO(#109): Dying Rect animation is too boring */
 int dying_rect_render(const dying_rect_t *dying_rect,
                       SDL_Renderer *renderer,
                       const camera_t *camera)
