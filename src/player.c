@@ -33,7 +33,7 @@ struct player_t {
     color_t color;
 
     /* TODO: introduce checkpoints */
-    vec_t resurrection_position;
+    vec_t checkpoint;
 };
 
 player_t *create_player(float x, float y, color_t color)
@@ -76,7 +76,7 @@ player_t *create_player(float x, float y, color_t color)
     player->lt = lt;
     player->jump_count = 0;
     player->color = color;
-    player->resurrection_position = vec(x, y);
+    player->checkpoint = vec(x, y);
 
     return player;
 }
@@ -158,7 +158,7 @@ void player_update(player_t *player,
                 player->alive_body,
                 create_rigid_rect(
                     rect_from_vecs(
-                        player->resurrection_position,
+                        player->checkpoint,
                         vec(PLAYER_WIDTH, PLAYER_HEIGHT)),
                     player->color));
             player->state = PLAYER_STATE_ALIVE;
