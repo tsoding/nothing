@@ -78,6 +78,15 @@ int lava_render(const lava_t   *lava,
     assert(renderer);
     assert(camera);
 
+    for (size_t i = 0; i < lava->rects_count; ++i) {
+        if (camera_fill_rect(camera,
+                             renderer,
+                             lava->rects[i],
+                             lava->colors[i]) < 0) {
+            return -1;
+        }
+    }
+
     return 0;
 }
 
