@@ -138,14 +138,7 @@ void player_update(player_t *player,
         const rect_t hitbox = rigid_rect_hitbox(player->alive_body);
 
         if (hitbox.y > 1000.0f) {
-            player->dying_body = RESET_LT(
-                player->lt,
-                player->dying_body,
-                create_dying_rect(
-                    hitbox,
-                    player->color,
-                    PLAYER_DEATH_DURATION));
-            player->state = PLAYER_STATE_DYING;
+            player_die(player);
         }
     } break;
 
@@ -198,6 +191,22 @@ void player_jump(player_t *player)
     }
 }
 
+void player_die(player_t *player)
+{
+    assert(player);
+
+    if (player->state == PLAYER_STATE_ALIVE) {
+        player->dying_body = RESET_LT(
+            player->lt,
+            player->dying_body,
+            create_dying_rect(
+                rigid_rect_hitbox(player->alive_body),
+                player->color,
+                PLAYER_DEATH_DURATION));
+        player->state = PLAYER_STATE_DYING;
+    }
+}
+
 void player_focus_camera(player_t *player,
                          camera_t *camera)
 {
@@ -219,4 +228,12 @@ void player_hide_goals(const player_t *player,
     assert(player);
     assert(goals);
     goals_hide(goals, rigid_rect_hitbox(player->alive_body));
+}
+
+void player_die_from_lava(player_t *player,
+                          const lava_t *lava)
+{
+    if (lava_overlaps_rect(lava, rigid_rect_hitbox(player->alive_body))) {
+        player_die(player);
+    }
 }

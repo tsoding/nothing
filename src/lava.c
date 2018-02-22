@@ -98,11 +98,16 @@ int lava_update(lava_t *lava, Uint32 delta_time)
     return 0;
 }
 
-int lava_contans_rect(const lava_t *lava,
+int lava_overlaps_rect(const lava_t *lava,
                       rect_t rect)
 {
     assert(lava);
-    (void) rect;
+
+    for (size_t i = 0; i < lava->rects_count; ++i) {
+        if (rects_overlap(rect, lava->rects[i])) {
+            return 1;
+        }
+    }
 
     return 0;
 }
