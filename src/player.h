@@ -2,6 +2,7 @@
 #define PLAYER_H_
 
 #include "./goals.h"
+#include "./lava.h"
 #include "./camera.h"
 
 typedef struct player_t player_t;
@@ -23,10 +24,13 @@ void player_move_left(player_t *player);
 void player_move_right(player_t *player);
 void player_stop(player_t *player);
 void player_jump(player_t *player);
+void player_die(player_t *player);
 
 void player_focus_camera(player_t *player,
                          camera_t *camera);
 void player_hide_goals(const player_t *player,
                        goals_t *goal);
+void player_die_from_lava(player_t *player,
+                          const lava_t *lava);
 
 #endif  // PLAYER_H_

@@ -29,6 +29,14 @@ let $goals := for $rect in $rects where matches($rect/@id, "goal.*") return (
     replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
   )
 )
+let $lavas := for $rect in $rects where matches($rect/@id, "lava.*")
+  return concat (
+    $rect/@x, " ",
+    $rect/@y, " ",
+    $rect/@width, " ",
+    $rect/@height, " ",
+    replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
+  )
 let $background := for $rect in $rects where $rect/@id = "background"
 return replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
 return (
@@ -37,5 +45,7 @@ return (
   count($platforms),
   $platforms,
   count($goals),
-  $goals
+  $goals,
+  count($lavas),
+  $lavas
 )

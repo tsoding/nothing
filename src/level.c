@@ -8,6 +8,7 @@
 #include "./camera.h"
 #include "./error.h"
 #include "./goals.h"
+#include "./lava.h"
 
 struct level_t
 {
@@ -16,6 +17,7 @@ struct level_t
     platforms_t *platforms;
     camera_t *camera;
     goals_t *goals;
+    lava_t *lava;
     color_t background_color;
 };
 
@@ -62,6 +64,11 @@ level_t *create_level_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
 
+    level->lava = PUSH_LT(lt, create_lava_from_stream(level_file), destroy_lava);
+    if (level->lava == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->camera = PUSH_LT(lt, create_camera(vec(0.0f, 0.0f)), destroy_camera);
     if (level->camera == NULL) {
         RETURN_LT(lt, NULL);
@@ -105,6 +112,10 @@ int level_render(const level_t *level, SDL_Renderer *renderer)
         return -1;
     }
 
+    if (lava_render(level->lava, renderer, level->camera) < 0) {
+        return -1;
+    }
+
     if (platforms_render(level->platforms, renderer, level->camera) < 0) {
         return -1;
     }
@@ -122,9 +133,12 @@ int level_update(level_t *level, Uint32 delta_time)
     assert(delta_time > 0);
 
     player_update(level->player, level->platforms, delta_time);
-    goals_update(level->goals, delta_time);
     player_focus_camera(level->player, level->camera);
     player_hide_goals(level->player, level->goals);
+    player_die_from_lava(level->player, level->lava);
+
+    goals_update(level->goals, delta_time);
+    lava_update(level->lava, delta_time);
 
     return 0;
 }
@@ -188,14 +202,14 @@ void level_toggle_pause_mode(level_t *level)
 
 int level_reload_preserve_player(level_t *level, const char *file_name)
 {
-    lt_t *lt = create_lt();
+    lt_t * const lt = create_lt();
     if (lt == NULL) {
         return -1;
     }
 
     /* TODO(#104): duplicate code in create_level_from_file and level_reload_preserve_player */
 
-    FILE *level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose);
+    FILE * const level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose);
     if (level_file == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, -1);
@@ -208,23 +222,28 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
     }
     level->background_color = color_from_hexstr(color);
 
-    player_t *skipped_player = create_player_from_stream(level_file);
+    player_t * const skipped_player = create_player_from_stream(level_file);
     if (skipped_player == NULL) {
         RETURN_LT(lt, -1);
     }
     destroy_player(skipped_player);
 
-    platforms_t *platforms = create_platforms_from_stream(level_file);
+    platforms_t * const platforms = create_platforms_from_stream(level_file);
     if (platforms == NULL) {
         RETURN_LT(lt, -1);
     }
     level->platforms = RESET_LT(level->lt, level->platforms, platforms);
 
-    goals_t *goals = create_goals_from_stream(level_file);
+    goals_t * const goals = create_goals_from_stream(level_file);
     if (goals == NULL) {
         RETURN_LT(lt, -1);
     }
     level->goals = RESET_LT(level->lt, level->goals, goals);
+
+    lava_t * const lava = create_lava_from_stream(level_file);
+    if (lava == NULL) {
+        RETURN_LT(lt, -1);
+    }
 
     RETURN_LT(lt, 0);
 }
