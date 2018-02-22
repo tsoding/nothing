@@ -31,9 +31,9 @@
      inkscape:bbox-nodes="true"
      inkscape:snap-bbox-midpoints="true"
      inkscape:snap-bbox-edge-midpoints="true"
-     inkscape:zoom="1.4142136"
-     inkscape:cx="517.35545"
-     inkscape:cy="176.54988"
+     inkscape:zoom="2"
+     inkscape:cx="470.2552"
+     inkscape:cy="72.425709"
      inkscape:window-x="0"
      inkscape:window-y="18"
      inkscape:window-maximized="0"
@@ -93,6 +93,14 @@
      y="-465.6813"
      x="920.57068"
      inkscape:label="#rect4-3-3-7-5-3-6-37-3" />
+  <rect
+     id="lava1"
+     style="fill:#ff8080;fill-opacity:0.69767438;stroke-width:1"
+     height="38.384777"
+     width="105.55992"
+     y="628.4342"
+     x="413.91043"
+     inkscape:label="#lava1" />
   <rect
      id="rect6"
      style="fill:#657b83;fill-opacity:1;stroke-width:1"
@@ -271,12 +279,4 @@
      width="65.961945"
      y="617.80682"
      x="508.66281" />
-  <rect
-     id="lava1"
-     style="fill:#ff8080;fill-opacity:0.69767438;stroke-width:1"
-     height="38.384777"
-     width="105.55992"
-     y="630.4342"
-     x="413.91043"
-     inkscape:label="#lava1" />
 </svg>
