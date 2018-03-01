@@ -5,6 +5,7 @@ typedef enum error_type_t {
     ERROR_TYPE_OK = 0,
     ERROR_TYPE_LIBC,
     ERROR_TYPE_SDL2,
+    ERROR_TYPE_SDL2_MIXER,
 
     ERROR_TYPE_N
 } error_type_t;

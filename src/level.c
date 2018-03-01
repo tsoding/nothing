@@ -10,6 +10,8 @@
 #include "./goals.h"
 #include "./lava.h"
 
+/* TODO: Level doesn't play the Nothing and Something sounds when the goal get into view */
+
 struct level_t
 {
     lt_t *lt;
@@ -19,9 +21,13 @@ struct level_t
     goals_t *goals;
     lava_t *lava;
     color_t background_color;
+    Mix_Music *lended_sound_nothing;
+    Mix_Music *lended_sound_something;
 };
 
-level_t *create_level_from_file(const char *file_name)
+level_t *create_level_from_file(const char *file_name,
+                                Mix_Music *lended_sound_nothing,
+                                Mix_Music *lended_sound_something)
 {
     assert(file_name);
 
@@ -75,6 +81,8 @@ level_t *create_level_from_file(const char *file_name)
     }
 
     level->lt = lt;
+    level->lended_sound_something = lended_sound_something;
+    level->lended_sound_nothing = lended_sound_nothing;
 
     fclose(RELEASE_LT(lt, level_file));
 
