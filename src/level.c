@@ -10,7 +10,7 @@
 #include "./goals.h"
 #include "./lava.h"
 
-/* TODO: Level doesn't play the Nothing and Something sounds when the goal get into view */
+/* TODO(#118): Level doesn't play the Nothing and Something sounds when the goal get into view */
 
 struct level_t
 {
