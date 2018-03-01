@@ -11,7 +11,10 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 find_package(SDL2 REQUIRED)
 
+find_package(SDL2_mixer REQUIRED)
+
 include_directories(${SDL2_INCLUDE_DIR})
+include_directories(${SDL2_MIXER_INCLUDE_DIR})
 
 set(SOURCE_FILES
   src/main.c
@@ -56,7 +59,7 @@ set(HEADER_FILES
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
-target_link_libraries(nothing ${SDL2_LIBRARY})
+target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
 
 if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "CLANG"))
   set(CMAKE_C_FLAGS

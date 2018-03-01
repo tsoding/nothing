@@ -4,6 +4,7 @@ with import <nixpkgs> {}; {
         buildInputs = [ stdenv
                         gcc
                         SDL2
+                        SDL2_mixer
                         mesa
                         pkgconfig
                         cmake

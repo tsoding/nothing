@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
 #include "./error.h"
 
@@ -39,6 +40,10 @@ void print_error_msg(error_type_t error_type, const char *user_prefix)
 
     case ERROR_TYPE_SDL2:
         fprintf(stderr, "%s: %s", user_prefix, SDL_GetError());
+        break;
+
+    case ERROR_TYPE_SDL2_MIXER:
+        fprintf(stderr, "%s: %s", user_prefix, Mix_GetError());
         break;
 
     default: {}

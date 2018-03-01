@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
 #include "./player.h"
 #include "./platforms.h"
@@ -17,6 +18,13 @@ static void SDL_Quit_lt(void* ignored)
 {
     (void) ignored;
     SDL_Quit();
+}
+
+/* LT module adapter for Mix_Quit */
+static void Mix_Quit_lt(void* ignored)
+{
+    (void) ignored;
+    Mix_Quit();
 }
 
 static void print_usage(FILE *stream)
@@ -38,6 +46,17 @@ int main(int argc, char *argv[])
         RETURN_LT(lt, -1);
     }
     PUSH_LT(lt, 42, SDL_Quit_lt);
+
+    if ((Mix_Init(MIX_INIT_MP3) & MIX_INIT_MP3) != MIX_INIT_MP3) {
+        print_error_msg(ERROR_TYPE_SDL2_MIXER, "Could not initialize SDL_mixer");
+        RETURN_LT(lt, -1);
+    }
+    PUSH_LT(lt, 42, Mix_Quit_lt);
+
+    if (Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640) < 0) {
+        print_error_msg(ERROR_TYPE_SDL2_MIXER, "Could not initialize SDL_mixer twice");
+        RETURN_LT(lt, -1);
+    }
 
     SDL_Window *const window = PUSH_LT(
         lt,
