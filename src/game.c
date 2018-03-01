@@ -43,7 +43,7 @@ game_t *create_game(const char *level_file_path)
         RETURN_LT(lt, NULL);
     }
 
-    /* TODO: paths to sounds are hardcoded */
+    /* TODO(#117): paths to sounds are hardcoded */
     game->sound_something = PUSH_LT(lt, Mix_LoadMUS("./sounds/something.mp3"), Mix_FreeMusic);
     if (game->sound_something == NULL) {
         throw_error(ERROR_TYPE_SDL2_MIXER);
