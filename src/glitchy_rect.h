@@ -9,6 +9,7 @@ typedef struct SDL_Renderer SDL_Renderer;
 typedef struct camera_t camera_t;
 
 glitchy_rect_t *create_glitchy_rect(rect_t rect, color_t color);
+glitchy_rect_t *create_glitchy_rect_from_stream(FILE *stream);
 void destroy_glitchy_rect(glitchy_rect_t *glitchy_rect);
 
 int glitchy_rect_render(const glitchy_rect_t *glitchy_rect,
