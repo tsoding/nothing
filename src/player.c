@@ -15,7 +15,7 @@
 #define PLAYER_HEIGHT 25.0f
 #define PLAYER_SPEED 500.0f
 #define PLAYER_JUMP 550.0f
-#define PLAYER_DEATH_DURATION 500
+#define PLAYER_DEATH_DURATION 250
 
 typedef enum player_state_t {
     PLAYER_STATE_ALIVE = 0,

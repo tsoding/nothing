@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 
@@ -34,6 +35,8 @@ static void print_usage(FILE *stream)
 
 int main(int argc, char *argv[])
 {
+    srand((unsigned int) time(NULL));
+
     lt_t *const lt = create_lt();
 
     if (argc < 2) {

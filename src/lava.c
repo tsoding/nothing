@@ -81,6 +81,12 @@ int lava_update(lava_t *lava, Uint32 delta_time)
     assert(lava);
     assert(delta_time);
 
+    for (size_t i = 0; i < lava->rects_count; ++i) {
+        if (glitchy_rect_update(lava->rects[i], delta_time) < 0) {
+            return -1;
+        }
+    }
+
     return 0;
 }
 
