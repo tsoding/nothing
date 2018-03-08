@@ -17,4 +17,7 @@ int glitchy_rect_render(const glitchy_rect_t *glitchy_rect,
 int glitchy_rect_update(glitchy_rect_t *glitchy_rect,
                         Uint32 delta_time);
 
+int glitchy_rect_overlaps(const glitchy_rect_t *glitchy_rect,
+                          rect_t rect);
+
 #endif  // GLITCHY_RECT_H_

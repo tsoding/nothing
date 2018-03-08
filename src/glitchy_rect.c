@@ -60,3 +60,9 @@ int glitchy_rect_update(glitchy_rect_t *glitchy_rect,
 
     return 0;
 }
+
+int glitchy_rect_overlaps(const glitchy_rect_t *glitchy_rect,
+                          rect_t rect)
+{
+    return rects_overlap(glitchy_rect->rect, rect);
+}
