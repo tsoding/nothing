@@ -6,12 +6,12 @@
 #include "./lava.h"
 #include "./error.h"
 #include "./color.h"
-#include "./glitchy_rect.h"
+#include "./wavy_rect.h"
 
 struct lava_t {
     lt_t *lt;
     size_t rects_count;
-    glitchy_rect_t **rects;
+    wavy_rect_t **rects;
 };
 
 lava_t *create_lava_from_stream(FILE *stream)
@@ -34,14 +34,14 @@ lava_t *create_lava_from_stream(FILE *stream)
         RETURN_LT(lt, NULL);
     }
 
-    lava->rects = PUSH_LT(lt, malloc(sizeof(glitchy_rect_t*) * lava->rects_count), free);
+    lava->rects = PUSH_LT(lt, malloc(sizeof(wavy_rect_t*) * lava->rects_count), free);
     if (lava->rects == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
     for (size_t i = 0; i < lava->rects_count; ++i) {
-        lava->rects[i] = PUSH_LT(lt, create_glitchy_rect_from_stream(stream), destroy_glitchy_rect);
+        lava->rects[i] = PUSH_LT(lt, create_wavy_rect_from_stream(stream), destroy_wavy_rect);
         if (lava->rects[i] == NULL) {
             RETURN_LT(lt, NULL);
         }
@@ -68,7 +68,7 @@ int lava_render(const lava_t   *lava,
     assert(camera);
 
     for (size_t i = 0; i < lava->rects_count; ++i) {
-        if (glitchy_rect_render(lava->rects[i], renderer, camera) < 0) {
+        if (wavy_rect_render(lava->rects[i], renderer, camera) < 0) {
             return -1;
         }
     }
@@ -82,7 +82,7 @@ int lava_update(lava_t *lava, Uint32 delta_time)
     assert(delta_time);
 
     for (size_t i = 0; i < lava->rects_count; ++i) {
-        if (glitchy_rect_update(lava->rects[i], delta_time) < 0) {
+        if (wavy_rect_update(lava->rects[i], delta_time) < 0) {
             return -1;
         }
     }
@@ -96,7 +96,7 @@ int lava_overlaps_rect(const lava_t *lava,
     assert(lava);
 
     for (size_t i = 0; i < lava->rects_count; ++i) {
-        if (glitchy_rect_overlaps(lava->rects[i], rect)) {
+        if (wavy_rect_overlaps(lava->rects[i], rect)) {
             return 1;
         }
     }
