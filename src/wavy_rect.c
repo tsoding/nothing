@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <time.h>
 
 #include <SDL2/SDL.h>
 
@@ -9,7 +10,7 @@
 #include "./error.h"
 #include "./pi.h"
 
-#define WAVE_PILLAR_WIDTH 20.0f
+#define WAVE_PILLAR_WIDTH 10.0f
 
 struct wavy_rect_t
 {
@@ -74,22 +75,25 @@ int wavy_rect_render(const wavy_rect_t *wavy_rect,
     assert(renderer);
     assert(camera);
 
+    srand(42);
     for (float wave_scanner = 0;
          wave_scanner < wavy_rect->rect.w;
          wave_scanner += WAVE_PILLAR_WIDTH) {
 
+        const float s = (float) (rand() % 50) * 0.1f;
         if (camera_fill_rect(
                 camera,
                 renderer,
                 rect(
                     wavy_rect->rect.x + wave_scanner,
-                    wavy_rect->rect.y + 5.0f * sinf(wavy_rect->angle + wave_scanner / WAVE_PILLAR_WIDTH),
+                    wavy_rect->rect.y + s * sinf(wavy_rect->angle + wave_scanner / WAVE_PILLAR_WIDTH),
                     WAVE_PILLAR_WIDTH,
                     wavy_rect->rect.h),
                 wavy_rect->color) < 0) {
             return -1;
         }
     }
+    srand((unsigned int) time(NULL));
 
     return 0;
 }
