@@ -7,6 +7,9 @@
 #include "./wavy_rect.h"
 #include "./lt.h"
 #include "./error.h"
+#include "./pi.h"
+
+#define WAVE_PILLAR_WIDTH 20.0f
 
 struct wavy_rect_t
 {
@@ -14,6 +17,7 @@ struct wavy_rect_t
 
     rect_t rect;
     color_t color;
+    float angle;
 };
 
 wavy_rect_t *create_wavy_rect(rect_t rect, color_t color)
@@ -31,6 +35,7 @@ wavy_rect_t *create_wavy_rect(rect_t rect, color_t color)
 
     wavy_rect->rect = rect;
     wavy_rect->color = color;
+    wavy_rect->angle = 0.0f;
     wavy_rect->lt = lt;
 
     return wavy_rect;
@@ -68,17 +73,36 @@ int wavy_rect_render(const wavy_rect_t *wavy_rect,
     assert(wavy_rect);
     assert(renderer);
     assert(camera);
-    return camera_fill_rect(
-        camera,
-        renderer,
-        wavy_rect->rect,
-        wavy_rect->color);
+
+    for (float wave_scanner = 0;
+         wave_scanner < wavy_rect->rect.w;
+         wave_scanner += WAVE_PILLAR_WIDTH) {
+
+        if (camera_fill_rect(
+                camera,
+                renderer,
+                rect(
+                    wavy_rect->rect.x + wave_scanner,
+                    wavy_rect->rect.y + 5.0f * sinf(wavy_rect->angle + wave_scanner / WAVE_PILLAR_WIDTH),
+                    WAVE_PILLAR_WIDTH,
+                    wavy_rect->rect.h),
+                wavy_rect->color) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
 }
+
 int wavy_rect_update(wavy_rect_t *wavy_rect,
                      Uint32 delta_time)
 {
     assert(wavy_rect);
-    (void) delta_time;
+
+    float d = (float) delta_time / 1000.0f;
+
+    wavy_rect->angle = fmodf(wavy_rect->angle + 2.0f * d, 2 * PI);
+
     return 0;
 }
 
@@ -86,6 +110,5 @@ int wavy_rect_overlaps(const wavy_rect_t *wavy_rect,
                        rect_t rect)
 {
     assert(wavy_rect);
-    (void) rect;
-    return 0;
+    return rects_overlap(wavy_rect->rect, rect);
 }
