@@ -35,7 +35,6 @@ set(SOURCE_FILES
   src/rigid_rect.c
   src/dying_rect.c
   src/lava.c
-  src/glitchy_rect.c
   src/wavy_rect.c
 )
 
@@ -58,7 +57,6 @@ set(HEADER_FILES
   src/rigid_rect.h
   src/dying_rect.h
   src/lava.h
-  src/glitchy_rect.h
   src/wavy_rect.h
 )
 
