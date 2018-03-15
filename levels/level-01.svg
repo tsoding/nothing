@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.175"
-     inkscape:cx="5397.8128"
-     inkscape:cy="1787.6289"
+     inkscape:zoom="0.12374369"
+     inkscape:cx="8507.4636"
+     inkscape:cy="1544.6594"
      inkscape:document-units="mm"
      inkscape:current-layer="svg4541"
      showgrid="false"
@@ -35,7 +35,12 @@
      inkscape:window-height="1023"
      inkscape:window-x="0"
      inkscape:window-y="36"
-     inkscape:window-maximized="0" />
+     inkscape:window-maximized="0"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-paths="true"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:snap-bbox-midpoints="true" />
   <metadata
      id="metadata4538">
     <rdf:RDF>
@@ -52,9 +57,17 @@
      style="fill:#fffda5;fill-opacity:1;stroke:none;stroke-width:0.26458332"
      id="background"
      width="3512.4561"
-     height="3062.9087"
+     height="4000.8721"
      x="-938.56219"
-     y="-893.9845" />
+     y="-1831.948" />
+  <rect
+     style="fill:#d35f5f;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+     id="lava4590"
+     width="442.59833"
+     height="151.7827"
+     x="2000.6281"
+     y="-288.25281"
+     inkscape:label="#rect4590" />
   <rect
      style="fill:#ff8080;fill-opacity:1;stroke:none;stroke-width:0.26458332"
      id="player"
@@ -107,10 +120,10 @@
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.26458332"
      id="rect5109-3-5"
-     width="548.61353"
-     height="784.28436"
+     width="996.55725"
+     height="664.13458"
      x="1718.3838"
-     y="-332.5112" />
+     y="-212.36145" />
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.26458332"
      id="rect4561"
@@ -146,4 +159,18 @@
      height="18.520832"
      x="575.27972"
      y="-261.74338" />
+  <rect
+     style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+     id="rect5109-3-5-3"
+     width="996.55725"
+     height="664.13458"
+     x="2409.0159"
+     y="-338.51266" />
+  <rect
+     style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+     id="rect5109-3-5-3-6"
+     width="83.564545"
+     height="80.417938"
+     x="2180.145"
+     y="-328.46176" />
 </svg>
