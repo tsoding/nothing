@@ -99,7 +99,7 @@ endif()
 
 add_subdirectory(devtools/cxd)
 
-# TODO: C headers are not generated from sounds/*
+# TODO(#126): C headers are not generated from sounds/*
 #
 # Once ./devtools/cxd/ is implementation we need to integrate into the
 # build and generate header files from sounds/*
