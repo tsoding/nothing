@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.2)
 project(nothing)
 
+add_subdirectory(devtools/cxd)
+
 if(WIN32)
   # Conan integration
   include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
