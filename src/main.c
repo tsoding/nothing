@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     }
     PUSH_LT(lt, 42, SDL_Quit_lt);
 
-    /* TODO: introduce some kind of sound medium where all of the sound samples are propagated */
+    /* TODO(#128): introduce some kind of sound medium where all of the sound samples are propagated */
 
     SDL_Window *const window = PUSH_LT(
         lt,
