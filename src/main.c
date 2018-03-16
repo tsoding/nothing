@@ -21,13 +21,6 @@ static void SDL_Quit_lt(void* ignored)
     SDL_Quit();
 }
 
-/* LT module adapter for Mix_Quit */
-static void Mix_Quit_lt(void* ignored)
-{
-    (void) ignored;
-    Mix_Quit();
-}
-
 static void print_usage(FILE *stream)
 {
     fprintf(stream, "Usage: nothing <level-file>\n");
@@ -50,16 +43,7 @@ int main(int argc, char *argv[])
     }
     PUSH_LT(lt, 42, SDL_Quit_lt);
 
-    if ((Mix_Init(MIX_INIT_MP3) & MIX_INIT_MP3) != MIX_INIT_MP3) {
-        print_error_msg(ERROR_TYPE_SDL2_MIXER, "Could not initialize SDL_mixer");
-        RETURN_LT(lt, -1);
-    }
-    PUSH_LT(lt, 42, Mix_Quit_lt);
-
-    if (Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640) < 0) {
-        print_error_msg(ERROR_TYPE_SDL2_MIXER, "Could not initialize SDL_mixer twice");
-        RETURN_LT(lt, -1);
-    }
+    /* TODO(#128): introduce some kind of sound medium where all of the sound samples are propagated */
 
     SDL_Window *const window = PUSH_LT(
         lt,
