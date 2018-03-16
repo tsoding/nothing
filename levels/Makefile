@@ -4,7 +4,7 @@ TXTS=$(SVGS:.svg=.txt)
 all: $(TXTS)
 
 %.txt: %.svg
-	xqilla ../scripts/svg2rects.xqe -i $< -o $@
+	xqilla ../devtools/svg2rects.xqe -i $< -o $@
 
 .PHONY: clean watch
 
