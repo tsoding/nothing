@@ -24,8 +24,6 @@ typedef struct game_t {
     game_state_t state;
     level_t *level;
     char *level_file_path;
-    Mix_Music *sound_something;
-    Mix_Music *sound_nothing;
 } game_t;
 
 game_t *create_game(const char *level_file_path)
@@ -43,25 +41,9 @@ game_t *create_game(const char *level_file_path)
         RETURN_LT(lt, NULL);
     }
 
-    /* TODO(#117): paths to sounds are hardcoded */
-    game->sound_something = PUSH_LT(lt, Mix_LoadMUS("./sounds/something.mp3"), Mix_FreeMusic);
-    if (game->sound_something == NULL) {
-        throw_error(ERROR_TYPE_SDL2_MIXER);
-        RETURN_LT(lt, NULL);
-    }
-
-    game->sound_nothing = PUSH_LT(lt, Mix_LoadMUS("./sounds/nothing.mp3"), Mix_FreeMusic);
-    if (game->sound_nothing == NULL) {
-        throw_error(ERROR_TYPE_SDL2_MIXER);
-        RETURN_LT(lt, NULL);
-    }
-
     game->level = PUSH_LT(
         lt,
-        create_level_from_file(
-            level_file_path,
-            game->sound_nothing,
-            game->sound_something),
+        create_level_from_file(level_file_path),
         destroy_level);
     if (game->level == NULL) {
         RETURN_LT(lt, NULL);
@@ -167,9 +149,7 @@ static int game_event_running(game_t *game, const SDL_Event *event)
                 game->lt,
                 game->level,
                 create_level_from_file(
-                    game->level_file_path,
-                    game->sound_nothing,
-                    game->sound_something));
+                    game->level_file_path));
 
             if (game->level == NULL) {
                 print_current_error_msg("Could not reload the level");
