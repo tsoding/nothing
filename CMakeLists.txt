@@ -97,9 +97,4 @@ if(WIN32)
   target_link_libraries(nothing Imm32 Version winmm)
 endif()
 
-add_subdirectory(devtools/cxd)
-
-# TODO(#126): C headers are not generated from sounds/*
-#
-# Once ./devtools/cxd/ is implementation we need to integrate into the
-# build and generate header files from sounds/*
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/sounds DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
