@@ -97,3 +97,4 @@ if(WIN32)
   target_link_libraries(nothing Imm32 Version winmm)
 endif()
 
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/sounds DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
