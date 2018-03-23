@@ -47,7 +47,11 @@ int main(int argc, char *argv[])
 
     SDL_Window *const window = PUSH_LT(
         lt,
-        SDL_CreateWindow("Nothing", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN),
+        SDL_CreateWindow(
+            "Nothing",
+            100, 100,
+            SCREEN_WIDTH, SCREEN_HEIGHT,
+            SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE),
         SDL_DestroyWindow);
 
     if (window == NULL) {
