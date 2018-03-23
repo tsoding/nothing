@@ -87,7 +87,7 @@ int wavy_rect_render(const wavy_rect_t *wavy_rect,
                 rect(
                     wavy_rect->rect.x + wave_scanner,
                     wavy_rect->rect.y + s * sinf(wavy_rect->angle + wave_scanner / WAVE_PILLAR_WIDTH),
-                    WAVE_PILLAR_WIDTH,
+                    WAVE_PILLAR_WIDTH * 1.20f,
                     wavy_rect->rect.h),
                 wavy_rect->color) < 0) {
             return -1;
