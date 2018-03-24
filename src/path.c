@@ -32,5 +32,6 @@ char *base_path_folder(const char *subfolder)
         RETURN_LT(lt, NULL);
     }
 
-    RETURN_LT(lt, RELEASE_LT(lt, buffer));
+    buffer = RELEASE_LT(lt, buffer);
+    RETURN_LT(lt, buffer);
 }
