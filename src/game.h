@@ -4,7 +4,8 @@
 typedef struct game_t game_t;
 typedef struct SDL_Renderer SDL_Renderer;
 
-game_t *create_game(const char *platforms_file_path);
+game_t *create_game(const char *platforms_file_path,
+                    const char *sounds_folder_path);
 void destroy_game(game_t *game);
 
 int game_render(const game_t *game, SDL_Renderer *renderer);

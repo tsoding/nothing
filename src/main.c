@@ -9,6 +9,7 @@
 #include "./error.h"
 #include "./game.h"
 #include "./lt.h"
+#include "./path.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -95,7 +96,12 @@ int main(int argc, char *argv[])
 
     // ------------------------------
 
-    game_t *const game = PUSH_LT(lt, create_game(argv[1]), destroy_game);
+    char *sounds_folder = PUSH_LT(lt, base_path_folder("sounds"), free);
+    if (sounds_folder == NULL) {
+        RETURN_LT(lt, -1);
+    }
+
+    game_t *const game = PUSH_LT(lt, create_game(argv[1], sounds_folder), destroy_game);
     if (game == NULL) {
         print_current_error_msg("Could not create the game object");
         RETURN_LT(lt, -1);

@@ -36,6 +36,8 @@ set(SOURCE_FILES
   src/dying_rect.c
   src/lava.c
   src/wavy_rect.c
+  src/sound_medium.c
+  src/path.c
 )
 
 set(HEADER_FILES
@@ -58,6 +60,8 @@ set(HEADER_FILES
   src/dying_rect.h
   src/lava.h
   src/wavy_rect.h
+  src/sound_medium.h
+  src/path.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
