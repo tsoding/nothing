@@ -5,6 +5,8 @@
 
 typedef struct sound_medium_t sound_medium_t;
 
+// TODO: sound_medium does not propagate any sounds
+
 sound_medium_t *create_sound_medium_from_folder(const char *folder_path);
 void destroy_sound_medium(sound_medium_t *sound_medium);
 
