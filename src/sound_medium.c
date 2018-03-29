@@ -46,6 +46,7 @@ void destroy_sound_medium(sound_medium_t *sound_medium)
     RETURN_LT0(sound_medium->lt);
 }
 
+/* TODO: sound_medium doesn't take into account the positions of the sound and the listener */
 int sound_medium_play_sound(sound_medium_t *sound_medium,
                             size_t sound_index,
                             point_t position)
