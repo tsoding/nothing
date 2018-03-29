@@ -37,7 +37,6 @@ set(SOURCE_FILES
   src/lava.c
   src/wavy_rect.c
   src/sound_medium.c
-  src/sound_sample.c
   src/path.c
 )
 
@@ -62,7 +61,6 @@ set(HEADER_FILES
   src/lava.h
   src/wavy_rect.h
   src/sound_medium.h
-  src/sound_sample.h
   src/path.h
 )
 

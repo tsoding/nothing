@@ -11,7 +11,6 @@
 #include "./lt.h"
 #include "./path.h"
 #include "./point.h"
-#include "./sound_sample.h"
 #include "./sound_medium.h"
 
 #define SCREEN_WIDTH 800
