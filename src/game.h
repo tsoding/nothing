@@ -1,10 +1,13 @@
 #ifndef GAME_H_
 #define GAME_H_
 
+#include "./sound_medium.h"
+
 typedef struct game_t game_t;
 typedef struct SDL_Renderer SDL_Renderer;
 
-game_t *create_game(const char *platforms_file_path);
+game_t *create_game(const char *platforms_file_path,
+                    sound_medium_t *sound_medium);
 void destroy_game(game_t *game);
 
 int game_render(const game_t *game, SDL_Renderer *renderer);

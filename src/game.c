@@ -25,9 +25,10 @@ typedef struct game_t {
     game_state_t state;
     level_t *level;
     char *level_file_path;
+    sound_medium_t *sound_medium;
 } game_t;
 
-game_t *create_game(const char *level_file_path)
+game_t *create_game(const char *level_file_path, sound_medium_t *sound_medium)
 {
     assert(level_file_path);
 
@@ -59,6 +60,7 @@ game_t *create_game(const char *level_file_path)
     strcpy(game->level_file_path, level_file_path);
 
     game->state = GAME_STATE_RUNNING;
+    game->sound_medium = sound_medium;
     game->lt = lt;
 
     return game;

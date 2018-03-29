@@ -122,8 +122,6 @@ int main(int argc, char *argv[])
     sound_medium_t *sound_medium =
         PUSH_LT(lt, create_sound_medium(sound_samples, sound_samples_count), destroy_sound_medium);
 
-    sound_medium_play_sound(sound_medium, 1, vec(0.0, 0.0));
-
     // ------------------------------
 
     char *sounds_folder = PUSH_LT(lt, base_path_folder("sounds"), free);
@@ -132,7 +130,7 @@ int main(int argc, char *argv[])
         RETURN_LT(lt, -1);
     }
 
-    game_t *const game = PUSH_LT(lt, create_game(argv[1]), destroy_game);
+    game_t *const game = PUSH_LT(lt, create_game(argv[1], sound_medium), destroy_game);
     if (game == NULL) {
         print_current_error_msg("Could not create the game object");
         RETURN_LT(lt, -1);
