@@ -46,3 +46,9 @@ void destroy_sound_sample(sound_sample_t *sound_sample)
     assert(sound_sample);
     RETURN_LT0(sound_sample->lt);
 }
+
+int sound_sample_play(sound_sample_t *sound_sample, int channel)
+{
+    assert(sound_sample);
+    return Mix_PlayChannel(channel, sound_sample->chunk, 1);
+}
