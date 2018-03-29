@@ -10,6 +10,9 @@
 #include "./game.h"
 #include "./lt.h"
 #include "./path.h"
+#include "./point.h"
+#include "./sound_sample.h"
+#include "./sound_medium.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -107,17 +110,30 @@ int main(int argc, char *argv[])
         print_error_msg(ERROR_TYPE_SDL2_MIXER, "Could not initialize the audio\n");
         RETURN_LT(lt, -1);
     }
-
     PUSH_LT(lt, 42, Mix_CloseAudio_lt);
+
+    Mix_AllocateChannels(16);
+
+    Mix_Chunk * sound_samples[] = {
+        PUSH_LT(lt, Mix_LoadWAV("./sounds/nothing.wav"), Mix_FreeChunk),
+        PUSH_LT(lt, Mix_LoadWAV("./sounds/something.wav"), Mix_FreeChunk)
+    };
+    const size_t sound_samples_count = sizeof(sound_samples) / sizeof(Mix_Chunk*);
+
+    sound_medium_t *sound_medium =
+        PUSH_LT(lt, create_sound_medium(sound_samples, sound_samples_count), destroy_sound_medium);
+
+    sound_medium_play_sound(sound_medium, 1, vec(0.0, 0.0));
 
     // ------------------------------
 
     char *sounds_folder = PUSH_LT(lt, base_path_folder("sounds"), free);
     if (sounds_folder == NULL) {
+        print_current_error_msg("Could not get the sounds folder");
         RETURN_LT(lt, -1);
     }
 
-    game_t *const game = PUSH_LT(lt, create_game(argv[1], sounds_folder), destroy_game);
+    game_t *const game = PUSH_LT(lt, create_game(argv[1]), destroy_game);
     if (game == NULL) {
         print_current_error_msg("Could not create the game object");
         RETURN_LT(lt, -1);
