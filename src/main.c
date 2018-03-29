@@ -15,6 +15,13 @@
 #define SCREEN_HEIGHT 600
 #define GAME_FPS 60
 
+/* LT module adapter for Mix_CloseAudio */
+static void Mix_CloseAudio_lt(void* ignored)
+{
+    (void) ignored;
+    Mix_CloseAudio();
+}
+
 /* LT module adapter for SDL_Quit */
 static void SDL_Quit_lt(void* ignored)
 {
@@ -91,6 +98,17 @@ int main(int argc, char *argv[])
     } else {
         fprintf(stderr, "[WARNING] Could not find any Sticks of the Joy\n");
     }
+
+    if (Mix_OpenAudio(
+            MIX_DEFAULT_FREQUENCY,
+            MIX_DEFAULT_FORMAT,
+            2,
+            1024) < 0) {
+        print_error_msg(ERROR_TYPE_SDL2_MIXER, "Could not initialize the audio\n");
+        RETURN_LT(lt, -1);
+    }
+
+    PUSH_LT(lt, 42, Mix_CloseAudio_lt);
 
     // ------------------------------
 
