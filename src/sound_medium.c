@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
+
 #include "./sound_medium.h"
 #include "./lt.h"
 #include "./error.h"
@@ -8,11 +12,14 @@
 struct sound_medium_t
 {
     lt_t *lt;
+    Mix_Chunk **samples;
+    size_t samples_count;
 };
 
-sound_medium_t *create_sound_medium_from_folder(const char *folder_path)
+sound_medium_t *create_sound_medium(Mix_Chunk **samples, size_t samples_count)
 {
-    assert(folder_path);
+    assert(samples);
+    assert(samples_count > 0);
 
     lt_t *lt = create_lt();
     if (lt == NULL) {
@@ -25,6 +32,9 @@ sound_medium_t *create_sound_medium_from_folder(const char *folder_path)
         RETURN_LT(lt, NULL);
     }
 
+    sound_medium->samples = samples;
+    sound_medium->samples_count = samples_count;
+
     sound_medium->lt = lt;
 
     return sound_medium;
@@ -36,13 +46,18 @@ void destroy_sound_medium(sound_medium_t *sound_medium)
     RETURN_LT0(sound_medium->lt);
 }
 
+/* TODO(#134): sound_medium doesn't take into account the positions of the sound and the listener */
 int sound_medium_play_sound(sound_medium_t *sound_medium,
-                            const char *sound_name,
+                            size_t sound_index,
                             point_t position)
 {
     assert(sound_medium);
-    assert(sound_name);
+    (void) sound_index;
     (void) position;
+
+    if (sound_index < sound_medium->samples_count) {
+        return Mix_PlayChannel(0, sound_medium->samples[sound_index], 0);
+    }
 
     return 0;
 }
