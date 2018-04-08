@@ -16,6 +16,17 @@ struct sound_medium_t
     size_t samples_count;
 };
 
+static int mix_get_free_channel(void)
+{
+    for (int i = 0; i < MIX_CHANNELS; ++i) {
+        if (!Mix_Playing(i)) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
 sound_medium_t *create_sound_medium(Mix_Chunk **samples, size_t samples_count)
 {
     assert(samples);
@@ -56,7 +67,11 @@ int sound_medium_play_sound(sound_medium_t *sound_medium,
     (void) position;
 
     if (sound_index < sound_medium->samples_count) {
-        return Mix_PlayChannel(0, sound_medium->samples[sound_index], 0);
+        const int free_channel = mix_get_free_channel();
+
+        if (free_channel >= 0) {
+            return Mix_PlayChannel(free_channel, sound_medium->samples[sound_index], 0);
+        }
     }
 
     return 0;
