@@ -237,3 +237,13 @@ void player_die_from_lava(player_t *player,
         player_die(player);
     }
 }
+
+int player_sound(const player_t * player,
+                 sound_medium_t * sound_medium)
+{
+    const rect_t hitbox = rigid_rect_hitbox(player->alive_body);
+
+    return sound_medium_listen_sounds(
+        sound_medium,
+        vec(hitbox.x, hitbox.y));
+}

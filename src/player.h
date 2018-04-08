@@ -4,6 +4,7 @@
 #include "./goals.h"
 #include "./lava.h"
 #include "./camera.h"
+#include "./sound_medium.h"
 
 typedef struct player_t player_t;
 typedef struct platforms_t platforms_t;
@@ -16,6 +17,8 @@ void destroy_player(player_t * player);
 int player_render(const player_t * player,
                   SDL_Renderer *renderer,
                   const camera_t *camera);
+int player_sound(const player_t * player,
+                 sound_medium_t * sound_medium);
 void player_update(player_t * player,
                    const platforms_t *platforms,
                    Uint32 delta_time);

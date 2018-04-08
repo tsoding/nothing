@@ -146,3 +146,11 @@ void goals_hide(goals_t *goals,
     goals->player_hitbox = player_hitbox;
 
 }
+
+int goals_sound(goals_t *goals,
+                sound_medium_t *sound_medium)
+{
+    (void) goals;
+    (void) sound_medium;
+    return 0;
+}

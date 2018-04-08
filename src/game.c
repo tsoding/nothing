@@ -90,6 +90,11 @@ int game_render(const game_t *game, SDL_Renderer *renderer)
     return 0;
 }
 
+int game_sound(game_t *game)
+{
+    return level_sound(game->level, game->sound_medium);
+}
+
 int game_update(game_t *game, Uint32 delta_time)
 {
     assert(game);
