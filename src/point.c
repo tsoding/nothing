@@ -88,3 +88,8 @@ vec_t vec_entry_div(vec_t v1, vec_t v2)
 
     return result;
 }
+
+float rad_to_deg(float a)
+{
+    return 180 / PI * a;
+}
