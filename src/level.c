@@ -249,3 +249,16 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
 
     RETURN_LT(lt, 0);
 }
+
+int level_sound(level_t *level, sound_medium_t *sound_medium)
+{
+    if (goals_sound(level->goals, sound_medium) < 0) {
+        return -1;
+    }
+
+    if (player_sound(level->player, sound_medium) < 0) {
+        return -1;
+    }
+
+    return 0;
+}

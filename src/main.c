@@ -159,6 +159,11 @@ int main(int argc, char *argv[])
             print_current_error_msg("Failed rendering the game");
             RETURN_LT(lt, -1);
         }
+
+        if (game_sound(game) < 0) {
+            print_current_error_msg("Failed handling the sound");
+            RETURN_LT(lt, -1);
+        }
     }
 
     RETURN_LT(lt, 0);

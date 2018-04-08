@@ -10,11 +10,13 @@ typedef struct platforms_t platforms_t;
 typedef struct SDL_Renderer SDL_Renderer;
 typedef union SDL_Event SDL_Event;
 typedef struct camera_t camera_t;
+typedef struct sound_medium_t sound_medium_t;
 
 level_t *create_level_from_file(const char *file_name);
 void destroy_level(level_t *level);
 
 int level_render(const level_t *level, SDL_Renderer *renderer);
+int level_sound(level_t *level, sound_medium_t *sound_medium);
 int level_update(level_t *level, Uint32 delta_time);
 
 int level_event(level_t *level, const SDL_Event *event);
