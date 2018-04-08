@@ -111,8 +111,6 @@ int main(int argc, char *argv[])
     }
     PUSH_LT(lt, 42, Mix_CloseAudio_lt);
 
-    Mix_AllocateChannels(16);
-
     Mix_Chunk * sound_samples[] = {
         PUSH_LT(lt, Mix_LoadWAV("./sounds/nothing.wav"), Mix_FreeChunk),
         PUSH_LT(lt, Mix_LoadWAV("./sounds/something.wav"), Mix_FreeChunk)
