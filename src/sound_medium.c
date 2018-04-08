@@ -8,12 +8,17 @@
 #include "./sound_medium.h"
 #include "./lt.h"
 #include "./error.h"
+#include "./pi.h"
+#include "./algo.h"
+
+#define SOUND_THRESHOLD_DISTANCE 200.0f
 
 struct sound_medium_t
 {
     lt_t *lt;
     Mix_Chunk **samples;
     size_t samples_count;
+    point_t *channel_positions;
 };
 
 static int mix_get_free_channel(void)
@@ -43,6 +48,12 @@ sound_medium_t *create_sound_medium(Mix_Chunk **samples, size_t samples_count)
         RETURN_LT(lt, NULL);
     }
 
+    sound_medium->channel_positions = PUSH_LT(lt, malloc(sizeof(point_t) * MIX_CHANNELS), free);
+    if (sound_medium->channel_positions == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
     sound_medium->samples = samples;
     sound_medium->samples_count = samples_count;
 
@@ -57,7 +68,6 @@ void destroy_sound_medium(sound_medium_t *sound_medium)
     RETURN_LT0(sound_medium->lt);
 }
 
-/* TODO(#134): sound_medium doesn't take into account the positions of the sound and the listener */
 int sound_medium_play_sound(sound_medium_t *sound_medium,
                             size_t sound_index,
                             point_t position)
@@ -70,6 +80,7 @@ int sound_medium_play_sound(sound_medium_t *sound_medium,
         const int free_channel = mix_get_free_channel();
 
         if (free_channel >= 0) {
+            sound_medium->channel_positions[free_channel] = position;
             return Mix_PlayChannel(free_channel, sound_medium->samples[sound_index], 0);
         }
     }
@@ -81,6 +92,15 @@ int sound_medium_listen_sounds(sound_medium_t *sound_medium,
                                point_t position)
 {
     assert(sound_medium);
-    (void) position;
+
+    for (int i = 0; i < MIX_CHANNELS; ++i) {
+        if (Mix_Playing(i)) {
+            const vec_t v = vec_from_ps(position, sound_medium->channel_positions[i]);
+            const Sint16 angle = (Sint16) roundf(rad_to_deg(vec_arg(v)));
+            const Uint8 distance = (Uint8) roundf(MIN(vec_mag(v), SOUND_THRESHOLD_DISTANCE) / SOUND_THRESHOLD_DISTANCE * 255.0f);
+            Mix_SetPosition(i, angle, distance);
+        }
+    }
+
     return 0;
 }
