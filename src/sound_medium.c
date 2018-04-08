@@ -11,7 +11,7 @@
 #include "./pi.h"
 #include "./algo.h"
 
-#define SOUND_THRESHOLD_DISTANCE 200.0f
+#define SOUND_THRESHOLD_DISTANCE 1000.0f
 
 struct sound_medium_t
 {
@@ -70,7 +70,8 @@ void destroy_sound_medium(sound_medium_t *sound_medium)
 
 int sound_medium_play_sound(sound_medium_t *sound_medium,
                             size_t sound_index,
-                            point_t position)
+                            point_t position,
+                            int loops)
 {
     assert(sound_medium);
     (void) sound_index;
@@ -81,7 +82,7 @@ int sound_medium_play_sound(sound_medium_t *sound_medium,
 
         if (free_channel >= 0) {
             sound_medium->channel_positions[free_channel] = position;
-            return Mix_PlayChannel(free_channel, sound_medium->samples[sound_index], 0);
+            return Mix_PlayChannel(free_channel, sound_medium->samples[sound_index], loops);
         }
     }
 
