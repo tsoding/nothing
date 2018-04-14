@@ -33,7 +33,6 @@ static int mix_get_free_channel(void)
     return -1;
 }
 
-/* TODO: make sound medium work only with a particular channel range */
 sound_medium_t *create_sound_medium(Mix_Chunk **samples,
                                     size_t samples_count)
 {
