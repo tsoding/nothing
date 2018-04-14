@@ -20,6 +20,8 @@ struct sound_medium_t
     size_t samples_count;
     point_t *channel_positions;
     int paused;
+    size_t lower_channel;
+    size_t upper_channel;
 };
 
 static int mix_get_free_channel(void)
@@ -34,7 +36,9 @@ static int mix_get_free_channel(void)
 }
 
 sound_medium_t *create_sound_medium(Mix_Chunk **samples,
-                                    size_t samples_count)
+                                    size_t samples_count,
+                                    size_t lower_channel,
+                                    size_t upper_channel)
 {
     assert(samples);
     assert(samples_count > 0);
@@ -59,6 +63,8 @@ sound_medium_t *create_sound_medium(Mix_Chunk **samples,
     sound_medium->samples = samples;
     sound_medium->samples_count = samples_count;
     sound_medium->paused = 0;
+    sound_medium->lower_channel = lower_channel;
+    sound_medium->upper_channel = upper_channel;
 
     sound_medium->lt = lt;
 

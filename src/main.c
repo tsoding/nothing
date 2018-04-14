@@ -118,7 +118,14 @@ int main(int argc, char *argv[])
     const size_t sound_samples_count = sizeof(sound_samples) / sizeof(Mix_Chunk*);
 
     sound_medium_t *sound_medium =
-        PUSH_LT(lt, create_sound_medium(sound_samples, sound_samples_count), destroy_sound_medium);
+        PUSH_LT(
+            lt,
+            create_sound_medium(sound_samples, sound_samples_count, 0, MIX_CHANNELS - 1),
+            destroy_sound_medium);
+    if (sound_medium == NULL) {
+        print_current_error_msg("Could not create sound medium");
+        RETURN_LT(lt, -1);
+    }
 
     // ------------------------------
 

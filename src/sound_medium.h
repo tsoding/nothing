@@ -6,7 +6,10 @@
 typedef struct sound_medium_t sound_medium_t;
 typedef struct Mix_Chunk Mix_Chunk;
 
-sound_medium_t *create_sound_medium(Mix_Chunk **samples, size_t samples_count);
+sound_medium_t *create_sound_medium(Mix_Chunk **samples,
+                                    size_t samples_count,
+                                    size_t lower_channel,
+                                    size_t upper_channel);
 void destroy_sound_medium(sound_medium_t *sound_medium);
 
 int sound_medium_play_sound(sound_medium_t *sound_medium,
