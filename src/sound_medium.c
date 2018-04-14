@@ -19,6 +19,7 @@ struct sound_medium_t
     Mix_Chunk **samples;
     size_t samples_count;
     point_t *channel_positions;
+    int paused;
 };
 
 static int mix_get_free_channel(void)
@@ -32,7 +33,8 @@ static int mix_get_free_channel(void)
     return -1;
 }
 
-sound_medium_t *create_sound_medium(Mix_Chunk **samples, size_t samples_count)
+sound_medium_t *create_sound_medium(Mix_Chunk **samples,
+                                    size_t samples_count)
 {
     assert(samples);
     assert(samples_count > 0);
@@ -56,6 +58,7 @@ sound_medium_t *create_sound_medium(Mix_Chunk **samples, size_t samples_count)
 
     sound_medium->samples = samples;
     sound_medium->samples_count = samples_count;
+    sound_medium->paused = 0;
 
     sound_medium->lt = lt;
 
@@ -102,6 +105,21 @@ int sound_medium_listen_sounds(sound_medium_t *sound_medium,
             Mix_SetPosition(i, angle, distance);
         }
     }
+
+    return 0;
+}
+
+int sound_medium_toggle_pause(sound_medium_t *sound_medium)
+{
+    assert(sound_medium);
+
+    if (sound_medium->paused) {
+        Mix_Resume(-1);
+    } else {
+        Mix_Pause(-1);
+    }
+
+    sound_medium->paused = !sound_medium->paused;
 
     return 0;
 }
