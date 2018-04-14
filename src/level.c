@@ -94,19 +94,7 @@ int level_render(const level_t *level, SDL_Renderer *renderer)
     assert(level);
     assert(renderer);
 
-    SDL_Color sdl_background_color = color_for_sdl(level->background_color);
-
-    if (SDL_SetRenderDrawColor(renderer,
-                               sdl_background_color.r,
-                               sdl_background_color.g,
-                               sdl_background_color.b,
-                               sdl_background_color.a) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
-        return -1;
-    }
-
-    if (SDL_RenderClear(renderer) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
+    if (camera_clear_background(level->camera, renderer, level->background_color) < 0) {
         return -1;
     }
 
