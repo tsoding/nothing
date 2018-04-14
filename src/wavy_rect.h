@@ -1,12 +1,12 @@
 #ifndef WAVY_RECT_H_
 #define WAVY_RECT_H_
 
+#include <SDL2/SDL.h>
 #include "./rect.h"
 #include "./color.h"
 #include "./camera.h"
 
 typedef struct wavy_rect_t wavy_rect_t;
-typedef struct SDL_Renderer SDL_Renderer;
 
 wavy_rect_t *create_wavy_rect(rect_t rect, color_t color);
 wavy_rect_t *create_wavy_rect_from_stream(FILE *stream);

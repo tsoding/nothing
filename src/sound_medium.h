@@ -1,10 +1,10 @@
 #ifndef SOUND_MEDIUM_H_
 #define SOUND_MEDIUM_H_
 
+#include <SDL2/SDL_mixer.h>
 #include "./point.h"
 
 typedef struct sound_medium_t sound_medium_t;
-typedef struct Mix_Chunk Mix_Chunk;
 
 sound_medium_t *create_sound_medium(Mix_Chunk **samples,
                                     size_t samples_count,

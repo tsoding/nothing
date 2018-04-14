@@ -1,11 +1,11 @@
 #ifndef DYING_RECT_H_
 #define DYING_RECT_H_
 
+#include <SDL2/SDL.h>
 #include "./rect.h"
 #include "./color.h"
 #include "./camera.h"
 
-typedef struct SDL_Renderer SDL_Renderer;
 typedef struct dying_rect_t dying_rect_t;
 
 dying_rect_t *create_dying_rect(rect_t rect,

@@ -1,16 +1,14 @@
 #ifndef LEVEL_H_
 #define LEVEL_H_
 
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include "./player.h"
+#include "./platforms.h"
+#include "./camera.h"
+#include "./sound_medium.h"
 
 typedef struct level_t level_t;
-
-typedef struct player_t player_t;
-typedef struct platforms_t platforms_t;
-typedef struct SDL_Renderer SDL_Renderer;
-typedef union SDL_Event SDL_Event;
-typedef struct camera_t camera_t;
-typedef struct sound_medium_t sound_medium_t;
 
 level_t *create_level_from_file(const char *file_name);
 void destroy_level(level_t *level);

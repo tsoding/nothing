@@ -1,9 +1,8 @@
 #ifndef RECT_H_
 #define RECT_H_
 
+#include <SDL2/SDL.h>
 #include "./point.h"
-
-typedef struct SDL_Rect SDL_Rect;
 
 typedef enum rect_side_t {
     RECT_SIDE_LEFT = 0,
