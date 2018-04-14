@@ -1,11 +1,11 @@
 #ifndef PLATFORMS_H_
 #define PLATFORMS_H_
 
+#include <SDL2/SDL.h>
 #include "./camera.h"
 #include "./rect.h"
 
 typedef struct platforms_t platforms_t;
-typedef struct SDL_Renderer SDL_Renderer;
 
 platforms_t *create_platforms_from_stream(FILE *stream);
 platforms_t *create_platforms_from_file(const char *filename);

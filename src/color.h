@@ -1,7 +1,7 @@
 #ifndef COLOR_H_
 #define COLOR_H_
 
-typedef struct SDL_Color SDL_Color;
+#include <SDL2/SDL.h>
 
 typedef struct color_t {
     float r, g, b, a;

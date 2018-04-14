@@ -1,11 +1,11 @@
 #ifndef GOALS_H_
 #define GOALS_H_
 
+#include <SDL2/SDL.h>
 #include "./camera.h"
 #include "./sound_medium.h"
 
 typedef struct goals_t goals_t;
-typedef struct SDL_Renderer SDL_Renderer;
 
 goals_t *create_goals_from_stream(FILE *stream);
 void destroy_goals(goals_t *goals);
