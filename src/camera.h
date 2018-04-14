@@ -11,6 +11,10 @@ typedef struct camera_t camera_t;
 camera_t *create_camera(point_t position);
 void destroy_camera(camera_t *camera);
 
+int camera_clear_background(const camera_t *camera,
+                            SDL_Renderer *render,
+                            color_t color);
+
 int camera_fill_rect(const camera_t *camera,
                      SDL_Renderer *render,
                      rect_t rect,
