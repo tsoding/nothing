@@ -127,6 +127,7 @@ static int game_event_pause(game_t *game, const SDL_Event *event)
         case SDLK_p:
             game->state = GAME_STATE_RUNNING;
             level_toggle_pause_mode(game->level);
+            sound_medium_toggle_pause(game->sound_medium);
             break;
         case SDLK_l:
             level_toggle_debug_mode(game->level);
@@ -178,6 +179,7 @@ static int game_event_running(game_t *game, const SDL_Event *event)
         case SDLK_p:
             game->state = GAME_STATE_PAUSE;
             level_toggle_pause_mode(game->level);
+            sound_medium_toggle_pause(game->sound_medium);
             break;
 
         case SDLK_l:
