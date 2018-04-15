@@ -61,3 +61,14 @@ void triangulate_rect(rect_t rect, triangle_t *triangles)
     triangles[0] = t1;
     triangles[1] = t2;
 }
+
+triangle_t triangle_mat3x3_product(triangle_t t, mat3x3 m)
+{
+    triangle_t t1 = {
+        .p1 = point_mat3x3_product(t.p1, m),
+        .p2 = point_mat3x3_product(t.p2, m),
+        .p3 = point_mat3x3_product(t.p3, m)
+    };
+
+    return t1;
+}
