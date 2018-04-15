@@ -93,3 +93,16 @@ float rad_to_deg(float a)
 {
     return 180 / PI * a;
 }
+
+point_t point_mat3x3_product(point_t p, mat3x3 m)
+{
+    /* Wonder what's this all about? Just google "perspective divide" 4Head */
+    const float z = p.x * m.M[2][0] + p.y * m.M[2][1] + m.M[2][2];
+
+    const point_t p1 = {
+        .x = (p.x * m.M[0][0] + p.y * m.M[0][1] + m.M[0][2]) / z,
+        .y = (p.x * m.M[1][0] + p.y * m.M[1][1] + m.M[1][2]) / z
+    };
+
+    return p1;
+}
