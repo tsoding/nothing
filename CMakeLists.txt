@@ -38,6 +38,7 @@ set(SOURCE_FILES
   src/wavy_rect.c
   src/sound_medium.c
   src/path.c
+  src/mat3x3.c
 )
 
 set(HEADER_FILES
@@ -62,6 +63,7 @@ set(HEADER_FILES
   src/wavy_rect.h
   src/sound_medium.h
   src/path.h
+  src/mat3x3.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})

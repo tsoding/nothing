@@ -2,6 +2,7 @@
 #define POINT_H_
 
 #include "./pi.h"
+#include "./mat3x3.h"
 
 typedef struct point_t {
     float x, y;
@@ -24,5 +25,7 @@ float vec_length(vec_t v);
 vec_t vec_scala_mult(vec_t v, float scalar);
 vec_t vec_entry_mult(vec_t v1, vec_t v2);
 vec_t vec_entry_div(vec_t v1, vec_t v2);
+
+point_t point_mat3x3_product(point_t p, mat3x3 m);
 
 #endif  // POINT_H_

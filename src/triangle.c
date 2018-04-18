@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <math.h>
 
 #include "./pi.h"
@@ -41,4 +42,33 @@ triangle_t triangle_sorted_by_y(triangle_t t)
     if (t.p1.y > t.p2.y) { swap_points(&t.p1, &t.p2); }
 
     return t;
+}
+
+void rect_as_triangles(rect_t rect, triangle_t triangles[2])
+{
+    triangle_t t1 = {
+        .p1 = { .x = rect.x, .y = rect.y },
+        .p2 = { .x = rect.x + rect.w, .y = rect.y },
+        .p3 = { .x = rect.x, .y = rect.y + rect.h }
+    };
+
+    triangle_t t2 = {
+        .p1 = { .x = rect.x + rect.w, .y = rect.y },
+        .p2 = { .x = rect.x, .y = rect.y + rect.h },
+        .p3 = { .x = rect.x + rect.w, .y = rect.y + rect.h }
+    };
+
+    triangles[0] = t1;
+    triangles[1] = t2;
+}
+
+triangle_t triangle_mat3x3_product(triangle_t t, mat3x3 m)
+{
+    triangle_t t1 = {
+        .p1 = point_mat3x3_product(t.p1, m),
+        .p2 = point_mat3x3_product(t.p2, m),
+        .p3 = point_mat3x3_product(t.p3, m)
+    };
+
+    return t1;
 }
