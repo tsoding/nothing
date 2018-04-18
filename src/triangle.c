@@ -44,7 +44,7 @@ triangle_t triangle_sorted_by_y(triangle_t t)
     return t;
 }
 
-void triangulate_rect(rect_t rect, triangle_t *triangles)
+void rect_as_triangles(rect_t rect, triangle_t triangles[2])
 {
     triangle_t t1 = {
         .p1 = { .x = rect.x, .y = rect.y },
