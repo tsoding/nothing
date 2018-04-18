@@ -96,13 +96,21 @@ float rad_to_deg(float a)
 
 point_t point_mat3x3_product(point_t p, mat3x3 m)
 {
-    /* Wonder what's this all about? Just google "perspective divide" 4Head */
-    const float z = p.x * m.M[2][0] + p.y * m.M[2][1] + m.M[2][2];
+    /* Convert p to Homogeneous coordinates */
+    const float homo_p[3] = {p.x, p.y, 1};
 
-    const point_t p1 = {
-        .x = (p.x * m.M[0][0] + p.y * m.M[0][1] + m.M[0][2]) / z,
-        .y = (p.x * m.M[1][0] + p.y * m.M[1][1] + m.M[1][2]) / z
+    /* Transform p with matrix m */
+    const float trans_p[3] = {
+        homo_p[0] * m.M[0][0] + homo_p[1] * m.M[0][1] + homo_p[2] * m.M[0][2],
+        homo_p[0] * m.M[1][0] + homo_p[1] * m.M[1][1] + homo_p[2] * m.M[1][2],
+        homo_p[0] * m.M[2][0] + homo_p[1] * m.M[2][1] + homo_p[2] * m.M[2][2]
     };
 
-    return p1;
+    /* Convert p back to Cartesian coordinates */
+    const point_t result_p = {
+        .x = trans_p[0] / trans_p[2],
+        .y = trans_p[1] / trans_p[2]
+    };
+
+    return result_p;
 }
