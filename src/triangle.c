@@ -29,7 +29,7 @@ triangle_t equilateral_triangle(point_t position, float radius, float angle)
     return result;
 }
 
-/* TODO: some of the random triangles are too thin */
+/* TODO(#151): some of the random triangles are too thin */
 triangle_t random_triangle(float radius)
 {
     return triangle(
