@@ -3,6 +3,7 @@
 
 #include "./pi.h"
 #include "./triangle.h"
+#include "./algo.h"
 
 triangle_t triangle(point_t p1, point_t p2, point_t p3)
 {
@@ -26,6 +27,15 @@ triangle_t equilateral_triangle(point_t position, float radius, float angle)
     };
 
     return result;
+}
+
+/* TODO(#151): some of the random triangles are too thin */
+triangle_t random_triangle(float radius)
+{
+    return triangle(
+        vec_from_polar(rand_float(2 * PI), rand_float(radius)),
+        vec_from_polar(rand_float(2 * PI), rand_float(radius)),
+        vec_from_polar(rand_float(2 * PI), rand_float(radius)));
 }
 
 static void swap_points(point_t *p1, point_t *p2)

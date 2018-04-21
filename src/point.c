@@ -11,6 +11,13 @@ vec_t vec(float x, float y)
     return result;
 }
 
+vec_t vec_from_polar(float arg, float mag)
+{
+    return vec_scala_mult(
+        vec(cosf(arg), sinf(arg)),
+        mag);
+}
+
 vec_t vec_from_ps(point_t p1, point_t p2)
 {
     vec_t result = {
