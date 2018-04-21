@@ -31,7 +31,6 @@ triangle_t equilateral_triangle(point_t position, float radius, float angle)
 
 triangle_t random_triangle(float radius)
 {
-    /* TODO: try to add lower radious bound to combat flat triangles */
     return triangle(
         vec_from_polar(rand_float(2 * PI), rand_float(radius)),
         vec_from_polar(rand_float(2 * PI), rand_float(radius)),
