@@ -4,6 +4,18 @@
 #include "./lt.h"
 #include "./error.h"
 #include "./dying_rect.h"
+#include "./algo.h"
+
+#define DYING_RECT_PIECE_COUNT 20
+#define DYING_RECT_PIECE_SIZE 20.0f
+
+typedef struct piece_t {
+    point_t position;
+    float angle;
+    float angle_velocity;
+    vec_t direction;
+    triangle_t body;
+} piece_t;
 
 struct dying_rect_t
 {
@@ -14,6 +26,7 @@ struct dying_rect_t
     color_t color;
     Uint32 duration;
     Uint32 time_passed;
+    piece_t *pieces;
 };
 
 dying_rect_t *create_dying_rect(rect_t rect,
@@ -38,6 +51,21 @@ dying_rect_t *create_dying_rect(rect_t rect,
     dying_rect->duration = duration;
     dying_rect->time_passed = 0;
 
+    dying_rect->pieces = PUSH_LT(lt, malloc(sizeof(piece_t) * DYING_RECT_PIECE_COUNT), free);
+    if (dying_rect->pieces == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
+    for (size_t i = 0; i < DYING_RECT_PIECE_COUNT; ++i) {
+        dying_rect->pieces[i].position = dying_rect->position;
+        dying_rect->pieces[i].angle = rand_float(2 * PI);
+        /* TODO: make angle_velocity depend on the size of the triangle */
+        dying_rect->pieces[i].angle_velocity = rand_float(8.0f);
+        dying_rect->pieces[i].body = random_triangle(DYING_RECT_PIECE_SIZE);
+        dying_rect->pieces[i].direction = vec_from_polar(rand_float(2 * PI), rand_float(300.0f));
+    }
+
     return dying_rect;
 }
 
@@ -56,22 +84,22 @@ int dying_rect_render(const dying_rect_t *dying_rect,
     assert(renderer);
     assert(camera);
 
-    const float scale = 1.0f - (float) dying_rect->time_passed / (float) dying_rect->duration;
-    const vec_t center = vec_sum(
-        dying_rect->position,
-        vec_scala_mult(
-            dying_rect->size,
-            0.5f));
-    const vec_t scaled_size =
-        vec_scala_mult(dying_rect->size, scale);
-    const vec_t scaled_position =
-        vec_sum(center, vec_scala_mult(scaled_size, -0.5f));
+    for (size_t i = 0; i < DYING_RECT_PIECE_COUNT; ++i) {
+        if (camera_fill_triangle(
+                camera,
+                renderer,
+                triangle_mat3x3_product(
+                    dying_rect->pieces[i].body,
+                    mat3x3_product(
+                        trans_mat(dying_rect->pieces[i].position.x,
+                                  dying_rect->pieces[i].position.y),
+                        rot_mat(dying_rect->pieces[i].angle))),
+                dying_rect->color) < 0) {
+            return -1;
+        }
+    }
 
-    return camera_fill_rect(
-        camera,
-        renderer,
-        rect_from_vecs(scaled_position, scaled_size),
-        dying_rect->color);
+    return 0;
 }
 
 int dying_rect_update(dying_rect_t *dying_rect,
@@ -80,8 +108,23 @@ int dying_rect_update(dying_rect_t *dying_rect,
     assert(dying_rect);
     assert(delta_time > 0);
 
-    if (!dying_rect_is_dead(dying_rect)) {
-        dying_rect->time_passed = dying_rect->time_passed + delta_time;
+    if (dying_rect_is_dead(dying_rect)) {
+        return 0;
+    }
+
+    float d = (float) delta_time / 1000.0f;
+
+    dying_rect->time_passed = dying_rect->time_passed + delta_time;
+
+    for (size_t i = 0; i < DYING_RECT_PIECE_COUNT; ++i) {
+        vec_add(
+            &dying_rect->pieces[i].position,
+            vec_scala_mult(
+                dying_rect->pieces[i].direction,
+                d));
+        dying_rect->pieces[i].angle = fmodf(
+            dying_rect->pieces[i].angle + dying_rect->pieces[i].angle_velocity * d,
+            2.0f * PI);
     }
 
     return 0;

@@ -39,6 +39,7 @@ set(SOURCE_FILES
   src/sound_medium.c
   src/path.c
   src/mat3x3.c
+  src/algo.c
 )
 
 set(HEADER_FILES
@@ -64,6 +65,7 @@ set(HEADER_FILES
   src/sound_medium.h
   src/path.h
   src/mat3x3.h
+  src/algo.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})

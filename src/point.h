@@ -11,6 +11,7 @@ typedef struct point_t {
 typedef point_t vec_t;
 
 vec_t vec(float x, float y);
+vec_t vec_from_polar(float arg, float mag);
 vec_t vec_from_ps(point_t p1, point_t p2);
 
 float vec_arg(vec_t v);
