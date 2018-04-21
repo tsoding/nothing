@@ -6,7 +6,9 @@ typedef struct mat3x3 {
 } mat3x3;
 
 mat3x3 mat3x3_product(mat3x3 m1, mat3x3 m2);
+mat3x3 mat3x3_product2(mat3x3 m1, mat3x3 m2, mat3x3 m3);
 mat3x3 trans_mat(float x, float y);
 mat3x3 rot_mat(float angle);
+mat3x3 scale_mat(float factor);
 
 #endif  // MAT3X3_H_

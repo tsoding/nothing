@@ -17,6 +17,11 @@ mat3x3 mat3x3_product(mat3x3 m1, mat3x3 m2)
     return result;
 }
 
+mat3x3 mat3x3_product2(mat3x3 m1, mat3x3 m2, mat3x3 m3)
+{
+    return mat3x3_product(m1, mat3x3_product(m2, m3));
+}
+
 mat3x3 trans_mat(float x, float y)
 {
     const mat3x3 m = {
@@ -36,6 +41,19 @@ mat3x3 rot_mat(float angle)
         .M = {
             {cosf(angle), -sinf(angle), 0.0f},
             {sinf(angle), cosf(angle), 0.0f},
+            {0.0f, 0.0f, 1.0f}
+        }
+    };
+
+    return m;
+}
+
+mat3x3 scale_mat(float factor)
+{
+    const mat3x3 m = {
+        .M = {
+            {factor, 0.0f, 0.0f},
+            {0.0f, factor, 0.0f},
             {0.0f, 0.0f, 1.0f}
         }
     };

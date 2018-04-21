@@ -16,14 +16,14 @@ triangle_t triangle(point_t p1, point_t p2, point_t p3)
     return result;
 }
 
-triangle_t equilateral_triangle(point_t position, float radius, float angle)
+triangle_t equilateral_triangle(void)
 {
     const float d = PI_2 / 3.0f;
 
     const triangle_t result = {
-        .p1 = vec_sum(position, vec(cosf(0.0f + angle) * radius, sinf(0.0f + angle) * radius)),
-        .p2 = vec_sum(position, vec(cosf(d + angle) * radius, sinf(d + angle) * radius)),
-        .p3 = vec_sum(position, vec(cosf(2.0f * d + angle) * radius, sinf(2.0f * d + angle) * radius))
+        .p1 = vec(cosf(0.0f), sinf(0.0f)),
+        .p2 = vec(cosf(d), sinf(d)),
+        .p3 = vec(cosf(2.0f * d), sinf(2.0f * d))
     };
 
     return result;
