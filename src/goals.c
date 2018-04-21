@@ -97,15 +97,19 @@ static int goals_render_core(const goals_t *goals,
     assert(renderer);
     assert(camera);
 
+    const point_t position = vec_sum(
+        goals->points[goal_index],
+        vec(0.0f, sinf(goals->angle) * 10.0f));
+
     return camera_fill_triangle(
         camera,
         renderer,
-        equilateral_triangle(
-            vec_sum(
-                goals->points[goal_index],
-                vec(0.0f, sinf(goals->angle) * 10.0f)),
-            GOAL_RADIUS,
-            PI * -0.5f + goals->angle),
+        triangle_mat3x3_product(
+            equilateral_triangle(),
+            mat3x3_product2(
+                trans_mat(position.x, position.y),
+                rot_mat(PI * -0.5f + goals->angle),
+                scale_mat(GOAL_RADIUS))),
         goals->colors[goal_index]);
 }
 
