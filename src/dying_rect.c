@@ -60,10 +60,11 @@ dying_rect_t *create_dying_rect(rect_t rect,
     for (size_t i = 0; i < DYING_RECT_PIECE_COUNT; ++i) {
         dying_rect->pieces[i].position = dying_rect->position;
         dying_rect->pieces[i].angle = rand_float(2 * PI);
-        /* TODO: make angle_velocity depend on the size of the triangle */
         dying_rect->pieces[i].angle_velocity = rand_float(8.0f);
         dying_rect->pieces[i].body = random_triangle(DYING_RECT_PIECE_SIZE);
-        dying_rect->pieces[i].direction = vec_from_polar(rand_float(2 * PI), rand_float(300.0f));
+        dying_rect->pieces[i].direction = vec_from_polar(
+            rand_float_range(-PI, 0.0f),
+            rand_float_range(100.0f, 300.0f));
     }
 
     return dying_rect;
@@ -85,6 +86,9 @@ int dying_rect_render(const dying_rect_t *dying_rect,
     assert(camera);
 
     for (size_t i = 0; i < DYING_RECT_PIECE_COUNT; ++i) {
+        color_t color = dying_rect->color;
+        color.a = fminf(1.0f, 4.0f - (float) dying_rect->time_passed / (float) dying_rect->duration * 4.0f);
+
         if (camera_fill_triangle(
                 camera,
                 renderer,
@@ -94,7 +98,7 @@ int dying_rect_render(const dying_rect_t *dying_rect,
                         trans_mat(dying_rect->pieces[i].position.x,
                                   dying_rect->pieces[i].position.y),
                         rot_mat(dying_rect->pieces[i].angle))),
-                dying_rect->color) < 0) {
+                color) < 0) {
             return -1;
         }
     }
