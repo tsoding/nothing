@@ -9,7 +9,7 @@ typedef struct triangle_t {
 } triangle_t;
 
 triangle_t triangle(point_t p1, point_t p2, point_t p3);
-// TODO: equilateral_triangle should use matrix transformation instead of position and angle parameters
+// TODO(#152): equilateral_triangle should use matrix transformation instead of position and angle parameters
 triangle_t equilateral_triangle(point_t position, float radius, float angle);
 triangle_t random_triangle(float radius);
 triangle_t triangle_sorted_by_y(triangle_t t);
