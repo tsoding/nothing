@@ -95,10 +95,10 @@ int game_sound(game_t *game)
     return level_sound(game->level, game->sound_medium);
 }
 
-int game_update(game_t *game, Uint32 delta_time)
+int game_update(game_t *game, float delta_time)
 {
     assert(game);
-    assert(delta_time > 0);
+    assert(delta_time > 0.0f);
 
     if (game->state == GAME_STATE_QUIT) {
         return 0;

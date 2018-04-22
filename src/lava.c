@@ -76,10 +76,9 @@ int lava_render(const lava_t   *lava,
     return 0;
 }
 
-int lava_update(lava_t *lava, Uint32 delta_time)
+int lava_update(lava_t *lava, float delta_time)
 {
     assert(lava);
-    assert(delta_time);
 
     for (size_t i = 0; i < lava->rects_count; ++i) {
         if (wavy_rect_update(lava->rects[i], delta_time) < 0) {

@@ -15,7 +15,7 @@ void destroy_level(level_t *level);
 
 int level_render(const level_t *level, SDL_Renderer *renderer);
 int level_sound(level_t *level, sound_medium_t *sound_medium);
-int level_update(level_t *level, Uint32 delta_time);
+int level_update(level_t *level, float delta_time);
 
 int level_event(level_t *level, const SDL_Event *event);
 int level_input(level_t *level,

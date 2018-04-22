@@ -24,14 +24,14 @@ struct dying_rect_t
     vec_t position;
     vec_t size;
     color_t color;
-    Uint32 duration;
-    Uint32 time_passed;
+    float duration;
+    float time_passed;
     piece_t *pieces;
 };
 
 dying_rect_t *create_dying_rect(rect_t rect,
                                 color_t color,
-                                Uint32 duration)
+                                float duration)
 {
     lt_t *lt = create_lt();
     if (lt == NULL) {
@@ -107,16 +107,14 @@ int dying_rect_render(const dying_rect_t *dying_rect,
 }
 
 int dying_rect_update(dying_rect_t *dying_rect,
-                      Uint32 delta_time)
+                      float delta_time)
 {
     assert(dying_rect);
-    assert(delta_time > 0);
+    assert(delta_time > 0.0f);
 
     if (dying_rect_is_dead(dying_rect)) {
         return 0;
     }
-
-    float d = (float) delta_time / 1000.0f;
 
     dying_rect->time_passed = dying_rect->time_passed + delta_time;
 
@@ -125,9 +123,9 @@ int dying_rect_update(dying_rect_t *dying_rect,
             &dying_rect->pieces[i].position,
             vec_scala_mult(
                 dying_rect->pieces[i].direction,
-                d));
+                delta_time));
         dying_rect->pieces[i].angle = fmodf(
-            dying_rect->pieces[i].angle + dying_rect->pieces[i].angle_velocity * d,
+            dying_rect->pieces[i].angle + dying_rect->pieces[i].angle_velocity * delta_time,
             2.0f * PI);
     }
 

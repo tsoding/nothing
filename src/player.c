@@ -15,7 +15,7 @@
 #define PLAYER_HEIGHT 25.0f
 #define PLAYER_SPEED 500.0f
 #define PLAYER_JUMP 550.0f
-#define PLAYER_DEATH_DURATION 750
+#define PLAYER_DEATH_DURATION 0.75f
 
 typedef enum player_state_t {
     PLAYER_STATE_ALIVE = 0,
@@ -122,7 +122,7 @@ int player_render(const player_t * player,
 
 void player_update(player_t *player,
                    const platforms_t *platforms,
-                   Uint32 delta_time)
+                   float delta_time)
 {
     assert(player);
     assert(platforms);

@@ -87,23 +87,21 @@ int rigid_rect_render(const rigid_rect_t *rigid_rect,
 
 int rigid_rect_update(rigid_rect_t * rigid_rect,
                       const platforms_t *platforms,
-                      Uint32 delta_time)
+                      float delta_time)
 {
     assert(rigid_rect);
     assert(platforms);
 
     rigid_rect->touches_ground = 0;
 
-    float d = (float) delta_time / 1000.0f;
-
-    rigid_rect->velocity.y += RIGID_RECT_GRAVITY * d;
+    rigid_rect->velocity.y += RIGID_RECT_GRAVITY * delta_time;
     rigid_rect->position = vec_sum(
         rigid_rect->position,
         vec_scala_mult(
             vec_sum(
                 rigid_rect->velocity,
                 rigid_rect->movement),
-            d));
+            delta_time));
 
     int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
 

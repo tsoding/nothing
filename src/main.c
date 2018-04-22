@@ -142,7 +142,8 @@ int main(int argc, char *argv[])
     }
 
     const Uint8 *const keyboard_state = SDL_GetKeyboardState(NULL);
-    const Uint32 delay_ms = (Uint32) roundf(1000.0f / GAME_FPS);
+    const float delay_ms = 1.0f / GAME_FPS;
+    printf("delay_ms: %f", delay_ms);
     SDL_Event e;
     while (!game_over_check(game)) {
         while (!game_over_check(game) && SDL_PollEvent(&e)) {

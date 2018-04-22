@@ -99,13 +99,10 @@ int wavy_rect_render(const wavy_rect_t *wavy_rect,
 }
 
 int wavy_rect_update(wavy_rect_t *wavy_rect,
-                     Uint32 delta_time)
+                     float delta_time)
 {
     assert(wavy_rect);
-
-    float d = (float) delta_time / 1000.0f;
-
-    wavy_rect->angle = fmodf(wavy_rect->angle + 2.0f * d, 2 * PI);
+    wavy_rect->angle = fmodf(wavy_rect->angle + 2.0f * delta_time, 2 * PI);
 
     return 0;
 }
