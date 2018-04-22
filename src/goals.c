@@ -26,8 +26,7 @@ struct goals_t {
     point_t *points;
     rect_t *regions;
     color_t *colors;
-    /* TODO: Introduce enum for cue_states */
-    int *cue_states;
+    cue_state_t *cue_states;
     size_t goals_count;
     rect_t player_hitbox;
     float angle;
