@@ -82,7 +82,7 @@ goals_t *create_goals_from_stream(FILE *stream)
             RETURN_LT(lt, NULL);
         }
         goals->colors[i] = color_from_hexstr(color);
-        goals->cue_states = 0;
+        goals->cue_states[i] = 0;
     }
 
     goals->lt = lt;
