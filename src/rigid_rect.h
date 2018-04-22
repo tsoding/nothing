@@ -16,7 +16,7 @@ int rigid_rect_render(const rigid_rect_t *rigid_rect,
                       const camera_t *camera);
 int rigid_rect_update(rigid_rect_t * rigid_rect,
                       const platforms_t *platforms,
-                      Uint32 delta_time);
+                      float delta_time);
 
 rect_t rigid_rect_hitbox(const rigid_rect_t *rigid_rect);
 

@@ -152,14 +152,11 @@ int goals_render(const goals_t *goals,
 }
 
 void goals_update(goals_t *goals,
-                  Uint32 delta_time)
+                  float delta_time)
 {
     assert(goals);
-    assert(delta_time > 0);
-
-    float d = (float) delta_time / 1000.0f;
-
-    goals->angle = fmodf(goals->angle + 2.0f * d, 2.0f * PI);
+    assert(delta_time > 0.0f);
+    goals->angle = fmodf(goals->angle + 2.0f * delta_time, 2.0f * PI);
 }
 
 void goals_hide(goals_t *goals,

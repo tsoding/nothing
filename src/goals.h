@@ -18,7 +18,7 @@ int goals_render(const goals_t *goals,
 int goals_sound(goals_t *goals,
                 sound_medium_t *sound_medium);
 void goals_update(goals_t *goals,
-                  Uint32 delta_time);
+                  float delta_time);
 void goals_hide(goals_t *goals,
                 rect_t player_hitbox);
 void goals_cue(goals_t *goals,

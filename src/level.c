@@ -123,7 +123,7 @@ int level_render(const level_t *level, SDL_Renderer *renderer)
     return 0;
 }
 
-int level_update(level_t *level, Uint32 delta_time)
+int level_update(level_t *level, float delta_time)
 {
     assert(level);
     assert(delta_time > 0);

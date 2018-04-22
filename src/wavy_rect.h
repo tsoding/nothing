@@ -16,7 +16,7 @@ int wavy_rect_render(const wavy_rect_t *wavy_rect,
                      SDL_Renderer *renderer,
                      const camera_t *camera);
 int wavy_rect_update(wavy_rect_t *wavy_rect,
-                     Uint32 delta_time);
+                     float delta_time);
 
 int wavy_rect_overlaps(const wavy_rect_t *wavy_rect,
                        rect_t rect);

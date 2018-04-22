@@ -12,7 +12,7 @@ void destroy_game(game_t *game);
 
 int game_render(const game_t *game, SDL_Renderer *renderer);
 int game_sound(game_t *game);
-int game_update(game_t *game, Uint32 delta_time);
+int game_update(game_t *game, float delta_time);
 
 int game_event(game_t *game, const SDL_Event *event);
 int game_input(game_t *game,
