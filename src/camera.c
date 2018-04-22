@@ -204,6 +204,18 @@ void camera_toggle_blackwhite_mode(camera_t *camera)
     camera->blackwhite_mode = !camera->blackwhite_mode;
 }
 
+/* TODO: camera_is_point_visible is not implemented */
+int camera_is_point_visible(const camera_t *camera, point_t p)
+{
+    (void) camera;
+    (void) p;
+
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(render, &view_port);
+
+    return 0;
+}
+
 /* ---------- Private Function ---------- */
 
 static vec_t effective_ratio(const SDL_Rect *view_port)

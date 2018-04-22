@@ -16,6 +16,8 @@ struct goals_t {
     point_t *points;
     rect_t *regions;
     color_t *colors;
+    /* TODO: Introduce enum for cue_states */
+    int *cue_states;
     size_t goals_count;
     rect_t player_hitbox;
     float angle;
@@ -60,6 +62,12 @@ goals_t *create_goals_from_stream(FILE *stream)
         RETURN_LT(lt, NULL);
     }
 
+    goals->cue_states = PUSH_LT(lt, malloc(sizeof(int) * goals->goals_count), free);
+    if (goals->cue_states == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
     char color[7];
     for (size_t i = 0; i < goals->goals_count; ++i) {
         if (fscanf(stream, "%f%f%f%f%f%f%6s",
@@ -74,6 +82,7 @@ goals_t *create_goals_from_stream(FILE *stream)
             RETURN_LT(lt, NULL);
         }
         goals->colors[i] = color_from_hexstr(color);
+        goals->cue_states = 0;
     }
 
     goals->lt = lt;
@@ -154,7 +163,22 @@ void goals_hide(goals_t *goals,
 int goals_sound(goals_t *goals,
                 sound_medium_t *sound_medium)
 {
-    (void) goals;
-    (void) sound_medium;
+    for (size_t i = 0; i < goals->goals_count; ++i) {
+        if (goals->cue_states[i] == 1) {
+            sound_medium_play_sound(sound_medium, 0, goals->points[i], 0);
+            goals->cue_states[i] = 2;
+        }
+    }
+
     return 0;
+}
+
+void goals_cue(goals_t *goals,
+               const camera_t *camera)
+{
+    for (size_t i = 0; i < goals->goals_count; ++i) {
+        if (camera_is_point_visible(camera, goals->points[i])) {
+            goals->cue_states[i] = 1;
+        }
+    }
 }
