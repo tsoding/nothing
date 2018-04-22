@@ -114,6 +114,12 @@ int level_render(const level_t *level, SDL_Renderer *renderer)
         return -1;
     }
 
+    /* TODO(#157): goals_cue is not supposed to be invoked in level_render
+     *
+     * But I simply couldn't find a better place for it.
+     */
+    goals_cue(level->goals, renderer, level->camera);
+
     return 0;
 }
 

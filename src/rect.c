@@ -23,6 +23,18 @@ rect_t rect_from_vecs(point_t position, vec_t size)
     return rect(position.x, position.y, size.x, size.y);
 }
 
+rect_t rect_from_sdl(const SDL_Rect *rect)
+{
+    const rect_t result = {
+        .x = (float) rect->x,
+        .y = (float) rect->y,
+        .w = (float) rect->w,
+        .h = (float) rect->h
+    };
+
+    return result;
+}
+
 rect_t rects_overlap_area(rect_t rect1, rect_t rect2)
 {
     float x1 = fmaxf(rect1.x, rect2.x);

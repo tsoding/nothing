@@ -204,6 +204,16 @@ void camera_toggle_blackwhite_mode(camera_t *camera)
     camera->blackwhite_mode = !camera->blackwhite_mode;
 }
 
+int camera_is_point_visible(const camera_t *camera, SDL_Renderer *renderer, point_t p)
+{
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(renderer, &view_port);
+
+    return rect_contains_point(
+        rect_from_sdl(&view_port),
+        camera_point(camera, &view_port, p));
+}
+
 /* ---------- Private Function ---------- */
 
 static vec_t effective_ratio(const SDL_Rect *view_port)
