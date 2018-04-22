@@ -22,6 +22,7 @@ void goals_update(goals_t *goals,
 void goals_hide(goals_t *goals,
                 rect_t player_hitbox);
 void goals_cue(goals_t *goals,
+               SDL_Renderer *renderer,
                const camera_t *camera);
 
 #endif  // GOALS_H_

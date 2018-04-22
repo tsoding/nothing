@@ -165,7 +165,7 @@ int goals_sound(goals_t *goals,
 {
     for (size_t i = 0; i < goals->goals_count; ++i) {
         if (goals->cue_states[i] == 1) {
-            sound_medium_play_sound(sound_medium, 0, goals->points[i], 0);
+            sound_medium_play_sound(sound_medium, 1, goals->points[i], 0);
             goals->cue_states[i] = 2;
         }
     }
@@ -174,10 +174,11 @@ int goals_sound(goals_t *goals,
 }
 
 void goals_cue(goals_t *goals,
+               SDL_Renderer *renderer,
                const camera_t *camera)
 {
     for (size_t i = 0; i < goals->goals_count; ++i) {
-        if (camera_is_point_visible(camera, goals->points[i])) {
+        if (goals->cue_states[i] == 0 && camera_is_point_visible(camera, renderer, goals->points[i])) {
             goals->cue_states[i] = 1;
         }
     }

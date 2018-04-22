@@ -24,6 +24,7 @@ typedef struct line_t {
 
 rect_t rect(float x, float y, float w, float h);
 rect_t rect_from_vecs(point_t position, vec_t size);
+rect_t rect_from_sdl(const SDL_Rect *rect);
 
 rect_t rects_overlap_area(rect_t rect1, rect_t rect2);
 

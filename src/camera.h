@@ -41,6 +41,6 @@ void camera_toggle_debug_mode(camera_t *camera);
 
 void camera_toggle_blackwhite_mode(camera_t *camera);
 
-int camera_is_point_visible(const camera_t *camera, point_t p);
+int camera_is_point_visible(const camera_t *camera, SDL_Renderer *renderer, point_t p);
 
 #endif  // CAMERA_H_
