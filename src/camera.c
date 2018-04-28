@@ -160,8 +160,15 @@ int camera_fill_triangle(const camera_t *camera,
         return -1;
     }
 
-    if (fill_triangle(render, camera_triangle(camera, &view_port, t)) < 0) {
-        return -1;
+    if (camera->debug_mode) {
+        if (draw_triangle(render, camera_triangle(camera, &view_port, t)) < 0) {
+            return -1;
+        }
+
+    } else {
+        if (fill_triangle(render, camera_triangle(camera, &view_port, t)) < 0) {
+            return -1;
+        }
     }
 
     return 0;
