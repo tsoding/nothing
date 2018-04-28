@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include "./camera.h"
 #include "./sound_medium.h"
+#include "./player.h"
 
 typedef struct goals_t goals_t;
 
@@ -21,6 +22,8 @@ void goals_update(goals_t *goals,
                   float delta_time);
 void goals_hide(goals_t *goals,
                 rect_t player_hitbox);
+void goals_checkpoint(const goals_t *goals,
+                      player_t *player);
 void goals_cue(goals_t *goals,
                SDL_Renderer *renderer,
                const camera_t *camera);

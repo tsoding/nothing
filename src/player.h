@@ -2,14 +2,14 @@
 #define PLAYER_H_
 
 #include <SDL2/SDL.h>
-#include "./goals.h"
 #include "./lava.h"
 #include "./camera.h"
 #include "./sound_medium.h"
-#include "./player.h"
 #include "./platforms.h"
 
 typedef struct player_t player_t;
+
+typedef struct goals_t goals_t;
 
 player_t *create_player(float x, float y, color_t color);
 player_t *create_player_from_stream(FILE *stream);
@@ -21,6 +21,9 @@ int player_render(const player_t * player,
 void player_update(player_t * player,
                    const platforms_t *platforms,
                    float delta_time);
+
+void player_checkpoint(player_t *player,
+                       vec_t checkpoint);
 
 void player_move_left(player_t *player);
 void player_move_right(player_t *player);

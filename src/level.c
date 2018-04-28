@@ -134,6 +134,7 @@ int level_update(level_t *level, float delta_time)
     player_die_from_lava(level->player, level->lava);
 
     goals_update(level->goals, delta_time);
+    goals_checkpoint(level->goals, level->player);
     lava_update(level->lava, delta_time);
 
     return 0;

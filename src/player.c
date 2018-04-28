@@ -10,6 +10,7 @@
 #include "./error.h"
 #include "./rigid_rect.h"
 #include "./dying_rect.h"
+#include "./goals.h"
 
 #define PLAYER_WIDTH 25.0f
 #define PLAYER_HEIGHT 25.0f
@@ -236,4 +237,9 @@ void player_die_from_lava(player_t *player,
     if (lava_overlaps_rect(lava, rigid_rect_hitbox(player->alive_body))) {
         player_die(player);
     }
+}
+
+void player_checkpoint(player_t *player, vec_t checkpoint)
+{
+    player->checkpoint = checkpoint;
 }
