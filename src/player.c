@@ -10,6 +10,7 @@
 #include "./error.h"
 #include "./rigid_rect.h"
 #include "./dying_rect.h"
+#include "./goals.h"
 
 #define PLAYER_WIDTH 25.0f
 #define PLAYER_HEIGHT 25.0f

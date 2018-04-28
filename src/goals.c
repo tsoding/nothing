@@ -205,6 +205,19 @@ void goals_cue(goals_t *goals,
     }
 }
 
+void goals_checkpoint(const goals_t *goals,
+                      player_t *player)
+{
+    assert(goals);
+    assert(player);
+
+    for (size_t i = 0; i < goals->goals_count; ++i) {
+        if (goals->cue_states[i] == CUE_STATE_HIT_NOTHING) {
+            player_checkpoint(player, goals->points[i]);
+        }
+    }
+}
+
 /* Private Functions */
 
 static int goals_is_goal_hidden(const goals_t *goals, size_t i)

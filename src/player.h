@@ -2,14 +2,14 @@
 #define PLAYER_H_
 
 #include <SDL2/SDL.h>
-#include "./goals.h"
 #include "./lava.h"
 #include "./camera.h"
 #include "./sound_medium.h"
-#include "./player.h"
 #include "./platforms.h"
 
 typedef struct player_t player_t;
+
+typedef struct goals_t goals_t;
 
 player_t *create_player(float x, float y, color_t color);
 player_t *create_player_from_stream(FILE *stream);
