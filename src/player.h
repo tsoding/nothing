@@ -22,6 +22,9 @@ void player_update(player_t * player,
                    const platforms_t *platforms,
                    float delta_time);
 
+void player_checkpoint(player_t *player,
+                       vec_t checkpoint);
+
 void player_move_left(player_t *player);
 void player_move_right(player_t *player);
 void player_stop(player_t *player);

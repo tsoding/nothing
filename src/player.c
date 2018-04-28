@@ -237,3 +237,8 @@ void player_die_from_lava(player_t *player,
         player_die(player);
     }
 }
+
+void player_checkpoint(player_t *player, vec_t checkpoint)
+{
+    player->checkpoint = checkpoint;
+}
