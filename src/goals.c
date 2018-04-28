@@ -15,8 +15,6 @@ static int goals_is_goal_hidden(const goals_t *goals, size_t i);
 
 typedef enum cue_state_t {
     CUE_STATE_VIRGIN = 0,
-    CUE_STATE_PLAY_SOMETHING,
-    CUE_STATE_SOMETHING,
     CUE_STATE_PLAY_NOTHING,
     CUE_STATE_NOTHING
 } cue_state_t;
@@ -171,11 +169,6 @@ int goals_sound(goals_t *goals,
 {
     for (size_t i = 0; i < goals->goals_count; ++i) {
         switch (goals->cue_states[i]) {
-        case CUE_STATE_PLAY_SOMETHING:
-            sound_medium_play_sound(sound_medium, 1, goals->points[i], 0);
-            goals->cue_states[i] = CUE_STATE_SOMETHING;
-            break;
-
         case CUE_STATE_PLAY_NOTHING:
             sound_medium_play_sound(sound_medium, 0, goals->points[i], 0);
             goals->cue_states[i] = CUE_STATE_NOTHING;
@@ -195,13 +188,6 @@ void goals_cue(goals_t *goals,
     for (size_t i = 0; i < goals->goals_count; ++i) {
         switch (goals->cue_states[i]) {
         case CUE_STATE_VIRGIN:
-            if (!goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, renderer, goals->points[i])) {
-                goals->cue_states[i] = CUE_STATE_PLAY_SOMETHING;
-            }
-
-            break;
-
-        case CUE_STATE_SOMETHING:
             if (goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, renderer, goals->points[i])) {
                 goals->cue_states[i] = CUE_STATE_PLAY_NOTHING;
             }
@@ -209,7 +195,7 @@ void goals_cue(goals_t *goals,
             break;
 
         case CUE_STATE_NOTHING:
-            if (goals_is_goal_hidden(goals, i) && !camera_is_point_visible(camera, renderer, goals->points[i])) {
+            if (!goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, renderer, goals->points[i])) {
                 goals->cue_states[i] = CUE_STATE_VIRGIN;
             }
             break;
