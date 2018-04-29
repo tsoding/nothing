@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include "./lava.h"
 #include "./camera.h"
-#include "./sound_medium.h"
+#include "./game/sound_medium.h"
 #include "./platforms.h"
 
 typedef struct player_t player_t;

@@ -2,7 +2,7 @@
 #define GAME_H_
 
 #include <SDL2/SDL.h>
-#include "./sound_medium.h"
+#include "./game/sound_medium.h"
 
 typedef struct game_t game_t;
 

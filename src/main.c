@@ -11,7 +11,7 @@
 #include "./lt.h"
 #include "./path.h"
 #include "./point.h"
-#include "./sound_medium.h"
+#include "./game/sound_medium.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600

@@ -37,7 +37,7 @@ set(SOURCE_FILES
   src/dying_rect.c
   src/lava.c
   src/wavy_rect.c
-  src/sound_medium.c
+  src/game/sound_medium.c
   src/path.c
   src/mat3x3.c
   src/algo.c
@@ -63,7 +63,7 @@ set(HEADER_FILES
   src/dying_rect.h
   src/lava.h
   src/wavy_rect.h
-  src/sound_medium.h
+  src/game/sound_medium.h
   src/path.h
   src/mat3x3.h
   src/algo.h

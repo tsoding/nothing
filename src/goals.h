@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include "./camera.h"
-#include "./sound_medium.h"
+#include "./game/sound_medium.h"
 #include "./player.h"
 
 typedef struct goals_t goals_t;

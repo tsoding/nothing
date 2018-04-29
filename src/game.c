@@ -6,7 +6,7 @@
 #include "./game.h"
 #include "./error.h"
 #include "./game/level.h"
-#include "./sound_medium.h"
+#include "./game/sound_medium.h"
 #include "./lt.h"
 
 typedef enum game_state_t {
