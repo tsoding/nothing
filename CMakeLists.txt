@@ -21,6 +21,7 @@ set(SOURCE_FILES
   src/color.c
   src/game.c
   src/game/level.c
+  src/game/level/background.c
   src/game/level/camera.c
   src/game/level/goals.c
   src/game/level/lava.c
@@ -46,6 +47,7 @@ set(HEADER_FILES
   src/color.h
   src/game.h
   src/game/level.h
+  src/game/level/background.h
   src/game/level/camera.h
   src/game/level/goals.h
   src/game/level/lava.h
