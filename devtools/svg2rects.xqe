@@ -7,7 +7,7 @@ let $player := for $rect in $rects where $rect/@id = "player"
     $rect/@y, " ",
     replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
   )
-let $platforms := for $rect in $rects where matches($rect/@id, "rect.*")
+let $platforms := for $rect in $rects where matches($rect/@id, "^rect.*")
   return concat (
     $rect/@x, " ",
     $rect/@y, " ",
@@ -39,6 +39,14 @@ let $lavas := for $rect in $rects where matches($rect/@id, "lava.*")
   )
 let $background := for $rect in $rects where $rect/@id = "background"
 return replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
+let $backplatforms := for $rect in $rects where matches($rect/@id, "^backrect.*")
+  return concat (
+    $rect/@x, " ",
+    $rect/@y, " ",
+    $rect/@width, " ",
+    $rect/@height, " ",
+    replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
+  )
 return (
   $background,
   $player,
@@ -47,5 +55,7 @@ return (
   count($goals),
   $goals,
   count($lavas),
-  $lavas
+  $lavas,
+  count($backplatforms),
+  $backplatforms
 )

@@ -21,6 +21,7 @@ struct level_t
     goals_t *goals;
     lava_t *lava;
     color_t background_color;
+    platforms_t *back_platforms;
 };
 
 level_t *create_level_from_file(const char *file_name)
@@ -71,6 +72,11 @@ level_t *create_level_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
 
+    level->back_platforms = PUSH_LT(lt, create_platforms_from_stream(level_file), destroy_platforms);
+    if (level->back_platforms == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->camera = PUSH_LT(lt, create_camera(vec(0.0f, 0.0f)), destroy_camera);
     if (level->camera == NULL) {
         RETURN_LT(lt, NULL);
@@ -95,6 +101,10 @@ int level_render(const level_t *level, SDL_Renderer *renderer)
     assert(renderer);
 
     if (camera_clear_background(level->camera, renderer, level->background_color) < 0) {
+        return -1;
+    }
+
+    if (platforms_render(level->back_platforms, renderer, level->camera) < 0) {
         return -1;
     }
 
@@ -241,6 +251,13 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
     if (lava == NULL) {
         RETURN_LT(lt, -1);
     }
+    level->lava = RESET_LT(level->lt, level->lava, lava);
+
+    platforms_t * const back_platforms = create_platforms_from_stream(level_file);
+    if (back_platforms == NULL) {
+        RETURN_LT(lt, -1);
+    }
+    level->back_platforms = RESET_LT(level->lt, level->back_platforms, back_platforms);
 
     RETURN_LT(lt, 0);
 }
