@@ -76,3 +76,11 @@ color_t color_desaturate(color_t c)
     const float k = (c.r + c.g + c.b) / 3.0f;
     return color(k, k, k, c.a);
 }
+
+color_t color_darker(color_t c, float d)
+{
+    return color(fmaxf(c.r - d, 0.0f),
+                 fmaxf(c.g - d, 0.0f),
+                 fmaxf(c.b - d, 0.0f),
+                 c.a);
+}

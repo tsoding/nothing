@@ -43,4 +43,7 @@ void camera_toggle_blackwhite_mode(camera_t *camera);
 
 int camera_is_point_visible(const camera_t *camera, SDL_Renderer *renderer, point_t p);
 
+rect_t camera_view_port(const camera_t *camera,
+                        SDL_Renderer *render);
+
 #endif  // CAMERA_H_

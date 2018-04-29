@@ -220,6 +220,25 @@ int camera_is_point_visible(const camera_t *camera, SDL_Renderer *renderer, poin
         camera_point(camera, &view_port, p));
 }
 
+rect_t camera_view_port(const camera_t *camera,
+                        SDL_Renderer *renderer)
+{
+    assert(camera);
+    assert(renderer);
+
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(renderer, &view_port);
+
+    const vec_t s = effective_scale(&view_port);
+    const float w = (float) view_port.w * s.x;
+    const float h = (float) view_port.h * s.y;
+
+    return rect(camera->position.x - w * 0.5f,
+                camera->position.y - h * 0.5f,
+                w, h);
+}
+
+
 /* ---------- Private Function ---------- */
 
 static vec_t effective_ratio(const SDL_Rect *view_port)
