@@ -2,6 +2,7 @@
 #define RENDERER_H_
 
 #include <SDL2/SDL.h>
+
 #include "./math/point.h"
 #include "./math/triangle.h"
 

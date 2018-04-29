@@ -1,13 +1,12 @@
+#include <SDL2/SDL.h>
 #include <assert.h>
 #include <math.h>
 
-#include <SDL2/SDL.h>
-
-#include "./system/lt.h"
 #include "./goals.h"
-#include "./system/error.h"
 #include "./math/pi.h"
 #include "./math/triangle.h"
+#include "./system/error.h"
+#include "./system/lt.h"
 
 #define GOAL_RADIUS 10.0f
 

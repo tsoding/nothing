@@ -1,8 +1,7 @@
-#include <string.h>
+#include <SDL2/SDL.h>
 #include <assert.h>
 #include <math.h>
-
-#include <SDL2/SDL.h>
+#include <string.h>
 
 #include "./rect.h"
 

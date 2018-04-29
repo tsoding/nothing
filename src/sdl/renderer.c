@@ -1,5 +1,6 @@
-#include <assert.h>
 #include <SDL2/SDL.h>
+#include <assert.h>
+
 #include "./renderer.h"
 #include "./system/error.h"
 

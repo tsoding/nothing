@@ -2,6 +2,7 @@
 #define PLATFORMS_H_
 
 #include <SDL2/SDL.h>
+
 #include "./camera.h"
 #include "./math/rect.h"
 

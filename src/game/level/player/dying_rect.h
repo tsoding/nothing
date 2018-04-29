@@ -2,9 +2,10 @@
 #define DYING_RECT_H_
 
 #include <SDL2/SDL.h>
-#include "./math/rect.h"
+
 #include "./color.h"
 #include "./game/level/camera.h"
+#include "./math/rect.h"
 
 typedef struct dying_rect_t dying_rect_t;
 

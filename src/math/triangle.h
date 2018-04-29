@@ -1,8 +1,8 @@
 #ifndef TRIANGLE_H_
 #define TRIANGLE_H_
 
-#include "./math/rect.h"
 #include "./math/point.h"
+#include "./math/rect.h"
 
 typedef struct triangle_t {
     point_t p1, p2, p3;

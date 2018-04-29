@@ -1,14 +1,13 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#include "./sound_medium.h"
-#include "./system/lt.h"
-#include "./system/error.h"
 #include "./math/pi.h"
+#include "./sound_medium.h"
+#include "./system/error.h"
+#include "./system/lt.h"
 
 struct sound_medium_t
 {

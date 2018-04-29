@@ -1,14 +1,13 @@
+#include <SDL2/SDL.h>
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <time.h>
 
-#include <SDL2/SDL.h>
-
-#include "./wavy_rect.h"
-#include "./system/lt.h"
-#include "./system/error.h"
 #include "./math/pi.h"
+#include "./system/error.h"
+#include "./system/lt.h"
+#include "./wavy_rect.h"
 
 #define WAVE_PILLAR_WIDTH 10.0f
 

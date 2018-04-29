@@ -1,10 +1,10 @@
 #include <assert.h>
 #include <SDL2/SDL.h>
 
-#include "./system/lt.h"
 #include "./color.h"
 #include "./rigid_rect.h"
 #include "./system/error.h"
+#include "./system/lt.h"
 
 #define RIGID_RECT_GRAVITY 1500.0f
 

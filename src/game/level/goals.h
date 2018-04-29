@@ -2,9 +2,10 @@
 #define GOALS_H_
 
 #include <SDL2/SDL.h>
+
 #include "./game/level/camera.h"
-#include "./game/sound_medium.h"
 #include "./game/level/player.h"
+#include "./game/sound_medium.h"
 
 typedef struct goals_t goals_t;
 

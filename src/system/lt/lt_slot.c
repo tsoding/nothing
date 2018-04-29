@@ -1,8 +1,9 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
-#include "./system/error.h"
+
 #include "./lt_slot.h"
+#include "./system/error.h"
 
 struct lt_slot_t
 {

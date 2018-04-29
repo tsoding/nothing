@@ -1,9 +1,9 @@
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 
 #include "./math/pi.h"
-#include "./triangle.h"
 #include "./math/rand.h"
+#include "./triangle.h"
 
 triangle_t triangle(point_t p1, point_t p2, point_t p3)
 {

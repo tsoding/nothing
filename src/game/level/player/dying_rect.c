@@ -1,10 +1,10 @@
-#include <assert.h>
 #include <SDL2/SDL.h>
+#include <assert.h>
 
-#include "./system/lt.h"
-#include "./system/error.h"
 #include "./dying_rect.h"
 #include "./math/rand.h"
+#include "./system/error.h"
+#include "./system/lt.h"
 
 #define DYING_RECT_PIECE_COUNT 20
 #define DYING_RECT_PIECE_SIZE 20.0f

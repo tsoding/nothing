@@ -2,6 +2,7 @@
 #define RECT_H_
 
 #include <SDL2/SDL.h>
+
 #include "./math/point.h"
 
 typedef enum rect_side_t {

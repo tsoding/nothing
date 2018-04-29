@@ -1,9 +1,9 @@
 #ifndef RIGID_RECT_H_
 #define RIGID_RECT_H_
 
-#include "./game/level/platforms.h"
-#include "./game/level/camera.h"
 #include "./color.h"
+#include "./game/level/camera.h"
+#include "./game/level/platforms.h"
 #include "./math/rect.h"
 
 typedef struct rigid_rect_t rigid_rect_t;
