@@ -78,12 +78,9 @@ void destroy_sound_medium(sound_medium_t *sound_medium)
 
 int sound_medium_play_sound(sound_medium_t *sound_medium,
                             size_t sound_index,
-                            point_t position,
                             int loops)
 {
     assert(sound_medium);
-    (void) sound_index;
-    (void) position;
 
     if (sound_index < sound_medium->samples_count) {
         const int free_channel = mix_get_free_channel(sound_medium->lower_channel,
