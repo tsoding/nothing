@@ -6,7 +6,7 @@
 #include <SDL2/SDL.h>
 
 #include "./platforms.h"
-#include "./error.h"
+#include "./system/error.h"
 #include "./lt.h"
 
 struct platforms_t {

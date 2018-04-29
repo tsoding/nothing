@@ -7,7 +7,7 @@
 
 #include "./sound_medium.h"
 #include "./lt.h"
-#include "./error.h"
+#include "./system/error.h"
 #include "./math/pi.h"
 
 struct sound_medium_t

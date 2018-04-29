@@ -24,7 +24,7 @@ set(SOURCE_FILES
   src/math/rect.c
   src/math/point.c
   src/game/level/camera.c
-  src/error.c
+  src/system/error.c
   src/game.c
   src/lt.c
   src/lt/lt_slot.c
@@ -48,7 +48,7 @@ set(HEADER_FILES
   src/math/rect.h
   src/math/point.h
   src/game/level/camera.h
-  src/error.h
+  src/system/error.h
   src/game.h
   src/lt.h
   src/lt/lt_slot.h

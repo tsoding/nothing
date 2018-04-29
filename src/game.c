@@ -4,7 +4,7 @@
 #include <SDL2/SDL_mixer.h>
 
 #include "./game.h"
-#include "./error.h"
+#include "./system/error.h"
 #include "./game/level.h"
 #include "./game/sound_medium.h"
 #include "./lt.h"

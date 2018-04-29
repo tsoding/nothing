@@ -5,7 +5,7 @@
 
 #include "./lt.h"
 #include "./goals.h"
-#include "./error.h"
+#include "./system/error.h"
 #include "./math/pi.h"
 #include "./math/triangle.h"
 

@@ -4,7 +4,7 @@
 
 #include "./lt.h"
 #include "./lava.h"
-#include "./error.h"
+#include "./system/error.h"
 #include "./color.h"
 #include "./game/level/lava/wavy_rect.h"
 

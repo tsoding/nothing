@@ -4,7 +4,7 @@
 #include <assert.h>
 
 #include "./camera.h"
-#include "./error.h"
+#include "./system/error.h"
 #include "./sdl/renderer.h"
 
 #define RATIO_X 16.0f

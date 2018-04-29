@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <SDL2/SDL.h>
 #include "./renderer.h"
-#include "./error.h"
+#include "./system/error.h"
 
 int draw_triangle(SDL_Renderer *render,
                   triangle_t t)

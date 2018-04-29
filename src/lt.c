@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "./error.h"
+#include "./system/error.h"
 #include "./lt.h"
 #include "./lt/lt_slot.h"
 

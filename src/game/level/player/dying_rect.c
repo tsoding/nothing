@@ -2,7 +2,7 @@
 #include <SDL2/SDL.h>
 
 #include "./lt.h"
-#include "./error.h"
+#include "./system/error.h"
 #include "./dying_rect.h"
 #include "./math/rand.h"
 

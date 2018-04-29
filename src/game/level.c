@@ -6,7 +6,7 @@
 #include "./game/level/platforms.h"
 #include "./game/level.h"
 #include "./game/level/camera.h"
-#include "./error.h"
+#include "./system/error.h"
 #include "./game/level/goals.h"
 #include "./game/level/lava.h"
 

@@ -7,7 +7,7 @@
 
 #include "./wavy_rect.h"
 #include "./lt.h"
-#include "./error.h"
+#include "./system/error.h"
 #include "./math/pi.h"
 
 #define WAVE_PILLAR_WIDTH 10.0f

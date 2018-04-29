@@ -4,7 +4,7 @@
 #include "./lt.h"
 #include "./color.h"
 #include "./rigid_rect.h"
-#include "./error.h"
+#include "./system/error.h"
 
 #define RIGID_RECT_GRAVITY 1500.0f
 
