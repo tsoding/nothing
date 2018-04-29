@@ -1,7 +1,7 @@
 #ifndef RIGID_RECT_H_
 #define RIGID_RECT_H_
 
-#include "./platforms.h"
+#include "./game/level/platforms.h"
 #include "./camera.h"
 #include "./color.h"
 #include "./rect.h"

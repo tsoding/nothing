@@ -3,7 +3,7 @@
 
 #include "./lt.h"
 #include "./game/level/player.h"
-#include "./platforms.h"
+#include "./game/level/platforms.h"
 #include "./game/level.h"
 #include "./camera.h"
 #include "./error.h"

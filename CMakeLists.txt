@@ -20,7 +20,7 @@ include_directories(${SDL2_MIXER_INCLUDE_DIR})
 set(SOURCE_FILES
   src/main.c
   src/game/level/player.c
-  src/platforms.c
+  src/game/level/platforms.c
   src/rect.c
   src/point.c
   src/camera.c
@@ -45,7 +45,7 @@ set(SOURCE_FILES
 
 set(HEADER_FILES
   src/game/level/player.h
-  src/platforms.h
+  src/game/level/platforms.h
   src/rect.h
   src/point.h
   src/camera.h

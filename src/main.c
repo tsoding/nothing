@@ -5,7 +5,7 @@
 #include <SDL2/SDL_mixer.h>
 
 #include "./game/level/player.h"
-#include "./platforms.h"
+#include "./game/level/platforms.h"
 #include "./error.h"
 #include "./game.h"
 #include "./lt.h"
