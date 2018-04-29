@@ -6,7 +6,7 @@
 #include "./lava.h"
 #include "./error.h"
 #include "./color.h"
-#include "./wavy_rect.h"
+#include "./game/level/lava/wavy_rect.h"
 
 struct lava_t {
     lt_t *lt;

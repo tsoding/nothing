@@ -36,7 +36,7 @@ set(SOURCE_FILES
   src/rigid_rect.c
   src/dying_rect.c
   src/game/level/lava.c
-  src/wavy_rect.c
+  src/game/level/lava/wavy_rect.c
   src/game/sound_medium.c
   src/path.c
   src/mat3x3.c
@@ -62,7 +62,7 @@ set(HEADER_FILES
   src/rigid_rect.h
   src/dying_rect.h
   src/game/level/lava.h
-  src/wavy_rect.h
+  src/game/level/lava/wavy_rect.h
   src/game/sound_medium.h
   src/path.h
   src/mat3x3.h
