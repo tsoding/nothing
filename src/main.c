@@ -9,7 +9,6 @@
 #include "./error.h"
 #include "./game.h"
 #include "./lt.h"
-#include "./path.h"
 #include "./math/point.h"
 #include "./game/sound_medium.h"
 
@@ -128,12 +127,6 @@ int main(int argc, char *argv[])
     }
 
     // ------------------------------
-
-    char *sounds_folder = PUSH_LT(lt, base_path_folder("sounds"), free);
-    if (sounds_folder == NULL) {
-        print_current_error_msg("Could not get the sounds folder");
-        RETURN_LT(lt, -1);
-    }
 
     game_t *const game = PUSH_LT(lt, create_game(argv[1], sound_medium), destroy_game);
     if (game == NULL) {

@@ -38,7 +38,6 @@ set(SOURCE_FILES
   src/game/level/lava.c
   src/game/level/lava/wavy_rect.c
   src/game/sound_medium.c
-  src/path.c
   src/math/mat3x3.c
   src/math/rand.c
 )
@@ -64,7 +63,6 @@ set(HEADER_FILES
   src/game/level/lava.h
   src/game/level/lava/wavy_rect.h
   src/game/sound_medium.h
-  src/path.h
   src/math/mat3x3.h
   src/math/rand.h
 )
