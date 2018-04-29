@@ -18,53 +18,53 @@ include_directories(${SDL2_INCLUDE_DIR})
 include_directories(${SDL2_MIXER_INCLUDE_DIR})
 
 set(SOURCE_FILES
-  src/main.c
-  src/game/level/player.c
-  src/game/level/platforms.c
-  src/math/rect.c
-  src/math/point.c
-  src/game/level/camera.c
-  src/system/error.c
-  src/game.c
-  src/system/lt.c
-  src/system/lt/lt_slot.c
-  src/game/level.c
-  src/game/level/goals.c
-  src/sdl/renderer.c
-  src/math/triangle.c
   src/color.c
-  src/game/level/player/rigid_rect.c
-  src/game/level/player/dying_rect.c
+  src/game.c
+  src/game/level.c
+  src/game/level/camera.c
+  src/game/level/goals.c
   src/game/level/lava.c
   src/game/level/lava/wavy_rect.c
+  src/game/level/platforms.c
+  src/game/level/player.c
+  src/game/level/player/dying_rect.c
+  src/game/level/player/rigid_rect.c
   src/game/sound_medium.c
+  src/main.c
   src/math/mat3x3.c
+  src/math/point.c
   src/math/rand.c
+  src/math/rect.c
+  src/math/triangle.c
+  src/sdl/renderer.c
+  src/system/error.c
+  src/system/lt.c
+  src/system/lt/lt_slot.c
 )
 
 set(HEADER_FILES
-  src/game/level/player.h
-  src/game/level/platforms.h
-  src/math/rect.h
-  src/math/point.h
-  src/game/level/camera.h
-  src/system/error.h
-  src/game.h
-  src/system/lt.h
-  src/system/lt/lt_slot.h
-  src/game/level.h
-  src/game/level/goals.h
-  src/sdl/renderer.h
-  src/math/triangle.h
-  src/math/pi.h
   src/color.h
-  src/game/level/player/rigid_rect.h
-  src/game/level/player/dying_rect.h
+  src/game.h
+  src/game/level.h
+  src/game/level/camera.h
+  src/game/level/goals.h
   src/game/level/lava.h
   src/game/level/lava/wavy_rect.h
+  src/game/level/platforms.h
+  src/game/level/player.h
+  src/game/level/player/dying_rect.h
+  src/game/level/player/rigid_rect.h
   src/game/sound_medium.h
   src/math/mat3x3.h
+  src/math/pi.h
+  src/math/point.h
   src/math/rand.h
+  src/math/rect.h
+  src/math/triangle.h
+  src/sdl/renderer.h
+  src/system/error.h
+  src/system/lt.h
+  src/system/lt/lt_slot.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
