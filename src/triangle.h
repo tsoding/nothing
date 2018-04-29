@@ -1,7 +1,7 @@
 #ifndef TRIANGLE_H_
 #define TRIANGLE_H_
 
-#include "./rect.h"
+#include "./math/rect.h"
 #include "./math/point.h"
 
 typedef struct triangle_t {

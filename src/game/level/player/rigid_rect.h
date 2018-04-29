@@ -4,7 +4,7 @@
 #include "./game/level/platforms.h"
 #include "./game/level/camera.h"
 #include "./color.h"
-#include "./rect.h"
+#include "./math/rect.h"
 
 typedef struct rigid_rect_t rigid_rect_t;
 

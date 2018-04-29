@@ -2,7 +2,7 @@
 #define WAVY_RECT_H_
 
 #include <SDL2/SDL.h>
-#include "./rect.h"
+#include "./math/rect.h"
 #include "./color.h"
 #include "./game/level/camera.h"
 
