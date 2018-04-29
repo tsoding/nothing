@@ -15,7 +15,6 @@ void destroy_sound_medium(sound_medium_t *sound_medium);
 
 int sound_medium_play_sound(sound_medium_t *sound_medium,
                             size_t sound_index,
-                            point_t position,
                             int loops);
 
 int sound_medium_toggle_pause(sound_medium_t *sound_medium);

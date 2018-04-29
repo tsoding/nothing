@@ -23,6 +23,8 @@ void player_update(player_t * player,
                    const platforms_t *platforms,
                    float delta_time);
 
+int player_sound(player_t *player,
+                 sound_medium_t *sound_medium);
 void player_checkpoint(player_t *player,
                        vec_t checkpoint);
 
