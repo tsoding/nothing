@@ -10,7 +10,7 @@
 #include "./game.h"
 #include "./lt.h"
 #include "./path.h"
-#include "./point.h"
+#include "./math/point.h"
 #include "./game/sound_medium.h"
 
 #define SCREEN_WIDTH 800

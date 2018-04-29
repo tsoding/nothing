@@ -22,7 +22,7 @@ set(SOURCE_FILES
   src/game/level/player.c
   src/game/level/platforms.c
   src/rect.c
-  src/point.c
+  src/math/point.c
   src/game/level/camera.c
   src/error.c
   src/game.c
@@ -47,7 +47,7 @@ set(HEADER_FILES
   src/game/level/player.h
   src/game/level/platforms.h
   src/rect.h
-  src/point.h
+  src/math/point.h
   src/game/level/camera.h
   src/error.h
   src/game.h
@@ -57,7 +57,7 @@ set(HEADER_FILES
   src/game/level/goals.h
   src/renderer.h
   src/triangle.h
-  src/pi.h
+  src/math/pi.h
   src/color.h
   src/game/level/player/rigid_rect.h
   src/game/level/player/dying_rect.h

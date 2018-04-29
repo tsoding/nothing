@@ -2,7 +2,7 @@
 #define SOUND_MEDIUM_H_
 
 #include <SDL2/SDL_mixer.h>
-#include "./point.h"
+#include "./math/point.h"
 
 typedef struct sound_medium_t sound_medium_t;
 

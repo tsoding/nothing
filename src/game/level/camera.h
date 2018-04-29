@@ -2,7 +2,7 @@
 #define CAMERA_H_
 
 #include "./rect.h"
-#include "./point.h"
+#include "./math/point.h"
 #include "./triangle.h"
 #include "./color.h"
 

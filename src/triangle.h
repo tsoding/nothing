@@ -2,7 +2,7 @@
 #define TRIANGLE_H_
 
 #include "./rect.h"
-#include "./point.h"
+#include "./math/point.h"
 
 typedef struct triangle_t {
     point_t p1, p2, p3;
