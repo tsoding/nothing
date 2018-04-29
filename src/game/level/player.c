@@ -9,7 +9,7 @@
 #include "./point.h"
 #include "./error.h"
 #include "./game/level/player/rigid_rect.h"
-#include "./dying_rect.h"
+#include "./game/level/player/dying_rect.h"
 #include "./goals.h"
 
 #define PLAYER_WIDTH 25.0f

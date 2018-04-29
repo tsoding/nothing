@@ -34,7 +34,7 @@ set(SOURCE_FILES
   src/triangle.c
   src/color.c
   src/game/level/player/rigid_rect.c
-  src/dying_rect.c
+  src/game/level/player/dying_rect.c
   src/game/level/lava.c
   src/game/level/lava/wavy_rect.c
   src/game/sound_medium.c
@@ -60,7 +60,7 @@ set(HEADER_FILES
   src/pi.h
   src/color.h
   src/game/level/player/rigid_rect.h
-  src/dying_rect.h
+  src/game/level/player/dying_rect.h
   src/game/level/lava.h
   src/game/level/lava/wavy_rect.h
   src/game/sound_medium.h
