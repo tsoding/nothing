@@ -2,7 +2,7 @@
 #include <SDL2/SDL.h>
 
 #include "./lt.h"
-#include "./player.h"
+#include "./game/level/player.h"
 #include "./platforms.h"
 #include "./game/level.h"
 #include "./camera.h"

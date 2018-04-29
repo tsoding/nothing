@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include "./camera.h"
 #include "./game/sound_medium.h"
-#include "./player.h"
+#include "./game/level/player.h"
 
 typedef struct goals_t goals_t;
 
