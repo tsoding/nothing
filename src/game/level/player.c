@@ -35,6 +35,8 @@ struct player_t {
 
     /* TODO(#110): introduce checkpoints */
     vec_t checkpoint;
+
+    int play_die_cue;
 };
 
 player_t *create_player(float x, float y, color_t color)
@@ -78,6 +80,7 @@ player_t *create_player(float x, float y, color_t color)
     player->jump_count = 0;
     player->color = color;
     player->checkpoint = vec(x, y);
+    player->play_die_cue = 0;
 
     return player;
 }
@@ -197,6 +200,7 @@ void player_die(player_t *player)
     assert(player);
 
     if (player->state == PLAYER_STATE_ALIVE) {
+        player->play_die_cue = 1;
         player->dying_body = RESET_LT(
             player->lt,
             player->dying_body,
@@ -242,4 +246,18 @@ void player_die_from_lava(player_t *player,
 void player_checkpoint(player_t *player, vec_t checkpoint)
 {
     player->checkpoint = checkpoint;
+}
+
+int player_sound(player_t *player,
+                 sound_medium_t *sound_medium)
+{
+    if (player->play_die_cue) {
+        player->play_die_cue = 0;
+
+        if (sound_medium_play_sound(sound_medium, 0, 1) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
 }
