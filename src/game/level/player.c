@@ -8,7 +8,7 @@
 #include "./platforms.h"
 #include "./point.h"
 #include "./error.h"
-#include "./rigid_rect.h"
+#include "./game/level/player/rigid_rect.h"
 #include "./dying_rect.h"
 #include "./goals.h"
 
