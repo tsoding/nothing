@@ -2,7 +2,7 @@
 #define GOALS_H_
 
 #include <SDL2/SDL.h>
-#include "./camera.h"
+#include "./game/level/camera.h"
 #include "./game/sound_medium.h"
 #include "./game/level/player.h"
 

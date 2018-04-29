@@ -23,7 +23,7 @@ set(SOURCE_FILES
   src/game/level/platforms.c
   src/rect.c
   src/point.c
-  src/camera.c
+  src/game/level/camera.c
   src/error.c
   src/game.c
   src/lt.c
@@ -48,7 +48,7 @@ set(HEADER_FILES
   src/game/level/platforms.h
   src/rect.h
   src/point.h
-  src/camera.h
+  src/game/level/camera.h
   src/error.h
   src/game.h
   src/lt.h

@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include "./rect.h"
 #include "./color.h"
-#include "./camera.h"
+#include "./game/level/camera.h"
 
 typedef struct dying_rect_t dying_rect_t;
 

@@ -5,7 +5,7 @@
 #include <SDL2/SDL_mixer.h>
 #include "./game/level/player.h"
 #include "./game/level/platforms.h"
-#include "./camera.h"
+#include "./game/level/camera.h"
 #include "./sound_medium.h"
 
 typedef struct level_t level_t;

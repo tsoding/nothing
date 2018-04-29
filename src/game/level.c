@@ -5,7 +5,7 @@
 #include "./game/level/player.h"
 #include "./game/level/platforms.h"
 #include "./game/level.h"
-#include "./camera.h"
+#include "./game/level/camera.h"
 #include "./error.h"
 #include "./goals.h"
 #include "./lava.h"
