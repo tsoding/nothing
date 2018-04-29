@@ -1,8 +1,8 @@
 #ifndef LAVA_H_
 #define LAVA_H_
 
-#include "./game/level/camera.h"
-#include "./math/rect.h"
+#include "game/level/camera.h"
+#include "math/rect.h"
 
 typedef struct lava_t lava_t;
 

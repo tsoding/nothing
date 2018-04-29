@@ -3,8 +3,8 @@
 
 #include <SDL2/SDL.h>
 
-#include "./camera.h"
-#include "./math/rect.h"
+#include "camera.h"
+#include "math/rect.h"
 
 typedef struct platforms_t platforms_t;
 

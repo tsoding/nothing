@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "./math/pi.h"
-#include "./sound_medium.h"
-#include "./system/error.h"
-#include "./system/lt.h"
+#include "math/pi.h"
+#include "sound_medium.h"
+#include "system/error.h"
+#include "system/lt.h"
 
 struct sound_medium_t
 {

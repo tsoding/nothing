@@ -4,10 +4,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "./math/pi.h"
-#include "./system/error.h"
-#include "./system/lt.h"
-#include "./wavy_rect.h"
+#include "math/pi.h"
+#include "system/error.h"
+#include "system/lt.h"
+#include "wavy_rect.h"
 
 #define WAVE_PILLAR_WIDTH 10.0f
 

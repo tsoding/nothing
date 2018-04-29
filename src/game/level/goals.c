@@ -2,11 +2,11 @@
 #include <assert.h>
 #include <math.h>
 
-#include "./goals.h"
-#include "./math/pi.h"
-#include "./math/triangle.h"
-#include "./system/error.h"
-#include "./system/lt.h"
+#include "goals.h"
+#include "math/pi.h"
+#include "math/triangle.h"
+#include "system/error.h"
+#include "system/lt.h"
 
 #define GOAL_RADIUS 10.0f
 

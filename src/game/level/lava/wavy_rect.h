@@ -3,9 +3,9 @@
 
 #include <SDL2/SDL.h>
 
-#include "./color.h"
-#include "./game/level/camera.h"
-#include "./math/rect.h"
+#include "color.h"
+#include "game/level/camera.h"
+#include "math/rect.h"
 
 typedef struct wavy_rect_t wavy_rect_t;
 

@@ -1,10 +1,10 @@
 #ifndef CAMERA_H_
 #define CAMERA_H_
 
-#include "./color.h"
-#include "./math/point.h"
-#include "./math/rect.h"
-#include "./math/triangle.h"
+#include "color.h"
+#include "math/point.h"
+#include "math/rect.h"
+#include "math/triangle.h"
 
 typedef struct camera_t camera_t;
 

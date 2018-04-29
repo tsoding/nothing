@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "./platforms.h"
-#include "./system/error.h"
-#include "./system/lt.h"
+#include "platforms.h"
+#include "system/error.h"
+#include "system/lt.h"
 
 struct platforms_t {
     lt_t *lt;

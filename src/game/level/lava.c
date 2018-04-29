@@ -2,11 +2,11 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "./color.h"
-#include "./game/level/lava/wavy_rect.h"
-#include "./lava.h"
-#include "./system/error.h"
-#include "./system/lt.h"
+#include "color.h"
+#include "game/level/lava/wavy_rect.h"
+#include "lava.h"
+#include "system/error.h"
+#include "system/lt.h"
 
 struct lava_t {
     lt_t *lt;

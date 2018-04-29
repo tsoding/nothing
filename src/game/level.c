@@ -1,14 +1,14 @@
 #include <SDL2/SDL.h>
 #include <assert.h>
 
-#include "./game/level.h"
-#include "./game/level/camera.h"
-#include "./game/level/goals.h"
-#include "./game/level/lava.h"
-#include "./game/level/platforms.h"
-#include "./game/level/player.h"
-#include "./system/error.h"
-#include "./system/lt.h"
+#include "game/level.h"
+#include "game/level/camera.h"
+#include "game/level/goals.h"
+#include "game/level/lava.h"
+#include "game/level/platforms.h"
+#include "game/level/player.h"
+#include "system/error.h"
+#include "system/lt.h"
 
 /* TODO(#118): Level doesn't play the Nothing and Something sounds when the goal get into view */
 

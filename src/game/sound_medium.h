@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL_mixer.h>
 
-#include "./math/point.h"
+#include "math/point.h"
 
 typedef struct sound_medium_t sound_medium_t;
 

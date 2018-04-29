@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "./math/rand.h"
+#include "math/rand.h"
 
 float rand_float(float max_value)
 {

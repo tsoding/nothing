@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "./game/sound_medium.h"
+#include "game/sound_medium.h"
 
 typedef struct game_t game_t;
 

@@ -3,8 +3,8 @@
 
 #include <SDL2/SDL.h>
 
-#include "./math/point.h"
-#include "./math/triangle.h"
+#include "math/point.h"
+#include "math/triangle.h"
 
 int draw_triangle(SDL_Renderer *render,
                   triangle_t t);

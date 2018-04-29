@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "./lt.h"
-#include "./lt/lt_slot.h"
-#include "./system/error.h"
+#include "lt.h"
+#include "lt/lt_slot.h"
+#include "system/error.h"
 
 #define INITIAL_FRAME_BUFFER_SIZE 16
 

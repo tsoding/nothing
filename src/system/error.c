@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "./error.h"
+#include "error.h"
 
 static error_type_t current_error_type = ERROR_TYPE_OK;
 

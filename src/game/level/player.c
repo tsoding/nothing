@@ -3,14 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "./game/level/player/dying_rect.h"
-#include "./game/level/player/rigid_rect.h"
-#include "./goals.h"
-#include "./math/point.h"
-#include "./platforms.h"
-#include "./player.h"
-#include "./system/error.h"
-#include "./system/lt.h"
+#include "game/level/player/dying_rect.h"
+#include "game/level/player/rigid_rect.h"
+#include "goals.h"
+#include "math/point.h"
+#include "platforms.h"
+#include "player.h"
+#include "system/error.h"
+#include "system/lt.h"
 
 #define PLAYER_WIDTH 25.0f
 #define PLAYER_HEIGHT 25.0f

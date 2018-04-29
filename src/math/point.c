@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <math.h>
 
-#include "./point.h"
+#include "point.h"
 
 vec_t vec(float x, float y)
 {

@@ -2,9 +2,9 @@
 #include <assert.h>
 #include <math.h>
 
-#include "./camera.h"
-#include "./sdl/renderer.h"
-#include "./system/error.h"
+#include "camera.h"
+#include "sdl/renderer.h"
+#include "system/error.h"
 
 #define RATIO_X 16.0f
 #define RATIO_Y 9.0f

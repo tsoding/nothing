@@ -4,13 +4,13 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "./game.h"
-#include "./game/level/platforms.h"
-#include "./game/level/player.h"
-#include "./game/sound_medium.h"
-#include "./math/point.h"
-#include "./system/error.h"
-#include "./system/lt.h"
+#include "game.h"
+#include "game/level/platforms.h"
+#include "game/level/player.h"
+#include "game/sound_medium.h"
+#include "math/point.h"
+#include "system/error.h"
+#include "system/lt.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600

@@ -3,7 +3,7 @@
 #include <math.h>
 #include <string.h>
 
-#include "./rect.h"
+#include "rect.h"
 
 rect_t rect(float x, float y, float w, float h)
 {
