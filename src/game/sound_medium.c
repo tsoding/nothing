@@ -9,7 +9,6 @@
 #include "./lt.h"
 #include "./error.h"
 #include "./pi.h"
-#include "./algo.h"
 
 struct sound_medium_t
 {

@@ -4,7 +4,7 @@
 #include "./lt.h"
 #include "./error.h"
 #include "./dying_rect.h"
-#include "./algo.h"
+#include "./math/rand.h"
 
 #define DYING_RECT_PIECE_COUNT 20
 #define DYING_RECT_PIECE_SIZE 20.0f

@@ -3,7 +3,7 @@
 
 #include "./pi.h"
 #include "./triangle.h"
-#include "./algo.h"
+#include "./math/rand.h"
 
 triangle_t triangle(point_t p1, point_t p2, point_t p3)
 {

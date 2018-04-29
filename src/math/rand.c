@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "./algo.h"
+#include "./math/rand.h"
 
 float rand_float(float max_value)
 {
