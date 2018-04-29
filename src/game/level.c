@@ -7,7 +7,7 @@
 #include "./game/level.h"
 #include "./game/level/camera.h"
 #include "./error.h"
-#include "./goals.h"
+#include "./game/level/goals.h"
 #include "./lava.h"
 
 /* TODO(#118): Level doesn't play the Nothing and Something sounds when the goal get into view */

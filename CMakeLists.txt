@@ -29,7 +29,7 @@ set(SOURCE_FILES
   src/lt.c
   src/lt/lt_slot.c
   src/game/level.c
-  src/goals.c
+  src/game/level/goals.c
   src/renderer.c
   src/triangle.c
   src/color.c
@@ -54,7 +54,7 @@ set(HEADER_FILES
   src/lt.h
   src/lt/lt_slot.h
   src/game/level.h
-  src/goals.h
+  src/game/level/goals.h
   src/renderer.h
   src/triangle.h
   src/pi.h
