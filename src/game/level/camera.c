@@ -5,7 +5,7 @@
 
 #include "./camera.h"
 #include "./error.h"
-#include "./renderer.h"
+#include "./sdl/renderer.h"
 
 #define RATIO_X 16.0f
 #define RATIO_Y 9.0f
