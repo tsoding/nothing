@@ -13,6 +13,8 @@ color_t color256(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 color_t color_from_hexstr(const char *hexstr);
 SDL_Color color_for_sdl(color_t color);
 
+color_t color_darker(color_t color, float d);
+
 color_t color_desaturate(color_t color);
 
 #endif  // COLOR_H_

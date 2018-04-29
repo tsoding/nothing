@@ -2,6 +2,7 @@
 #include <assert.h>
 
 #include "game/level.h"
+#include "game/level/background.h"
 #include "game/level/camera.h"
 #include "game/level/goals.h"
 #include "game/level/lava.h"
@@ -22,6 +23,7 @@ struct level_t
     lava_t *lava;
     color_t background_color;
     platforms_t *back_platforms;
+    background_t *background;
 };
 
 level_t *create_level_from_file(const char *file_name)
@@ -82,6 +84,11 @@ level_t *create_level_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
 
+    level->background = PUSH_LT(lt, create_background(level->background_color), destroy_background);
+    if (level->background == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->lt = lt;
 
     fclose(RELEASE_LT(lt, level_file));
@@ -101,6 +108,10 @@ int level_render(const level_t *level, SDL_Renderer *renderer)
     assert(renderer);
 
     if (camera_clear_background(level->camera, renderer, level->background_color) < 0) {
+        return -1;
+    }
+
+    if (background_render(level->background, renderer, level->camera) < 0) {
         return -1;
     }
 
