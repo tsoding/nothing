@@ -1,17 +1,16 @@
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
 
-#include "./player.h"
-#include "./platforms.h"
-#include "./error.h"
-#include "./game.h"
-#include "./lt.h"
-#include "./path.h"
-#include "./point.h"
-#include "./sound_medium.h"
+#include "game.h"
+#include "game/level/platforms.h"
+#include "game/level/player.h"
+#include "game/sound_medium.h"
+#include "math/point.h"
+#include "system/error.h"
+#include "system/lt.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -129,12 +128,6 @@ int main(int argc, char *argv[])
 
     // ------------------------------
 
-    char *sounds_folder = PUSH_LT(lt, base_path_folder("sounds"), free);
-    if (sounds_folder == NULL) {
-        print_current_error_msg("Could not get the sounds folder");
-        RETURN_LT(lt, -1);
-    }
-
     game_t *const game = PUSH_LT(lt, create_game(argv[1], sound_medium), destroy_game);
     if (game == NULL) {
         print_current_error_msg("Could not create the game object");
@@ -143,7 +136,6 @@ int main(int argc, char *argv[])
 
     const Uint8 *const keyboard_state = SDL_GetKeyboardState(NULL);
     const float delay_ms = 1.0f / GAME_FPS;
-    printf("delay_ms: %f", delay_ms);
     SDL_Event e;
     while (!game_over_check(game)) {
         while (!game_over_check(game) && SDL_PollEvent(&e)) {

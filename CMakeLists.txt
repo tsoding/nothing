@@ -13,59 +13,58 @@ find_package(SDL2 REQUIRED)
 
 find_package(SDL2_mixer REQUIRED)
 
+include_directories(src/)
 include_directories(${SDL2_INCLUDE_DIR})
 include_directories(${SDL2_MIXER_INCLUDE_DIR})
 
 set(SOURCE_FILES
-  src/main.c
-  src/player.c
-  src/platforms.c
-  src/rect.c
-  src/point.c
-  src/camera.c
-  src/error.c
-  src/game.c
-  src/lt.c
-  src/lt/lt_slot.c
-  src/level.c
-  src/goals.c
-  src/renderer.c
-  src/triangle.c
   src/color.c
-  src/rigid_rect.c
-  src/dying_rect.c
-  src/lava.c
-  src/wavy_rect.c
-  src/sound_medium.c
-  src/path.c
-  src/mat3x3.c
-  src/algo.c
+  src/game.c
+  src/game/level.c
+  src/game/level/camera.c
+  src/game/level/goals.c
+  src/game/level/lava.c
+  src/game/level/lava/wavy_rect.c
+  src/game/level/platforms.c
+  src/game/level/player.c
+  src/game/level/player/dying_rect.c
+  src/game/level/player/rigid_rect.c
+  src/game/sound_medium.c
+  src/main.c
+  src/math/mat3x3.c
+  src/math/point.c
+  src/math/rand.c
+  src/math/rect.c
+  src/math/triangle.c
+  src/sdl/renderer.c
+  src/system/error.c
+  src/system/lt.c
+  src/system/lt/lt_slot.c
 )
 
 set(HEADER_FILES
-  src/player.h
-  src/platforms.h
-  src/rect.h
-  src/point.h
-  src/camera.h
-  src/error.h
-  src/game.h
-  src/lt.h
-  src/lt/lt_slot.h
-  src/level.h
-  src/goals.h
-  src/renderer.h
-  src/triangle.h
-  src/pi.h
   src/color.h
-  src/rigid_rect.h
-  src/dying_rect.h
-  src/lava.h
-  src/wavy_rect.h
-  src/sound_medium.h
-  src/path.h
-  src/mat3x3.h
-  src/algo.h
+  src/game.h
+  src/game/level.h
+  src/game/level/camera.h
+  src/game/level/goals.h
+  src/game/level/lava.h
+  src/game/level/lava/wavy_rect.h
+  src/game/level/platforms.h
+  src/game/level/player.h
+  src/game/level/player/dying_rect.h
+  src/game/level/player/rigid_rect.h
+  src/game/sound_medium.h
+  src/math/mat3x3.h
+  src/math/pi.h
+  src/math/point.h
+  src/math/rand.h
+  src/math/rect.h
+  src/math/triangle.h
+  src/sdl/renderer.h
+  src/system/error.h
+  src/system/lt.h
+  src/system/lt/lt_slot.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})

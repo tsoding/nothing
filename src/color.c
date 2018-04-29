@@ -1,7 +1,7 @@
-#include <string.h>
 #include <SDL2/SDL.h>
+#include <string.h>
 
-#include "./color.h"
+#include "color.h"
 
 color_t color(float r, float g, float b, float a)
 {

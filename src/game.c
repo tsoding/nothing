@@ -1,15 +1,13 @@
-#include <stdio.h>
-#include <assert.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include <assert.h>
+#include <stdio.h>
 
-#include "./player.h"
-#include "./platforms.h"
-#include "./game.h"
-#include "./error.h"
-#include "./level.h"
-#include "./sound_medium.h"
-#include "./lt.h"
+#include "game.h"
+#include "game/level.h"
+#include "game/sound_medium.h"
+#include "system/error.h"
+#include "system/lt.h"
 
 typedef enum game_state_t {
     GAME_STATE_RUNNING = 0,
