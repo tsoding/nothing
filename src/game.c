@@ -5,7 +5,7 @@
 
 #include "./game.h"
 #include "./error.h"
-#include "./level.h"
+#include "./game/level.h"
 #include "./sound_medium.h"
 #include "./lt.h"
 

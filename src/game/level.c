@@ -4,7 +4,7 @@
 #include "./lt.h"
 #include "./player.h"
 #include "./platforms.h"
-#include "./level.h"
+#include "./game/level.h"
 #include "./camera.h"
 #include "./error.h"
 #include "./goals.h"
