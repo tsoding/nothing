@@ -1,6 +1,7 @@
 #ifndef ALGO_H_
 #define ALGO_H_
 
+// TODO: MIN and MAX macros are naive and can lead to multiple evaluation
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
