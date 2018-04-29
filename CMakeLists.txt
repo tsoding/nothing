@@ -31,7 +31,7 @@ set(SOURCE_FILES
   src/game/level.c
   src/game/level/goals.c
   src/renderer.c
-  src/triangle.c
+  src/math/triangle.c
   src/color.c
   src/game/level/player/rigid_rect.c
   src/game/level/player/dying_rect.c
@@ -56,7 +56,7 @@ set(HEADER_FILES
   src/game/level.h
   src/game/level/goals.h
   src/renderer.h
-  src/triangle.h
+  src/math/triangle.h
   src/math/pi.h
   src/color.h
   src/game/level/player/rigid_rect.h

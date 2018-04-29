@@ -3,7 +3,7 @@
 
 #include "./math/rect.h"
 #include "./math/point.h"
-#include "./triangle.h"
+#include "./math/triangle.h"
 #include "./color.h"
 
 typedef struct camera_t camera_t;

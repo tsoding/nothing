@@ -7,7 +7,7 @@
 #include "./goals.h"
 #include "./error.h"
 #include "./math/pi.h"
-#include "./triangle.h"
+#include "./math/triangle.h"
 
 #define GOAL_RADIUS 10.0f
 
