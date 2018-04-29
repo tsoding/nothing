@@ -52,6 +52,8 @@ int main(int argc, char *argv[])
     }
     PUSH_LT(lt, 42, SDL_Quit_lt);
 
+    SDL_ShowCursor(SDL_DISABLE);
+
     SDL_Window *const window = PUSH_LT(
         lt,
         SDL_CreateWindow(
