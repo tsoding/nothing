@@ -7,7 +7,7 @@
 
 #include "./platforms.h"
 #include "./system/error.h"
-#include "./lt.h"
+#include "./system/lt.h"
 
 struct platforms_t {
     lt_t *lt;

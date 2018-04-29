@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "./lt.h"
+#include "./system/lt.h"
 #include "./lava.h"
 #include "./system/error.h"
 #include "./color.h"

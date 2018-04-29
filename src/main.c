@@ -8,7 +8,7 @@
 #include "./game/level/platforms.h"
 #include "./system/error.h"
 #include "./game.h"
-#include "./lt.h"
+#include "./system/lt.h"
 #include "./math/point.h"
 #include "./game/sound_medium.h"
 

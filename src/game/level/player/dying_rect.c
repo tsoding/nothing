@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <SDL2/SDL.h>
 
-#include "./lt.h"
+#include "./system/lt.h"
 #include "./system/error.h"
 #include "./dying_rect.h"
 #include "./math/rand.h"

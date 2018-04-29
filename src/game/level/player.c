@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
-#include "./lt.h"
+#include "./system/lt.h"
 #include "./player.h"
 #include "./platforms.h"
 #include "./math/point.h"

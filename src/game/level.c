@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <SDL2/SDL.h>
 
-#include "./lt.h"
+#include "./system/lt.h"
 #include "./game/level/player.h"
 #include "./game/level/platforms.h"
 #include "./game/level.h"

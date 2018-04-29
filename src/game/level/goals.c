@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "./lt.h"
+#include "./system/lt.h"
 #include "./goals.h"
 #include "./system/error.h"
 #include "./math/pi.h"

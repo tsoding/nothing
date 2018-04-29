@@ -6,7 +6,7 @@
 #include <SDL2/SDL.h>
 
 #include "./wavy_rect.h"
-#include "./lt.h"
+#include "./system/lt.h"
 #include "./system/error.h"
 #include "./math/pi.h"
 

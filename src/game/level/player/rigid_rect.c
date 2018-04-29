@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <SDL2/SDL.h>
 
-#include "./lt.h"
+#include "./system/lt.h"
 #include "./color.h"
 #include "./rigid_rect.h"
 #include "./system/error.h"

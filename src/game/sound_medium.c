@@ -6,7 +6,7 @@
 #include <SDL2/SDL_mixer.h>
 
 #include "./sound_medium.h"
-#include "./lt.h"
+#include "./system/lt.h"
 #include "./system/error.h"
 #include "./math/pi.h"
 

@@ -26,8 +26,8 @@ set(SOURCE_FILES
   src/game/level/camera.c
   src/system/error.c
   src/game.c
-  src/lt.c
-  src/lt/lt_slot.c
+  src/system/lt.c
+  src/system/lt/lt_slot.c
   src/game/level.c
   src/game/level/goals.c
   src/sdl/renderer.c
@@ -50,8 +50,8 @@ set(HEADER_FILES
   src/game/level/camera.h
   src/system/error.h
   src/game.h
-  src/lt.h
-  src/lt/lt_slot.h
+  src/system/lt.h
+  src/system/lt/lt_slot.h
   src/game/level.h
   src/game/level/goals.h
   src/sdl/renderer.h
