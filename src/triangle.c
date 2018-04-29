@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "./pi.h"
+#include "./math/pi.h"
 #include "./triangle.h"
 #include "./math/rand.h"
 

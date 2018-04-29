@@ -1,7 +1,7 @@
 #ifndef POINT_H_
 #define POINT_H_
 
-#include "./pi.h"
+#include "./math/pi.h"
 #include "./math/mat3x3.h"
 
 typedef struct point_t {
