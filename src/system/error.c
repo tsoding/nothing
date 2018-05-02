@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include <assert.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -34,15 +35,15 @@ void print_error_msg(error_type_t error_type, const char *user_prefix)
 {
     switch (error_type) {
     case ERROR_TYPE_LIBC:
-        perror(user_prefix);
+        fprintf(stderr, "libc error: %s: %s\n", user_prefix, strerror(errno));
         break;
 
     case ERROR_TYPE_SDL2:
-        fprintf(stderr, "%s: %s", user_prefix, SDL_GetError());
+        fprintf(stderr, "SDL2 error: %s: %s\n", user_prefix, SDL_GetError());
         break;
 
     case ERROR_TYPE_SDL2_MIXER:
-        fprintf(stderr, "%s: %s", user_prefix, Mix_GetError());
+        fprintf(stderr, "SDL2_mixer error: %s: %s\n", user_prefix, Mix_GetError());
         break;
 
     default: {}
