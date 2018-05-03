@@ -24,9 +24,12 @@ typedef struct game_t {
     level_t *level;
     char *level_file_path;
     sound_medium_t *sound_medium;
+    camera_t *camera;
 } game_t;
 
-game_t *create_game(const char *level_file_path, sound_medium_t *sound_medium)
+game_t *create_game(const char *level_file_path,
+                    sound_medium_t *sound_medium,
+                    SDL_Renderer *renderer)
 {
     assert(level_file_path);
 
@@ -54,8 +57,12 @@ game_t *create_game(const char *level_file_path, sound_medium_t *sound_medium)
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
-
     strcpy(game->level_file_path, level_file_path);
+
+    game->camera = PUSH_LT(lt, create_camera_from_renderer(renderer), destroy_camera);
+    if (game->camera == NULL) {
+        RETURN_LT(lt, NULL);
+    }
 
     game->state = GAME_STATE_RUNNING;
     game->sound_medium = sound_medium;
@@ -79,7 +86,7 @@ int game_render(const game_t *game, SDL_Renderer *renderer)
         return 0;
     }
 
-    if (level_render(game->level, renderer) < 0) {
+    if (level_render(game->level, game->camera) < 0) {
         return -1;
     }
 
@@ -124,11 +131,11 @@ static int game_event_pause(game_t *game, const SDL_Event *event)
         switch (event->key.keysym.sym) {
         case SDLK_p:
             game->state = GAME_STATE_RUNNING;
-            level_toggle_pause_mode(game->level);
+            camera_toggle_blackwhite_mode(game->camera);
             sound_medium_toggle_pause(game->sound_medium);
             break;
         case SDLK_l:
-            level_toggle_debug_mode(game->level);
+            camera_toggle_debug_mode(game->camera);
             break;
         }
         break;
@@ -176,12 +183,12 @@ static int game_event_running(game_t *game, const SDL_Event *event)
 
         case SDLK_p:
             game->state = GAME_STATE_PAUSE;
-            level_toggle_pause_mode(game->level);
+            camera_toggle_blackwhite_mode(game->camera);
             sound_medium_toggle_pause(game->sound_medium);
             break;
 
         case SDLK_l:
-            level_toggle_debug_mode(game->level);
+            camera_toggle_debug_mode(game->camera);
             break;
         }
         break;

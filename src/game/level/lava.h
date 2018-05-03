@@ -10,7 +10,6 @@ lava_t *create_lava_from_stream(FILE *stream);
 void destroy_lava(lava_t *lava);
 
 int lava_render(const lava_t *lava,
-                SDL_Renderer *renderer,
                 const camera_t *camera);
 int lava_update(lava_t *lava, float delta_time);
 

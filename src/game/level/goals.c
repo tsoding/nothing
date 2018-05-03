@@ -105,11 +105,9 @@ void destroy_goals(goals_t *goals)
 
 static int goals_render_core(const goals_t *goals,
                              size_t goal_index,
-                             SDL_Renderer *renderer,
                              const camera_t *camera)
 {
     assert(goals);
-    assert(renderer);
     assert(camera);
 
     const point_t position = vec_sum(
@@ -128,17 +126,15 @@ static int goals_render_core(const goals_t *goals,
 }
 
 int goals_render(const goals_t *goals,
-                 SDL_Renderer *renderer,
                  const camera_t *camera)
 
 {
     assert(goals);
-    assert(renderer);
     assert(camera);
 
     for (size_t i = 0; i < goals->goals_count; ++i) {
         if (!goals_is_goal_hidden(goals, i)) {
-            if (goals_render_core(goals, i, renderer, camera) < 0) {
+            if (goals_render_core(goals, i, camera) < 0) {
                 return -1;
             }
         }

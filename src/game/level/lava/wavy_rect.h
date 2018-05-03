@@ -14,7 +14,6 @@ wavy_rect_t *create_wavy_rect_from_stream(FILE *stream);
 void destroy_wavy_rect(wavy_rect_t *wavy_rect);
 
 int wavy_rect_render(const wavy_rect_t *wavy_rect,
-                     SDL_Renderer *renderer,
                      const camera_t *camera);
 int wavy_rect_update(wavy_rect_t *wavy_rect,
                      float delta_time);

@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 
     // ------------------------------
 
-    game_t *const game = PUSH_LT(lt, create_game(argv[1], sound_medium), destroy_game);
+    game_t *const game = PUSH_LT(lt, create_game(argv[1], sound_medium, renderer), destroy_game);
     if (game == NULL) {
         print_current_error_msg("Could not create the game object");
         RETURN_LT(lt, -1);

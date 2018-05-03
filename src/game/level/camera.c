@@ -28,7 +28,7 @@ static triangle_t camera_triangle(const camera_t *camera,
                                   const SDL_Rect *view_port,
                                   const triangle_t t);
 
-camera_t *create_camera(void)
+camera_t *create_camera_from_renderer(SDL_Renderer *renderer)
 {
     camera_t *camera = malloc(sizeof(camera_t));
 
@@ -40,18 +40,6 @@ camera_t *create_camera(void)
     camera->position = vec(0.0f, 0.0f);
     camera->debug_mode = 0;
     camera->blackwhite_mode = 0;
-    camera->renderer = NULL;
-
-    return camera;
-}
-
-camera_t *create_camera_from_renderer(SDL_Renderer *renderer)
-{
-    camera_t *camera = create_camera();
-    if (camera == NULL) {
-        return NULL;
-    }
-
     camera->renderer = renderer;
 
     return camera;

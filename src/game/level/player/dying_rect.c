@@ -78,11 +78,9 @@ void destroy_dying_rect(dying_rect_t *dying_rect)
 
 /* TODO(#109): Dying Rect animation is too boring */
 int dying_rect_render(const dying_rect_t *dying_rect,
-                      SDL_Renderer *renderer,
                       const camera_t *camera)
 {
     assert(dying_rect);
-    assert(renderer);
     assert(camera);
 
     for (size_t i = 0; i < DYING_RECT_PIECE_COUNT; ++i) {

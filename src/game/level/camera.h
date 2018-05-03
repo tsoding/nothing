@@ -8,7 +8,6 @@
 
 typedef struct camera_t camera_t;
 
-camera_t *create_camera(void);
 camera_t *create_camera_from_renderer(SDL_Renderer *renderer);
 void destroy_camera(camera_t *camera);
 

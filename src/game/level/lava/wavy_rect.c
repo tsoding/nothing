@@ -67,11 +67,9 @@ void destroy_wavy_rect(wavy_rect_t *wavy_rect)
 }
 
 int wavy_rect_render(const wavy_rect_t *wavy_rect,
-                     SDL_Renderer *renderer,
                      const camera_t *camera)
 {
     assert(wavy_rect);
-    assert(renderer);
     assert(camera);
 
     srand(42);

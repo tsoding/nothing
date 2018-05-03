@@ -49,11 +49,9 @@ void destroy_background(background_t *background)
 }
 
 int background_render(const background_t *background,
-                      SDL_Renderer *renderer,
                       const camera_t *camera)
 {
     assert(background);
-    assert(renderer);
     assert(camera);
 
     rect_t view_port = camera_view_port(camera);

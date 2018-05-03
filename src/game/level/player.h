@@ -17,7 +17,6 @@ player_t *create_player_from_stream(FILE *stream);
 void destroy_player(player_t * player);
 
 int player_render(const player_t * player,
-                  SDL_Renderer *renderer,
                   const camera_t *camera);
 void player_update(player_t * player,
                    const platforms_t *platforms,
