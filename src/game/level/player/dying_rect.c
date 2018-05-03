@@ -91,7 +91,6 @@ int dying_rect_render(const dying_rect_t *dying_rect,
 
         if (camera_fill_triangle(
                 camera,
-                renderer,
                 triangle_mat3x3_product(
                     dying_rect->pieces[i].body,
                     mat3x3_product(

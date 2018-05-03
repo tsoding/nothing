@@ -28,7 +28,6 @@ int camera_draw_triangle(const camera_t *camera,
                          color_t color);
 
 int camera_fill_triangle(const camera_t *camera,
-                         SDL_Renderer *render,
                          triangle_t t,
                          color_t color);
 

@@ -118,7 +118,6 @@ static int goals_render_core(const goals_t *goals,
 
     return camera_fill_triangle(
         camera,
-        renderer,
         triangle_mat3x3_product(
             equilateral_triangle(),
             mat3x3_product2(
