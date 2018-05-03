@@ -100,6 +100,9 @@ int level_render(const level_t *level, camera_t *camera)
 {
     assert(level);
 
+    /* TODO: player_focus_camera is not supposed to be invoked in level_render */
+    player_focus_camera(level->player, camera);
+
     if (camera_clear_background(camera, level->background_color) < 0) {
         return -1;
     }
@@ -132,9 +135,6 @@ int level_render(const level_t *level, camera_t *camera)
     if (goals_render(level->goals, camera) < 0) {
         return -1;
     }
-
-    /* TODO: player_focus_camera is not supposed to be invoked in level_render */
-    player_focus_camera(level->player, camera);
 
     /* TODO(#157): goals_cue is not supposed to be invoked in level_render
      *
