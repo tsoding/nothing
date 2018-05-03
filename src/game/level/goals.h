@@ -26,7 +26,6 @@ void goals_hide(goals_t *goals,
 void goals_checkpoint(const goals_t *goals,
                       player_t *player);
 void goals_cue(goals_t *goals,
-               SDL_Renderer *renderer,
                const camera_t *camera);
 
 #endif  // GOALS_H_

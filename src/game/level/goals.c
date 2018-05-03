@@ -180,20 +180,19 @@ int goals_sound(goals_t *goals,
 }
 
 void goals_cue(goals_t *goals,
-               SDL_Renderer *renderer,
                const camera_t *camera)
 {
     for (size_t i = 0; i < goals->goals_count; ++i) {
         switch (goals->cue_states[i]) {
         case CUE_STATE_VIRGIN:
-            if (goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, renderer, goals->points[i])) {
+            if (goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, goals->points[i])) {
                 goals->cue_states[i] = CUE_STATE_HIT_NOTHING;
             }
 
             break;
 
         case CUE_STATE_SEEN_NOTHING:
-            if (!goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, renderer, goals->points[i])) {
+            if (!goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, goals->points[i])) {
                 goals->cue_states[i] = CUE_STATE_VIRGIN;
             }
             break;

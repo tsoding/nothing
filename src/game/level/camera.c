@@ -215,10 +215,10 @@ void camera_toggle_blackwhite_mode(camera_t *camera)
     camera->blackwhite_mode = !camera->blackwhite_mode;
 }
 
-int camera_is_point_visible(const camera_t *camera, SDL_Renderer *renderer, point_t p)
+int camera_is_point_visible(const camera_t *camera, point_t p)
 {
     SDL_Rect view_port;
-    SDL_RenderGetViewport(renderer, &view_port);
+    SDL_RenderGetViewport(camera->renderer, &view_port);
 
     return rect_contains_point(
         rect_from_sdl(&view_port),

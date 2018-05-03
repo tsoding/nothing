@@ -144,7 +144,7 @@ int level_render(const level_t *level, SDL_Renderer *renderer)
      *
      * But I simply couldn't find a better place for it.
      */
-    goals_cue(level->goals, renderer, level->camera);
+    goals_cue(level->goals, level->camera);
 
     return 0;
 }
