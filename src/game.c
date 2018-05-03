@@ -77,10 +77,9 @@ void destroy_game(game_t *game)
     RETURN_LT0(game->lt);
 }
 
-int game_render(const game_t *game, SDL_Renderer *renderer)
+int game_render(const game_t *game)
 {
     assert(game);
-    assert(renderer);
 
     if (game->state == GAME_STATE_QUIT) {
         return 0;
@@ -90,7 +89,7 @@ int game_render(const game_t *game, SDL_Renderer *renderer)
         return -1;
     }
 
-    SDL_RenderPresent(renderer);
+    camera_present(game->camera);
 
     return 0;
 }

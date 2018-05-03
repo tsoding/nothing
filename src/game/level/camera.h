@@ -14,6 +14,8 @@ void destroy_camera(camera_t *camera);
 int camera_clear_background(const camera_t *camera,
                             color_t color);
 
+void camera_present(const camera_t *camera);
+
 int camera_fill_rect(const camera_t *camera,
                      rect_t rect,
                      color_t color);

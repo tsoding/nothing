@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
             RETURN_LT(lt, -1);
         }
 
-        if (game_render(game, renderer) < 0) {
+        if (game_render(game) < 0) {
             print_current_error_msg("Failed rendering the game");
             RETURN_LT(lt, -1);
         }

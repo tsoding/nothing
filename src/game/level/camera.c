@@ -185,6 +185,11 @@ int camera_clear_background(const camera_t *camera,
     return 0;
 }
 
+void camera_present(const camera_t *camera)
+{
+    SDL_RenderPresent(camera->renderer);
+}
+
 void camera_center_at(camera_t *camera, point_t position)
 {
     assert(camera);
