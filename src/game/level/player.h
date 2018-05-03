@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 
 #include "game/camera.h"
-#include "game/sound_medium.h"
+#include "game/sound_samples.h"
 #include "lava.h"
 #include "platforms.h"
 
@@ -23,7 +23,7 @@ void player_update(player_t * player,
                    float delta_time);
 
 int player_sound(player_t *player,
-                 sound_medium_t *sound_medium);
+                 sound_samples_t *sound_samples);
 void player_checkpoint(player_t *player,
                        vec_t checkpoint);
 

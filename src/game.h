@@ -3,12 +3,12 @@
 
 #include <SDL2/SDL.h>
 
-#include "game/sound_medium.h"
+#include "game/sound_samples.h"
 
 typedef struct game_t game_t;
 
 game_t *create_game(const char *platforms_file_path,
-                    sound_medium_t *sound_medium,
+                    sound_samples_t *sound_samples,
                     SDL_Renderer *renderer);
 void destroy_game(game_t *game);
 
