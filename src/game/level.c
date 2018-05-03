@@ -100,7 +100,6 @@ int level_render(const level_t *level, camera_t *camera)
 {
     assert(level);
 
-    /* TODO: player_focus_camera is not supposed to be invoked in level_render */
     player_focus_camera(level->player, camera);
 
     if (camera_clear_background(camera, level->background_color) < 0) {
