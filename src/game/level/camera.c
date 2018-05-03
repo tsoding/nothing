@@ -127,24 +127,22 @@ int camera_draw_rect(const camera_t * camera,
 }
 
 int camera_draw_triangle(const camera_t *camera,
-                         SDL_Renderer *render,
                          triangle_t t,
                          color_t color)
 {
     assert(camera);
-    assert(render);
 
     SDL_Rect view_port;
-    SDL_RenderGetViewport(render, &view_port);
+    SDL_RenderGetViewport(camera->renderer, &view_port);
 
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
-    if (SDL_SetRenderDrawColor(render, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
+    if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
 
-    if (draw_triangle(render, camera_triangle(camera, &view_port, t)) < 0) {
+    if (draw_triangle(camera->renderer, camera_triangle(camera, &view_port, t)) < 0) {
         return -1;
     }
 
