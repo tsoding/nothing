@@ -15,19 +15,11 @@ struct sound_samples_t
     Mix_Chunk **samples;
     size_t samples_count;
     int paused;
-    int lower_channel;
-    int upper_channel;
-    size_t channels_count;
 };
 
-static int mix_get_free_channel(int lower_channel,
-                                int upper_channel)
+static int mix_get_free_channel(void)
 {
-    assert(lower_channel >= 0);
-    assert(upper_channel >= 0);
-    assert(lower_channel <= upper_channel);
-
-    for (int i = lower_channel; i < upper_channel; ++i) {
+    for (int i = 0; i < MIX_CHANNELS; ++i) {
         if (!Mix_Playing(i)) {
             return i;
         }
@@ -37,15 +29,10 @@ static int mix_get_free_channel(int lower_channel,
 }
 
 sound_samples_t *create_sound_samples(Mix_Chunk **samples,
-                                    size_t samples_count,
-                                    int lower_channel,
-                                    int upper_channel)
+                                      size_t samples_count)
 {
     assert(samples);
     assert(samples_count > 0);
-    assert(lower_channel >= 0);
-    assert(upper_channel >= 0);
-    assert(lower_channel <= upper_channel);
 
     lt_t *lt = create_lt();
     if (lt == NULL) {
@@ -58,12 +45,9 @@ sound_samples_t *create_sound_samples(Mix_Chunk **samples,
         RETURN_LT(lt, NULL);
     }
 
-    sound_samples->channels_count = (size_t) (upper_channel - lower_channel + 1);
     sound_samples->samples = samples;
     sound_samples->samples_count = samples_count;
     sound_samples->paused = 0;
-    sound_samples->lower_channel = lower_channel;
-    sound_samples->upper_channel = upper_channel;
 
     sound_samples->lt = lt;
 
@@ -83,8 +67,7 @@ int sound_samples_play_sound(sound_samples_t *sound_samples,
     assert(sound_samples);
 
     if (sound_index < sound_samples->samples_count) {
-        const int free_channel = mix_get_free_channel(sound_samples->lower_channel,
-                                                      sound_samples->upper_channel);
+        const int free_channel = mix_get_free_channel();
 
         printf("Found free channel: %d\n", free_channel);
 

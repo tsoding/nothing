@@ -123,8 +123,7 @@ int main(int argc, char *argv[])
             lt,
             create_sound_samples(
                 sound_sample_files,
-                sound_sample_files_count,
-                0, MIX_CHANNELS - 1),
+                sound_sample_files_count),
             destroy_sound_samples);
     if (sound_samples == NULL) {
         print_current_error_msg("Could not create sound medium");
