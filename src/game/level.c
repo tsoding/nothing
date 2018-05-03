@@ -79,7 +79,7 @@ level_t *create_level_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
 
-    level->camera = PUSH_LT(lt, create_camera(vec(0.0f, 0.0f)), destroy_camera);
+    level->camera = PUSH_LT(lt, create_camera(), destroy_camera);
     if (level->camera == NULL) {
         RETURN_LT(lt, NULL);
     }
