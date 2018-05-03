@@ -7,7 +7,7 @@
 #include "game.h"
 #include "game/level/platforms.h"
 #include "game/level/player.h"
-#include "game/sound_medium.h"
+#include "game/sound_samples.h"
 #include "math/point.h"
 #include "system/error.h"
 #include "system/lt.h"
@@ -112,25 +112,22 @@ int main(int argc, char *argv[])
     }
     PUSH_LT(lt, 42, Mix_CloseAudio_lt);
 
-    Mix_Chunk * sound_samples[] = {
-        PUSH_LT(lt, Mix_LoadWAV("./sounds/nothing.wav"), Mix_FreeChunk),
-        PUSH_LT(lt, Mix_LoadWAV("./sounds/something.wav"), Mix_FreeChunk)
-    };
-    const size_t sound_samples_count = sizeof(sound_samples) / sizeof(Mix_Chunk*);
-
-    sound_medium_t *sound_medium =
-        PUSH_LT(
-            lt,
-            create_sound_medium(sound_samples, sound_samples_count, 0, MIX_CHANNELS - 1),
-            destroy_sound_medium);
-    if (sound_medium == NULL) {
-        print_current_error_msg("Could not create sound medium");
-        RETURN_LT(lt, -1);
-    }
-
     // ------------------------------
 
-    game_t *const game = PUSH_LT(lt, create_game(argv[1], sound_medium, renderer), destroy_game);
+    const char * sound_sample_files[] = {
+        "./sounds/nothing.wav",
+        "./sounds/something.wav"
+    };
+    const size_t sound_sample_files_count = sizeof(sound_sample_files) / sizeof(char*);
+
+    game_t *const game = PUSH_LT(
+        lt,
+        create_game(
+            argv[1],
+            sound_sample_files,
+            sound_sample_files_count,
+            renderer),
+        destroy_game);
     if (game == NULL) {
         print_current_error_msg("Could not create the game object");
         RETURN_LT(lt, -1);

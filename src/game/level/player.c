@@ -247,12 +247,12 @@ void player_checkpoint(player_t *player, vec_t checkpoint)
 }
 
 int player_sound(player_t *player,
-                 sound_medium_t *sound_medium)
+                 sound_samples_t *sound_samples)
 {
     if (player->play_die_cue) {
         player->play_die_cue = 0;
 
-        if (sound_medium_play_sound(sound_medium, 0, 0) < 0) {
+        if (sound_samples_play_sound(sound_samples, 0, 0) < 0) {
             return -1;
         }
     }

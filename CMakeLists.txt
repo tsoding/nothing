@@ -30,7 +30,7 @@ set(SOURCE_FILES
   src/game/level/player.c
   src/game/level/player/dying_rect.c
   src/game/level/player/rigid_rect.c
-  src/game/sound_medium.c
+  src/game/sound_samples.c
   src/main.c
   src/math/mat3x3.c
   src/math/point.c
@@ -56,7 +56,7 @@ set(HEADER_FILES
   src/game/level/player.h
   src/game/level/player/dying_rect.h
   src/game/level/player/rigid_rect.h
-  src/game/sound_medium.h
+  src/game/sound_samples.h
   src/math/mat3x3.h
   src/math/pi.h
   src/math/point.h

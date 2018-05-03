@@ -159,12 +159,12 @@ void goals_hide(goals_t *goals,
 }
 
 int goals_sound(goals_t *goals,
-                sound_medium_t *sound_medium)
+                sound_samples_t *sound_samples)
 {
     for (size_t i = 0; i < goals->goals_count; ++i) {
         switch (goals->cue_states[i]) {
         case CUE_STATE_HIT_NOTHING:
-            sound_medium_play_sound(sound_medium, 0, 0);
+            sound_samples_play_sound(sound_samples, 0, 0);
             goals->cue_states[i] = CUE_STATE_SEEN_NOTHING;
             break;
 

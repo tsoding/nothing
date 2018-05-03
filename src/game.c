@@ -5,7 +5,7 @@
 
 #include "game.h"
 #include "game/level.h"
-#include "game/sound_medium.h"
+#include "game/sound_samples.h"
 #include "system/error.h"
 #include "system/lt.h"
 
@@ -23,12 +23,13 @@ typedef struct game_t {
     game_state_t state;
     level_t *level;
     char *level_file_path;
-    sound_medium_t *sound_medium;
+    sound_samples_t *sound_samples;
     camera_t *camera;
 } game_t;
 
 game_t *create_game(const char *level_file_path,
-                    sound_medium_t *sound_medium,
+                    const char *sound_sample_files[],
+                    size_t sound_sample_files_count,
                     SDL_Renderer *renderer)
 {
     assert(level_file_path);
@@ -64,8 +65,17 @@ game_t *create_game(const char *level_file_path,
         RETURN_LT(lt, NULL);
     }
 
+    game->sound_samples = PUSH_LT(
+        lt,
+        create_sound_samples(
+            sound_sample_files,
+            sound_sample_files_count),
+        destroy_sound_samples);
+    if (game->sound_samples == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     game->state = GAME_STATE_RUNNING;
-    game->sound_medium = sound_medium;
     game->lt = lt;
 
     return game;
@@ -96,7 +106,7 @@ int game_render(const game_t *game)
 
 int game_sound(game_t *game)
 {
-    return level_sound(game->level, game->sound_medium);
+    return level_sound(game->level, game->sound_samples);
 }
 
 int game_update(game_t *game, float delta_time)
@@ -131,7 +141,7 @@ static int game_event_pause(game_t *game, const SDL_Event *event)
         case SDLK_p:
             game->state = GAME_STATE_RUNNING;
             camera_toggle_blackwhite_mode(game->camera);
-            sound_medium_toggle_pause(game->sound_medium);
+            sound_samples_toggle_pause(game->sound_samples);
             break;
         case SDLK_l:
             camera_toggle_debug_mode(game->camera);
@@ -183,7 +193,7 @@ static int game_event_running(game_t *game, const SDL_Event *event)
         case SDLK_p:
             game->state = GAME_STATE_PAUSE;
             camera_toggle_blackwhite_mode(game->camera);
-            sound_medium_toggle_pause(game->sound_medium);
+            sound_samples_toggle_pause(game->sound_samples);
             break;
 
         case SDLK_l:

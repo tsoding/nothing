@@ -5,7 +5,7 @@
 
 #include "game/camera.h"
 #include "game/level/player.h"
-#include "game/sound_medium.h"
+#include "game/sound_samples.h"
 
 typedef struct goals_t goals_t;
 
@@ -17,7 +17,7 @@ rect_t goals_hitbox(const goals_t *goals);
 int goals_render(const goals_t *goals,
                  const camera_t *camera);
 int goals_sound(goals_t *goals,
-                sound_medium_t *sound_medium);
+                sound_samples_t *sound_samples);
 void goals_update(goals_t *goals,
                   float delta_time);
 void goals_hide(goals_t *goals,
