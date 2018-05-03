@@ -2,7 +2,7 @@
 #define RIGID_RECT_H_
 
 #include "color.h"
-#include "game/level/camera.h"
+#include "game/camera.h"
 #include "game/level/platforms.h"
 #include "math/rect.h"
 

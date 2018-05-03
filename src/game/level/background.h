@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 
 #include "color.h"
-#include "game/level/camera.h"
+#include "game/camera.h"
 
 typedef struct background_t background_t;
 

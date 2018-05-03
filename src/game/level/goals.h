@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "game/level/camera.h"
+#include "game/camera.h"
 #include "game/level/player.h"
 #include "game/sound_medium.h"
 

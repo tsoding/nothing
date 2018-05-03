@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "camera.h"
+#include "game/camera.h"
 #include "game/sound_medium.h"
 #include "lava.h"
 #include "platforms.h"

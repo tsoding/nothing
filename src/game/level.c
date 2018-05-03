@@ -1,9 +1,9 @@
 #include <SDL2/SDL.h>
 #include <assert.h>
 
+#include "game/camera.h"
 #include "game/level.h"
 #include "game/level/background.h"
-#include "game/level/camera.h"
 #include "game/level/goals.h"
 #include "game/level/lava.h"
 #include "game/level/platforms.h"
