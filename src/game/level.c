@@ -1,9 +1,9 @@
 #include <SDL2/SDL.h>
 #include <assert.h>
 
+#include "game/camera.h"
 #include "game/level.h"
 #include "game/level/background.h"
-#include "game/level/camera.h"
 #include "game/level/goals.h"
 #include "game/level/lava.h"
 #include "game/level/platforms.h"
@@ -18,7 +18,6 @@ struct level_t
     lt_t *lt;
     player_t *player;
     platforms_t *platforms;
-    camera_t *camera;
     goals_t *goals;
     lava_t *lava;
     color_t background_color;
@@ -79,11 +78,6 @@ level_t *create_level_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
 
-    level->camera = PUSH_LT(lt, create_camera(vec(0.0f, 0.0f)), destroy_camera);
-    if (level->camera == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
     level->background = PUSH_LT(lt, create_background(level->background_color), destroy_background);
     if (level->background == NULL) {
         RETURN_LT(lt, NULL);
@@ -102,41 +96,42 @@ void destroy_level(level_t *level)
     RETURN_LT0(level->lt);
 }
 
-int level_render(const level_t *level, SDL_Renderer *renderer)
+int level_render(const level_t *level, camera_t *camera)
 {
     assert(level);
-    assert(renderer);
 
-    if (camera_clear_background(level->camera, renderer, level->background_color) < 0) {
+    player_focus_camera(level->player, camera);
+
+    if (camera_clear_background(camera, level->background_color) < 0) {
         return -1;
     }
 
-    const rect_t view_port = camera_view_port(level->camera, renderer);
+    const rect_t view_port = camera_view_port(camera);
 
     background_move_to(level->background, vec(view_port.x + view_port.w * 0.5f,
                                               view_port.y + view_port.h * 0.5f));
 
-    if (background_render(level->background, renderer, level->camera) < 0) {
+    if (background_render(level->background, camera) < 0) {
         return -1;
     }
 
-    if (platforms_render(level->back_platforms, renderer, level->camera) < 0) {
+    if (platforms_render(level->back_platforms, camera) < 0) {
         return -1;
     }
 
-    if (player_render(level->player, renderer, level->camera) < 0) {
+    if (player_render(level->player, camera) < 0) {
         return -1;
     }
 
-    if (lava_render(level->lava, renderer, level->camera) < 0) {
+    if (lava_render(level->lava, camera) < 0) {
         return -1;
     }
 
-    if (platforms_render(level->platforms, renderer, level->camera) < 0) {
+    if (platforms_render(level->platforms, camera) < 0) {
         return -1;
     }
 
-    if (goals_render(level->goals, renderer, level->camera) < 0) {
+    if (goals_render(level->goals, camera) < 0) {
         return -1;
     }
 
@@ -144,7 +139,7 @@ int level_render(const level_t *level, SDL_Renderer *renderer)
      *
      * But I simply couldn't find a better place for it.
      */
-    goals_cue(level->goals, renderer, level->camera);
+    goals_cue(level->goals, camera);
 
     return 0;
 }
@@ -155,7 +150,7 @@ int level_update(level_t *level, float delta_time)
     assert(delta_time > 0);
 
     player_update(level->player, level->platforms, delta_time);
-    player_focus_camera(level->player, level->camera);
+
     player_hide_goals(level->player, level->goals);
     player_die_from_lava(level->player, level->lava);
 
@@ -211,16 +206,6 @@ int level_input(level_t *level,
     }
 
     return 0;
-}
-
-void level_toggle_debug_mode(level_t *level)
-{
-    camera_toggle_debug_mode(level->camera);
-}
-
-void level_toggle_pause_mode(level_t *level)
-{
-    camera_toggle_blackwhite_mode(level->camera);
 }
 
 int level_reload_preserve_player(level_t *level, const char *file_name)

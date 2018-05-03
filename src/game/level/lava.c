@@ -60,15 +60,13 @@ void destroy_lava(lava_t *lava)
 
 /* TODO(#119): Lava rendering is too boring */
 int lava_render(const lava_t   *lava,
-                SDL_Renderer   *renderer,
                 const camera_t *camera)
 {
     assert(lava);
-    assert(renderer);
     assert(camera);
 
     for (size_t i = 0; i < lava->rects_count; ++i) {
-        if (wavy_rect_render(lava->rects[i], renderer, camera) < 0) {
+        if (wavy_rect_render(lava->rects[i], camera) < 0) {
             return -1;
         }
     }

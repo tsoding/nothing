@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 
-#include "game/level/camera.h"
+#include "game/camera.h"
 #include "game/level/platforms.h"
 #include "game/level/player.h"
 #include "sound_medium.h"
@@ -14,7 +14,7 @@ typedef struct level_t level_t;
 level_t *create_level_from_file(const char *file_name);
 void destroy_level(level_t *level);
 
-int level_render(const level_t *level, SDL_Renderer *renderer);
+int level_render(const level_t *level, camera_t *camera);
 int level_sound(level_t *level, sound_medium_t *sound_medium);
 int level_update(level_t *level, float delta_time);
 

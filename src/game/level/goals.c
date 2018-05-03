@@ -105,11 +105,9 @@ void destroy_goals(goals_t *goals)
 
 static int goals_render_core(const goals_t *goals,
                              size_t goal_index,
-                             SDL_Renderer *renderer,
                              const camera_t *camera)
 {
     assert(goals);
-    assert(renderer);
     assert(camera);
 
     const point_t position = vec_sum(
@@ -118,7 +116,6 @@ static int goals_render_core(const goals_t *goals,
 
     return camera_fill_triangle(
         camera,
-        renderer,
         triangle_mat3x3_product(
             equilateral_triangle(),
             mat3x3_product2(
@@ -129,17 +126,15 @@ static int goals_render_core(const goals_t *goals,
 }
 
 int goals_render(const goals_t *goals,
-                 SDL_Renderer *renderer,
                  const camera_t *camera)
 
 {
     assert(goals);
-    assert(renderer);
     assert(camera);
 
     for (size_t i = 0; i < goals->goals_count; ++i) {
         if (!goals_is_goal_hidden(goals, i)) {
-            if (goals_render_core(goals, i, renderer, camera) < 0) {
+            if (goals_render_core(goals, i, camera) < 0) {
                 return -1;
             }
         }
@@ -181,20 +176,19 @@ int goals_sound(goals_t *goals,
 }
 
 void goals_cue(goals_t *goals,
-               SDL_Renderer *renderer,
                const camera_t *camera)
 {
     for (size_t i = 0; i < goals->goals_count; ++i) {
         switch (goals->cue_states[i]) {
         case CUE_STATE_VIRGIN:
-            if (goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, renderer, goals->points[i])) {
+            if (goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, goals->points[i])) {
                 goals->cue_states[i] = CUE_STATE_HIT_NOTHING;
             }
 
             break;
 
         case CUE_STATE_SEEN_NOTHING:
-            if (!goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, renderer, goals->points[i])) {
+            if (!goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, goals->points[i])) {
                 goals->cue_states[i] = CUE_STATE_VIRGIN;
             }
             break;

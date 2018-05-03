@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 
 #include "color.h"
-#include "game/level/camera.h"
+#include "game/camera.h"
 
 typedef struct background_t background_t;
 
@@ -12,7 +12,6 @@ background_t *create_background(color_t base_color);
 void destroy_background(background_t *background);
 
 int background_render(const background_t *background,
-                      SDL_Renderer *renderer,
                       const camera_t *camera);
 
 void background_move_to(background_t *background,

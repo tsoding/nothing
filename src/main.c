@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 
     // ------------------------------
 
-    game_t *const game = PUSH_LT(lt, create_game(argv[1], sound_medium), destroy_game);
+    game_t *const game = PUSH_LT(lt, create_game(argv[1], sound_medium, renderer), destroy_game);
     if (game == NULL) {
         print_current_error_msg("Could not create the game object");
         RETURN_LT(lt, -1);
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
             RETURN_LT(lt, -1);
         }
 
-        if (game_render(game, renderer) < 0) {
+        if (game_render(game) < 0) {
             print_current_error_msg("Failed rendering the game");
             RETURN_LT(lt, -1);
         }

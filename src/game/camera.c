@@ -13,6 +13,7 @@ struct camera_t {
     int debug_mode;
     int blackwhite_mode;
     point_t position;
+    SDL_Renderer *renderer;
 };
 
 static vec_t effective_ratio(const SDL_Rect *view_port);
@@ -27,7 +28,7 @@ static triangle_t camera_triangle(const camera_t *camera,
                                   const SDL_Rect *view_port,
                                   const triangle_t t);
 
-camera_t *create_camera(point_t position)
+camera_t *create_camera_from_renderer(SDL_Renderer *renderer)
 {
     camera_t *camera = malloc(sizeof(camera_t));
 
@@ -36,9 +37,10 @@ camera_t *create_camera(point_t position)
         return NULL;
     }
 
-    camera->position = position;
+    camera->position = vec(0.0f, 0.0f);
     camera->debug_mode = 0;
     camera->blackwhite_mode = 0;
+    camera->renderer = renderer;
 
     return camera;
 }
@@ -52,33 +54,31 @@ void destroy_camera(camera_t *camera)
 
 
 int camera_fill_rect(const camera_t *camera,
-                     SDL_Renderer *render,
                      rect_t rect,
                      color_t color)
 {
     assert(camera);
-    assert(render);
 
     SDL_Rect view_port;
-    SDL_RenderGetViewport(render, &view_port);
+    SDL_RenderGetViewport(camera->renderer, &view_port);
 
     const SDL_Rect sdl_rect = rect_for_sdl(
         camera_rect(camera, &view_port, rect));
 
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
-    if (SDL_SetRenderDrawColor(render, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
+    if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
 
     if (camera->debug_mode) {
-        if (SDL_RenderDrawRect(render, &sdl_rect) < 0) {
+        if (SDL_RenderDrawRect(camera->renderer, &sdl_rect) < 0) {
             throw_error(ERROR_TYPE_SDL2);
             return -1;
         }
     } else {
-        if (SDL_RenderFillRect(render, &sdl_rect) < 0) {
+        if (SDL_RenderFillRect(camera->renderer, &sdl_rect) < 0) {
             throw_error(ERROR_TYPE_SDL2);
             return -1;
         }
@@ -88,27 +88,25 @@ int camera_fill_rect(const camera_t *camera,
 }
 
 int camera_draw_rect(const camera_t * camera,
-                     SDL_Renderer *render,
                      rect_t rect,
                      color_t color)
 {
     assert(camera);
-    assert(render);
 
     SDL_Rect view_port;
-    SDL_RenderGetViewport(render, &view_port);
+    SDL_RenderGetViewport(camera->renderer, &view_port);
 
     const SDL_Rect sdl_rect = rect_for_sdl(
         camera_rect(camera, &view_port, rect));
 
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
-    if (SDL_SetRenderDrawColor(render, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
+    if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
 
-    if (SDL_RenderDrawRect(render, &sdl_rect) < 0) {
+    if (SDL_RenderDrawRect(camera->renderer, &sdl_rect) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
@@ -117,24 +115,22 @@ int camera_draw_rect(const camera_t * camera,
 }
 
 int camera_draw_triangle(const camera_t *camera,
-                         SDL_Renderer *render,
                          triangle_t t,
                          color_t color)
 {
     assert(camera);
-    assert(render);
 
     SDL_Rect view_port;
-    SDL_RenderGetViewport(render, &view_port);
+    SDL_RenderGetViewport(camera->renderer, &view_port);
 
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
-    if (SDL_SetRenderDrawColor(render, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
+    if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
 
-    if (draw_triangle(render, camera_triangle(camera, &view_port, t)) < 0) {
+    if (draw_triangle(camera->renderer, camera_triangle(camera, &view_port, t)) < 0) {
         return -1;
     }
 
@@ -142,30 +138,28 @@ int camera_draw_triangle(const camera_t *camera,
 }
 
 int camera_fill_triangle(const camera_t *camera,
-                         SDL_Renderer *render,
                          triangle_t t,
                          color_t color)
 {
     assert(camera);
-    assert(render);
 
     SDL_Rect view_port;
-    SDL_RenderGetViewport(render, &view_port);
+    SDL_RenderGetViewport(camera->renderer, &view_port);
 
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
-    if (SDL_SetRenderDrawColor(render, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
+    if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
 
     if (camera->debug_mode) {
-        if (draw_triangle(render, camera_triangle(camera, &view_port, t)) < 0) {
+        if (draw_triangle(camera->renderer, camera_triangle(camera, &view_port, t)) < 0) {
             return -1;
         }
 
     } else {
-        if (fill_triangle(render, camera_triangle(camera, &view_port, t)) < 0) {
+        if (fill_triangle(camera->renderer, camera_triangle(camera, &view_port, t)) < 0) {
             return -1;
         }
     }
@@ -174,22 +168,26 @@ int camera_fill_triangle(const camera_t *camera,
 }
 
 int camera_clear_background(const camera_t *camera,
-                            SDL_Renderer *render,
                             color_t color)
 {
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
-    if (SDL_SetRenderDrawColor(render, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
+    if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
 
-    if (SDL_RenderClear(render) < 0) {
+    if (SDL_RenderClear(camera->renderer) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
 
     return 0;
+}
+
+void camera_present(const camera_t *camera)
+{
+    SDL_RenderPresent(camera->renderer);
 }
 
 void camera_center_at(camera_t *camera, point_t position)
@@ -210,24 +208,22 @@ void camera_toggle_blackwhite_mode(camera_t *camera)
     camera->blackwhite_mode = !camera->blackwhite_mode;
 }
 
-int camera_is_point_visible(const camera_t *camera, SDL_Renderer *renderer, point_t p)
+int camera_is_point_visible(const camera_t *camera, point_t p)
 {
     SDL_Rect view_port;
-    SDL_RenderGetViewport(renderer, &view_port);
+    SDL_RenderGetViewport(camera->renderer, &view_port);
 
     return rect_contains_point(
         rect_from_sdl(&view_port),
         camera_point(camera, &view_port, p));
 }
 
-rect_t camera_view_port(const camera_t *camera,
-                        SDL_Renderer *renderer)
+rect_t camera_view_port(const camera_t *camera)
 {
     assert(camera);
-    assert(renderer);
 
     SDL_Rect view_port;
-    SDL_RenderGetViewport(renderer, &view_port);
+    SDL_RenderGetViewport(camera->renderer, &view_port);
 
     const vec_t s = effective_scale(&view_port);
     const float w = (float) view_port.w * s.x;

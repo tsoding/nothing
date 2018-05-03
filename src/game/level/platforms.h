@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "camera.h"
+#include "game/camera.h"
 #include "math/rect.h"
 
 typedef struct platforms_t platforms_t;
@@ -16,7 +16,6 @@ int platforms_save_to_file(const platforms_t *platforms,
                            const char *filename);
 
 int platforms_render(const platforms_t *platforms,
-                     SDL_Renderer *renderer,
                      const camera_t *camera);
 
 void platforms_rect_object_collide(const platforms_t *platforms,

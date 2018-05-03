@@ -11,7 +11,6 @@
 
 static void chunk_of_point(point_t p, int *x, int *y);
 int render_chunk(const background_t *background,
-                 SDL_Renderer *renderer,
                  const camera_t *camera,
                  int x, int y,
                  color_t color,
@@ -50,14 +49,12 @@ void destroy_background(background_t *background)
 }
 
 int background_render(const background_t *background,
-                      SDL_Renderer *renderer,
                       const camera_t *camera)
 {
     assert(background);
-    assert(renderer);
     assert(camera);
 
-    rect_t view_port = camera_view_port(camera, renderer);
+    rect_t view_port = camera_view_port(camera);
 
     int min_x = 0, min_y = 0;
     chunk_of_point(vec(view_port.x, view_port.y), &min_x, &min_y);
@@ -69,7 +66,7 @@ int background_render(const background_t *background,
     for (int l = 0; l < 3; ++l) {
         for (int x = min_x; x <= max_x; ++x) {
             for (int y = min_y; y <= max_y; ++y) {
-                if (render_chunk(background, renderer, camera, x, y, color_darker(background->base_color, 0.2f * (float)l), 1.0f - 0.2f * (float)l) < 0) {
+                if (render_chunk(background, camera, x, y, color_darker(background->base_color, 0.2f * (float)l), 1.0f - 0.2f * (float)l) < 0) {
                     return -1;
                 }
             }
@@ -96,7 +93,6 @@ static void chunk_of_point(point_t p, int *x, int *y)
 }
 
 int render_chunk(const background_t *background,
-                 SDL_Renderer *renderer,
                  const camera_t *camera,
                  int x, int y,
                  color_t color,
@@ -114,7 +110,6 @@ int render_chunk(const background_t *background,
 
         if (camera_fill_rect(
                 camera,
-                renderer,
                 rect(rect_x + background->position.x * parallax,
                      rect_y + background->position.y * parallax,
                      rect_w,

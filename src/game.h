@@ -8,10 +8,11 @@
 typedef struct game_t game_t;
 
 game_t *create_game(const char *platforms_file_path,
-                    sound_medium_t *sound_medium);
+                    sound_medium_t *sound_medium,
+                    SDL_Renderer *renderer);
 void destroy_game(game_t *game);
 
-int game_render(const game_t *game, SDL_Renderer *renderer);
+int game_render(const game_t *game);
 int game_sound(game_t *game);
 int game_update(game_t *game, float delta_time);
 
