@@ -100,27 +100,25 @@ int camera_fill_rect(const camera_t *camera,
 }
 
 int camera_draw_rect(const camera_t * camera,
-                     SDL_Renderer *render,
                      rect_t rect,
                      color_t color)
 {
     assert(camera);
-    assert(render);
 
     SDL_Rect view_port;
-    SDL_RenderGetViewport(render, &view_port);
+    SDL_RenderGetViewport(camera->renderer, &view_port);
 
     const SDL_Rect sdl_rect = rect_for_sdl(
         camera_rect(camera, &view_port, rect));
 
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
-    if (SDL_SetRenderDrawColor(render, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
+    if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
 
-    if (SDL_RenderDrawRect(render, &sdl_rect) < 0) {
+    if (SDL_RenderDrawRect(camera->renderer, &sdl_rect) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }

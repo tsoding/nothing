@@ -20,7 +20,6 @@ int camera_fill_rect(const camera_t *camera,
                      color_t color);
 
 int camera_draw_rect(const camera_t * camera,
-                     SDL_Renderer *render,
                      rect_t rect,
                      color_t color);
 
