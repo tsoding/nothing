@@ -225,14 +225,12 @@ int camera_is_point_visible(const camera_t *camera, point_t p)
         camera_point(camera, &view_port, p));
 }
 
-rect_t camera_view_port(const camera_t *camera,
-                        SDL_Renderer *renderer)
+rect_t camera_view_port(const camera_t *camera)
 {
     assert(camera);
-    assert(renderer);
 
     SDL_Rect view_port;
-    SDL_RenderGetViewport(renderer, &view_port);
+    SDL_RenderGetViewport(camera->renderer, &view_port);
 
     const vec_t s = effective_scale(&view_port);
     const float w = (float) view_port.w * s.x;

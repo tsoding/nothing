@@ -56,7 +56,7 @@ int background_render(const background_t *background,
     assert(renderer);
     assert(camera);
 
-    rect_t view_port = camera_view_port(camera, renderer);
+    rect_t view_port = camera_view_port(camera);
 
     int min_x = 0, min_y = 0;
     chunk_of_point(vec(view_port.x, view_port.y), &min_x, &min_y);
