@@ -28,7 +28,8 @@ typedef struct game_t {
 } game_t;
 
 game_t *create_game(const char *level_file_path,
-                    sound_samples_t *sound_samples,
+                    const char *sound_sample_files[],
+                    size_t sound_sample_files_count,
                     SDL_Renderer *renderer)
 {
     assert(level_file_path);
@@ -64,8 +65,17 @@ game_t *create_game(const char *level_file_path,
         RETURN_LT(lt, NULL);
     }
 
+    game->sound_samples = PUSH_LT(
+        lt,
+        create_sound_samples(
+            sound_sample_files,
+            sound_sample_files_count),
+        destroy_sound_samples);
+    if (game->sound_samples == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     game->state = GAME_STATE_RUNNING;
-    game->sound_samples = sound_samples;
     game->lt = lt;
 
     return game;

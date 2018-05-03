@@ -8,7 +8,8 @@
 typedef struct game_t game_t;
 
 game_t *create_game(const char *platforms_file_path,
-                    sound_samples_t *sound_samples,
+                    const char *sound_sample_files[],
+                    size_t sound_sample_files_count,
                     SDL_Renderer *renderer);
 void destroy_game(game_t *game);
 

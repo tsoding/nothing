@@ -112,27 +112,22 @@ int main(int argc, char *argv[])
     }
     PUSH_LT(lt, 42, Mix_CloseAudio_lt);
 
+    // ------------------------------
+
     const char * sound_sample_files[] = {
         "./sounds/nothing.wav",
         "./sounds/something.wav"
     };
     const size_t sound_sample_files_count = sizeof(sound_sample_files) / sizeof(char*);
 
-    sound_samples_t *sound_samples =
-        PUSH_LT(
-            lt,
-            create_sound_samples(
-                sound_sample_files,
-                sound_sample_files_count),
-            destroy_sound_samples);
-    if (sound_samples == NULL) {
-        print_current_error_msg("Could not create sound medium");
-        RETURN_LT(lt, -1);
-    }
-
-    // ------------------------------
-
-    game_t *const game = PUSH_LT(lt, create_game(argv[1], sound_samples, renderer), destroy_game);
+    game_t *const game = PUSH_LT(
+        lt,
+        create_game(
+            argv[1],
+            sound_sample_files,
+            sound_sample_files_count,
+            renderer),
+        destroy_game);
     if (game == NULL) {
         print_current_error_msg("Could not create the game object");
         RETURN_LT(lt, -1);
