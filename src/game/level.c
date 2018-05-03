@@ -107,7 +107,7 @@ int level_render(const level_t *level, SDL_Renderer *renderer)
     assert(level);
     assert(renderer);
 
-    if (camera_clear_background(level->camera, renderer, level->background_color) < 0) {
+    if (camera_clear_background(level->camera, level->background_color) < 0) {
         return -1;
     }
 

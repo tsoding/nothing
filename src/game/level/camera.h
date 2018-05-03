@@ -13,7 +13,6 @@ camera_t *create_camera_from_renderer(SDL_Renderer *renderer);
 void destroy_camera(camera_t *camera);
 
 int camera_clear_background(const camera_t *camera,
-                            SDL_Renderer *render,
                             color_t color);
 
 int camera_fill_rect(const camera_t *camera,

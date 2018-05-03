@@ -188,17 +188,16 @@ int camera_fill_triangle(const camera_t *camera,
 }
 
 int camera_clear_background(const camera_t *camera,
-                            SDL_Renderer *render,
                             color_t color)
 {
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
-    if (SDL_SetRenderDrawColor(render, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
+    if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
 
-    if (SDL_RenderClear(render) < 0) {
+    if (SDL_RenderClear(camera->renderer) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         return -1;
     }
