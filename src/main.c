@@ -112,11 +112,11 @@ int main(int argc, char *argv[])
     }
     PUSH_LT(lt, 42, Mix_CloseAudio_lt);
 
-    Mix_Chunk * sound_sample_files[] = {
-        PUSH_LT(lt, Mix_LoadWAV("./sounds/nothing.wav"), Mix_FreeChunk),
-        PUSH_LT(lt, Mix_LoadWAV("./sounds/something.wav"), Mix_FreeChunk)
+    const char * sound_sample_files[] = {
+        "./sounds/nothing.wav",
+        "./sounds/something.wav"
     };
-    const size_t sound_sample_files_count = sizeof(sound_sample_files) / sizeof(Mix_Chunk*);
+    const size_t sound_sample_files_count = sizeof(sound_sample_files) / sizeof(char*);
 
     sound_samples_t *sound_samples =
         PUSH_LT(

@@ -28,11 +28,11 @@ static int mix_get_free_channel(void)
     return -1;
 }
 
-sound_samples_t *create_sound_samples(Mix_Chunk **samples,
-                                      size_t samples_count)
+sound_samples_t *create_sound_samples(const char *sample_files[],
+                                      size_t sample_files_count)
 {
-    assert(samples);
-    assert(samples_count > 0);
+    assert(sample_files);
+    assert(sample_files_count > 0);
 
     lt_t *lt = create_lt();
     if (lt == NULL) {
@@ -45,8 +45,27 @@ sound_samples_t *create_sound_samples(Mix_Chunk **samples,
         RETURN_LT(lt, NULL);
     }
 
-    sound_samples->samples = samples;
-    sound_samples->samples_count = samples_count;
+    sound_samples->samples = PUSH_LT(
+        lt,
+        malloc(sizeof(Mix_Chunk*) * sample_files_count),
+        free);
+    if (sound_samples->samples == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
+    for (size_t i = 0; i < sample_files_count; ++i) {
+        sound_samples->samples[i] = PUSH_LT(
+            lt,
+            Mix_LoadWAV(sample_files[i]),
+            Mix_FreeChunk);
+        if (sound_samples->samples[i] == NULL) {
+            throw_error(ERROR_TYPE_SDL2_MIXER);
+            RETURN_LT(lt, NULL);
+        }
+    }
+
+    sound_samples->samples_count = sample_files_count;
     sound_samples->paused = 0;
 
     sound_samples->lt = lt;
