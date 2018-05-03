@@ -82,7 +82,6 @@ int wavy_rect_render(const wavy_rect_t *wavy_rect,
         const float s = (float) (rand() % 50) * 0.1f;
         if (camera_fill_rect(
                 camera,
-                renderer,
                 rect(
                     wavy_rect->rect.x + wave_scanner,
                     wavy_rect->rect.y + s * sinf(wavy_rect->angle + wave_scanner / WAVE_PILLAR_WIDTH),

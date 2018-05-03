@@ -74,12 +74,10 @@ void destroy_rigid_rect(rigid_rect_t *rigid_rect)
 }
 
 int rigid_rect_render(const rigid_rect_t *rigid_rect,
-                      SDL_Renderer *renderer,
                       const camera_t *camera)
 {
     return camera_fill_rect(
         camera,
-        renderer,
         rigid_rect_hitbox(rigid_rect),
         rigid_rect->color);
 

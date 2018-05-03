@@ -113,7 +113,7 @@ int player_render(const player_t * player,
 
     switch (player->state) {
     case PLAYER_STATE_ALIVE:
-        return rigid_rect_render(player->alive_body, renderer, camera);
+        return rigid_rect_render(player->alive_body, camera);
 
     case PLAYER_STATE_DYING:
         return dying_rect_render(player->dying_body, renderer, camera);

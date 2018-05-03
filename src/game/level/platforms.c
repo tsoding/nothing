@@ -123,13 +123,11 @@ int platforms_save_to_file(const platforms_t *platforms,
 }
 
 int platforms_render(const platforms_t *platforms,
-                     SDL_Renderer *renderer,
                      const camera_t *camera)
 {
     for (size_t i = 0; i < platforms->rects_size; ++i) {
         if (camera_fill_rect(
                 camera,
-                renderer,
                 platforms->rects[i],
                 platforms->colors[i]) < 0) {
             throw_error(ERROR_TYPE_SDL2);
