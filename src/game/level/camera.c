@@ -13,6 +13,7 @@ struct camera_t {
     int debug_mode;
     int blackwhite_mode;
     point_t position;
+    SDL_Renderer *renderer;
 };
 
 static vec_t effective_ratio(const SDL_Rect *view_port);
@@ -39,6 +40,19 @@ camera_t *create_camera(void)
     camera->position = vec(0.0f, 0.0f);
     camera->debug_mode = 0;
     camera->blackwhite_mode = 0;
+    camera->renderer = NULL;
+
+    return camera;
+}
+
+camera_t *create_camera_from_renderer(SDL_Renderer *renderer)
+{
+    camera_t *camera = create_camera();
+    if (camera == NULL) {
+        return NULL;
+    }
+
+    camera->renderer = renderer;
 
     return camera;
 }
