@@ -106,11 +106,6 @@ int level_render(const level_t *level, camera_t *camera)
         return -1;
     }
 
-    const rect_t view_port = camera_view_port(camera);
-
-    background_move_to(level->background, vec(view_port.x + view_port.w * 0.5f,
-                                              view_port.y + view_port.h * 0.5f));
-
     if (background_render(level->background, camera) < 0) {
         return -1;
     }
