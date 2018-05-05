@@ -5,9 +5,9 @@
 #include "math/rect.h"
 #include "system/lt.h"
 
-#define BACKGROUND_CHUNK_COUNT 10
-#define BACKGROUND_CHUNK_WIDTH 500.0f
-#define BACKGROUND_CHUNK_HEIGHT 500.0f
+#define BACKGROUND_CHUNK_COUNT 5
+#define BACKGROUND_CHUNK_WIDTH 250.0f
+#define BACKGROUND_CHUNK_HEIGHT 250.0f
 
 static void chunk_of_point(point_t p, int *x, int *y);
 int render_chunk(const background_t *background,
@@ -117,7 +117,7 @@ int render_chunk(const background_t *background,
         const float rect_y = rand_float_range((float) y * BACKGROUND_CHUNK_HEIGHT,
                                               (float) (y + 1) * BACKGROUND_CHUNK_HEIGHT);
         const float rect_w = rand_float_range(0.0f, BACKGROUND_CHUNK_WIDTH * 0.5f);
-        const float rect_h = rand_float_range(0.0f, BACKGROUND_CHUNK_HEIGHT * 0.5f);
+        const float rect_h = rand_float_range(rect_w * 0.5f, rect_w * 1.5f);
 
         if (camera_fill_rect(
                 camera,
