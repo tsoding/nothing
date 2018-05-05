@@ -95,8 +95,8 @@ static void chunk_of_point(point_t p, int *x, int *y)
 {
     assert(x);
     assert(y);
-    *x = (int) roundf(p.x / BACKGROUND_CHUNK_WIDTH);
-    *y = (int) roundf(p.y / BACKGROUND_CHUNK_HEIGHT);
+    *x = (int) (p.x / BACKGROUND_CHUNK_WIDTH);
+    *y = (int) (p.y / BACKGROUND_CHUNK_HEIGHT);
 }
 
 int render_chunk(const background_t *background,
