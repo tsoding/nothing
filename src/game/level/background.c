@@ -78,7 +78,7 @@ int background_render(const background_t *background,
                         background,
                         camera,
                         x, y,
-                        color_darker(background->base_color, 0.2f * (float)l),
+                        color_darker(background->base_color, 0.05f * (float)(l + 1)),
                         position,
                         parallax) < 0) {
                     return -1;
