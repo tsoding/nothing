@@ -14,7 +14,4 @@ void destroy_background(background_t *background);
 int background_render(const background_t *background,
                       const camera_t *camera);
 
-void background_move_to(background_t *background,
-                        vec_t position);
-
 #endif  // BACKGROUND_H_
