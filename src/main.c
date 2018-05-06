@@ -17,7 +17,6 @@
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
-#define GAME_FPS 60
 
 /* LT module adapter for Mix_CloseAudio */
 static void Mix_CloseAudio_lt(void* ignored)
@@ -35,7 +34,7 @@ static void SDL_Quit_lt(void* ignored)
 
 static void print_usage(FILE *stream)
 {
-    fprintf(stream, "Usage: nothing <level-file>\n");
+    fprintf(stream, "Usage: nothing [--fps <fps>] <level-file>\n");
 }
 
 int main(int argc, char *argv[])
@@ -44,7 +43,31 @@ int main(int argc, char *argv[])
 
     lt_t *const lt = create_lt();
 
-    if (argc < 2) {
+    char *level_filename = NULL;
+    int fps = 60;
+
+    for (int i = 1; i < argc;) {
+        if (strcmp(argv[i], "--fps") == 0) {
+            if (i + 1 < argc) {
+                if (sscanf(argv[i + 1], "%d", &fps) == 0) {
+                    fprintf(stderr, "Cannot parse FPS: %s is not a number\n", argv[i + 1]);
+                    print_usage(stderr);
+                    RETURN_LT(lt, -1);
+                }
+                i += 2;
+            } else {
+                fprintf(stderr, "Value of FPS is not provided\n");
+                print_usage(stderr);
+                RETURN_LT(lt, -1);
+            }
+        } else {
+            level_filename = argv[i];
+            i++;
+        }
+    }
+
+    if (level_filename == NULL) {
+        fprintf(stderr, "Path to level file is not provided\n");
         print_usage(stderr);
         RETURN_LT(lt, -1);
     }
@@ -126,7 +149,7 @@ int main(int argc, char *argv[])
     game_t *const game = PUSH_LT(
         lt,
         create_game(
-            argv[1],
+            level_filename,
             sound_sample_files,
             sound_sample_files_count,
             renderer),
@@ -140,12 +163,12 @@ int main(int argc, char *argv[])
 
     SDL_Event e;
     int64_t last_time = (int64_t) SDL_GetTicks();
-    const int64_t expected_delay_ms = (int64_t) (1000.0f / GAME_FPS);
+    const int64_t expected_delay_ms = (int64_t) (1000.0f / (float) fps);
     while (!game_over_check(game)) {
         const int64_t current_time = (int64_t) SDL_GetTicks();
 
         if (current_time == last_time) {
-            SDL_Delay((int) expected_delay_ms);
+            SDL_Delay((Uint32) expected_delay_ms);
             last_time = current_time;
             continue;
         }
