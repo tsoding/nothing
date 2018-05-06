@@ -163,6 +163,8 @@ int main(int argc, char *argv[])
             print_current_error_msg("Failed handling the sound");
             RETURN_LT(lt, -1);
         }
+
+        SDL_Delay((int) (delay_ms * 1000.0f));
     }
 
     RETURN_LT(lt, 0);
