@@ -1,5 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -8,6 +10,7 @@
 #include "game/level/platforms.h"
 #include "game/level/player.h"
 #include "game/sound_samples.h"
+#include "math/minmax.h"
 #include "math/point.h"
 #include "system/error.h"
 #include "system/lt.h"
@@ -134,9 +137,22 @@ int main(int argc, char *argv[])
     }
 
     const Uint8 *const keyboard_state = SDL_GetKeyboardState(NULL);
-    const float delay_ms = 1.0f / GAME_FPS;
+
     SDL_Event e;
+    int64_t last_time = (int64_t) SDL_GetTicks();
+    const int64_t expected_delay_ms = (int64_t) (1000.0f / GAME_FPS);
     while (!game_over_check(game)) {
+        const int64_t current_time = (int64_t) SDL_GetTicks();
+
+        if (current_time == last_time) {
+            SDL_Delay((int) expected_delay_ms);
+            last_time = current_time;
+            continue;
+        }
+
+        const int64_t actual_delta_ms = current_time - last_time;
+
+
         while (!game_over_check(game) && SDL_PollEvent(&e)) {
             if (game_event(game, &e) < 0) {
                 print_current_error_msg("Failed handling event");
@@ -154,9 +170,14 @@ int main(int argc, char *argv[])
             RETURN_LT(lt, -1);
         }
 
-        if (game_update(game, delay_ms) < 0) {
-            print_current_error_msg("Failed handling updating");
-            RETURN_LT(lt, -1);
+        int64_t effective_delta_ms = max_int64(actual_delta_ms, expected_delay_ms);
+        while (effective_delta_ms > 0) {
+            if (game_update(game, (float) min_int64(expected_delay_ms, effective_delta_ms) * 0.001f) < 0) {
+                print_current_error_msg("Failed handling updating");
+                RETURN_LT(lt, -1);
+            }
+
+            effective_delta_ms -= expected_delay_ms;
         }
 
         if (game_sound(game) < 0) {
@@ -164,7 +185,8 @@ int main(int argc, char *argv[])
             RETURN_LT(lt, -1);
         }
 
-        SDL_Delay((int) (delay_ms * 1000.0f));
+        SDL_Delay((unsigned int) max_int64(0, expected_delay_ms - actual_delta_ms));
+        last_time = current_time;
     }
 
     RETURN_LT(lt, 0);
