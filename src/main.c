@@ -1,5 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -8,13 +10,13 @@
 #include "game/level/platforms.h"
 #include "game/level/player.h"
 #include "game/sound_samples.h"
+#include "math/minmax.h"
 #include "math/point.h"
 #include "system/error.h"
 #include "system/lt.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
-#define GAME_FPS 60
 
 /* LT module adapter for Mix_CloseAudio */
 static void Mix_CloseAudio_lt(void* ignored)
@@ -32,7 +34,7 @@ static void SDL_Quit_lt(void* ignored)
 
 static void print_usage(FILE *stream)
 {
-    fprintf(stream, "Usage: nothing <level-file>\n");
+    fprintf(stream, "Usage: nothing [--fps <fps>] <level-file>\n");
 }
 
 int main(int argc, char *argv[])
@@ -41,7 +43,31 @@ int main(int argc, char *argv[])
 
     lt_t *const lt = create_lt();
 
-    if (argc < 2) {
+    char *level_filename = NULL;
+    int fps = 60;
+
+    for (int i = 1; i < argc;) {
+        if (strcmp(argv[i], "--fps") == 0) {
+            if (i + 1 < argc) {
+                if (sscanf(argv[i + 1], "%d", &fps) == 0) {
+                    fprintf(stderr, "Cannot parse FPS: %s is not a number\n", argv[i + 1]);
+                    print_usage(stderr);
+                    RETURN_LT(lt, -1);
+                }
+                i += 2;
+            } else {
+                fprintf(stderr, "Value of FPS is not provided\n");
+                print_usage(stderr);
+                RETURN_LT(lt, -1);
+            }
+        } else {
+            level_filename = argv[i];
+            i++;
+        }
+    }
+
+    if (level_filename == NULL) {
+        fprintf(stderr, "Path to level file is not provided\n");
         print_usage(stderr);
         RETURN_LT(lt, -1);
     }
@@ -123,7 +149,7 @@ int main(int argc, char *argv[])
     game_t *const game = PUSH_LT(
         lt,
         create_game(
-            argv[1],
+            level_filename,
             sound_sample_files,
             sound_sample_files_count,
             renderer),
@@ -134,9 +160,22 @@ int main(int argc, char *argv[])
     }
 
     const Uint8 *const keyboard_state = SDL_GetKeyboardState(NULL);
-    const float delay_ms = 1.0f / GAME_FPS;
+
     SDL_Event e;
+    int64_t last_time = (int64_t) SDL_GetTicks();
+    const int64_t expected_delay_ms = (int64_t) (1000.0f / (float) fps);
     while (!game_over_check(game)) {
+        const int64_t current_time = (int64_t) SDL_GetTicks();
+
+        if (current_time == last_time) {
+            SDL_Delay((Uint32) expected_delay_ms);
+            last_time = current_time;
+            continue;
+        }
+
+        const int64_t actual_delta_ms = current_time - last_time;
+
+
         while (!game_over_check(game) && SDL_PollEvent(&e)) {
             if (game_event(game, &e) < 0) {
                 print_current_error_msg("Failed handling event");
@@ -154,15 +193,23 @@ int main(int argc, char *argv[])
             RETURN_LT(lt, -1);
         }
 
-        if (game_update(game, delay_ms) < 0) {
-            print_current_error_msg("Failed handling updating");
-            RETURN_LT(lt, -1);
+        int64_t effective_delta_ms = max_int64(actual_delta_ms, expected_delay_ms);
+        while (effective_delta_ms > 0) {
+            if (game_update(game, (float) min_int64(expected_delay_ms, effective_delta_ms) * 0.001f) < 0) {
+                print_current_error_msg("Failed handling updating");
+                RETURN_LT(lt, -1);
+            }
+
+            effective_delta_ms -= expected_delay_ms;
         }
 
         if (game_sound(game) < 0) {
             print_current_error_msg("Failed handling the sound");
             RETURN_LT(lt, -1);
         }
+
+        SDL_Delay((unsigned int) max_int64(0, expected_delay_ms - actual_delta_ms));
+        last_time = current_time;
     }
 
     RETURN_LT(lt, 0);
