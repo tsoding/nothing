@@ -9,13 +9,18 @@
 typedef struct rigid_rect_t rigid_rect_t;
 
 rigid_rect_t *create_rigid_rect(rect_t rect, color_t color);
+rigid_rect_t *create_rigid_rect_from_stream(FILE *stream);
 void destroy_rigid_rect(rigid_rect_t *rigid_rect);
 
 int rigid_rect_render(const rigid_rect_t *rigid_rect,
                       const camera_t *camera);
 int rigid_rect_update(rigid_rect_t * rigid_rect,
-                      const platforms_t *platforms,
                       float delta_time);
+
+void rigid_rect_collide_with_platforms(rigid_rect_t * rigid_rect,
+                                       const platforms_t *platforms);
+void rigid_rect_collide_with_rect(rigid_rect_t * rigid_rect,
+                                  rect_t rect);
 
 rect_t rigid_rect_hitbox(const rigid_rect_t *rigid_rect);
 

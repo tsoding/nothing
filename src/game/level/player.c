@@ -123,19 +123,13 @@ int player_render(const player_t * player,
 }
 
 void player_update(player_t *player,
-                   const platforms_t *platforms,
                    float delta_time)
 {
     assert(player);
-    assert(platforms);
 
     switch (player->state) {
     case PLAYER_STATE_ALIVE: {
-        rigid_rect_update(player->alive_body, platforms, delta_time);
-
-        if (rigid_rect_touches_ground(player->alive_body)) {
-            player->jump_count = 0;
-        }
+        rigid_rect_update(player->alive_body, delta_time);
 
         const rect_t hitbox = rigid_rect_hitbox(player->alive_body);
 
@@ -161,6 +155,30 @@ void player_update(player_t *player,
     } break;
 
     default: {}
+    }
+}
+
+void player_collide_with_platforms(player_t * player,
+                                   const platforms_t *platforms)
+{
+    if (player->state == PLAYER_STATE_ALIVE) {
+        rigid_rect_collide_with_platforms(player->alive_body, platforms);
+
+        if (rigid_rect_touches_ground(player->alive_body)) {
+            player->jump_count = 0;
+        }
+    }
+}
+
+void player_collide_with_rect(player_t * player,
+                              rect_t rect)
+{
+    if (player->state == PLAYER_STATE_ALIVE) {
+        rigid_rect_collide_with_rect(player->alive_body, rect);
+
+        if (rigid_rect_touches_ground(player->alive_body)) {
+            player->jump_count = 0;
+        }
     }
 }
 
@@ -258,4 +276,13 @@ int player_sound(player_t *player,
     }
 
     return 0;
+}
+
+rect_t player_hitbox(const player_t *player)
+{
+    if (player->state == PLAYER_STATE_ALIVE) {
+        return rigid_rect_hitbox(player->alive_body);
+    } else {
+        return rect(0.0f, 0.0f, 0.0f, 0.0f);
+    }
 }
