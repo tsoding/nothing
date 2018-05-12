@@ -15,6 +15,14 @@ let $platforms := for $rect in $rects where matches($rect/@id, "^rect.*")
     $rect/@height, " ",
     replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
   )
+let $boxes := for $rect in $rects where matches($rect/@id, "^box.*")
+  return concat (
+    $rect/@x, " ",
+    $rect/@y, " ",
+    $rect/@width, " ",
+    $rect/@height, " ",
+    replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
+  )
 let $regions := for $rect in $rects where matches($rect/@id, "region.*") return $rect
 let $goals := for $rect in $rects where matches($rect/@id, "goal.*") return (
   let $goal_id := replace($rect/@id, "goal(.*)", "$1")
@@ -57,5 +65,7 @@ return (
   count($lavas),
   $lavas,
   count($backplatforms),
-  $backplatforms
+  $backplatforms,
+  count($boxes),
+  $boxes
 )
