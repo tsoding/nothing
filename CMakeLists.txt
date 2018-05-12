@@ -20,6 +20,7 @@ include_directories(${SDL2_MIXER_INCLUDE_DIR})
 set(SOURCE_FILES
   src/color.c
   src/game.c
+  src/game/level/boxes.c
   src/game/camera.c
   src/game/level.c
   src/game/level/background.c
@@ -46,6 +47,7 @@ set(SOURCE_FILES
 set(HEADER_FILES
   src/color.h
   src/game.h
+  src/game/level/boxes.h
   src/game/camera.h
   src/game/level.h
   src/game/level/background.h
