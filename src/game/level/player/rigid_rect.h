@@ -19,6 +19,8 @@ int rigid_rect_update(rigid_rect_t * rigid_rect,
 
 void rigid_rect_collide_with_platforms(rigid_rect_t * rigid_rect,
                                        const platforms_t *platforms);
+void rigid_rect_collide_with_rect(rigid_rect_t * rigid_rect,
+                                  rect_t rect);
 
 rect_t rigid_rect_hitbox(const rigid_rect_t *rigid_rect);
 

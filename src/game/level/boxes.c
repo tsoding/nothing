@@ -86,6 +86,16 @@ int boxes_update(boxes_t *boxes,
         }
     }
 
+    for (size_t i = 0; i < boxes->count; ++i) {
+        for (size_t j = 0; j < boxes->count; ++j) {
+            if (i != j) {
+                rigid_rect_collide_with_rect(
+                    boxes->bodies[i],
+                    rigid_rect_hitbox(boxes->bodies[j]));
+            }
+        }
+    }
+
     return 0;
 }
 
@@ -97,5 +107,18 @@ void boxes_collide_with_platforms(boxes_t *boxes,
 
     for (size_t i = 0; i < boxes->count; ++i) {
         rigid_rect_collide_with_platforms(boxes->bodies[i], platforms);
+    }
+}
+
+void boxes_collide_with_player(boxes_t *boxes,
+                               const player_t *player)
+{
+    assert(boxes);
+    assert(player);
+
+    const rect_t hitbox = player_hitbox(player);
+
+    for (size_t i = 0; i < boxes->count; ++i) {
+        rigid_rect_collide_with_rect(boxes->bodies[i], hitbox);
     }
 }

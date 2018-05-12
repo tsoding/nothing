@@ -23,6 +23,8 @@ void player_update(player_t * player,
 void player_collide_with_platforms(player_t * player,
                                    const platforms_t *platforms);
 
+rect_t player_hitbox(const player_t *player);
+
 int player_sound(player_t *player,
                  sound_samples_t *sound_samples);
 void player_checkpoint(player_t *player,
