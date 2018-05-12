@@ -19,8 +19,9 @@ void destroy_player(player_t * player);
 int player_render(const player_t * player,
                   const camera_t *camera);
 void player_update(player_t * player,
-                   const platforms_t *platforms,
                    float delta_time);
+void player_collide_with_platforms(player_t * player,
+                                   const platforms_t *platforms);
 
 int player_sound(player_t *player,
                  sound_samples_t *sound_samples);

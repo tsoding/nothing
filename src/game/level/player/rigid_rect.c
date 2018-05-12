@@ -103,11 +103,9 @@ int rigid_rect_render(const rigid_rect_t *rigid_rect,
 }
 
 int rigid_rect_update(rigid_rect_t * rigid_rect,
-                      const platforms_t *platforms,
                       float delta_time)
 {
     assert(rigid_rect);
-    assert(platforms);
 
     rigid_rect->touches_ground = 0;
 
@@ -120,6 +118,12 @@ int rigid_rect_update(rigid_rect_t * rigid_rect,
                 rigid_rect->movement),
             delta_time));
 
+    return 0;
+}
+
+void rigid_rect_collide_with_platforms(rigid_rect_t * rigid_rect,
+                                       const platforms_t *platforms)
+{
     int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
 
     platforms_rect_object_collide(platforms, rigid_rect_hitbox(rigid_rect), sides);
@@ -153,8 +157,6 @@ int rigid_rect_update(rigid_rect_t * rigid_rect,
             sides);
         opposing_force = opposing_force_by_sides(sides);
     }
-
-    return 0;
 }
 
 rect_t rigid_rect_hitbox(const rigid_rect_t *rigid_rect)

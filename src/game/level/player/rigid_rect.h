@@ -15,8 +15,10 @@ void destroy_rigid_rect(rigid_rect_t *rigid_rect);
 int rigid_rect_render(const rigid_rect_t *rigid_rect,
                       const camera_t *camera);
 int rigid_rect_update(rigid_rect_t * rigid_rect,
-                      const platforms_t *platforms,
                       float delta_time);
+
+void rigid_rect_collide_with_platforms(rigid_rect_t * rigid_rect,
+                                       const platforms_t *platforms);
 
 rect_t rigid_rect_hitbox(const rigid_rect_t *rigid_rect);
 
