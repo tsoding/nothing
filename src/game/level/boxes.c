@@ -56,13 +56,29 @@ int boxes_render(boxes_t *boxes, camera_t *camera)
 {
     assert(boxes);
     assert(camera);
+
+    for (size_t i = 0; i < boxes->count; ++i) {
+        if (rigid_rect_render(boxes->bodies[i], camera) < 0) {
+            return -1;
+        }
+    }
+
     return 0;
 }
 
-int boxes_update(boxes_t *boxes, float delta_time)
+int boxes_update(boxes_t *boxes,
+                 const platforms_t *platforms,
+                 float delta_time)
 {
     assert(boxes);
     assert(delta_time);
+
+    for (size_t i = 0; i < boxes->count; ++i) {
+        if (rigid_rect_update(boxes->bodies[i], platforms, delta_time) < 0) {
+            return -1;
+        }
+    }
+
     return 0;
 }
 
