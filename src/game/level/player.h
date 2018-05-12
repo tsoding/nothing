@@ -22,6 +22,8 @@ void player_update(player_t * player,
                    float delta_time);
 void player_collide_with_platforms(player_t * player,
                                    const platforms_t *platforms);
+void player_collide_with_rect(player_t * player,
+                              rect_t rect);
 
 rect_t player_hitbox(const player_t *player);
 

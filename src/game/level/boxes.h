@@ -15,7 +15,7 @@ int boxes_update(boxes_t *boxes, float delta_time);
 void boxes_collide_with_platforms(boxes_t *boxes,
                                   const platforms_t *platforms);
 void boxes_collide_with_player(boxes_t *boxes,
-                               const player_t *player);
+                               player_t *player);
 
 
 #endif  // BOXES_H_

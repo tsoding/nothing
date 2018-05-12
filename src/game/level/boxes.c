@@ -111,7 +111,7 @@ void boxes_collide_with_platforms(boxes_t *boxes,
 }
 
 void boxes_collide_with_player(boxes_t *boxes,
-                               const player_t *player)
+                               player_t *player)
 {
     assert(boxes);
     assert(player);
@@ -119,6 +119,7 @@ void boxes_collide_with_player(boxes_t *boxes,
     const rect_t hitbox = player_hitbox(player);
 
     for (size_t i = 0; i < boxes->count; ++i) {
+        player_collide_with_rect(player, rigid_rect_hitbox(boxes->bodies[i]));
         rigid_rect_collide_with_rect(boxes->bodies[i], hitbox);
     }
 }
