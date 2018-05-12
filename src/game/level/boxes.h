@@ -11,6 +11,6 @@ void destroy_boxes(boxes_t *boxes);
 
 int boxes_render(boxes_t *boxes, camera_t *camera);
 int boxes_update(boxes_t *boxes, const platforms_t *platforms, float delta_time);
-int boxes_collide_with_platforms(boxes_t *boxes, platforms_t *platforms);
+
 
 #endif  // BOXES_H_

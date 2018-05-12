@@ -89,10 +89,3 @@ int boxes_update(boxes_t *boxes,
 
     return 0;
 }
-
-int boxes_collide_with_platforms(boxes_t *boxes, platforms_t *platforms)
-{
-    assert(boxes);
-    assert(platforms);
-    return 0;
-}
