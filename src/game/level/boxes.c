@@ -33,6 +33,12 @@ boxes_t *create_boxes_from_stream(FILE *stream)
         RETURN_LT(lt, NULL);
     }
 
+    boxes->bodies = PUSH_LT(lt, malloc(sizeof(rigid_rect_t*) * boxes->count), free);
+    if (boxes->bodies == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
     for (size_t i = 0; i < boxes->count; ++i) {
         boxes->bodies[i] = PUSH_LT(
             lt,
@@ -42,6 +48,8 @@ boxes_t *create_boxes_from_stream(FILE *stream)
             RETURN_LT(lt, NULL);
         }
     }
+
+    boxes->lt = lt;
 
     return boxes;
 }

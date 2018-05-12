@@ -1,5 +1,6 @@
-#include <assert.h>
 #include <SDL2/SDL.h>
+#include <assert.h>
+#include <stdio.h>
 
 #include "color.h"
 #include "rigid_rect.h"
@@ -66,6 +67,24 @@ rigid_rect_t *create_rigid_rect(rect_t rect, color_t color)
     rigid_rect->touches_ground = 0;
 
     return rigid_rect;
+}
+
+rigid_rect_t *create_rigid_rect_from_stream(FILE *stream)
+{
+    assert(stream);
+
+    char color[7];
+    rect_t rect;
+
+    if (fscanf(stream, "%f%f%f%f%6s\n",
+               &rect.x, &rect.y,
+               &rect.w, &rect.h,
+               color) < 0) {
+        throw_error(ERROR_TYPE_LIBC);
+        return NULL;
+    }
+
+    return create_rigid_rect(rect, color_from_hexstr(color));
 }
 
 void destroy_rigid_rect(rigid_rect_t *rigid_rect)

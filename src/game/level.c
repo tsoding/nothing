@@ -4,6 +4,7 @@
 #include "game/camera.h"
 #include "game/level.h"
 #include "game/level/background.h"
+#include "game/level/boxes.h"
 #include "game/level/goals.h"
 #include "game/level/lava.h"
 #include "game/level/platforms.h"
@@ -23,6 +24,7 @@ struct level_t
     color_t background_color;
     platforms_t *back_platforms;
     background_t *background;
+    boxes_t *boxes;
 };
 
 level_t *create_level_from_file(const char *file_name)
@@ -78,6 +80,11 @@ level_t *create_level_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
 
+    level->boxes = PUSH_LT(lt, create_boxes_from_stream(level_file), destroy_boxes);
+    if (level->boxes == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->background = PUSH_LT(lt, create_background(level->background_color), destroy_background);
     if (level->background == NULL) {
         RETURN_LT(lt, NULL);
@@ -118,6 +125,10 @@ int level_render(const level_t *level, camera_t *camera)
         return -1;
     }
 
+    if (boxes_render(level->boxes, camera) < 0) {
+        return -1;
+    }
+
     if (lava_render(level->lava, camera) < 0) {
         return -1;
     }
@@ -144,6 +155,7 @@ int level_update(level_t *level, float delta_time)
     assert(level);
     assert(delta_time > 0);
 
+    boxes_update(level->boxes, level->platforms, delta_time);
     player_update(level->player, level->platforms, delta_time);
 
     player_hide_goals(level->player, level->goals);
@@ -254,6 +266,12 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
         RETURN_LT(lt, -1);
     }
     level->back_platforms = RESET_LT(level->lt, level->back_platforms, back_platforms);
+
+    boxes_t * const boxes = create_boxes_from_stream(level_file);
+    if (level->boxes == NULL) {
+        RETURN_LT(lt, -1);
+    }
+    level->boxes = RESET_LT(level->lt, level->boxes, boxes);
 
     RETURN_LT(lt, 0);
 }
