@@ -156,11 +156,13 @@ int level_update(level_t *level, float delta_time)
     assert(delta_time > 0);
 
     player_update(level->player, delta_time);
-    player_collide_with_platforms(level->player, level->platforms);
 
     boxes_update(level->boxes, delta_time);
-    boxes_collide_with_player(level->boxes, level->player);
     boxes_collide_with_platforms(level->boxes, level->platforms);
+    boxes_collide_with_player(level->boxes, level->player);
+
+    player_collide_with_platforms(level->player, level->platforms);
+    player_collide_with_boxes(level->player, level->boxes);
 
     player_hide_goals(level->player, level->goals);
     player_die_from_lava(level->player, level->lava);

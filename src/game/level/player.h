@@ -7,10 +7,11 @@
 #include "game/sound_samples.h"
 #include "lava.h"
 #include "platforms.h"
+#include "boxes.h"
 
 typedef struct player_t player_t;
-
 typedef struct goals_t goals_t;
+typedef struct rigid_rect_t rigid_rect_t;
 
 player_t *create_player(float x, float y, color_t color);
 player_t *create_player_from_stream(FILE *stream);
@@ -24,6 +25,10 @@ void player_collide_with_platforms(player_t * player,
                                    const platforms_t *platforms);
 void player_collide_with_rect(player_t * player,
                               rect_t rect);
+void player_collide_with_boxes(player_t * player,
+                               const boxes_t * boxes);
+void player_impact_rigid_rect(player_t * player,
+                              rigid_rect_t *rigid_rect);
 
 rect_t player_hitbox(const player_t *player);
 
