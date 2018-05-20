@@ -1,6 +1,7 @@
 #include <assert.h>
 
 #include "game/level/boxes.h"
+#include "game/level/player.h"
 #include "game/level/player/rigid_rect.h"
 #include "system/lt.h"
 #include "system/error.h"
@@ -116,10 +117,21 @@ void boxes_collide_with_player(boxes_t *boxes,
     assert(boxes);
     assert(player);
 
-    const rect_t hitbox = player_hitbox(player);
+    for (size_t i = 0; i < boxes->count; ++i) {
+        player_impact_rigid_rect(player, boxes->bodies[i]);
+    }
+}
+
+void boxes_rect_object_collide(const boxes_t *boxes,
+                               rect_t object,
+                               int sides[RECT_SIDE_N])
+{
+    assert(boxes);
+
+    memset(sides, 0, sizeof(int) * RECT_SIDE_N);
 
     for (size_t i = 0; i < boxes->count; ++i) {
-        player_collide_with_rect(player, rigid_rect_hitbox(boxes->bodies[i]));
-        rigid_rect_collide_with_rect(boxes->bodies[i], hitbox);
+        const rect_t hitbox = rigid_rect_hitbox(boxes->bodies[i]);
+        rect_object_impact(&object, &hitbox, sides);
     }
 }

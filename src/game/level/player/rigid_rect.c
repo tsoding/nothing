@@ -6,6 +6,7 @@
 #include "rigid_rect.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "game/level/boxes.h"
 
 #define RIGID_RECT_GRAVITY 1500.0f
 
@@ -192,6 +193,55 @@ void rigid_rect_collide_with_rect(rigid_rect_t * rigid_rect,
 
         rect_object_impact(&object, &rect, sides);
         opposing_force = opposing_force_by_sides(sides);
+    }
+}
+
+void rigid_rect_collide_with_boxes(rigid_rect_t * rigid_rect,
+                                   const boxes_t *boxes)
+{
+    int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
+
+    boxes_rect_object_collide(boxes, rigid_rect_hitbox(rigid_rect), sides);
+
+    if (sides[RECT_SIDE_BOTTOM]) {
+        rigid_rect->touches_ground = 1;
+    }
+
+    vec_t opposing_force = opposing_force_by_sides(sides);
+
+    for (int i = 0; i < 1000 && vec_length(opposing_force) > 1e-6; ++i) {
+        rigid_rect->position = vec_sum(
+            rigid_rect->position,
+            vec_scala_mult(
+                opposing_force,
+                1e-2f));
+
+        if (fabs(opposing_force.x) > 1e-6 && (opposing_force.x < 0.0f) != ((rigid_rect->velocity.x + rigid_rect->movement.x) < 0.0f)) {
+            rigid_rect->velocity.x = 0.0f;
+            rigid_rect->movement.x = 0.0f;
+        }
+
+        if (fabs(opposing_force.y) > 1e-6 && (opposing_force.y < 0.0f) != ((rigid_rect->velocity.y + rigid_rect->movement.y) < 0.0f)) {
+            rigid_rect->velocity.y = 0.0f;
+            rigid_rect->movement.y = 0.0f;
+        }
+
+        boxes_rect_object_collide(
+            boxes,
+            rigid_rect_hitbox(rigid_rect),
+            sides);
+        opposing_force = opposing_force_by_sides(sides);
+    }
+}
+
+void rigid_rect_impact_rigid_rect(rigid_rect_t * rigid_rect,
+                                 rigid_rect_t *another_rect)
+{
+    if (rects_overlap(rigid_rect_hitbox(rigid_rect), rigid_rect_hitbox(another_rect))) {
+        rigid_rect_move(another_rect,
+                        vec_sum(
+                            rigid_rect->velocity,
+                            rigid_rect->movement));
     }
 }
 
