@@ -20,10 +20,10 @@ include_directories(${SDL2_MIXER_INCLUDE_DIR})
 set(SOURCE_FILES
   src/color.c
   src/game.c
-  src/game/level/boxes.c
   src/game/camera.c
   src/game/level.c
   src/game/level/background.c
+  src/game/level/boxes.c
   src/game/level/goals.c
   src/game/level/lava.c
   src/game/level/lava/wavy_rect.c
@@ -31,6 +31,7 @@ set(SOURCE_FILES
   src/game/level/player.c
   src/game/level/player/dying_rect.c
   src/game/level/player/rigid_rect.c
+  src/game/level/solid.c
   src/game/sound_samples.c
   src/main.c
   src/math/mat3x3.c
@@ -58,6 +59,7 @@ set(HEADER_FILES
   src/game/level/player.h
   src/game/level/player/dying_rect.h
   src/game/level/player/rigid_rect.h
+  src/game/level/solid.h
   src/game/sound_samples.h
   src/math/mat3x3.h
   src/math/pi.h

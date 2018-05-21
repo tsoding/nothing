@@ -122,6 +122,16 @@ int platforms_save_to_file(const platforms_t *platforms,
     RETURN_LT(lt, 0);
 }
 
+solid_ref_t platforms_as_solid(platforms_t *platforms)
+{
+    solid_ref_t ref = {
+        .tag = SOLID_PLATFORMS,
+        .solid = (void*)platforms
+    };
+
+    return ref;
+}
+
 int platforms_render(const platforms_t *platforms,
                      const camera_t *camera)
 {

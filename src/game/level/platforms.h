@@ -5,12 +5,15 @@
 
 #include "game/camera.h"
 #include "math/rect.h"
+#include "solid.h"
 
 typedef struct platforms_t platforms_t;
 
 platforms_t *create_platforms_from_stream(FILE *stream);
 platforms_t *create_platforms_from_file(const char *filename);
 void destroy_platforms(platforms_t *platforms);
+
+solid_ref_t platforms_as_solid(platforms_t *platforms);
 
 int platforms_save_to_file(const platforms_t *platforms,
                            const char *filename);

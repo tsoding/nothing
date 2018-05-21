@@ -10,6 +10,8 @@ typedef struct player_t player_t;
 boxes_t *create_boxes_from_stream(FILE *stream);
 void destroy_boxes(boxes_t *boxes);
 
+solid_ref_t boxes_as_solid(boxes_t *boxes);
+
 int boxes_render(boxes_t *boxes, camera_t *camera);
 int boxes_update(boxes_t *boxes, float delta_time);
 void boxes_rect_object_collide(const boxes_t *boxes,

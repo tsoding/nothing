@@ -158,6 +158,17 @@ void player_update(player_t *player,
     }
 }
 
+void player_collide_with_solid(player_t *player, solid_ref_t solid)
+{
+    if (player->state == PLAYER_STATE_ALIVE) {
+        rigid_rect_collide_with_solid(player->alive_body, solid);
+
+        if (rigid_rect_touches_ground(player->alive_body)) {
+            player->jump_count = 0;
+        }
+    }
+}
+
 void player_collide_with_platforms(player_t * player,
                                    const platforms_t *platforms)
 {
@@ -175,18 +186,6 @@ void player_collide_with_boxes(player_t * player,
 {
     if (player->state == PLAYER_STATE_ALIVE) {
         rigid_rect_collide_with_boxes(player->alive_body, boxes);
-
-        if (rigid_rect_touches_ground(player->alive_body)) {
-            player->jump_count = 0;
-        }
-    }
-}
-
-void player_collide_with_rect(player_t * player,
-                              rect_t rect)
-{
-    if (player->state == PLAYER_STATE_ALIVE) {
-        rigid_rect_collide_with_rect(player->alive_body, rect);
 
         if (rigid_rect_touches_ground(player->alive_body)) {
             player->jump_count = 0;

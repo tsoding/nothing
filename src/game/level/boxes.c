@@ -61,6 +61,16 @@ void destroy_boxes(boxes_t *boxes)
     RETURN_LT0(boxes->lt);
 }
 
+solid_ref_t boxes_as_solid(boxes_t *boxes)
+{
+    solid_ref_t ref = {
+        .tag = SOLID_BOXES,
+        .solid = (void*) boxes
+    };
+
+    return ref;
+}
+
 int boxes_render(boxes_t *boxes, camera_t *camera)
 {
     assert(boxes);
