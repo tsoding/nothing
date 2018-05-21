@@ -20,10 +20,6 @@ int rigid_rect_update(rigid_rect_t * rigid_rect,
 
 void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
                                    solid_ref_t solid);
-void rigid_rect_collide_with_platforms(rigid_rect_t * rigid_rect,
-                                       const platforms_t *platforms);
-void rigid_rect_collide_with_boxes(rigid_rect_t * rigid_rect,
-                                   const boxes_t *boxes);
 
 void rigid_rect_collide_with_rect(rigid_rect_t * rigid_rect,
                                   rect_t rect);

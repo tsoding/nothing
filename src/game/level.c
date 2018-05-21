@@ -161,8 +161,8 @@ int level_update(level_t *level, float delta_time)
     boxes_collide_with_platforms(level->boxes, level->platforms);
     boxes_collide_with_player(level->boxes, level->player);
 
-    player_collide_with_platforms(level->player, level->platforms);
-    player_collide_with_boxes(level->player, level->boxes);
+    player_collide_with_solid(level->player, platforms_as_solid(level->platforms));
+    player_collide_with_solid(level->player, boxes_as_solid(level->boxes));
 
     player_hide_goals(level->player, level->goals);
     player_die_from_lava(level->player, level->lava);

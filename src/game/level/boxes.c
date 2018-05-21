@@ -111,13 +111,13 @@ int boxes_update(boxes_t *boxes,
 }
 
 void boxes_collide_with_platforms(boxes_t *boxes,
-                                  const platforms_t *platforms)
+                                  platforms_t *platforms)
 {
     assert(boxes);
     assert(platforms);
 
     for (size_t i = 0; i < boxes->count; ++i) {
-        rigid_rect_collide_with_platforms(boxes->bodies[i], platforms);
+        rigid_rect_collide_with_solid(boxes->bodies[i], platforms_as_solid(platforms));
     }
 }
 
