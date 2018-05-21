@@ -5,7 +5,7 @@
 
 typedef enum solid_tag_t {
     SOLID_PLATFORMS = 0,
-    SOLID_BOXES,
+    SOLID_BOXES
 } solid_tag_t;
 
 typedef struct solid_ref_t {

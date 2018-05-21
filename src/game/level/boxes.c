@@ -110,19 +110,18 @@ int boxes_update(boxes_t *boxes,
     return 0;
 }
 
-void boxes_collide_with_platforms(boxes_t *boxes,
-                                  platforms_t *platforms)
+void boxes_collide_with_solid(boxes_t *boxes,
+                              solid_ref_t solid)
 {
     assert(boxes);
-    assert(platforms);
 
     for (size_t i = 0; i < boxes->count; ++i) {
-        rigid_rect_collide_with_solid(boxes->bodies[i], platforms_as_solid(platforms));
+        rigid_rect_collide_with_solid(boxes->bodies[i], solid);
     }
 }
 
-void boxes_collide_with_player(boxes_t *boxes,
-                               player_t *player)
+void boxes_take_impact_from_player(boxes_t *boxes,
+                                   player_t *player)
 {
     assert(boxes);
     assert(player);

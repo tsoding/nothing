@@ -17,10 +17,10 @@ int boxes_update(boxes_t *boxes, float delta_time);
 void boxes_rect_object_collide(const boxes_t *boxes,
                                rect_t object,
                                int sides[RECT_SIDE_N]);
-void boxes_collide_with_platforms(boxes_t *boxes,
-                                  platforms_t *platforms);
-void boxes_collide_with_player(boxes_t *boxes,
-                               player_t *player);
 
+void boxes_collide_with_solid(boxes_t *boxes,
+                              solid_ref_t solid);
+void boxes_take_impact_from_player(boxes_t *boxes,
+                                   player_t *player);
 
 #endif  // BOXES_H_
