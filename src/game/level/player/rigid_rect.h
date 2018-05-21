@@ -21,6 +21,7 @@ int rigid_rect_update(rigid_rect_t * rigid_rect,
 void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
                                    solid_ref_t solid);
 
+// TODO: replace rigid_rect_collide_with_rect with rigid_rect_collide_with_solid
 void rigid_rect_collide_with_rect(rigid_rect_t * rigid_rect,
                                   rect_t rect);
 void rigid_rect_impact_rigid_rect(rigid_rect_t * rigid_rect,
