@@ -97,16 +97,6 @@ int boxes_update(boxes_t *boxes,
         }
     }
 
-    for (size_t i = 0; i < boxes->count; ++i) {
-        for (size_t j = 0; j < boxes->count; ++j) {
-            if (i != j) {
-                rigid_rect_collide_with_solid(
-                    boxes->bodies[i],
-                    rigid_rect_as_solid(boxes->bodies[j]));
-            }
-        }
-    }
-
     return 0;
 }
 
@@ -115,8 +105,20 @@ void boxes_collide_with_solid(boxes_t *boxes,
 {
     assert(boxes);
 
-    for (size_t i = 0; i < boxes->count; ++i) {
-        rigid_rect_collide_with_solid(boxes->bodies[i], solid);
+    if (boxes == solid.ptr) {
+        for (size_t i = 0; i < boxes->count; ++i) {
+            for (size_t j = 0; j < boxes->count; ++j) {
+                if (i != j) {
+                    rigid_rect_collide_with_solid(
+                        boxes->bodies[i],
+                        rigid_rect_as_solid(boxes->bodies[j]));
+                }
+            }
+        }
+    } else {
+        for (size_t i = 0; i < boxes->count; ++i) {
+            rigid_rect_collide_with_solid(boxes->bodies[i], solid);
+        }
     }
 }
 
