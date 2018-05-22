@@ -140,7 +140,9 @@ void boxes_rect_object_collide(const boxes_t *boxes,
     memset(sides, 0, sizeof(int) * RECT_SIDE_N);
 
     for (size_t i = 0; i < boxes->count; ++i) {
-        const rect_t hitbox = rigid_rect_hitbox(boxes->bodies[i]);
-        rect_object_impact(&object, &hitbox, sides);
+        rect_object_impact(
+            object,
+            rigid_rect_hitbox(boxes->bodies[i]),
+            sides);
     }
 }

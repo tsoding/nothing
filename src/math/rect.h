@@ -33,8 +33,8 @@ int rect_contains_point(rect_t rect, point_t p);
 
 int rects_overlap(rect_t rect1, rect_t rect2);
 
-void rect_object_impact(const rect_t *object,
-                        const rect_t *obstacle,
+void rect_object_impact(rect_t object,
+                        rect_t obstacle,
                         int *sides);
 
 line_t rect_side(rect_t rect, rect_side_t side);

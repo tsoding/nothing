@@ -108,8 +108,7 @@ void rigid_body_object_collide(rigid_rect_t *rigid_rect,
                                rect_t object,
                                int sides[RECT_SIDE_N])
 {
-    const rect_t hitbox = rigid_rect_hitbox(rigid_rect);
-    rect_object_impact(&object, &hitbox, sides);
+    rect_object_impact(object, rigid_rect_hitbox(rigid_rect), sides);
 }
 
 int rigid_rect_render(const rigid_rect_t *rigid_rect,
