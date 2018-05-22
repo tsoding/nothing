@@ -126,7 +126,7 @@ solid_ref_t platforms_as_solid(platforms_t *platforms)
 {
     solid_ref_t ref = {
         .tag = SOLID_PLATFORMS,
-        .solid = (void*)platforms
+        .ptr = (void*)platforms
     };
 
     return ref;

@@ -10,7 +10,7 @@ typedef enum solid_tag_t {
 
 typedef struct solid_ref_t {
     solid_tag_t tag;
-    void *solid;
+    void *ptr;
 } solid_ref_t;
 
 void solid_rect_object_collide(solid_ref_t solid,

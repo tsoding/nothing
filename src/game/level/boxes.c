@@ -65,7 +65,7 @@ solid_ref_t boxes_as_solid(boxes_t *boxes)
 {
     solid_ref_t ref = {
         .tag = SOLID_BOXES,
-        .solid = (void*) boxes
+        .ptr = (void*) boxes
     };
 
     return ref;
