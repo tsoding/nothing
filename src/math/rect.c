@@ -65,19 +65,15 @@ float line_length(line_t line)
     return sqrtf(dx * dx + dy * dy);
 }
 
-void rect_object_impact(const rect_t *object,
-                        const rect_t *obstacle,
-                        int *sides)
+void rect_object_impact(rect_t object, rect_t obstacle, int *sides)
 {
-    assert(object);
-    assert(obstacle);
     assert(sides);
 
-    rect_t int_area = rects_overlap_area(*object, *obstacle);
+    rect_t int_area = rects_overlap_area(object, obstacle);
 
     if (int_area.w * int_area.h > 0.0f) {
         for (int side = 0; side < RECT_SIDE_N; ++side) {
-            line_t object_side = rect_side(*object, side);
+            line_t object_side = rect_side(object, side);
             line_t int_side = rect_side(int_area, side);
 
             if (line_length(int_side) > 10.0f) {

@@ -122,6 +122,16 @@ int platforms_save_to_file(const platforms_t *platforms,
     RETURN_LT(lt, 0);
 }
 
+solid_ref_t platforms_as_solid(platforms_t *platforms)
+{
+    solid_ref_t ref = {
+        .tag = SOLID_PLATFORMS,
+        .ptr = (void*)platforms
+    };
+
+    return ref;
+}
+
 int platforms_render(const platforms_t *platforms,
                      const camera_t *camera)
 {
@@ -144,9 +154,7 @@ void platforms_rect_object_collide(const platforms_t *platforms,
 {
     assert(platforms);
 
-    memset(sides, 0, sizeof(int) * RECT_SIDE_N);
-
     for (size_t i = 0; i < platforms->rects_size; ++i) {
-        rect_object_impact(&object, &platforms->rects[i], sides);
+        rect_object_impact(object, platforms->rects[i], sides);
     }
 }
