@@ -154,8 +154,6 @@ void platforms_rect_object_collide(const platforms_t *platforms,
 {
     assert(platforms);
 
-    memset(sides, 0, sizeof(int) * RECT_SIDE_N);
-
     for (size_t i = 0; i < platforms->rects_size; ++i) {
         rect_object_impact(object, platforms->rects[i], sides);
     }

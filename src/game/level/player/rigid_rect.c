@@ -173,6 +173,7 @@ void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
             rigid_rect->movement.y = 0.0f;
         }
 
+        memset(sides, 0, sizeof(int) * RECT_SIDE_N);
         solid_rect_object_collide(
             solid,
             rigid_rect_hitbox(rigid_rect),

@@ -139,8 +139,6 @@ void boxes_rect_object_collide(const boxes_t *boxes,
 {
     assert(boxes);
 
-    memset(sides, 0, sizeof(int) * RECT_SIDE_N);
-
     for (size_t i = 0; i < boxes->count; ++i) {
         rect_object_impact(
             object,
