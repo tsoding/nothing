@@ -4,6 +4,7 @@
 #include "color.h"
 #include "game/camera.h"
 #include "game/level/platforms.h"
+#include "game/level/solid.h"
 #include "math/rect.h"
 
 typedef struct rigid_rect_t rigid_rect_t;
@@ -13,17 +14,20 @@ rigid_rect_t *create_rigid_rect(rect_t rect, color_t color);
 rigid_rect_t *create_rigid_rect_from_stream(FILE *stream);
 void destroy_rigid_rect(rigid_rect_t *rigid_rect);
 
+solid_ref_t rigid_rect_as_solid(rigid_rect_t *rigid_rect);
+
 int rigid_rect_render(const rigid_rect_t *rigid_rect,
                       const camera_t *camera);
 int rigid_rect_update(rigid_rect_t * rigid_rect,
                       float delta_time);
 
+void rigid_body_object_collide(rigid_rect_t *rigid_rect,
+                               rect_t object,
+                               int sides[RECT_SIDE_N]);
+
 void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
                                    solid_ref_t solid);
 
-// TODO: replace rigid_rect_collide_with_rect with rigid_rect_collide_with_solid
-void rigid_rect_collide_with_rect(rigid_rect_t * rigid_rect,
-                                  rect_t rect);
 void rigid_rect_impact_rigid_rect(rigid_rect_t * rigid_rect,
                                   rigid_rect_t *another_rect);
 

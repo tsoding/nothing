@@ -100,9 +100,9 @@ int boxes_update(boxes_t *boxes,
     for (size_t i = 0; i < boxes->count; ++i) {
         for (size_t j = 0; j < boxes->count; ++j) {
             if (i != j) {
-                rigid_rect_collide_with_rect(
+                rigid_rect_collide_with_solid(
                     boxes->bodies[i],
-                    rigid_rect_hitbox(boxes->bodies[j]));
+                    rigid_rect_as_solid(boxes->bodies[j]));
             }
         }
     }

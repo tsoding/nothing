@@ -3,10 +3,11 @@
 #include <stdio.h>
 
 #include "color.h"
+#include "game/level/boxes.h"
+#include "game/level/solid.h"
 #include "rigid_rect.h"
 #include "system/error.h"
 #include "system/lt.h"
-#include "game/level/boxes.h"
 
 #define RIGID_RECT_GRAVITY 1500.0f
 
@@ -93,6 +94,24 @@ void destroy_rigid_rect(rigid_rect_t *rigid_rect)
     RETURN_LT0(rigid_rect->lt);
 }
 
+solid_ref_t rigid_rect_as_solid(rigid_rect_t *rigid_rect)
+{
+    const solid_ref_t ref = {
+        .tag = SOLID_RIGID_RECT,
+        .ptr = rigid_rect
+    };
+
+    return ref;
+}
+
+void rigid_body_object_collide(rigid_rect_t *rigid_rect,
+                               rect_t object,
+                               int sides[RECT_SIDE_N])
+{
+    const rect_t hitbox = rigid_rect_hitbox(rigid_rect);
+    rect_object_impact(&object, &hitbox, sides);
+}
+
 int rigid_rect_render(const rigid_rect_t *rigid_rect,
                       const camera_t *camera)
 {
@@ -125,6 +144,9 @@ int rigid_rect_update(rigid_rect_t * rigid_rect,
 void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
                                    solid_ref_t solid)
 {
+    assert(rigid_rect);
+    assert(rigid_rect != solid.ptr);
+
     int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
 
     solid_rect_object_collide(solid, rigid_rect_hitbox(rigid_rect), sides);
@@ -156,42 +178,6 @@ void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
             solid,
             rigid_rect_hitbox(rigid_rect),
             sides);
-        opposing_force = opposing_force_by_sides(sides);
-    }
-}
-
-void rigid_rect_collide_with_rect(rigid_rect_t * rigid_rect,
-                                  rect_t rect)
-{
-    int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
-
-    const rect_t object = rect_from_vecs(rigid_rect->position, rigid_rect->size);
-    rect_object_impact(&object, &rect, sides);
-
-    if (sides[RECT_SIDE_BOTTOM]) {
-        rigid_rect->touches_ground = 1;
-    }
-
-    vec_t opposing_force = opposing_force_by_sides(sides);
-
-    for (int i = 0; i < 1000 && vec_length(opposing_force) > 1e-6; ++i) {
-        rigid_rect->position = vec_sum(
-            rigid_rect->position,
-            vec_scala_mult(
-                opposing_force,
-                1e-2f));
-
-        if (fabs(opposing_force.x) > 1e-6 && (opposing_force.x < 0.0f) != ((rigid_rect->velocity.x + rigid_rect->movement.x) < 0.0f)) {
-            rigid_rect->velocity.x = 0.0f;
-            rigid_rect->movement.x = 0.0f;
-        }
-
-        if (fabs(opposing_force.y) > 1e-6 && (opposing_force.y < 0.0f) != ((rigid_rect->velocity.y + rigid_rect->movement.y) < 0.0f)) {
-            rigid_rect->velocity.y = 0.0f;
-            rigid_rect->movement.y = 0.0f;
-        }
-
-        rect_object_impact(&object, &rect, sides);
         opposing_force = opposing_force_by_sides(sides);
     }
 }
