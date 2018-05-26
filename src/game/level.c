@@ -295,3 +295,8 @@ int level_sound(level_t *level, sound_samples_t *sound_samples)
 
     return 0;
 }
+
+void level_toggle_debug_mode(level_t *level)
+{
+    background_toggle_debug_mode(level->background);
+}
