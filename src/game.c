@@ -145,6 +145,7 @@ static int game_event_pause(game_t *game, const SDL_Event *event)
             break;
         case SDLK_l:
             camera_toggle_debug_mode(game->camera);
+            level_toggle_debug_mode(game->level);
             break;
         }
         break;
@@ -198,6 +199,7 @@ static int game_event_running(game_t *game, const SDL_Event *event)
 
         case SDLK_l:
             camera_toggle_debug_mode(game->camera);
+            level_toggle_debug_mode(game->level);
             break;
         }
         break;

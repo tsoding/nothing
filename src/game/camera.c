@@ -67,21 +67,21 @@ int camera_fill_rect(const camera_t *camera,
 
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
-    if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
-        return -1;
-    }
-
     if (camera->debug_mode) {
-        if (SDL_RenderDrawRect(camera->renderer, &sdl_rect) < 0) {
+        if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a / 2) < 0) {
             throw_error(ERROR_TYPE_SDL2);
             return -1;
         }
     } else {
-        if (SDL_RenderFillRect(camera->renderer, &sdl_rect) < 0) {
+        if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
             throw_error(ERROR_TYPE_SDL2);
             return -1;
         }
+    }
+
+    if (SDL_RenderFillRect(camera->renderer, &sdl_rect) < 0) {
+        throw_error(ERROR_TYPE_SDL2);
+        return -1;
     }
 
     return 0;
@@ -148,20 +148,22 @@ int camera_fill_triangle(const camera_t *camera,
 
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
-    if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
-        return -1;
-    }
+
 
     if (camera->debug_mode) {
-        if (draw_triangle(camera->renderer, camera_triangle(camera, &view_port, t)) < 0) {
+        if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a / 2) < 0) {
+            throw_error(ERROR_TYPE_SDL2);
             return -1;
         }
-
     } else {
-        if (fill_triangle(camera->renderer, camera_triangle(camera, &view_port, t)) < 0) {
+        if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
+            throw_error(ERROR_TYPE_SDL2);
             return -1;
         }
+    }
+
+    if (fill_triangle(camera->renderer, camera_triangle(camera, &view_port, t)) < 0) {
+        return -1;
     }
 
     return 0;
