@@ -14,4 +14,6 @@ void destroy_background(background_t *background);
 int background_render(const background_t *background,
                       const camera_t *camera);
 
+void background_toggle_debug_mode(background_t *background);
+
 #endif  // BACKGROUND_H_

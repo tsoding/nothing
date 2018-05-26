@@ -22,6 +22,7 @@ struct background_t
     lt_t *lt;
     color_t base_color;
     vec_t position;
+    int debug_mode;
 };
 
 background_t *create_background(color_t base_color)
@@ -38,6 +39,7 @@ background_t *create_background(color_t base_color)
 
     background->base_color = base_color;
     background->position = vec(0.0f, 0.0f);
+    background->debug_mode = 0;
     background->lt = lt;
 
     return background;
@@ -109,6 +111,10 @@ int render_chunk(const background_t *background,
 {
     (void) background;
 
+    if (background->debug_mode) {
+        return 0;
+    }
+
     srand((unsigned int)(roundf((float)x + (float)y + parallax)));
 
     for (size_t i = 0; i < BACKGROUND_CHUNK_COUNT; ++i) {
@@ -131,4 +137,9 @@ int render_chunk(const background_t *background,
     }
 
     return 0;
+}
+
+void background_toggle_debug_mode(background_t *background)
+{
+    background->debug_mode = !background->debug_mode;
 }
