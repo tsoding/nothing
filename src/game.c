@@ -198,7 +198,6 @@ static int game_event_running(game_t *game, const SDL_Event *event)
             break;
 
         case SDLK_l:
-            /* TODO: duplicate toggle debug mode code in running and pause states of the game */
             camera_toggle_debug_mode(game->camera);
             level_toggle_debug_mode(game->level);
             break;
