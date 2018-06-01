@@ -1,5 +1,6 @@
 #include "boxes.h"
 #include "platforms.h"
+#include "player.h"
 #include "player/rigid_rect.h"
 #include "solid.h"
 
@@ -18,6 +19,10 @@ void solid_rect_object_collide(solid_ref_t solid,
 
     case SOLID_RIGID_RECT:
         rigid_body_object_collide((rigid_rect_t *) solid.ptr, object, sides);
+        break;
+
+    case SOLID_PLAYER:
+        player_rect_object_collide((player_t *) solid.ptr, object, sides);
         break;
 
     default: {}

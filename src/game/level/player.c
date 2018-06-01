@@ -33,7 +33,6 @@ struct player_t {
     int jump_count;
     color_t color;
 
-    /* TODO(#110): introduce checkpoints */
     vec_t checkpoint;
 
     int play_die_cue;
@@ -101,6 +100,16 @@ player_t *create_player_from_stream(FILE *stream)
 void destroy_player(player_t * player)
 {
     RETURN_LT0(player->lt);
+}
+
+solid_ref_t player_as_solid(player_t *player)
+{
+    solid_ref_t ref = {
+        .tag = SOLID_PLAYER,
+        .ptr = (void*) player
+    };
+
+    return ref;
 }
 
 int player_render(const player_t * player,
@@ -279,5 +288,14 @@ rect_t player_hitbox(const player_t *player)
         return rigid_rect_hitbox(player->alive_body);
     } else {
         return rect(0.0f, 0.0f, 0.0f, 0.0f);
+    }
+}
+
+void player_rect_object_collide(player_t *player,
+                                rect_t object,
+                                int sides[RECT_SIDE_N])
+{
+    if (player->state == PLAYER_STATE_ALIVE) {
+        rigid_body_object_collide(player->alive_body, object, sides);
     }
 }

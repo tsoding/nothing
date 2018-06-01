@@ -6,7 +6,8 @@
 typedef enum solid_tag_t {
     SOLID_PLATFORMS = 0,
     SOLID_BOXES,
-    SOLID_RIGID_RECT
+    SOLID_RIGID_RECT,
+    SOLID_PLAYER
 } solid_tag_t;
 
 typedef struct solid_ref_t {
@@ -14,6 +15,7 @@ typedef struct solid_ref_t {
     void *ptr;
 } solid_ref_t;
 
+// TODO(#199): Try to extend solid interface to recieve an impact feedback
 void solid_rect_object_collide(solid_ref_t solid,
                                rect_t object,
                                int sides[RECT_SIDE_N]);
