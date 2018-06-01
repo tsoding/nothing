@@ -17,6 +17,8 @@ player_t *create_player(float x, float y, color_t color);
 player_t *create_player_from_stream(FILE *stream);
 void destroy_player(player_t * player);
 
+solid_ref_t player_as_solid(player_t *player);
+
 int player_render(const player_t * player,
                   const camera_t *camera);
 void player_update(player_t * player,
@@ -24,6 +26,9 @@ void player_update(player_t * player,
 void player_collide_with_solid(player_t *player, solid_ref_t solid);
 void player_impact_rigid_rect(player_t * player,
                               rigid_rect_t *rigid_rect);
+void player_rect_object_collide(player_t *player,
+                                rect_t object,
+                                int sides[RECT_SIDE_N]);
 
 rect_t player_hitbox(const player_t *player);
 
