@@ -29,7 +29,6 @@ triangle_t equilateral_triangle(void)
     return result;
 }
 
-/* TODO(#151): some of the random triangles are too thin */
 triangle_t random_triangle(float radius)
 {
     return triangle(

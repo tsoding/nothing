@@ -33,7 +33,6 @@ struct player_t {
     int jump_count;
     color_t color;
 
-    /* TODO(#110): introduce checkpoints */
     vec_t checkpoint;
 
     int play_die_cue;

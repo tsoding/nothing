@@ -58,7 +58,6 @@ void destroy_lava(lava_t *lava)
     RETURN_LT0(lava->lt);
 }
 
-/* TODO(#119): Lava rendering is too boring */
 int lava_render(const lava_t   *lava,
                 const camera_t *camera)
 {

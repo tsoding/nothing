@@ -12,8 +12,6 @@
 #include "system/error.h"
 #include "system/lt.h"
 
-/* TODO(#118): Level doesn't play the Nothing and Something sounds when the goal get into view */
-
 struct level_t
 {
     lt_t *lt;
