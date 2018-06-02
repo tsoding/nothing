@@ -156,7 +156,7 @@ int level_update(level_t *level, float delta_time)
     boxes_update(level->boxes, delta_time);
     player_update(level->player, delta_time);
 
-    /* TODO: it is diffcult to introduce more kinds of object into the physics engine */
+    /* TODO(#202): it is diffcult to introduce more kinds of object into the physics engine */
     boxes_collide_with_solid(level->boxes, platforms_as_solid(level->platforms));
     player_collide_with_solid(level->player, platforms_as_solid(level->platforms));
 
