@@ -22,7 +22,7 @@ void solid_touches_rect_sides(solid_ref_t solid,
         break;
 
     case SOLID_PLAYER:
-        player_rect_object_collide((player_t *) solid.ptr, object, sides);
+        player_touches_rect_sides((player_t *) solid.ptr, object, sides);
         break;
 
     default: {}
