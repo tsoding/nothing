@@ -26,9 +26,9 @@ void player_update(player_t * player,
 void player_collide_with_solid(player_t *player, solid_ref_t solid);
 void player_impact_rigid_rect(player_t * player,
                               rigid_rect_t *rigid_rect);
-void player_rect_object_collide(player_t *player,
-                                rect_t object,
-                                int sides[RECT_SIDE_N]);
+void player_touches_rect_sides(player_t *player,
+                               rect_t object,
+                               int sides[RECT_SIDE_N]);
 
 int player_sound(player_t *player,
                  sound_samples_t *sound_samples);

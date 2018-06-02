@@ -104,9 +104,9 @@ solid_ref_t rigid_rect_as_solid(rigid_rect_t *rigid_rect)
     return ref;
 }
 
-void rigid_body_object_collide(rigid_rect_t *rigid_rect,
-                               rect_t object,
-                               int sides[RECT_SIDE_N])
+void rigid_rect_touches_rect_sides(rigid_rect_t *rigid_rect,
+                                   rect_t object,
+                                   int sides[RECT_SIDE_N])
 {
     rect_object_impact(object, rigid_rect_hitbox(rigid_rect), sides);
 }
@@ -148,7 +148,7 @@ void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
 
     int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
 
-    solid_rect_object_collide(solid, rigid_rect_hitbox(rigid_rect), sides);
+    solid_touches_rect_sides(solid, rigid_rect_hitbox(rigid_rect), sides);
 
     if (sides[RECT_SIDE_BOTTOM]) {
         rigid_rect->touches_ground = 1;
@@ -174,7 +174,7 @@ void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
         }
 
         memset(sides, 0, sizeof(int) * RECT_SIDE_N);
-        solid_rect_object_collide(
+        solid_touches_rect_sides(
             solid,
             rigid_rect_hitbox(rigid_rect),
             sides);
@@ -183,7 +183,7 @@ void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
 }
 
 void rigid_rect_impact_rigid_rect(rigid_rect_t * rigid_rect,
-                                 rigid_rect_t *another_rect)
+                                  rigid_rect_t * another_rect)
 {
     if (rects_overlap(rigid_rect_hitbox(rigid_rect), rigid_rect_hitbox(another_rect))) {
         rigid_rect_move(another_rect,

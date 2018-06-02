@@ -153,14 +153,22 @@ int level_update(level_t *level, float delta_time)
     assert(level);
     assert(delta_time > 0);
 
+    boxes_update(level->boxes, delta_time);
     player_update(level->player, delta_time);
 
-    boxes_update(level->boxes, delta_time);
-    boxes_collide_with_solid(level->boxes, boxes_as_solid(level->boxes));
+    /* TODO(#202): it is diffcult to introduce more kinds of object into the physics engine */
     boxes_collide_with_solid(level->boxes, platforms_as_solid(level->platforms));
-    boxes_take_impact_from_player(level->boxes, level->player);
-
     player_collide_with_solid(level->player, platforms_as_solid(level->platforms));
+
+    boxes_collide_with_solid(level->boxes, boxes_as_solid(level->boxes));
+    boxes_collide_with_solid(level->boxes, player_as_solid(level->player));
+
+    player_collide_with_solid(level->player, boxes_as_solid(level->boxes));
+
+    boxes_collide_with_solid(level->boxes, platforms_as_solid(level->platforms));
+    player_collide_with_solid(level->player, platforms_as_solid(level->platforms));
+
+    boxes_collide_with_solid(level->boxes, boxes_as_solid(level->boxes));
     player_collide_with_solid(level->player, boxes_as_solid(level->boxes));
 
     player_hide_goals(level->player, level->goals);

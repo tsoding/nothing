@@ -282,11 +282,11 @@ int player_sound(player_t *player,
     return 0;
 }
 
-void player_rect_object_collide(player_t *player,
-                                rect_t object,
-                                int sides[RECT_SIDE_N])
+void player_touches_rect_sides(player_t *player,
+                               rect_t object,
+                               int sides[RECT_SIDE_N])
 {
     if (player->state == PLAYER_STATE_ALIVE) {
-        rigid_body_object_collide(player->alive_body, object, sides);
+        rigid_rect_touches_rect_sides(player->alive_body, object, sides);
     }
 }

@@ -21,9 +21,9 @@ int rigid_rect_render(const rigid_rect_t *rigid_rect,
 int rigid_rect_update(rigid_rect_t * rigid_rect,
                       float delta_time);
 
-void rigid_body_object_collide(rigid_rect_t *rigid_rect,
-                               rect_t object,
-                               int sides[RECT_SIDE_N]);
+void rigid_rect_touches_rect_sides(rigid_rect_t *rigid_rect,
+                                   rect_t object,
+                                   int sides[RECT_SIDE_N]);
 
 void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
                                    solid_ref_t solid);
