@@ -4,9 +4,9 @@
 #include "player/rigid_rect.h"
 #include "solid.h"
 
-void solid_rect_object_collide(solid_ref_t solid,
-                               rect_t object,
-                               int sides[RECT_SIDE_N])
+void solid_touches_rect_sides(solid_ref_t solid,
+                              rect_t object,
+                              int sides[RECT_SIDE_N])
 {
     switch (solid.tag) {
     case SOLID_PLATFORMS:

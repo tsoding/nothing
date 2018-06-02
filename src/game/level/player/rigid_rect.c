@@ -148,7 +148,7 @@ void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
 
     int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
 
-    solid_rect_object_collide(solid, rigid_rect_hitbox(rigid_rect), sides);
+    solid_touches_rect_sides(solid, rigid_rect_hitbox(rigid_rect), sides);
 
     if (sides[RECT_SIDE_BOTTOM]) {
         rigid_rect->touches_ground = 1;
@@ -174,7 +174,7 @@ void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
         }
 
         memset(sides, 0, sizeof(int) * RECT_SIDE_N);
-        solid_rect_object_collide(
+        solid_touches_rect_sides(
             solid,
             rigid_rect_hitbox(rigid_rect),
             sides);
