@@ -10,7 +10,7 @@ void solid_touches_rect_sides(solid_ref_t solid,
 {
     switch (solid.tag) {
     case SOLID_PLATFORMS:
-        platforms_rect_object_collide((platforms_t *) solid.ptr, object, sides);
+        platforms_touches_rect_sides((platforms_t *) solid.ptr, object, sides);
         break;
 
     case SOLID_BOXES:

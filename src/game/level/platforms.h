@@ -21,8 +21,8 @@ int platforms_save_to_file(const platforms_t *platforms,
 int platforms_render(const platforms_t *platforms,
                      const camera_t *camera);
 
-void platforms_rect_object_collide(const platforms_t *platforms,
-                                   rect_t object,
-                                   int sides[RECT_SIDE_N]);
+void platforms_touches_rect_sides(const platforms_t *platforms,
+                                  rect_t object,
+                                  int sides[RECT_SIDE_N]);
 
 #endif  // PLATFORMS_H_

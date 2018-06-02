@@ -148,9 +148,9 @@ int platforms_render(const platforms_t *platforms,
     return 0;
 }
 
-void platforms_rect_object_collide(const platforms_t *platforms,
-                                   rect_t object,
-                                   int sides[RECT_SIDE_N])
+void platforms_touches_rect_sides(const platforms_t *platforms,
+                                  rect_t object,
+                                  int sides[RECT_SIDE_N])
 {
     assert(platforms);
 
