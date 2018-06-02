@@ -133,9 +133,9 @@ void boxes_take_impact_from_player(boxes_t *boxes,
     }
 }
 
-void boxes_rect_object_collide(const boxes_t *boxes,
-                               rect_t object,
-                               int sides[RECT_SIDE_N])
+void boxes_touches_rect_sides(const boxes_t *boxes,
+                              rect_t object,
+                              int sides[RECT_SIDE_N])
 {
     assert(boxes);
 

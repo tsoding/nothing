@@ -14,7 +14,7 @@ void solid_touches_rect_sides(solid_ref_t solid,
         break;
 
     case SOLID_BOXES:
-        boxes_rect_object_collide((boxes_t *) solid.ptr, object, sides);
+        boxes_touches_rect_sides((boxes_t *) solid.ptr, object, sides);
         break;
 
     case SOLID_RIGID_RECT:

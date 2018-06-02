@@ -14,9 +14,9 @@ solid_ref_t boxes_as_solid(boxes_t *boxes);
 
 int boxes_render(boxes_t *boxes, camera_t *camera);
 int boxes_update(boxes_t *boxes, float delta_time);
-void boxes_rect_object_collide(const boxes_t *boxes,
-                               rect_t object,
-                               int sides[RECT_SIDE_N]);
+void boxes_touches_rect_sides(const boxes_t *boxes,
+                              rect_t object,
+                              int sides[RECT_SIDE_N]);
 
 void boxes_collide_with_solid(boxes_t *boxes,
                               solid_ref_t solid);
