@@ -30,8 +30,6 @@ void player_rect_object_collide(player_t *player,
                                 rect_t object,
                                 int sides[RECT_SIDE_N]);
 
-rect_t player_hitbox(const player_t *player);
-
 int player_sound(player_t *player,
                  sound_samples_t *sound_samples);
 void player_checkpoint(player_t *player,

@@ -282,15 +282,6 @@ int player_sound(player_t *player,
     return 0;
 }
 
-rect_t player_hitbox(const player_t *player)
-{
-    if (player->state == PLAYER_STATE_ALIVE) {
-        return rigid_rect_hitbox(player->alive_body);
-    } else {
-        return rect(0.0f, 0.0f, 0.0f, 0.0f);
-    }
-}
-
 void player_rect_object_collide(player_t *player,
                                 rect_t object,
                                 int sides[RECT_SIDE_N])
