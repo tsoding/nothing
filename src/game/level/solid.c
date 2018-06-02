@@ -24,7 +24,5 @@ void solid_touches_rect_sides(solid_ref_t solid,
     case SOLID_PLAYER:
         player_touches_rect_sides((player_t *) solid.ptr, object, sides);
         break;
-
-    default: {}
     }
 }

@@ -100,6 +100,7 @@ if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" ST
      -Wshadow \
      -Wstrict-prototypes \
      -Wwrite-strings \
+     -Wswitch \
      -fno-common \
      -pedantic \
      -std=c11 \
