@@ -104,9 +104,9 @@ solid_ref_t rigid_rect_as_solid(rigid_rect_t *rigid_rect)
     return ref;
 }
 
-void rigid_body_object_collide(rigid_rect_t *rigid_rect,
-                               rect_t object,
-                               int sides[RECT_SIDE_N])
+void rigid_rect_touches_rect_sides(rigid_rect_t *rigid_rect,
+                                   rect_t object,
+                                   int sides[RECT_SIDE_N])
 {
     rect_object_impact(object, rigid_rect_hitbox(rigid_rect), sides);
 }

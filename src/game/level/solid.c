@@ -18,7 +18,7 @@ void solid_touches_rect_sides(solid_ref_t solid,
         break;
 
     case SOLID_RIGID_RECT:
-        rigid_body_object_collide((rigid_rect_t *) solid.ptr, object, sides);
+        rigid_rect_touches_rect_sides((rigid_rect_t *) solid.ptr, object, sides);
         break;
 
     case SOLID_PLAYER:
