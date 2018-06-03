@@ -109,3 +109,10 @@ int wavy_rect_overlaps(const wavy_rect_t *wavy_rect,
     assert(wavy_rect);
     return rects_overlap(wavy_rect->rect, rect);
 }
+
+rect_t wavy_rect_overlap_area(const wavy_rect_t *wavy_rect,
+                              rect_t rect)
+{
+    assert(wavy_rect);
+    return rects_overlap_area(wavy_rect->rect, rect);
+}

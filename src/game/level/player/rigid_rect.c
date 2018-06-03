@@ -19,6 +19,7 @@ struct rigid_rect_t {
     vec_t size;
     color_t color;
     int touches_ground;
+    float floating;
 };
 
 static const vec_t opposing_rect_side_forces[RECT_SIDE_N] = {
@@ -67,6 +68,7 @@ rigid_rect_t *create_rigid_rect(rect_t rect, color_t color)
     rigid_rect->size = vec(rect.w, rect.h);
     rigid_rect->color = color;
     rigid_rect->touches_ground = 0;
+    rigid_rect->floating = 0.0f;
 
     return rigid_rect;
 }
@@ -128,7 +130,24 @@ int rigid_rect_update(rigid_rect_t * rigid_rect,
 
     rigid_rect->touches_ground = 0;
 
-    rigid_rect->velocity.y += RIGID_RECT_GRAVITY * delta_time;
+    if (rigid_rect->floating > 1e-6) {
+        rigid_rect->velocity = vec_sum(
+            rigid_rect->velocity,
+            vec_scala_mult(
+                vec_sum(
+                    vec(0.0f,  RIGID_RECT_GRAVITY),
+                    vec(0.0f, -RIGID_RECT_GRAVITY * 1.1f * rigid_rect->floating)),
+                delta_time));
+
+    } else {
+        rigid_rect->velocity = vec_sum(
+            rigid_rect->velocity,
+            vec_scala_mult(
+                vec(0.0f,  RIGID_RECT_GRAVITY),
+                delta_time));
+    }
+
+
     rigid_rect->position = vec_sum(
         rigid_rect->position,
         vec_scala_mult(
@@ -223,5 +242,6 @@ void rigid_rect_collide_with_lava(rigid_rect_t *rigid_rect,
     assert(rigid_rect);
     assert(lava);
 
-
+    rect_t overlap_area = lava_overlap_area(lava, rigid_rect_hitbox(rigid_rect));
+    rigid_rect->floating = (overlap_area.w * overlap_area.h) / (rigid_rect->size.x * rigid_rect->size.y);
 }
