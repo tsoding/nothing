@@ -160,6 +160,7 @@ int level_update(level_t *level, float delta_time)
     boxes_collide_with_solid(level->boxes, platforms_as_solid(level->platforms));
     player_collide_with_solid(level->player, platforms_as_solid(level->platforms));
 
+    boxes_collide_with_lava(level->boxes, level->lava);
     boxes_collide_with_solid(level->boxes, boxes_as_solid(level->boxes));
     boxes_collide_with_solid(level->boxes, player_as_solid(level->player));
 

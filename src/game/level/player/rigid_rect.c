@@ -216,3 +216,12 @@ int rigid_rect_touches_ground(const rigid_rect_t *rigid_rect)
 {
     return rigid_rect->touches_ground;
 }
+
+void rigid_rect_collide_with_lava(rigid_rect_t *rigid_rect,
+                                  lava_t *lava)
+{
+    assert(rigid_rect);
+    assert(lava);
+
+
+}

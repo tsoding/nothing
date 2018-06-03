@@ -3,6 +3,7 @@
 
 #include "color.h"
 #include "game/camera.h"
+#include "game/level/lava.h"
 #include "game/level/platforms.h"
 #include "game/level/solid.h"
 #include "math/rect.h"
@@ -27,6 +28,8 @@ void rigid_rect_touches_rect_sides(rigid_rect_t *rigid_rect,
 
 void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
                                    solid_ref_t solid);
+void rigid_rect_collide_with_lava(rigid_rect_t *rigid_rect,
+                                  lava_t *lava);
 
 void rigid_rect_impact_rigid_rect(rigid_rect_t * rigid_rect,
                                   rigid_rect_t *another_rect);
