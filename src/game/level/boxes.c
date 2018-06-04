@@ -122,6 +122,16 @@ void boxes_collide_with_solid(boxes_t *boxes,
     }
 }
 
+void boxes_collide_with_lava(boxes_t *boxes,
+                             lava_t *lava)
+{
+    assert(boxes);
+
+    for (size_t i = 0; i < boxes->count; ++i) {
+        rigid_rect_collide_with_lava(boxes->bodies[i], lava);
+    }
+}
+
 void boxes_take_impact_from_player(boxes_t *boxes,
                                    player_t *player)
 {

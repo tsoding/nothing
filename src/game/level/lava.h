@@ -16,4 +16,7 @@ int lava_update(lava_t *lava, float delta_time);
 int lava_overlaps_rect(const lava_t *lava,
                        rect_t rect);
 
+rect_t lava_overlap_area(const lava_t *lava,
+                         rect_t rect);
+
 #endif  // LAVA_H_

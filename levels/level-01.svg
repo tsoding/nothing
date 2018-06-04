@@ -26,15 +26,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.24748737"
-     inkscape:cx="5490.5438"
-     inkscape:cy="2852.0482"
+     inkscape:cx="6339.0719"
+     inkscape:cy="2650.0177"
      inkscape:document-units="mm"
      inkscape:current-layer="svg4541"
      showgrid="false"
      inkscape:window-width="1916"
-     inkscape:window-height="1041"
+     inkscape:window-height="1023"
      inkscape:window-x="0"
-     inkscape:window-y="18"
+     inkscape:window-y="36"
      inkscape:window-maximized="0"
      inkscape:snap-bbox="true"
      inkscape:bbox-paths="true"
@@ -232,7 +232,7 @@
      x="2942.7126"
      y="-454.97012" />
   <rect
-     style="fill:#80c8ff;fill-opacity:1;stroke:none;stroke-width:0.57572961"
+     style="fill:#445016;fill-opacity:1;stroke:none;stroke-width:0.57572961"
      id="box-1"
      width="43.519718"
      height="43.519718"
@@ -240,7 +240,7 @@
      y="-526.31775"
      inkscape:label="#player-3" />
   <rect
-     style="fill:#80c8ff;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+     style="fill:#445016;fill-opacity:1;stroke:none;stroke-width:0.26458332"
      id="box-2"
      width="71.628235"
      height="67.351921"
@@ -248,15 +248,15 @@
      y="-581.78223"
      inkscape:label="#rect4617" />
   <rect
-     style="fill:#80c8ff;fill-opacity:1;stroke:none;stroke-width:0.57905543"
+     style="fill:#445016;fill-opacity:1;stroke:none;stroke-width:0.5093438"
      id="box-1-3"
      width="25.34539"
-     height="75.592064"
-     x="1239.7523"
-     y="-478.45993"
+     height="58.486813"
+     x="1885.4755"
+     y="-525.49939"
      inkscape:label="#player-3" />
   <rect
-     style="fill:#80c8ff;fill-opacity:1;stroke:none;stroke-width:0.36330926"
+     style="fill:#445016;fill-opacity:1;stroke:none;stroke-width:0.36330926"
      id="box-1-6"
      width="26.414469"
      height="28.552624"
@@ -264,7 +264,7 @@
      y="-573.60791"
      inkscape:label="#player-3" />
   <rect
-     style="fill:#80c8ff;fill-opacity:1;stroke:none;stroke-width:0.57572967"
+     style="fill:#445016;fill-opacity:1;stroke:none;stroke-width:0.57572967"
      id="box-1-7"
      width="43.519718"
      height="43.519718"
