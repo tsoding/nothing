@@ -104,7 +104,7 @@ static void chunk_of_point(point_t p, int *x, int *y)
 
 int render_chunk(const background_t *background,
                  const camera_t *camera,
-                 int x, int y,
+                 int chunk_x, int chunk_y,
                  color_t color,
                  vec_t position,
                  float parallax)
@@ -115,13 +115,13 @@ int render_chunk(const background_t *background,
         return 0;
     }
 
-    srand((unsigned int)(roundf((float)x + (float)y + parallax)));
+    srand((unsigned int)(roundf((float)chunk_x + (float)chunk_y + parallax)));
 
     for (size_t i = 0; i < BACKGROUND_CHUNK_COUNT; ++i) {
-        const float rect_x = rand_float_range((float) x * BACKGROUND_CHUNK_WIDTH,
-                                              (float) (x + 1) * BACKGROUND_CHUNK_WIDTH);
-        const float rect_y = rand_float_range((float) y * BACKGROUND_CHUNK_HEIGHT,
-                                              (float) (y + 1) * BACKGROUND_CHUNK_HEIGHT);
+        const float rect_x = rand_float_range((float) chunk_x * BACKGROUND_CHUNK_WIDTH,
+                                              (float) (chunk_x + 1) * BACKGROUND_CHUNK_WIDTH);
+        const float rect_y = rand_float_range((float) chunk_y * BACKGROUND_CHUNK_HEIGHT,
+                                              (float) (chunk_y + 1) * BACKGROUND_CHUNK_HEIGHT);
         const float rect_w = rand_float_range(0.0f, BACKGROUND_CHUNK_WIDTH * 0.5f);
         const float rect_h = rand_float_range(rect_w * 0.5f, rect_w * 1.5f);
 
