@@ -204,6 +204,12 @@ void camera_toggle_debug_mode(camera_t *camera)
     camera->debug_mode = !camera->debug_mode;
 }
 
+void camera_disable_debug_mode(camera_t *camera)
+{
+    assert(camera);
+    camera->debug_mode = 0;
+}
+
 void camera_toggle_blackwhite_mode(camera_t *camera)
 {
     assert(camera);

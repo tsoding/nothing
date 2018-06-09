@@ -180,6 +180,9 @@ static int game_event_running(game_t *game, const SDL_Event *event)
                 game->state = GAME_STATE_QUIT;
                 return -1;
             }
+
+            camera_disable_debug_mode(game->camera);
+
             break;
 
         case SDLK_q:

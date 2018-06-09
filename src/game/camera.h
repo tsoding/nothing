@@ -35,6 +35,7 @@ int camera_fill_triangle(const camera_t *camera,
 void camera_center_at(camera_t *camera, point_t position);
 
 void camera_toggle_debug_mode(camera_t *camera);
+void camera_disable_debug_mode(camera_t *camera);
 
 void camera_toggle_blackwhite_mode(camera_t *camera);
 
