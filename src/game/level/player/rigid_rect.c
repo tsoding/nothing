@@ -226,3 +226,10 @@ void rigid_rect_apply_force(rigid_rect_t * rigid_rect,
 {
     rigid_rect->forces = vec_sum(rigid_rect->forces, force);
 }
+
+void rigid_rect_transform_velocity(rigid_rect_t *rigid_rect,
+                                   mat3x3 trans_mat)
+{
+    rigid_rect->velocity = point_mat3x3_product(rigid_rect->velocity,
+                                                trans_mat);
+}

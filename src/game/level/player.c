@@ -15,10 +15,9 @@
 #define PLAYER_WIDTH 25.0f
 #define PLAYER_HEIGHT 25.0f
 #define PLAYER_SPEED 500.0f
-#define PLAYER_JUMP 38000.0f
+#define PLAYER_JUMP 32000.0f
 #define PLAYER_DEATH_DURATION 0.75f
-/* TODO(#206): double-jump is broken */
-#define PLAYER_MAX_JUMP_COUNT 1
+#define PLAYER_MAX_JUMP_COUNT 2
 
 typedef enum player_state_t {
     PLAYER_STATE_ALIVE = 0,
@@ -204,6 +203,10 @@ void player_jump(player_t *player)
 {
     assert(player);
     if (player->jump_count < PLAYER_MAX_JUMP_COUNT) {
+        rigid_rect_transform_velocity(player->alive_body,
+                                      make_mat3x3(1.0f, 0.0f, 0.0f,
+                                                  0.0f, 0.0f, 0.0f,
+                                                  0.0f, 0.0f, 1.0f));
         rigid_rect_apply_force(player->alive_body,
                                vec(0.0f, -PLAYER_JUMP));
         player->jump_count++;

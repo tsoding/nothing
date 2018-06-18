@@ -6,6 +6,7 @@
 #include "game/level/lava.h"
 #include "game/level/platforms.h"
 #include "game/level/solid.h"
+#include "math/mat3x3.h"
 #include "math/rect.h"
 
 typedef struct rigid_rect_t rigid_rect_t;
@@ -42,5 +43,8 @@ int rigid_rect_touches_ground(const rigid_rect_t *rigid_rect);
  */
 void rigid_rect_apply_force(rigid_rect_t * rigid_rect,
                             vec_t force);
+
+void rigid_rect_transform_velocity(rigid_rect_t *rigid_rect,
+                                   mat3x3 trans_mat);
 
 #endif  // RIGID_RECT_H_
