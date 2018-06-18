@@ -43,6 +43,10 @@ void solid_apply_force(solid_ref_t solid,
         player_apply_force((player_t *) solid.ptr, force);
         break;
 
+    case SOLID_BOXES:
+        boxes_apply_force((boxes_t *) solid.ptr, force);
+        break;
+
     default: {}
     }
 }

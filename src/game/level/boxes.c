@@ -156,3 +156,13 @@ void boxes_touches_rect_sides(const boxes_t *boxes,
             sides);
     }
 }
+
+void boxes_apply_force(boxes_t *boxes,
+                       vec_t force)
+{
+    assert(boxes);
+
+    for (size_t i = 0; i < boxes->count; ++i) {
+        rigid_rect_apply_force(boxes->bodies[i], force);
+    }
+}
