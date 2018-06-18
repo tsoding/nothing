@@ -39,6 +39,10 @@ void solid_apply_force(solid_ref_t solid,
         rigid_rect_apply_force((rigid_rect_t *) solid.ptr, force);
         break;
 
+    case SOLID_PLAYER:
+        player_apply_force((player_t *) solid.ptr, force);
+        break;
+
     default: {}
     }
 }

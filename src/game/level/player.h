@@ -48,4 +48,8 @@ void player_hide_goals(const player_t *player,
 void player_die_from_lava(player_t *player,
                           const lava_t *lava);
 
+/** \brief Implements solid_apply_force
+ */
+void player_apply_force(player_t *player, vec_t force);
+
 #endif  // PLAYER_H_

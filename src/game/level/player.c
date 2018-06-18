@@ -290,3 +290,10 @@ void player_touches_rect_sides(player_t *player,
         rigid_rect_touches_rect_sides(player->alive_body, object, sides);
     }
 }
+
+void player_apply_force(player_t *player, vec_t force)
+{
+    if (player->state == PLAYER_STATE_ALIVE) {
+        rigid_rect_apply_force(player->alive_body, force);
+    }
+}
