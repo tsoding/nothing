@@ -27,6 +27,12 @@ struct level_t
     boxes_t *boxes;
 };
 
+// A wrapper for fclose to pass like lt_destroy_t
+static void fclose_lt(void* file)
+{
+    fclose(file);
+}
+
 level_t *create_level_from_file(const char *file_name)
 {
     assert(file_name);
@@ -42,7 +48,7 @@ level_t *create_level_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
 
-    FILE *level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose);
+    FILE *level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose_lt);
     if (level_file == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -243,7 +249,7 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
 
     /* TODO(#104): duplicate code in create_level_from_file and level_reload_preserve_player */
 
-    FILE * const level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose);
+    FILE * const level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose_lt);
     if (level_file == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, -1);

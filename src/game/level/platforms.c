@@ -16,6 +16,12 @@ struct platforms_t {
     size_t rects_size;
 };
 
+// A wrapper for fclose to pass like lt_destroy_t
+static void fclose_lt(void* file)
+{
+    fclose(file);
+}
+
 platforms_t *create_platforms_from_stream(FILE *stream)
 {
     assert(stream);
@@ -103,7 +109,7 @@ int platforms_save_to_file(const platforms_t *platforms,
         return -1;
     }
 
-    FILE *platforms_file = PUSH_LT(lt, fopen(filename, "w"), fclose);
+    FILE *platforms_file = PUSH_LT(lt, fopen(filename, "w"), fclose_lt);
 
     if (platforms_file == NULL) {
         throw_error(ERROR_TYPE_LIBC);
