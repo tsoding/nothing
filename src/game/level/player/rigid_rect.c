@@ -217,12 +217,6 @@ void rigid_rect_move(rigid_rect_t *rigid_rect,
     rigid_rect->movement = movement;
 }
 
-void rigid_rect_jump(rigid_rect_t *rigid_rect,
-                     float force)
-{
-    rigid_rect->velocity.y = -force;
-}
-
 int rigid_rect_touches_ground(const rigid_rect_t *rigid_rect)
 {
     return rigid_rect->touches_ground;

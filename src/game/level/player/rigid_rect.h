@@ -38,8 +38,6 @@ rect_t rigid_rect_hitbox(const rigid_rect_t *rigid_rect);
 
 void rigid_rect_move(rigid_rect_t *rigid_rect,
                      vec_t movement);
-void rigid_rect_jump(rigid_rect_t *rigid_rect,
-                     float force);
 
 int rigid_rect_touches_ground(const rigid_rect_t *rigid_rect);
 
