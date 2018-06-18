@@ -21,4 +21,9 @@ void solid_touches_rect_sides(solid_ref_t solid,
                               rect_t object,
                               int sides[RECT_SIDE_N]);
 
+/** \brief Applies a force vector to the solid body
+ */
+void solid_apply_force(solid_ref_t solid,
+                       vec_t force);
+
 #endif  // SOLID_H_

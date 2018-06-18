@@ -26,3 +26,15 @@ void solid_touches_rect_sides(solid_ref_t solid,
         break;
     }
 }
+
+void solid_apply_force(solid_ref_t solid,
+                       vec_t force)
+{
+    switch (solid.tag) {
+    case SOLID_PLATFORMS:
+        platforms_apply_force((platforms_t *)solid.ptr, force);
+        break;
+
+    default: {}
+    }
+}
