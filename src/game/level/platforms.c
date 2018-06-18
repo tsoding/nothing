@@ -158,3 +158,12 @@ void platforms_touches_rect_sides(const platforms_t *platforms,
         rect_object_impact(object, platforms->rects[i], sides);
     }
 }
+
+void platforms_apply_force(platforms_t *platforms,
+                           vec_t force)
+{
+    (void) platforms;
+    (void) force;
+    /* Platforms have infinite mass and a fixed position in the
+     * space */
+}

@@ -132,17 +132,6 @@ void boxes_collide_with_lava(boxes_t *boxes,
     }
 }
 
-void boxes_take_impact_from_player(boxes_t *boxes,
-                                   player_t *player)
-{
-    assert(boxes);
-    assert(player);
-
-    for (size_t i = 0; i < boxes->count; ++i) {
-        player_impact_rigid_rect(player, boxes->bodies[i]);
-    }
-}
-
 void boxes_touches_rect_sides(const boxes_t *boxes,
                               rect_t object,
                               int sides[RECT_SIDE_N])
@@ -154,5 +143,15 @@ void boxes_touches_rect_sides(const boxes_t *boxes,
             object,
             rigid_rect_hitbox(boxes->bodies[i]),
             sides);
+    }
+}
+
+void boxes_apply_force(boxes_t *boxes,
+                       vec_t force)
+{
+    assert(boxes);
+
+    for (size_t i = 0; i < boxes->count; ++i) {
+        rigid_rect_apply_force(boxes->bodies[i], force);
     }
 }

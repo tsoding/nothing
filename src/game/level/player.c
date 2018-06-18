@@ -15,8 +15,10 @@
 #define PLAYER_WIDTH 25.0f
 #define PLAYER_HEIGHT 25.0f
 #define PLAYER_SPEED 500.0f
-#define PLAYER_JUMP 550.0f
+#define PLAYER_JUMP 38000.0f
 #define PLAYER_DEATH_DURATION 0.75f
+/* TODO(#206): double-jump is broken */
+#define PLAYER_MAX_JUMP_COUNT 1
 
 typedef enum player_state_t {
     PLAYER_STATE_ALIVE = 0,
@@ -178,14 +180,6 @@ void player_collide_with_solid(player_t *player, solid_ref_t solid)
     }
 }
 
-void player_impact_rigid_rect(player_t * player,
-                              rigid_rect_t *rigid_rect)
-{
-    if (player->state == PLAYER_STATE_ALIVE) {
-        rigid_rect_impact_rigid_rect(player->alive_body, rigid_rect);
-    }
-}
-
 void player_move_left(player_t *player)
 {
     assert(player);
@@ -209,8 +203,9 @@ void player_stop(player_t *player)
 void player_jump(player_t *player)
 {
     assert(player);
-    if (player->jump_count < 2) {
-        rigid_rect_jump(player->alive_body, PLAYER_JUMP);
+    if (player->jump_count < PLAYER_MAX_JUMP_COUNT) {
+        rigid_rect_apply_force(player->alive_body,
+                               vec(0.0f, -PLAYER_JUMP));
         player->jump_count++;
     }
 }
@@ -288,5 +283,12 @@ void player_touches_rect_sides(player_t *player,
 {
     if (player->state == PLAYER_STATE_ALIVE) {
         rigid_rect_touches_rect_sides(player->alive_body, object, sides);
+    }
+}
+
+void player_apply_force(player_t *player, vec_t force)
+{
+    if (player->state == PLAYER_STATE_ALIVE) {
+        rigid_rect_apply_force(player->alive_body, force);
     }
 }

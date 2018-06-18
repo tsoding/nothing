@@ -9,7 +9,7 @@
 #include "system/error.h"
 #include "system/lt.h"
 
-#define RIGID_RECT_GRAVITY 1500.0f
+
 
 struct rigid_rect_t {
     lt_t *lt;
@@ -20,6 +20,7 @@ struct rigid_rect_t {
     color_t color;
     int touches_ground;
     float floating;
+    vec_t forces;
 };
 
 static const vec_t opposing_rect_side_forces[RECT_SIDE_N] = {
@@ -130,23 +131,12 @@ int rigid_rect_update(rigid_rect_t * rigid_rect,
 
     rigid_rect->touches_ground = 0;
 
-    if (rigid_rect->floating > 1e-6) {
-        rigid_rect->velocity = vec_sum(
-            rigid_rect->velocity,
-            vec_scala_mult(
-                vec_sum(
-                    vec(0.0f,  RIGID_RECT_GRAVITY),
-                    vec(0.0f, -RIGID_RECT_GRAVITY * 1.1f * rigid_rect->floating)),
-                delta_time));
-
-    } else {
-        rigid_rect->velocity = vec_sum(
-            rigid_rect->velocity,
-            vec_scala_mult(
-                vec(0.0f,  RIGID_RECT_GRAVITY),
-                delta_time));
-    }
-
+    /* TODO(#207): rigid_rect floating in lava is broken */
+    rigid_rect->velocity = vec_sum(
+        rigid_rect->velocity,
+        vec_scala_mult(
+            rigid_rect->forces,
+            delta_time));
 
     rigid_rect->position = vec_sum(
         rigid_rect->position,
@@ -155,6 +145,8 @@ int rigid_rect_update(rigid_rect_t * rigid_rect,
                 rigid_rect->velocity,
                 rigid_rect->movement),
             delta_time));
+
+    rigid_rect->forces = vec(0.0f, 0.0f);
 
     return 0;
 }
@@ -201,17 +193,6 @@ void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
     }
 }
 
-void rigid_rect_impact_rigid_rect(rigid_rect_t * rigid_rect,
-                                  rigid_rect_t * another_rect)
-{
-    if (rects_overlap(rigid_rect_hitbox(rigid_rect), rigid_rect_hitbox(another_rect))) {
-        rigid_rect_move(another_rect,
-                        vec_sum(
-                            rigid_rect->velocity,
-                            rigid_rect->movement));
-    }
-}
-
 rect_t rigid_rect_hitbox(const rigid_rect_t *rigid_rect)
 {
     return rect_from_vecs(
@@ -223,12 +204,6 @@ void rigid_rect_move(rigid_rect_t *rigid_rect,
                            vec_t movement)
 {
     rigid_rect->movement = movement;
-}
-
-void rigid_rect_jump(rigid_rect_t *rigid_rect,
-                     float force)
-{
-    rigid_rect->velocity.y = -force;
 }
 
 int rigid_rect_touches_ground(const rigid_rect_t *rigid_rect)
@@ -244,4 +219,10 @@ void rigid_rect_collide_with_lava(rigid_rect_t *rigid_rect,
 
     rect_t overlap_area = lava_overlap_area(lava, rigid_rect_hitbox(rigid_rect));
     rigid_rect->floating = (overlap_area.w * overlap_area.h) / (rigid_rect->size.x * rigid_rect->size.y);
+}
+
+void rigid_rect_apply_force(rigid_rect_t * rigid_rect,
+                            vec_t force)
+{
+    rigid_rect->forces = vec_sum(rigid_rect->forces, force);
 }
