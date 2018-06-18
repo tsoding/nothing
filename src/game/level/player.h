@@ -24,8 +24,6 @@ int player_render(const player_t * player,
 void player_update(player_t * player,
                    float delta_time);
 void player_collide_with_solid(player_t *player, solid_ref_t solid);
-void player_impact_rigid_rect(player_t * player,
-                              rigid_rect_t *rigid_rect);
 void player_touches_rect_sides(player_t *player,
                                rect_t object,
                                int sides[RECT_SIDE_N]);

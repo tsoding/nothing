@@ -23,8 +23,6 @@ void boxes_collide_with_solid(boxes_t *boxes,
                               solid_ref_t solid);
 void boxes_collide_with_lava(boxes_t *boxes,
                              lava_t *lava);
-void boxes_take_impact_from_player(boxes_t *boxes,
-                                   player_t *player);
 
 /** \brief Implements solid_apply_force */
 void boxes_apply_force(boxes_t *boxes,

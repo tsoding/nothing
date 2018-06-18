@@ -180,14 +180,6 @@ void player_collide_with_solid(player_t *player, solid_ref_t solid)
     }
 }
 
-void player_impact_rigid_rect(player_t * player,
-                              rigid_rect_t *rigid_rect)
-{
-    if (player->state == PLAYER_STATE_ALIVE) {
-        rigid_rect_impact_rigid_rect(player->alive_body, rigid_rect);
-    }
-}
-
 void player_move_left(player_t *player)
 {
     assert(player);

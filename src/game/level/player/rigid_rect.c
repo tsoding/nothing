@@ -193,17 +193,6 @@ void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
     }
 }
 
-void rigid_rect_impact_rigid_rect(rigid_rect_t * rigid_rect,
-                                  rigid_rect_t * another_rect)
-{
-    if (rects_overlap(rigid_rect_hitbox(rigid_rect), rigid_rect_hitbox(another_rect))) {
-        rigid_rect_move(another_rect,
-                        vec_sum(
-                            rigid_rect->velocity,
-                            rigid_rect->movement));
-    }
-}
-
 rect_t rigid_rect_hitbox(const rigid_rect_t *rigid_rect)
 {
     return rect_from_vecs(
