@@ -17,7 +17,7 @@
 #define PLAYER_SPEED 500.0f
 #define PLAYER_JUMP 38000.0f
 #define PLAYER_DEATH_DURATION 0.75f
-/* TODO: double-jump is broken */
+/* TODO(#206): double-jump is broken */
 #define PLAYER_MAX_JUMP_COUNT 1
 
 typedef enum player_state_t {
