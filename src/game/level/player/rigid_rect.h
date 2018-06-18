@@ -43,4 +43,9 @@ void rigid_rect_jump(rigid_rect_t *rigid_rect,
 
 int rigid_rect_touches_ground(const rigid_rect_t *rigid_rect);
 
+/** \brief implements solid_apply_force
+ */
+void rigid_rect_apply_force(rigid_rect_t * rigid_rect,
+                            vec_t force);
+
 #endif  // RIGID_RECT_H_

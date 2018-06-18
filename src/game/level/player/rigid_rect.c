@@ -245,3 +245,10 @@ void rigid_rect_collide_with_lava(rigid_rect_t *rigid_rect,
     rect_t overlap_area = lava_overlap_area(lava, rigid_rect_hitbox(rigid_rect));
     rigid_rect->floating = (overlap_area.w * overlap_area.h) / (rigid_rect->size.x * rigid_rect->size.y);
 }
+
+void rigid_rect_apply_force(rigid_rect_t * rigid_rect,
+                            vec_t force)
+{
+    (void) rigid_rect;
+    (void) force;
+}

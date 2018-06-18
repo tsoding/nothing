@@ -35,6 +35,10 @@ void solid_apply_force(solid_ref_t solid,
         platforms_apply_force((platforms_t *)solid.ptr, force);
         break;
 
+    case SOLID_RIGID_RECT:
+        rigid_rect_apply_force((rigid_rect_t *) solid.ptr, force);
+        break;
+
     default: {}
     }
 }
