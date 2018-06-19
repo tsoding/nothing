@@ -11,6 +11,7 @@
 #include "game/level/player.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/lt/lt_adapters.h"
 
 #define LEVEL_GRAVITY 1500.0f
 
@@ -42,7 +43,7 @@ level_t *create_level_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
 
-    FILE *level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose);
+    FILE *level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose_lt);
     if (level_file == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -243,7 +244,7 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
 
     /* TODO(#104): duplicate code in create_level_from_file and level_reload_preserve_player */
 
-    FILE * const level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose);
+    FILE * const level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose_lt);
     if (level_file == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, -1);

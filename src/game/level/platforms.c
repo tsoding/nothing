@@ -7,6 +7,7 @@
 #include "platforms.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/lt/lt_adapters.h"
 
 struct platforms_t {
     lt_t *lt;
@@ -103,7 +104,7 @@ int platforms_save_to_file(const platforms_t *platforms,
         return -1;
     }
 
-    FILE *platforms_file = PUSH_LT(lt, fopen(filename, "w"), fclose);
+    FILE *platforms_file = PUSH_LT(lt, fopen(filename, "w"), fclose_lt);
 
     if (platforms_file == NULL) {
         throw_error(ERROR_TYPE_LIBC);
