@@ -2,6 +2,21 @@
 
 #include "mat3x3.h"
 
+mat3x3 make_mat3x3(float a11, float a12, float a13,
+                   float a21, float a22, float a23,
+                   float a31, float a32, float a33)
+{
+    const mat3x3 m = {
+        .M = {
+            {a11, a12, a13},
+            {a21, a22, a23},
+            {a31, a32, a33}
+        }
+    };
+
+    return m;
+}
+
 mat3x3 mat3x3_product(mat3x3 m1, mat3x3 m2)
 {
     mat3x3 result;
