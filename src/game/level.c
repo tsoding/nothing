@@ -11,6 +11,7 @@
 #include "game/level/player.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/lt/lt_adapters.h"
 
 #define LEVEL_GRAVITY 1500.0f
 
@@ -26,12 +27,6 @@ struct level_t
     background_t *background;
     boxes_t *boxes;
 };
-
-// A wrapper for fclose to pass like lt_destroy_t
-static void fclose_lt(void* file)
-{
-    fclose(file);
-}
 
 level_t *create_level_from_file(const char *file_name)
 {

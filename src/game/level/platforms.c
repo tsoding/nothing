@@ -7,6 +7,7 @@
 #include "platforms.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/lt/lt_adapters.h"
 
 struct platforms_t {
     lt_t *lt;
@@ -15,12 +16,6 @@ struct platforms_t {
     color_t *colors;
     size_t rects_size;
 };
-
-// A wrapper for fclose to pass like lt_destroy_t
-static void fclose_lt(void* file)
-{
-    fclose(file);
-}
 
 platforms_t *create_platforms_from_stream(FILE *stream)
 {

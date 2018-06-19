@@ -43,6 +43,7 @@ set(SOURCE_FILES
   src/system/error.c
   src/system/lt.c
   src/system/lt/lt_slot.c
+  src/system/lt/lt_adapters.c
 )
 
 set(HEADER_FILES
@@ -71,6 +72,7 @@ set(HEADER_FILES
   src/system/error.h
   src/system/lt.h
   src/system/lt/lt_slot.h
+  src/system/lt/lt_adapters.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
