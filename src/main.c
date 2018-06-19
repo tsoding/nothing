@@ -14,23 +14,10 @@
 #include "math/point.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/lt/lt_adapters.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
-
-/* LT module adapter for Mix_CloseAudio */
-static void Mix_CloseAudio_lt(void* ignored)
-{
-    (void) ignored;
-    Mix_CloseAudio();
-}
-
-/* LT module adapter for SDL_Quit */
-static void SDL_Quit_lt(void* ignored)
-{
-    (void) ignored;
-    SDL_Quit();
-}
 
 static void print_usage(FILE *stream)
 {
