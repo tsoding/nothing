@@ -39,20 +39,21 @@ set(SOURCE_FILES
   src/math/rand.c
   src/math/rect.c
   src/math/triangle.c
+  src/rigid_bodies.c
   src/sdl/renderer.c
   src/system/error.c
   src/system/lt.c
-  src/system/lt/lt_slot.c
   src/system/lt/lt_adapters.c
+  src/system/lt/lt_slot.c
 )
 
 set(HEADER_FILES
   src/color.h
   src/game.h
-  src/game/level/boxes.h
   src/game/camera.h
   src/game/level.h
   src/game/level/background.h
+  src/game/level/boxes.h
   src/game/level/goals.h
   src/game/level/lava.h
   src/game/level/lava/wavy_rect.h
@@ -68,11 +69,12 @@ set(HEADER_FILES
   src/math/rand.h
   src/math/rect.h
   src/math/triangle.h
+  src/rigid_bodies.h
   src/sdl/renderer.h
   src/system/error.h
   src/system/lt.h
-  src/system/lt/lt_slot.h
   src/system/lt/lt_adapters.h
+  src/system/lt/lt_slot.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})

@@ -54,6 +54,14 @@ void lt_slot_reset_resource(lt_slot_t *lt_slot, void *resource)
     lt_slot->resource = resource;
 }
 
+void lt_slot_replace_resource(lt_slot_t *lt_slot, void *resource)
+{
+    assert(lt_slot);
+    assert(resource);
+
+    lt_slot->resource = resource;
+}
+
 int lt_slot_contains_resource(const lt_slot_t *lt_slot, void *resource)
 {
     assert(lt_slot);

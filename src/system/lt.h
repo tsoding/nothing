@@ -7,6 +7,9 @@
 #define RESET_LT(lt, old_resource, new_resource)    \
     lt_reset(lt, (void*)old_resource, (void*)new_resource)
 
+#define REPLACE_LT(lt, old_resource, new_resource)  \
+    lt_replace(lt, (void*)old_resource, (void*)new_resource)
+
 #define RELEASE_LT(lt, resource)                \
     lt_release(lt, (void*) resource)
 
@@ -28,8 +31,20 @@ typedef void (*lt_destroy_t)(void*);
 lt_t *create_lt(void);
 void destroy_lt(lt_t *lt);
 
+/** \brief Pushes the resource onto the Life Time creating a new Life Time frame.
+ */
 void *lt_push(lt_t *lt, void *resource, lt_destroy_t resource_destroy);
+
+/** \brief Destroys old_resource preserving its LT frame and assigns the new_resource to the LT frame.
+ */
 void *lt_reset(lt_t *lt, void *old_resource, void *new_resource);
+
+/** \brief Replaces old_resource with new_resource in the LT frame without destroying old_resource.
+ */
+void *lt_replace(lt_t *lt, void *old_resource, void *new_resource);
+
+/** \brief Removes the LT frame of resource without destroying the resource.
+ */
 void *lt_release(lt_t *lt, void *resource);
 
 #endif  // LT_H_
