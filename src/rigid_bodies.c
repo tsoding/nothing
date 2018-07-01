@@ -78,7 +78,7 @@ void rigid_bodies_update(rigid_bodies_t *rigid_bodies,
 {
     assert(rigid_bodies);
     (void) delta_time;
-    /* TODO: rigid_bodies_update is not implemented */
+    /* TODO(#216): rigid_bodies_update is not implemented */
 }
 
 int rigid_bodies_fill_rect(rigid_bodies_t *rigid_bodies,
