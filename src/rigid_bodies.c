@@ -92,13 +92,19 @@ rigid_rect_ref rigid_bodies_create_rect(rigid_bodies_t *rigid_bodies,
         rigid_bodies->capacity = 2 * prev_capacity;
         rigid_bodies->refs_size = prev_capacity;
 
-        /* TODO: reallocated memory buffers in rigid_bodies are not reset in the lt */
-        rigid_bodies->refs = realloc(
+        rigid_bodies->refs = REPLACE_LT(
+            rigid_bodies->lt,
             rigid_bodies->refs,
-            sizeof(rigid_rect_ref) * rigid_bodies->capacity);
-        rigid_bodies->rects = realloc(
+            realloc(
+                rigid_bodies->refs,
+                sizeof(rigid_rect_ref) * rigid_bodies->capacity));
+
+        rigid_bodies->rects = REPLACE_LT(
+            rigid_bodies->lt,
             rigid_bodies->rects,
-            sizeof(rect_t*) * rigid_bodies->capacity);
+            realloc(
+                rigid_bodies->rects,
+                sizeof(rect_t*) * rigid_bodies->capacity));
 
         for (size_t i = 0; i < prev_capacity; ++i) {
             rigid_bodies->refs[i] = (int32_t) (prev_capacity - i - 1 + prev_capacity);
