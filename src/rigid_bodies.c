@@ -93,7 +93,7 @@ int rigid_bodies_fill_rect(rigid_bodies_t *rigid_bodies,
     assert(camera);
     (void) color;
 
-    /* TODO: rigid_bodies_fill_rect is not implemented */
+    /* TODO(#217): rigid_bodies_fill_rect is not implemented */
 
     return 0;
 }
