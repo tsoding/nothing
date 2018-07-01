@@ -81,6 +81,23 @@ void rigid_bodies_update(rigid_bodies_t *rigid_bodies,
     /* TODO: rigid_bodies_update is not implemented */
 }
 
+int rigid_bodies_fill_rect(rigid_bodies_t *rigid_bodies,
+                           rigid_rect_ref rect_ref,
+                           color_t color,
+                           camera_t *camera)
+{
+    assert(rigid_bodies);
+    assert(rect_ref < 0);
+    assert(rect_ref >= (int32_t)rigid_bodies->capacity);
+    assert(rigid_bodies->rects[rect_ref] == NULL);
+    assert(camera);
+    (void) color;
+
+    /* TODO: rigid_bodies_fill_rect is not implemented */
+
+    return 0;
+}
+
 rigid_rect_ref rigid_bodies_create_rect(rigid_bodies_t *rigid_bodies,
                                         rect_t rect)
 {
@@ -125,18 +142,9 @@ void rigid_bodies_destroy_rect(rigid_bodies_t *rigid_bodies,
                                rigid_rect_ref rect_ref)
 {
     assert(rigid_bodies);
-
-    if (rect_ref < 0) {
-        return;
-    }
-
-    if (rect_ref >= (int32_t)rigid_bodies->capacity) {
-        return;
-    }
-
-    if (rigid_bodies->rects[rect_ref] == NULL) {
-        return;
-    }
+    assert(rect_ref < 0);
+    assert(rect_ref >= (int32_t)rigid_bodies->capacity);
+    assert(rigid_bodies->rects[rect_ref] == NULL);
 
     free(rigid_bodies->rects[rect_ref]);
     rigid_bodies->rects[rect_ref] = NULL;
@@ -146,6 +154,8 @@ void rigid_bodies_destroy_rect(rigid_bodies_t *rigid_bodies,
 
 void rigid_bodies_print(rigid_bodies_t *rigid_bodies)
 {
+    assert(rigid_bodies);
+
     printf("refs\t=");
     for (size_t i = 0; i < rigid_bodies->capacity; ++i) {
         if (i < rigid_bodies->refs_size) {
