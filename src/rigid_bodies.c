@@ -5,8 +5,7 @@
 #include "system/error.h"
 #include "system/lt.h"
 
-/* #define RIGID_BODIES_CAPACITY 256 */
-#define RIGID_BODIES_CAPACITY 4
+#define RIGID_BODIES_CAPACITY 256
 
 struct rigid_bodies_t
 {
