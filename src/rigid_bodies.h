@@ -4,7 +4,7 @@
 #include "math/rect.h"
 
 typedef struct rigid_bodies_t rigid_bodies_t;
-typedef int rigid_rect_ref;
+typedef int32_t rigid_rect_ref;
 
 rigid_bodies_t *create_rigid_bodies(void);
 void destroy_rigid_bodies(rigid_bodies_t *rigid_bodies);
@@ -16,5 +16,7 @@ rigid_rect_ref rigid_bodies_create_rect(rigid_bodies_t *rigid_bodies,
                                         rect_t rect);
 void rigid_bodies_destroy_rect(rigid_bodies_t *rigid_bodies,
                                rigid_rect_ref rect_ref);
+
+void rigid_bodies_print(rigid_bodies_t *rigid_bodies);
 
 #endif  // RIGID_BODIES_H_
