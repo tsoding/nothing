@@ -5,7 +5,6 @@
 
 typedef enum solid_tag_t {
     SOLID_PLATFORMS = 0,
-    SOLID_BOXES,
     SOLID_RIGID_RECT,
     SOLID_PLAYER
 } solid_tag_t;

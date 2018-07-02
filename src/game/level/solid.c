@@ -13,10 +13,6 @@ void solid_touches_rect_sides(solid_ref_t solid,
         platforms_touches_rect_sides((platforms_t *) solid.ptr, object, sides);
         break;
 
-    case SOLID_BOXES:
-        boxes_touches_rect_sides((boxes_t *) solid.ptr, object, sides);
-        break;
-
     case SOLID_RIGID_RECT:
         rigid_rect_touches_rect_sides((rigid_rect_t *) solid.ptr, object, sides);
         break;
@@ -43,10 +39,6 @@ void solid_apply_force(solid_ref_t solid,
         player_apply_force((player_t *) solid.ptr, force);
         break;
 
-    case SOLID_BOXES:
-        boxes_apply_force((boxes_t *) solid.ptr, force);
-        break;
-
     default: {}
     }
 }
@@ -65,10 +57,6 @@ void solid_collide_with_solid(solid_ref_t solid,
 
     case SOLID_PLAYER:
         player_collide_with_solid((player_t *) solid.ptr, other_solid);
-        break;
-
-    case SOLID_BOXES:
-        boxes_collide_with_solid((boxes_t *) solid.ptr, other_solid);
         break;
 
     default: {}
