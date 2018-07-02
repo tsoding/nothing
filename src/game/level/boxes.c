@@ -164,9 +164,11 @@ int boxes_add_to_physical_world(const boxes_t *boxes,
     assert(physical_world);
 
     for (size_t i = 0; i < boxes->count; ++i) {
-        physical_world_add_solid(
-            physical_world,
-            rigid_rect_as_solid(boxes->bodies[i]));
+        if (physical_world_add_solid(
+                physical_world,
+                rigid_rect_as_solid(boxes->bodies[i])) < 0) {
+            return -1;
+        }
     }
 
     return 0;

@@ -55,12 +55,14 @@ void destroy_physical_world(physical_world_t *physical_world)
 void physical_world_collide_solids(physical_world_t *physical_world)
 {
     assert(physical_world);
-    for (size_t i = 0; i < physical_world->size; ++i) {
-        for (size_t j = 0; j < physical_world->size; ++j) {
-            if (i != j) {
-                solid_collide_with_solid(
-                    physical_world->solids[i],
-                    physical_world->solids[j]);
+    for (size_t k = 0; k < 5; ++k) {
+        for (size_t i = 0; i < physical_world->size; ++i) {
+            for (size_t j = 0; j < physical_world->size; ++j) {
+                if (i != j) {
+                    solid_collide_with_solid(
+                        physical_world->solids[i],
+                        physical_world->solids[j]);
+                }
             }
         }
     }
@@ -91,4 +93,10 @@ int physical_world_add_solid(physical_world_t *physical_world,
     physical_world->solids[physical_world->size++] = solid;
 
     return 0;
+}
+
+void physical_world_clean(physical_world_t *physical_world)
+{
+    assert(physical_world);
+    physical_world->size = 0;
 }
