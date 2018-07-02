@@ -27,6 +27,7 @@ set(SOURCE_FILES
   src/game/level/goals.c
   src/game/level/lava.c
   src/game/level/lava/wavy_rect.c
+  src/game/level/physical_world.c
   src/game/level/platforms.c
   src/game/level/player.c
   src/game/level/player/dying_rect.c
@@ -57,6 +58,7 @@ set(HEADER_FILES
   src/game/level/goals.h
   src/game/level/lava.h
   src/game/level/lava/wavy_rect.h
+  src/game/level/physical_world.c
   src/game/level/platforms.h
   src/game/level/player.h
   src/game/level/player/dying_rect.h
