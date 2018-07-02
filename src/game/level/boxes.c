@@ -1,10 +1,11 @@
 #include <assert.h>
 
 #include "game/level/boxes.h"
+#include "game/level/physical_world.h"
 #include "game/level/player.h"
 #include "game/level/player/rigid_rect.h"
-#include "system/lt.h"
 #include "system/error.h"
+#include "system/lt.h"
 
 struct boxes_t
 {
@@ -154,4 +155,19 @@ void boxes_apply_force(boxes_t *boxes,
     for (size_t i = 0; i < boxes->count; ++i) {
         rigid_rect_apply_force(boxes->bodies[i], force);
     }
+}
+
+int boxes_add_to_physical_world(const boxes_t *boxes,
+                                physical_world_t *physical_world)
+{
+    assert(boxes);
+    assert(physical_world);
+
+    for (size_t i = 0; i < boxes->count; ++i) {
+        physical_world_add_solid(
+            physical_world,
+            rigid_rect_as_solid(boxes->bodies[i]));
+    }
+
+    return 0;
 }
