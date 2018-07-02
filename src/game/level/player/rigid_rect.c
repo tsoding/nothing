@@ -167,7 +167,7 @@ void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
 
     vec_t opposing_force = opposing_force_by_sides(sides);
 
-    /* TODO: apply opposing_force to solid from rigid_rect_t */
+    /* TODO(#219): apply opposing_force to solid from rigid_rect_t collision */
 
     for (int i = 0; i < 1000 && vec_length(opposing_force) > 1e-6; ++i) {
         rigid_rect->position = vec_sum(
