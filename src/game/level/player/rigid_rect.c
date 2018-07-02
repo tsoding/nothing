@@ -176,7 +176,7 @@ void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
                 opposing_force,
                 1e-2f));
 
-        /* TODO: implement friction for rigid_rect_t */
+        /* TODO(#220): implement friction for rigid_rect_t */
 
         if (fabs(opposing_force.x) > 1e-6 && (opposing_force.x < 0.0f) != ((rigid_rect->velocity.x + rigid_rect->movement.x) < 0.0f)) {
             rigid_rect->velocity.x = 0.0f;
