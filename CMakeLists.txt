@@ -27,6 +27,7 @@ set(SOURCE_FILES
   src/game/level/goals.c
   src/game/level/lava.c
   src/game/level/lava/wavy_rect.c
+  src/game/level/physical_world.c
   src/game/level/platforms.c
   src/game/level/player.c
   src/game/level/player/dying_rect.c
@@ -39,7 +40,6 @@ set(SOURCE_FILES
   src/math/rand.c
   src/math/rect.c
   src/math/triangle.c
-  src/rigid_bodies.c
   src/sdl/renderer.c
   src/system/error.c
   src/system/lt.c
@@ -57,6 +57,7 @@ set(HEADER_FILES
   src/game/level/goals.h
   src/game/level/lava.h
   src/game/level/lava/wavy_rect.h
+  src/game/level/physical_world.c
   src/game/level/platforms.h
   src/game/level/player.h
   src/game/level/player/dying_rect.h
@@ -69,7 +70,6 @@ set(HEADER_FILES
   src/math/rand.h
   src/math/rect.h
   src/math/triangle.h
-  src/rigid_bodies.h
   src/sdl/renderer.h
   src/system/error.h
   src/system/lt.h

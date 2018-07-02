@@ -5,7 +5,6 @@
 
 typedef enum solid_tag_t {
     SOLID_PLATFORMS = 0,
-    SOLID_BOXES,
     SOLID_RIGID_RECT,
     SOLID_PLAYER
 } solid_tag_t;
@@ -25,5 +24,8 @@ void solid_touches_rect_sides(solid_ref_t solid,
  */
 void solid_apply_force(solid_ref_t solid,
                        vec_t force);
+
+void solid_collide_with_solid(solid_ref_t solid,
+                              solid_ref_t other_solid);
 
 #endif  // SOLID_H_

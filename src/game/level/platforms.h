@@ -25,9 +25,4 @@ void platforms_touches_rect_sides(const platforms_t *platforms,
                                   rect_t object,
                                   int sides[RECT_SIDE_N]);
 
-/** \brief implements solid_apply_force
- */
-void platforms_apply_force(platforms_t *platforms,
-                           vec_t force);
-
 #endif  // PLATFORMS_H_

@@ -1,10 +1,11 @@
 #include <assert.h>
 
 #include "game/level/boxes.h"
+#include "game/level/physical_world.h"
 #include "game/level/player.h"
 #include "game/level/player/rigid_rect.h"
-#include "system/lt.h"
 #include "system/error.h"
+#include "system/lt.h"
 
 struct boxes_t
 {
@@ -61,16 +62,6 @@ void destroy_boxes(boxes_t *boxes)
     RETURN_LT0(boxes->lt);
 }
 
-solid_ref_t boxes_as_solid(boxes_t *boxes)
-{
-    solid_ref_t ref = {
-        .tag = SOLID_BOXES,
-        .ptr = (void*) boxes
-    };
-
-    return ref;
-}
-
 int boxes_render(boxes_t *boxes, camera_t *camera)
 {
     assert(boxes);
@@ -100,58 +91,19 @@ int boxes_update(boxes_t *boxes,
     return 0;
 }
 
-void boxes_collide_with_solid(boxes_t *boxes,
-                              solid_ref_t solid)
+int boxes_add_to_physical_world(const boxes_t *boxes,
+                                physical_world_t *physical_world)
 {
     assert(boxes);
+    assert(physical_world);
 
-    if (boxes == solid.ptr) {
-        for (size_t i = 0; i < boxes->count; ++i) {
-            for (size_t j = 0; j < boxes->count; ++j) {
-                if (i != j) {
-                    rigid_rect_collide_with_solid(
-                        boxes->bodies[i],
-                        rigid_rect_as_solid(boxes->bodies[j]));
-                }
-            }
-        }
-    } else {
-        for (size_t i = 0; i < boxes->count; ++i) {
-            rigid_rect_collide_with_solid(boxes->bodies[i], solid);
+    for (size_t i = 0; i < boxes->count; ++i) {
+        if (physical_world_add_solid(
+                physical_world,
+                rigid_rect_as_solid(boxes->bodies[i])) < 0) {
+            return -1;
         }
     }
-}
 
-void boxes_collide_with_lava(boxes_t *boxes,
-                             lava_t *lava)
-{
-    assert(boxes);
-
-    for (size_t i = 0; i < boxes->count; ++i) {
-        rigid_rect_collide_with_lava(boxes->bodies[i], lava);
-    }
-}
-
-void boxes_touches_rect_sides(const boxes_t *boxes,
-                              rect_t object,
-                              int sides[RECT_SIDE_N])
-{
-    assert(boxes);
-
-    for (size_t i = 0; i < boxes->count; ++i) {
-        rect_object_impact(
-            object,
-            rigid_rect_hitbox(boxes->bodies[i]),
-            sides);
-    }
-}
-
-void boxes_apply_force(boxes_t *boxes,
-                       vec_t force)
-{
-    assert(boxes);
-
-    for (size_t i = 0; i < boxes->count; ++i) {
-        rigid_rect_apply_force(boxes->bodies[i], force);
-    }
+    return 0;
 }

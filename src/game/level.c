@@ -7,17 +7,18 @@
 #include "game/level/boxes.h"
 #include "game/level/goals.h"
 #include "game/level/lava.h"
+#include "game/level/physical_world.h"
 #include "game/level/platforms.h"
 #include "game/level/player.h"
 #include "system/error.h"
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
 
-#define LEVEL_GRAVITY 1500.0f
-
 struct level_t
 {
     lt_t *lt;
+
+    physical_world_t *physical_world;
     player_t *player;
     platforms_t *platforms;
     goals_t *goals;
@@ -43,6 +44,11 @@ level_t *create_level_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
 
+    level->physical_world = PUSH_LT(lt, create_physical_world(), destroy_physical_world);
+    if (level->physical_world == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     FILE *level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose_lt);
     if (level_file == NULL) {
         throw_error(ERROR_TYPE_LIBC);
@@ -58,6 +64,10 @@ level_t *create_level_from_file(const char *file_name)
 
     level->player = PUSH_LT(lt, create_player_from_stream(level_file), destroy_player);
     if (level->player == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    if (physical_world_add_solid(level->physical_world,
+                                 player_as_solid(level->player)) < 0) {
         RETURN_LT(lt, NULL);
     }
 
@@ -83,6 +93,10 @@ level_t *create_level_from_file(const char *file_name)
 
     level->boxes = PUSH_LT(lt, create_boxes_from_stream(level_file), destroy_boxes);
     if (level->boxes == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    if (boxes_add_to_physical_world(level->boxes,
+                                    level->physical_world) < 0) {
         RETURN_LT(lt, NULL);
     }
 
@@ -156,27 +170,12 @@ int level_update(level_t *level, float delta_time)
     assert(level);
     assert(delta_time > 0);
 
-    player_apply_force(level->player, vec(0.0f, LEVEL_GRAVITY));
-    boxes_apply_force(level->boxes, vec(0.0f, LEVEL_GRAVITY));
+    physical_world_apply_gravity(level->physical_world);
 
     boxes_update(level->boxes, delta_time);
     player_update(level->player, delta_time);
 
-    /* TODO(#202): it is diffcult to introduce more kinds of object into the physics engine */
-    boxes_collide_with_solid(level->boxes, platforms_as_solid(level->platforms));
-    player_collide_with_solid(level->player, platforms_as_solid(level->platforms));
-
-    boxes_collide_with_lava(level->boxes, level->lava);
-    boxes_collide_with_solid(level->boxes, boxes_as_solid(level->boxes));
-    boxes_collide_with_solid(level->boxes, player_as_solid(level->player));
-
-    player_collide_with_solid(level->player, boxes_as_solid(level->boxes));
-
-    boxes_collide_with_solid(level->boxes, platforms_as_solid(level->platforms));
-    player_collide_with_solid(level->player, platforms_as_solid(level->platforms));
-
-    boxes_collide_with_solid(level->boxes, boxes_as_solid(level->boxes));
-    player_collide_with_solid(level->player, boxes_as_solid(level->boxes));
+    physical_world_collide_solids(level->physical_world, level->platforms);
 
     player_hide_goals(level->player, level->goals);
     player_die_from_lava(level->player, level->lava);
@@ -244,6 +243,8 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
 
     /* TODO(#104): duplicate code in create_level_from_file and level_reload_preserve_player */
 
+    physical_world_clean(level->physical_world);
+
     FILE * const level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose_lt);
     if (level_file == NULL) {
         throw_error(ERROR_TYPE_LIBC);
@@ -262,6 +263,10 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
         RETURN_LT(lt, -1);
     }
     destroy_player(skipped_player);
+    if (physical_world_add_solid(level->physical_world,
+                                 player_as_solid(level->player)) < 0) {
+        RETURN_LT(lt, -1);
+    }
 
     platforms_t * const platforms = create_platforms_from_stream(level_file);
     if (platforms == NULL) {
@@ -292,6 +297,10 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
         RETURN_LT(lt, -1);
     }
     level->boxes = RESET_LT(level->lt, level->boxes, boxes);
+    if (boxes_add_to_physical_world(level->boxes,
+                                    level->physical_world) < 0) {
+        RETURN_LT(lt, -1);
+    }
 
     RETURN_LT(lt, 0);
 }
