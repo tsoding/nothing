@@ -26,4 +26,7 @@ void solid_touches_rect_sides(solid_ref_t solid,
 void solid_apply_force(solid_ref_t solid,
                        vec_t force);
 
+void solid_collide_with_solid(solid_ref_t solid,
+                              solid_ref_t other_solid);
+
 #endif  // SOLID_H_

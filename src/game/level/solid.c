@@ -50,3 +50,27 @@ void solid_apply_force(solid_ref_t solid,
     default: {}
     }
 }
+
+void solid_collide_with_solid(solid_ref_t solid,
+                              solid_ref_t other_solid)
+{
+    switch (solid.tag) {
+    case SOLID_PLATFORMS:
+        /* TODO: solid_collide_with_solid is not implemented for platforms_t */
+        break;
+
+    case SOLID_RIGID_RECT:
+        rigid_rect_collide_with_solid((rigid_rect_t *) solid.ptr, other_solid);
+        break;
+
+    case SOLID_PLAYER:
+        player_collide_with_solid((player_t *) solid.ptr, other_solid);
+        break;
+
+    case SOLID_BOXES:
+        boxes_collide_with_solid((boxes_t *) solid.ptr, other_solid);
+        break;
+
+    default: {}
+    }
+}
