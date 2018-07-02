@@ -14,8 +14,6 @@
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
 
-#define LEVEL_GRAVITY 1500.0f
-
 struct level_t
 {
     lt_t *lt;
@@ -176,8 +174,7 @@ int level_update(level_t *level, float delta_time)
     assert(level);
     assert(delta_time > 0);
 
-    player_apply_force(level->player, vec(0.0f, LEVEL_GRAVITY));
-    /* boxes_apply_force(level->boxes, vec(0.0f, LEVEL_GRAVITY)); */
+    physical_world_apply_gravity(level->physical_world);
 
     boxes_update(level->boxes, delta_time);
     player_update(level->player, delta_time);

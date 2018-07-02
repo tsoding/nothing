@@ -6,6 +6,7 @@
 #include "system/lt.h"
 
 #define PHYSICAL_WORLD_CAPACITY 256
+#define PHYSICAL_WORLD_GRAVITY 1500.0f
 
 struct physical_world_t
 {
@@ -52,17 +53,24 @@ void destroy_physical_world(physical_world_t *physical_world)
     RETURN_LT0(physical_world->lt);
 }
 
+void physical_world_apply_gravity(physical_world_t *physical_world)
+{
+    for (size_t i = 0; i < physical_world->size; ++i) {
+        solid_apply_force(
+            physical_world->solids[i],
+            vec(0.0f, PHYSICAL_WORLD_GRAVITY));
+    }
+}
+
 void physical_world_collide_solids(physical_world_t *physical_world)
 {
     assert(physical_world);
-    for (size_t k = 0; k < 5; ++k) {
-        for (size_t i = 0; i < physical_world->size; ++i) {
-            for (size_t j = 0; j < physical_world->size; ++j) {
-                if (i != j) {
-                    solid_collide_with_solid(
-                        physical_world->solids[i],
-                        physical_world->solids[j]);
-                }
+    for (size_t i = 0; i < physical_world->size; ++i) {
+        for (size_t j = 0; j < physical_world->size; ++j) {
+            if (i != j) {
+                solid_collide_with_solid(
+                    physical_world->solids[i],
+                    physical_world->solids[j]);
             }
         }
     }
