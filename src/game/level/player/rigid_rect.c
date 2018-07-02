@@ -167,7 +167,7 @@ void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
 
     vec_t opposing_force = opposing_force_by_sides(sides);
 
-    /* TODO: apply opposing_force to solid */
+    /* TODO: apply opposing_force to solid from rigid_rect_t */
 
     for (int i = 0; i < 1000 && vec_length(opposing_force) > 1e-6; ++i) {
         rigid_rect->position = vec_sum(
@@ -176,7 +176,7 @@ void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
                 opposing_force,
                 1e-2f));
 
-        /* TODO: implement friction */
+        /* TODO: implement friction for rigid_rect_t */
 
         if (fabs(opposing_force.x) > 1e-6 && (opposing_force.x < 0.0f) != ((rigid_rect->velocity.x + rigid_rect->movement.x) < 0.0f)) {
             rigid_rect->velocity.x = 0.0f;
