@@ -32,7 +32,7 @@ void solid_apply_force(solid_ref_t solid,
 {
     switch (solid.tag) {
     case SOLID_PLATFORMS:
-        platforms_apply_force((platforms_t *)solid.ptr, force);
+        /* no implementation */
         break;
 
     case SOLID_RIGID_RECT:
@@ -56,7 +56,7 @@ void solid_collide_with_solid(solid_ref_t solid,
 {
     switch (solid.tag) {
     case SOLID_PLATFORMS:
-        /* TODO: solid_collide_with_solid is not implemented for platforms_t */
+        /* no implementation */
         break;
 
     case SOLID_RIGID_RECT:
