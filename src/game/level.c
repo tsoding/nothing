@@ -75,10 +75,6 @@ level_t *create_level_from_file(const char *file_name)
     if (level->platforms == NULL) {
         RETURN_LT(lt, NULL);
     }
-    if (physical_world_add_solid(level->physical_world,
-                                 platforms_as_solid(level->platforms)) < 0) {
-        RETURN_LT(lt, NULL);
-    }
 
     level->goals = PUSH_LT(lt, create_goals_from_stream(level_file), destroy_goals);
     if (level->goals == NULL) {
@@ -179,24 +175,7 @@ int level_update(level_t *level, float delta_time)
     boxes_update(level->boxes, delta_time);
     player_update(level->player, delta_time);
 
-    physical_world_collide_solids(level->physical_world);
-    /* TODO(#202): it is diffcult to introduce more kinds of object into the physics engine */
-    /*
-    boxes_collide_with_solid(level->boxes, platforms_as_solid(level->platforms));
-    player_collide_with_solid(level->player, platforms_as_solid(level->platforms));
-
-    boxes_collide_with_lava(level->boxes, level->lava);
-    boxes_collide_with_solid(level->boxes, boxes_as_solid(level->boxes));
-    boxes_collide_with_solid(level->boxes, player_as_solid(level->player));
-
-    player_collide_with_solid(level->player, boxes_as_solid(level->boxes));
-
-    boxes_collide_with_solid(level->boxes, platforms_as_solid(level->platforms));
-    player_collide_with_solid(level->player, platforms_as_solid(level->platforms));
-
-    boxes_collide_with_solid(level->boxes, boxes_as_solid(level->boxes));
-    player_collide_with_solid(level->player, boxes_as_solid(level->boxes));
-    */
+    physical_world_collide_solids(level->physical_world, level->platforms);
 
     player_hide_goals(level->player, level->goals);
     player_die_from_lava(level->player, level->lava);
@@ -294,10 +273,6 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
         RETURN_LT(lt, -1);
     }
     level->platforms = RESET_LT(level->lt, level->platforms, platforms);
-    if (physical_world_add_solid(level->physical_world,
-                                 platforms_as_solid(level->platforms)) < 0) {
-        RETURN_LT(lt, -1);
-    }
 
     goals_t * const goals = create_goals_from_stream(level_file);
     if (goals == NULL) {

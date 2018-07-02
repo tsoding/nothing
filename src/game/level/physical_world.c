@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include "game/level/platforms.h"
 #include "physical_world.h"
 #include "system/error.h"
 #include "system/lt.h"
@@ -62,9 +63,17 @@ void physical_world_apply_gravity(physical_world_t *physical_world)
     }
 }
 
-void physical_world_collide_solids(physical_world_t *physical_world)
+void physical_world_collide_solids(physical_world_t *physical_world,
+                                   platforms_t *platforms)
 {
     assert(physical_world);
+
+    for (size_t i = 0; i < physical_world->size; ++i) {
+        solid_collide_with_solid(
+            physical_world->solids[i],
+            platforms_as_solid(platforms));
+    }
+
     for (size_t i = 0; i < physical_world->size; ++i) {
         for (size_t j = 0; j < physical_world->size; ++j) {
             if (i != j) {
@@ -73,6 +82,12 @@ void physical_world_collide_solids(physical_world_t *physical_world)
                     physical_world->solids[j]);
             }
         }
+    }
+
+    for (size_t i = 0; i < physical_world->size; ++i) {
+        solid_collide_with_solid(
+            physical_world->solids[i],
+            platforms_as_solid(platforms));
     }
 }
 
