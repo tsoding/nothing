@@ -166,35 +166,49 @@ void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
         rigid_rect->touches_ground = 1;
     }
 
-    vec_t opposing_force = opposing_force_by_sides(sides);
+    vec_t opforce_direction = opposing_force_by_sides(sides);
 
-    /* TODO(#219): apply opposing_force to solid from rigid_rect_t collision */
+    solid_apply_force(
+        solid,
+        vec_scala_mult(
+            vec_neg(vec_norm(opforce_direction)),
+            vec_length(
+                vec_sum(
+                    rigid_rect->velocity,
+                    rigid_rect->movement)) * 8.0f));
 
-    for (int i = 0; i < 1000 && vec_length(opposing_force) > 1e-6; ++i) {
+    if (fabs(opforce_direction.x) > 1e-6 && (opforce_direction.x < 0.0f) != ((rigid_rect->velocity.x + rigid_rect->movement.x) < 0.0f)) {
+        rigid_rect->velocity.x = 0.0f;
+        rigid_rect->movement.x = 0.0f;
+    }
+
+    if (fabs(opforce_direction.y) > 1e-6 && (opforce_direction.y < 0.0f) != ((rigid_rect->velocity.y + rigid_rect->movement.y) < 0.0f)) {
+        rigid_rect->velocity.y = 0.0f;
+        rigid_rect->movement.y = 0.0f;
+
+        if (vec_length(rigid_rect->velocity) > 1e-6) {
+            rigid_rect_apply_force(
+                rigid_rect,
+                vec_scala_mult(
+                    vec_neg(rigid_rect->velocity),
+                    16.0f));
+        }
+    }
+
+
+    for (int i = 0; i < 1000 && vec_length(opforce_direction) > 1e-6; ++i) {
         rigid_rect->position = vec_sum(
             rigid_rect->position,
             vec_scala_mult(
-                opposing_force,
+                opforce_direction,
                 1e-2f));
-
-        /* TODO(#220): implement friction for rigid_rect_t */
-
-        if (fabs(opposing_force.x) > 1e-6 && (opposing_force.x < 0.0f) != ((rigid_rect->velocity.x + rigid_rect->movement.x) < 0.0f)) {
-            rigid_rect->velocity.x = 0.0f;
-            rigid_rect->movement.x = 0.0f;
-        }
-
-        if (fabs(opposing_force.y) > 1e-6 && (opposing_force.y < 0.0f) != ((rigid_rect->velocity.y + rigid_rect->movement.y) < 0.0f)) {
-            rigid_rect->velocity.y = 0.0f;
-            rigid_rect->movement.y = 0.0f;
-        }
 
         memset(sides, 0, sizeof(int) * RECT_SIDE_N);
         solid_touches_rect_sides(
             solid,
             rigid_rect_hitbox(rigid_rect),
             sides);
-        opposing_force = opposing_force_by_sides(sides);
+        opforce_direction = opposing_force_by_sides(sides);
     }
 }
 
