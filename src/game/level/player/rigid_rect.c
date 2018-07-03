@@ -70,6 +70,7 @@ rigid_rect_t *create_rigid_rect(rect_t rect, color_t color)
     rigid_rect->color = color;
     rigid_rect->touches_ground = 0;
     rigid_rect->floating = 0.0f;
+    rigid_rect->forces = vec(0.0f, 0.0f);
 
     return rigid_rect;
 }
