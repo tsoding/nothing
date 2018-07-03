@@ -122,3 +122,14 @@ point_t point_mat3x3_product(point_t p, mat3x3 m)
 
     return result_p;
 }
+
+vec_t vec_norm(vec_t v)
+{
+    const float l = vec_length(v);
+
+    if (l < 1e-6) {
+        return vec(0.0f, 0.0f);
+    }
+
+    return vec(v.x / l, v.y / l);
+}
