@@ -72,9 +72,7 @@ void physical_world_collide_solids(physical_world_t *physical_world,
         solid_collide_with_solid(
             physical_world->solids[i],
             platforms_as_solid(platforms));
-    }
 
-    for (size_t i = 0; i < physical_world->size; ++i) {
         for (size_t j = 0; j < physical_world->size; ++j) {
             if (i != j) {
                 solid_collide_with_solid(
@@ -82,9 +80,7 @@ void physical_world_collide_solids(physical_world_t *physical_world,
                     physical_world->solids[j]);
             }
         }
-    }
 
-    for (size_t i = 0; i < physical_world->size; ++i) {
         solid_collide_with_solid(
             physical_world->solids[i],
             platforms_as_solid(platforms));
