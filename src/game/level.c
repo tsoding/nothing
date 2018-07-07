@@ -44,11 +44,6 @@ level_t *create_level_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
 
-    level->physical_world = PUSH_LT(lt, create_physical_world(), destroy_physical_world);
-    if (level->physical_world == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
     FILE *level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose_lt);
     if (level_file == NULL) {
         throw_error(ERROR_TYPE_LIBC);
@@ -64,10 +59,6 @@ level_t *create_level_from_file(const char *file_name)
 
     level->player = PUSH_LT(lt, create_player_from_stream(level_file), destroy_player);
     if (level->player == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    if (physical_world_add_solid(level->physical_world,
-                                 player_as_solid(level->player)) < 0) {
         RETURN_LT(lt, NULL);
     }
 
@@ -95,15 +86,22 @@ level_t *create_level_from_file(const char *file_name)
     if (level->boxes == NULL) {
         RETURN_LT(lt, NULL);
     }
-    if (boxes_add_to_physical_world(level->boxes,
-                                    level->physical_world) < 0) {
-        RETURN_LT(lt, NULL);
-    }
 
     level->background = PUSH_LT(lt, create_background(level->background_color), destroy_background);
     if (level->background == NULL) {
         RETURN_LT(lt, NULL);
     }
+
+    level->physical_world = PUSH_LT(lt, create_physical_world(), destroy_physical_world);
+    if (level->physical_world == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    if (physical_world_add_solid(
+            level->physical_world,
+            player_as_solid(level->player)) < 0) { RETURN_LT(lt, NULL); }
+    if (boxes_add_to_physical_world(
+            level->boxes,
+            level->physical_world) < 0) { RETURN_LT(lt, NULL); }
 
     level->lt = lt;
 
@@ -243,7 +241,7 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
 
     /* TODO(#104): duplicate code in create_level_from_file and level_reload_preserve_player */
 
-    physical_world_clean(level->physical_world);
+
 
     FILE * const level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose_lt);
     if (level_file == NULL) {
@@ -263,10 +261,6 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
         RETURN_LT(lt, -1);
     }
     destroy_player(skipped_player);
-    if (physical_world_add_solid(level->physical_world,
-                                 player_as_solid(level->player)) < 0) {
-        RETURN_LT(lt, -1);
-    }
 
     platforms_t * const platforms = create_platforms_from_stream(level_file);
     if (platforms == NULL) {
@@ -297,10 +291,14 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
         RETURN_LT(lt, -1);
     }
     level->boxes = RESET_LT(level->lt, level->boxes, boxes);
-    if (boxes_add_to_physical_world(level->boxes,
-                                    level->physical_world) < 0) {
-        RETURN_LT(lt, -1);
-    }
+
+    physical_world_clean(level->physical_world);
+    if (physical_world_add_solid(
+            level->physical_world,
+            player_as_solid(level->player)) < 0) { RETURN_LT(lt, -1); }
+    if (boxes_add_to_physical_world(
+            level->boxes,
+            level->physical_world) < 0) { RETURN_LT(lt, -1); }
 
     RETURN_LT(lt, 0);
 }
