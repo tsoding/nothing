@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
         const int64_t end_frame_time = (int64_t) SDL_GetTicks();
 
         render_timer -= delta_time;
-        if (render_timer < 0) {
+        if (render_timer <= 0) {
             SDL_RenderPresent(renderer);
             render_timer = (int64_t) (1000.0f / (float) fps);
         }
