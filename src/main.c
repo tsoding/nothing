@@ -163,19 +163,9 @@ int main(int argc, char *argv[])
     const Uint8 *const keyboard_state = SDL_GetKeyboardState(NULL);
 
     SDL_Event e;
-    int64_t last_time = (int64_t) SDL_GetTicks();
     const int64_t expected_delay_ms = (int64_t) (1000.0f / (float) fps);
     while (!game_over_check(game)) {
-        const int64_t current_time = (int64_t) SDL_GetTicks();
-
-        if (current_time == last_time) {
-            SDL_Delay((Uint32) expected_delay_ms);
-            last_time = current_time;
-            continue;
-        }
-
-        const int64_t actual_delta_ms = current_time - last_time;
-
+        const int64_t begin_frame_time = (int64_t) SDL_GetTicks();
 
         while (!game_over_check(game) && SDL_PollEvent(&e)) {
             if (game_event(game, &e) < 0) {
@@ -189,21 +179,9 @@ int main(int argc, char *argv[])
             RETURN_LT(lt, -1);
         }
 
-        if (game_render(game) < 0) {
-            print_current_error_msg("Failed rendering the game");
+        if (game_update(game, (float) expected_delay_ms * 0.001f) < 0) {
+            print_current_error_msg("Failed handling updating");
             RETURN_LT(lt, -1);
-        }
-
-        SDL_RenderPresent(renderer);
-
-        int64_t effective_delta_ms = max_int64(actual_delta_ms, expected_delay_ms);
-        while (effective_delta_ms > 0) {
-            if (game_update(game, (float) min_int64(expected_delay_ms, effective_delta_ms) * 0.001f) < 0) {
-                print_current_error_msg("Failed handling updating");
-                RETURN_LT(lt, -1);
-            }
-
-            effective_delta_ms -= expected_delay_ms;
         }
 
         if (game_sound(game) < 0) {
@@ -211,8 +189,15 @@ int main(int argc, char *argv[])
             RETURN_LT(lt, -1);
         }
 
-        SDL_Delay((unsigned int) max_int64(0, expected_delay_ms - actual_delta_ms));
-        last_time = current_time;
+        if (game_render(game) < 0) {
+            print_current_error_msg("Failed rendering the game");
+            RETURN_LT(lt, -1);
+        }
+        const int64_t end_frame_time = (int64_t) SDL_GetTicks();
+
+        SDL_RenderPresent(renderer);
+
+        SDL_Delay((unsigned int) max_int64(0, expected_delay_ms - (end_frame_time - begin_frame_time)));
     }
 
     RETURN_LT(lt, 0);
