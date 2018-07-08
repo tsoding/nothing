@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 
 #include <stdint.h>
 #include <stdio.h>
@@ -12,6 +13,7 @@
 #include "game/sound_samples.h"
 #include "math/minmax.h"
 #include "math/point.h"
+#include "sdl/renderer.h"
 #include "system/error.h"
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
@@ -58,6 +60,12 @@ int main(int argc, char *argv[])
         print_usage(stderr);
         RETURN_LT(lt, -1);
     }
+
+    if (TTF_Init() < 0) {
+        print_error_msg(ERROR_TYPE_SDL2_TTF, "Could not initialize SDL_ttf");
+        RETURN_LT(lt, -1);
+    }
+    PUSH_LT(lt, 42, TTF_Quit_lt);
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         print_error_msg(ERROR_TYPE_SDL2, "Could not initialize SDL");
@@ -146,6 +154,12 @@ int main(int argc, char *argv[])
         RETURN_LT(lt, -1);
     }
 
+    TTF_Font *const font = PUSH_LT(lt, TTF_OpenFont("fonts/UbuntuMono-R.ttf", 24), TTF_CloseFont);
+    if (font == NULL) {
+        print_error_msg(ERROR_TYPE_SDL2_TTF, "loading fonts");
+        RETURN_LT(lt, -1);
+    }
+
     const Uint8 *const keyboard_state = SDL_GetKeyboardState(NULL);
 
     SDL_Event e;
@@ -179,6 +193,8 @@ int main(int argc, char *argv[])
             print_current_error_msg("Failed rendering the game");
             RETURN_LT(lt, -1);
         }
+
+        SDL_RenderPresent(renderer);
 
         int64_t effective_delta_ms = max_int64(actual_delta_ms, expected_delay_ms);
         while (effective_delta_ms > 0) {

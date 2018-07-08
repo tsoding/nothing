@@ -99,8 +99,6 @@ int game_render(const game_t *game)
         return -1;
     }
 
-    camera_present(game->camera);
-
     return 0;
 }
 
