@@ -10,12 +10,13 @@ endif()
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 find_package(SDL2 REQUIRED)
-
 find_package(SDL2_mixer REQUIRED)
+find_package(SDL2_ttf REQUIRED)
 
 include_directories(src/)
 include_directories(${SDL2_INCLUDE_DIR})
 include_directories(${SDL2_MIXER_INCLUDE_DIR})
+include_directories(${SDL2_TTF_DIR})
 
 set(SOURCE_FILES
   src/color.c
@@ -78,7 +79,7 @@ set(HEADER_FILES
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
-target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
+target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_TTF_LIBRARY})
 
 if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "CLANG"))
   set(CMAKE_C_FLAGS
@@ -116,3 +117,4 @@ if(WIN32)
 endif()
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/sounds DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/fonts DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
