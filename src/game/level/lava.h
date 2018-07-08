@@ -10,7 +10,7 @@ lava_t *create_lava_from_stream(FILE *stream);
 void destroy_lava(lava_t *lava);
 
 int lava_render(const lava_t *lava,
-                const camera_t *camera);
+                camera_t *camera);
 int lava_update(lava_t *lava, float delta_time);
 
 int lava_overlaps_rect(const lava_t *lava,

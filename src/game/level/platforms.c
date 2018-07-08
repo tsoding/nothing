@@ -134,7 +134,7 @@ solid_ref_t platforms_as_solid(platforms_t *platforms)
 }
 
 int platforms_render(const platforms_t *platforms,
-                     const camera_t *camera)
+                     camera_t *camera)
 {
     for (size_t i = 0; i < platforms->rects_size; ++i) {
         if (camera_fill_rect(

@@ -60,7 +60,7 @@ void destroy_lava(lava_t *lava)
 }
 
 int lava_render(const lava_t   *lava,
-                const camera_t *camera)
+                camera_t *camera)
 {
     assert(lava);
     assert(camera);

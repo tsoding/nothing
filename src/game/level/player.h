@@ -20,7 +20,7 @@ void destroy_player(player_t * player);
 solid_ref_t player_as_solid(player_t *player);
 
 int player_render(const player_t * player,
-                  const camera_t *camera);
+                  camera_t *camera);
 void player_update(player_t * player,
                    float delta_time);
 void player_collide_with_solid(player_t *player, solid_ref_t solid);

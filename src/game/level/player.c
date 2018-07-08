@@ -114,7 +114,7 @@ solid_ref_t player_as_solid(player_t *player)
 }
 
 int player_render(const player_t * player,
-                  const camera_t *camera)
+                  camera_t *camera)
 {
     assert(player);
     assert(camera);

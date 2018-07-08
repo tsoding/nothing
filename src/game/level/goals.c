@@ -105,7 +105,7 @@ void destroy_goals(goals_t *goals)
 
 static int goals_render_core(const goals_t *goals,
                              size_t goal_index,
-                             const camera_t *camera)
+                             camera_t *camera)
 {
     assert(goals);
     assert(camera);
@@ -126,7 +126,7 @@ static int goals_render_core(const goals_t *goals,
 }
 
 int goals_render(const goals_t *goals,
-                 const camera_t *camera)
+                 camera_t *camera)
 
 {
     assert(goals);

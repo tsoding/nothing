@@ -116,13 +116,12 @@ void rigid_rect_touches_rect_sides(rigid_rect_t *rigid_rect,
 }
 
 int rigid_rect_render(const rigid_rect_t *rigid_rect,
-                      const camera_t *camera)
+                      camera_t *camera)
 {
     return camera_fill_rect(
         camera,
         rigid_rect_hitbox(rigid_rect),
         rigid_rect->color);
-
 }
 
 int rigid_rect_update(rigid_rect_t * rigid_rect,
