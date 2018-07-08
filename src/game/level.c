@@ -317,13 +317,8 @@ void level_toggle_debug_mode(level_t *level)
 }
 
 int level_enter_camera_event(level_t *level,
-                             camera_t *camera)
+                             const camera_t *camera)
 {
-    /* TODO(#157): goals_cue is not supposed to be invoked in level_render
-     *
-     * But I simply couldn't find a better place for it.
-     */
     goals_cue(level->goals, camera);
-
     return 0;
 }

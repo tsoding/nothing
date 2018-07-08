@@ -15,7 +15,7 @@ void destroy_goals(goals_t *goals);
 rect_t goals_hitbox(const goals_t *goals);
 
 int goals_render(const goals_t *goals,
-                 const camera_t *camera);
+                 camera_t *camera);
 int goals_sound(goals_t *goals,
                 sound_samples_t *sound_samples);
 void goals_update(goals_t *goals,

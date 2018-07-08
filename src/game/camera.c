@@ -53,7 +53,7 @@ void destroy_camera(camera_t *camera)
 }
 
 
-int camera_fill_rect(const camera_t *camera,
+int camera_fill_rect(camera_t *camera,
                      rect_t rect,
                      color_t color)
 {
@@ -87,7 +87,7 @@ int camera_fill_rect(const camera_t *camera,
     return 0;
 }
 
-int camera_draw_rect(const camera_t * camera,
+int camera_draw_rect(camera_t * camera,
                      rect_t rect,
                      color_t color)
 {
@@ -114,7 +114,7 @@ int camera_draw_rect(const camera_t * camera,
     return 0;
 }
 
-int camera_draw_triangle(const camera_t *camera,
+int camera_draw_triangle(camera_t *camera,
                          triangle_t t,
                          color_t color)
 {
@@ -137,7 +137,7 @@ int camera_draw_triangle(const camera_t *camera,
     return 0;
 }
 
-int camera_fill_triangle(const camera_t *camera,
+int camera_fill_triangle(camera_t *camera,
                          triangle_t t,
                          color_t color)
 {
@@ -169,7 +169,7 @@ int camera_fill_triangle(const camera_t *camera,
     return 0;
 }
 
-int camera_clear_background(const camera_t *camera,
+int camera_clear_background(camera_t *camera,
                             color_t color)
 {
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
@@ -185,11 +185,6 @@ int camera_clear_background(const camera_t *camera,
     }
 
     return 0;
-}
-
-void camera_present(const camera_t *camera)
-{
-    SDL_RenderPresent(camera->renderer);
 }
 
 void camera_center_at(camera_t *camera, point_t position)

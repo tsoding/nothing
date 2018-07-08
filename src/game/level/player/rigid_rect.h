@@ -21,7 +21,7 @@ void destroy_rigid_rect(rigid_rect_t *rigid_rect);
 solid_ref_t rigid_rect_as_solid(rigid_rect_t *rigid_rect);
 
 int rigid_rect_render(const rigid_rect_t *rigid_rect,
-                      const camera_t *camera);
+                      camera_t *camera);
 int rigid_rect_update(rigid_rect_t * rigid_rect,
                       float delta_time);
 

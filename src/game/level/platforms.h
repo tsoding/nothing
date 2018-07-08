@@ -19,7 +19,7 @@ int platforms_save_to_file(const platforms_t *platforms,
                            const char *filename);
 
 int platforms_render(const platforms_t *platforms,
-                     const camera_t *camera);
+                     camera_t *camera);
 
 void platforms_touches_rect_sides(const platforms_t *platforms,
                                   rect_t object,

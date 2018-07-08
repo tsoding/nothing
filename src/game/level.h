@@ -23,9 +23,8 @@ int level_event(level_t *level, const SDL_Event *event);
 int level_input(level_t *level,
                 const Uint8 *const keyboard_state,
                 SDL_Joystick *the_stick_of_joy);
-// TODO: level_enter_camera_event allows rendering in non *_render functions
 int level_enter_camera_event(level_t *level,
-                             camera_t *camera);
+                             const camera_t *camera);
 
 int level_reload_preserve_player(level_t *level,
                                  const char *file_name);

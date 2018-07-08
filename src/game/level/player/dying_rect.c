@@ -77,7 +77,7 @@ void destroy_dying_rect(dying_rect_t *dying_rect)
 }
 
 int dying_rect_render(const dying_rect_t *dying_rect,
-                      const camera_t *camera)
+                      camera_t *camera)
 {
     assert(dying_rect);
     assert(camera);
