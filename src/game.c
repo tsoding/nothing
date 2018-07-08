@@ -117,7 +117,13 @@ int game_update(game_t *game, float delta_time)
     }
 
     if (game->state == GAME_STATE_RUNNING) {
-        return level_update(game->level, delta_time);
+        if (level_update(game->level, delta_time) < 0) {
+            return -1;
+        }
+
+        if (level_enter_camera_event(game->level, game->camera) < 0) {
+            return -1;
+        }
     }
 
     return 0;

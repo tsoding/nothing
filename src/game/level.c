@@ -154,11 +154,6 @@ int level_render(const level_t *level, camera_t *camera)
         return -1;
     }
 
-    /* TODO(#157): goals_cue is not supposed to be invoked in level_render
-     *
-     * But I simply couldn't find a better place for it.
-     */
-    goals_cue(level->goals, camera);
 
     return 0;
 }
@@ -319,4 +314,16 @@ int level_sound(level_t *level, sound_samples_t *sound_samples)
 void level_toggle_debug_mode(level_t *level)
 {
     background_toggle_debug_mode(level->background);
+}
+
+int level_enter_camera_event(level_t *level,
+                             camera_t *camera)
+{
+    /* TODO(#157): goals_cue is not supposed to be invoked in level_render
+     *
+     * But I simply couldn't find a better place for it.
+     */
+    goals_cue(level->goals, camera);
+
+    return 0;
 }
