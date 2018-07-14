@@ -5,7 +5,6 @@ with import <nixpkgs> {}; {
                         gcc
                         SDL2
                         SDL2_mixer
-                        SDL2_ttf
                         mesa
                         pkgconfig
                         cmake

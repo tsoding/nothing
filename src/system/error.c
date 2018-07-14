@@ -1,6 +1,5 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_ttf.h>
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>
@@ -50,8 +49,5 @@ void print_error_msg(error_type_t error_type, const char *user_prefix)
     case ERROR_TYPE_SDL2_MIXER:
         fprintf(stderr, "SDL2_mixer error: %s: %s\n", user_prefix, Mix_GetError());
         break;
-
-    case ERROR_TYPE_SDL2_TTF:
-        fprintf(stderr, "SDL2_ttf error: %s: %s\n", user_prefix, TTF_GetError());
     }
 }
