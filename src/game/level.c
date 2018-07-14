@@ -174,7 +174,6 @@ int level_update(level_t *level, float delta_time)
     player_die_from_lava(level->player, level->lava);
 
     goals_update(level->goals, delta_time);
-    goals_checkpoint(level->goals, level->player);
     lava_update(level->lava, delta_time);
 
     return 0;
@@ -320,5 +319,6 @@ int level_enter_camera_event(level_t *level,
                              const camera_t *camera)
 {
     goals_cue(level->goals, camera);
+    goals_checkpoint(level->goals, level->player);
     return 0;
 }
