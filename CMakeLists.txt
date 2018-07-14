@@ -11,12 +11,10 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
-find_package(SDL2_ttf REQUIRED)
 
 include_directories(src/)
 include_directories(${SDL2_INCLUDE_DIR})
 include_directories(${SDL2_MIXER_INCLUDE_DIR})
-include_directories(${SDL2_TTF_DIR})
 
 set(SOURCE_FILES
   src/color.c
@@ -35,6 +33,7 @@ set(SOURCE_FILES
   src/game/level/player/rigid_rect.c
   src/game/level/solid.c
   src/game/sound_samples.c
+  src/game/sprite_font.c
   src/main.c
   src/math/mat3x3.c
   src/math/point.c
@@ -65,6 +64,7 @@ set(HEADER_FILES
   src/game/level/player/rigid_rect.h
   src/game/level/solid.h
   src/game/sound_samples.h
+  src/game/sprite_font.h
   src/math/mat3x3.h
   src/math/pi.h
   src/math/point.h
@@ -79,7 +79,7 @@ set(HEADER_FILES
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
-target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_TTF_LIBRARY})
+target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
 
 if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "CLANG"))
   set(CMAKE_C_FLAGS

@@ -1,6 +1,5 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_ttf.h>
 
 #include <stdint.h>
 #include <stdio.h>
@@ -11,6 +10,7 @@
 #include "game/level/platforms.h"
 #include "game/level/player.h"
 #include "game/sound_samples.h"
+#include "game/sprite_font.h"
 #include "math/minmax.h"
 #include "math/point.h"
 #include "sdl/renderer.h"
@@ -60,12 +60,6 @@ int main(int argc, char *argv[])
         print_usage(stderr);
         RETURN_LT(lt, -1);
     }
-
-    if (TTF_Init() < 0) {
-        print_error_msg(ERROR_TYPE_SDL2_TTF, "Could not initialize SDL_ttf");
-        RETURN_LT(lt, -1);
-    }
-    PUSH_LT(lt, 42, TTF_Quit_lt);
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         print_error_msg(ERROR_TYPE_SDL2, "Could not initialize SDL");
@@ -154,9 +148,12 @@ int main(int argc, char *argv[])
         RETURN_LT(lt, -1);
     }
 
-    TTF_Font *const font = PUSH_LT(lt, TTF_OpenFont("fonts/UbuntuMono-R.ttf", 24), TTF_CloseFont);
-    if (font == NULL) {
-        print_error_msg(ERROR_TYPE_SDL2_TTF, "loading fonts");
+    sprite_font_t * const sprite_font =
+        PUSH_LT(lt,
+                create_sprite_font_from_file("fonts/charmap-oldschool_white.bmp", renderer),
+                destroy_sprite_font);
+    if (sprite_font == NULL) {
+        print_current_error_msg("Loading up sprite font");
         RETURN_LT(lt, -1);
     }
 
@@ -194,6 +191,16 @@ int main(int argc, char *argv[])
             print_current_error_msg("Failed rendering the game");
             RETURN_LT(lt, -1);
         }
+
+        if (sprite_font_render_text(sprite_font,
+                                    renderer,
+                                    vec(0.0f, 0.0f),
+                                    1,
+                                    "HELLO, WORLD!!!") < 0) {
+            print_current_error_msg("Failed rendering debug info");
+            RETURN_LT(lt, -1);
+        }
+
         const int64_t end_frame_time = (int64_t) SDL_GetTicks();
 
         render_timer -= delta_time;

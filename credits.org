@@ -2,3 +2,5 @@
   - https://freesound.org/people/Unaxete/
     - sounds/nothing.mp3  
     - sounds/something.mp3
+- Fonts:
+  - https://opengameart.org/content/ascii-bitmap-font-oldschool
