@@ -35,6 +35,7 @@ set(SOURCE_FILES
   src/game/level/player/rigid_rect.c
   src/game/level/solid.c
   src/game/sound_samples.c
+  src/game/sprite_font.c
   src/main.c
   src/math/mat3x3.c
   src/math/point.c
@@ -65,6 +66,7 @@ set(HEADER_FILES
   src/game/level/player/rigid_rect.h
   src/game/level/solid.h
   src/game/sound_samples.h
+  src/game/sprite_font.h
   src/math/mat3x3.h
   src/math/pi.h
   src/math/point.h
