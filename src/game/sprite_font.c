@@ -3,9 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "sdl/renderer.h"
 #include "sprite_font.h"
-#include "system/lt.h"
 #include "system/error.h"
+#include "system/lt.h"
 
 #define FONT_ROW_SIZE 18
 #define CHAR_WIDTH 7
@@ -19,9 +20,12 @@ struct sprite_font_t
 };
 
 sprite_font_t *create_sprite_font_from_file(const char *bmp_file_path,
+                                            color_t color,
                                             SDL_Renderer *renderer)
 {
     assert(bmp_file_path);
+
+    (void) color;
 
     lt_t *lt = create_lt();
     if (lt == NULL) {
@@ -47,6 +51,22 @@ sprite_font_t *create_sprite_font_from_file(const char *bmp_file_path,
         throw_error(ERROR_TYPE_SDL2);
         RETURN_LT(lt, NULL);
     }
+
+    const SDL_Color text_color = color_for_sdl(color);
+    const Uint32 actual_text_color =
+        SDL_MapRGB(sprite_font->surface->format,
+                   text_color.r,
+                   text_color.g,
+                   text_color.b);
+    SDL_LockSurface(sprite_font->surface);
+    for (int y = 0; y < sprite_font->surface->h; ++y) {
+        for (int x = 0; x < sprite_font->surface->w; ++x) {
+            if (getpixel(sprite_font->surface, x, y) == SDL_MapRGB(sprite_font->surface->format, 255, 255, 255)) {
+                putpixel(sprite_font->surface, x, y, actual_text_color);
+            }
+        }
+    }
+    SDL_UnlockSurface(sprite_font->surface);
 
     sprite_font->texture = PUSH_LT(
         lt,
