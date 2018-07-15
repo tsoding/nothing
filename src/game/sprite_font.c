@@ -40,6 +40,14 @@ sprite_font_t *create_sprite_font_from_file(const char *bmp_file_path,
         RETURN_LT(lt, NULL);
     }
 
+    if (SDL_SetColorKey(sprite_font->surface,
+                        SDL_TRUE,
+                        SDL_MapRGB(sprite_font->surface->format,
+                                   0, 0, 0)) < 0) {
+        throw_error(ERROR_TYPE_SDL2);
+        RETURN_LT(lt, NULL);
+    }
+
     sprite_font->texture = PUSH_LT(
         lt,
         SDL_CreateTextureFromSurface(renderer, sprite_font->surface),
