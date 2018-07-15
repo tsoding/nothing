@@ -49,4 +49,7 @@ void rigid_rect_apply_force(rigid_rect_t * rigid_rect,
 void rigid_rect_transform_velocity(rigid_rect_t *rigid_rect,
                                    mat3x3 trans_mat);
 
+void rigid_rect_teleport_to(rigid_rect_t *rigid_rect,
+                            vec_t position);
+
 #endif  // RIGID_RECT_H_

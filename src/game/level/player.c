@@ -152,14 +152,7 @@ void player_update(player_t *player,
         dying_rect_update(player->dying_body, delta_time);
 
         if (dying_rect_is_dead(player->dying_body)) {
-            player->alive_body = RESET_LT(
-                player->lt,
-                player->alive_body,
-                create_rigid_rect(
-                    rect_from_vecs(
-                        player->checkpoint,
-                        vec(PLAYER_WIDTH, PLAYER_HEIGHT)),
-                    player->color));
+            rigid_rect_teleport_to(player->alive_body, player->checkpoint);
             player->state = PLAYER_STATE_ALIVE;
         }
     } break;
