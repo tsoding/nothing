@@ -25,6 +25,7 @@ typedef struct game_t {
     char *level_file_path;
     sound_samples_t *sound_samples;
     camera_t *camera;
+    sprite_font_t *font;
 } game_t;
 
 game_t *create_game(const char *level_file_path,
@@ -75,6 +76,17 @@ game_t *create_game(const char *level_file_path,
         RETURN_LT(lt, NULL);
     }
 
+    game->font = PUSH_LT(
+        lt,
+        create_sprite_font_from_file("fonts/charmap-oldschool_white.bmp",
+                                     color(1.0f, 0.0f, 0.0f, 1.0f),
+                                     renderer),
+        destroy_sprite_font);
+    if (game->font == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+
     game->state = GAME_STATE_RUNNING;
     game->lt = lt;
 
@@ -96,6 +108,10 @@ int game_render(const game_t *game)
     }
 
     if (level_render(game->level, game->camera) < 0) {
+        return -1;
+    }
+
+    if (camera_render_text(game->camera, "hello world", vec(-30.0f, 0.0f), game->font) < 0) {
         return -1;
     }
 

@@ -2,6 +2,7 @@
 #define CAMERA_H_
 
 #include "color.h"
+#include "game/sprite_font.h"
 #include "math/point.h"
 #include "math/rect.h"
 #include "math/triangle.h"
@@ -29,6 +30,11 @@ int camera_draw_triangle(camera_t *camera,
 int camera_fill_triangle(camera_t *camera,
                          triangle_t t,
                          color_t color);
+
+int camera_render_text(camera_t *camera,
+                       const char *text,
+                       vec_t position,
+                       sprite_font_t *font);
 
 void camera_center_at(camera_t *camera, point_t position);
 
