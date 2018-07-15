@@ -148,17 +148,6 @@ int main(int argc, char *argv[])
         RETURN_LT(lt, -1);
     }
 
-    sprite_font_t * const sprite_font =
-        PUSH_LT(lt,
-                create_sprite_font_from_file("fonts/charmap-oldschool_white.bmp",
-                                             color(1.0f, 0.0f, 0.0f, 1.0f),
-                                             renderer),
-                destroy_sprite_font);
-    if (sprite_font == NULL) {
-        print_current_error_msg("Loading up sprite font");
-        RETURN_LT(lt, -1);
-    }
-
     const Uint8 *const keyboard_state = SDL_GetKeyboardState(NULL);
 
     SDL_Event e;
@@ -191,15 +180,6 @@ int main(int argc, char *argv[])
 
         if (game_render(game) < 0) {
             print_current_error_msg("Failed rendering the game");
-            RETURN_LT(lt, -1);
-        }
-
-        if (sprite_font_render_text(sprite_font,
-                                    renderer,
-                                    vec(0.0f, 0.0f),
-                                    10,
-                                    "HELLO, WORLD!!!") < 0) {
-            print_current_error_msg("Failed rendering debug info");
             RETURN_LT(lt, -1);
         }
 

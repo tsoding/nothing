@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <assert.h>
 
+#include "color.h"
 #include "game/camera.h"
 #include "game/level.h"
 #include "game/level/background.h"
@@ -153,7 +154,6 @@ int level_render(const level_t *level, camera_t *camera)
     if (goals_render(level->goals, camera) < 0) {
         return -1;
     }
-
 
     return 0;
 }

@@ -292,3 +292,20 @@ static rect_t camera_rect(const camera_t *camera,
             effective_scale(view_port),
             vec(rect.w, rect.h)));
 }
+
+int camera_render_text(camera_t *camera,
+                       const char *text,
+                       vec_t position,
+                       sprite_font_t *font)
+{
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(camera->renderer, &view_port);
+
+    const vec_t screen_position = camera_point(camera, &view_port, position);
+
+    if (sprite_font_render_text(font, camera->renderer, screen_position, 4, text) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
