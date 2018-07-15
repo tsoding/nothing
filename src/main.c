@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
         if (sprite_font_render_text(sprite_font,
                                     renderer,
                                     vec(0.0f, 0.0f),
-                                    1,
+                                    4,
                                     "HELLO, WORLD!!!") < 0) {
             print_current_error_msg("Failed rendering debug info");
             RETURN_LT(lt, -1);
