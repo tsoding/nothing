@@ -1,11 +1,13 @@
 #ifndef SPRITE_FONT_H_
 #define SPRITE_FONT_H_
 
+#include "color.h"
 #include "math/point.h"
 
 typedef struct sprite_font_t sprite_font_t;
 
 sprite_font_t *create_sprite_font_from_file(const char *bmp_file_path,
+                                            color_t color,
                                             SDL_Renderer *renderer);
 void destroy_sprite_font(sprite_font_t *sprite_font);
 
