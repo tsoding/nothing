@@ -68,7 +68,6 @@ player_t *create_player(float x, float y, color_t color)
     player->dying_body = PUSH_LT(
         lt,
         create_dying_rect(
-            rect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT),
             color,
             PLAYER_DEATH_DURATION),
         destroy_dying_rect);
@@ -211,14 +210,11 @@ void player_die(player_t *player)
     assert(player);
 
     if (player->state == PLAYER_STATE_ALIVE) {
+        const rect_t hitbox =
+            rigid_rect_hitbox(player->alive_body);
+
         player->play_die_cue = 1;
-        player->dying_body = RESET_LT(
-            player->lt,
-            player->dying_body,
-            create_dying_rect(
-                rigid_rect_hitbox(player->alive_body),
-                player->color,
-                PLAYER_DEATH_DURATION));
+        dying_rect_start_dying(player->dying_body, vec(hitbox.x, hitbox.y));
         player->state = PLAYER_STATE_DYING;
     }
 }

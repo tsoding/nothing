@@ -22,15 +22,13 @@ struct dying_rect_t
     lt_t *lt;
 
     vec_t position;
-    vec_t size;
     color_t color;
     float duration;
     float time_passed;
     piece_t *pieces;
 };
 
-dying_rect_t *create_dying_rect(rect_t rect,
-                                color_t color,
+dying_rect_t *create_dying_rect(color_t color,
                                 float duration)
 {
     lt_t *lt = create_lt();
@@ -45,26 +43,15 @@ dying_rect_t *create_dying_rect(rect_t rect,
     }
 
     dying_rect->lt = lt;
-    dying_rect->position = vec(rect.x, rect.y);
-    dying_rect->size = vec(rect.w, rect.h);
+    dying_rect->position = vec(0.0f, 0.0f);
     dying_rect->color = color;
     dying_rect->duration = duration;
-    dying_rect->time_passed = 0;
+    dying_rect->time_passed = duration;
 
     dying_rect->pieces = PUSH_LT(lt, malloc(sizeof(piece_t) * DYING_RECT_PIECE_COUNT), free);
     if (dying_rect->pieces == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
-    }
-
-    for (size_t i = 0; i < DYING_RECT_PIECE_COUNT; ++i) {
-        dying_rect->pieces[i].position = dying_rect->position;
-        dying_rect->pieces[i].angle = rand_float(2 * PI);
-        dying_rect->pieces[i].angle_velocity = rand_float(8.0f);
-        dying_rect->pieces[i].body = random_triangle(DYING_RECT_PIECE_SIZE);
-        dying_rect->pieces[i].direction = vec_from_polar(
-            rand_float_range(-PI, 0.0f),
-            rand_float_range(100.0f, 300.0f));
     }
 
     return dying_rect;
@@ -132,4 +119,21 @@ int dying_rect_is_dead(const dying_rect_t *dying_rect)
 {
     assert(dying_rect);
     return dying_rect->time_passed >= dying_rect->duration;
+}
+
+void dying_rect_start_dying(dying_rect_t *dying_rect,
+                            vec_t position)
+{
+    dying_rect->position = position;
+    dying_rect->time_passed = 0;
+
+    for (size_t i = 0; i < DYING_RECT_PIECE_COUNT; ++i) {
+        dying_rect->pieces[i].position = dying_rect->position;
+        dying_rect->pieces[i].angle = rand_float(2 * PI);
+        dying_rect->pieces[i].angle_velocity = rand_float(8.0f);
+        dying_rect->pieces[i].body = random_triangle(DYING_RECT_PIECE_SIZE);
+        dying_rect->pieces[i].direction = vec_from_polar(
+            rand_float_range(-PI, 0.0f),
+            rand_float_range(100.0f, 300.0f));
+    }
 }
