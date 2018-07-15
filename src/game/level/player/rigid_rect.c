@@ -251,3 +251,9 @@ void rigid_rect_transform_velocity(rigid_rect_t *rigid_rect,
     rigid_rect->velocity = point_mat3x3_product(rigid_rect->velocity,
                                                 trans_mat);
 }
+
+void rigid_rect_teleport_to(rigid_rect_t *rigid_rect,
+                            vec_t position)
+{
+    rigid_rect->position = position;
+}

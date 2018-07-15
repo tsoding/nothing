@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
             render_timer = (int64_t) roundf(1000.0f / (float) fps);
         }
 
-        SDL_Delay((unsigned int) max_int64(0, delta_time - (end_frame_time - begin_frame_time)));
+        SDL_Delay((unsigned int) max_int64(10, delta_time - (end_frame_time - begin_frame_time)));
     }
 
     RETURN_LT(lt, 0);
