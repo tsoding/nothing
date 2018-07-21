@@ -63,8 +63,7 @@ game_t *create_game(const char *level_file_path,
 
     game->font = PUSH_LT(
         lt,
-        create_sprite_font_from_file("fonts/charmap-oldschool_white.bmp",
-                                     renderer),
+        create_sprite_font_from_file("fonts/charmap-oldschool.bmp", renderer),
         destroy_sprite_font);
     if (game->font == NULL) {
         RETURN_LT(lt, NULL);
