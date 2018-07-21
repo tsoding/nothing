@@ -298,6 +298,7 @@ static rect_t camera_rect(const camera_t *camera,
 
 int camera_render_text(camera_t *camera,
                        const char *text,
+                       int size,
                        vec_t position)
 {
     SDL_Rect view_port;
@@ -305,7 +306,7 @@ int camera_render_text(camera_t *camera,
 
     const vec_t screen_position = camera_point(camera, &view_port, position);
 
-    if (sprite_font_render_text(camera->font, camera->renderer, screen_position, 4, text) < 0) {
+    if (sprite_font_render_text(camera->font, camera->renderer, screen_position, size, text) < 0) {
         return -1;
     }
 
