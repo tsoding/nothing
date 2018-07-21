@@ -64,7 +64,6 @@ game_t *create_game(const char *level_file_path,
     game->font = PUSH_LT(
         lt,
         create_sprite_font_from_file("fonts/charmap-oldschool_white.bmp",
-                                     color(1.0f, 0.0f, 0.0f, 1.0f),
                                      renderer),
         destroy_sprite_font);
     if (game->font == NULL) {
@@ -110,7 +109,7 @@ int game_render(const game_t *game)
         return -1;
     }
 
-    if (camera_render_text(game->camera, "hello world", 4, vec(-30.0f, 0.0f)) < 0) {
+    if (camera_render_text(game->camera, "hello world", 4, color(1.0f, 0.0f, 0.0f, 1.0f), vec(-30.0f, 0.0f)) < 0) {
         return -1;
     }
 

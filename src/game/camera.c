@@ -172,6 +172,30 @@ int camera_fill_triangle(camera_t *camera,
     return 0;
 }
 
+int camera_render_text(camera_t *camera,
+                       const char *text,
+                       int size,
+                       color_t color,
+                       vec_t position)
+{
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(camera->renderer, &view_port);
+
+    const vec_t screen_position = camera_point(camera, &view_port, position);
+
+    if (sprite_font_render_text(
+            camera->font,
+            camera->renderer,
+            screen_position,
+            size,
+            camera->blackwhite_mode ? color_desaturate(color) : color,
+            text) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
 int camera_clear_background(camera_t *camera,
                             color_t color)
 {
@@ -294,21 +318,4 @@ static rect_t camera_rect(const camera_t *camera,
         vec_entry_mult(
             effective_scale(view_port),
             vec(rect.w, rect.h)));
-}
-
-int camera_render_text(camera_t *camera,
-                       const char *text,
-                       int size,
-                       vec_t position)
-{
-    SDL_Rect view_port;
-    SDL_RenderGetViewport(camera->renderer, &view_port);
-
-    const vec_t screen_position = camera_point(camera, &view_port, position);
-
-    if (sprite_font_render_text(camera->font, camera->renderer, screen_position, size, text) < 0) {
-        return -1;
-    }
-
-    return 0;
 }

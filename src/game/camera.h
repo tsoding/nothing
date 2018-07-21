@@ -35,6 +35,7 @@ int camera_fill_triangle(camera_t *camera,
 int camera_render_text(camera_t *camera,
                        const char *text,
                        int size,
+                       color_t color,
                        vec_t position);
 
 void camera_center_at(camera_t *camera, point_t position);
