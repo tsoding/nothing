@@ -132,25 +132,3 @@ int sprite_font_render_text(const sprite_font_t *sprite_font,
     }
     return 0;
 }
-
-int sprite_font_debug_render_whole_texture(const sprite_font_t *sprite_font,
-                                           SDL_Renderer *renderer,
-                                           vec_t position)
-{
-    int texW = 0;
-    int texH = 0;
-
-    if (SDL_QueryTexture(sprite_font->texture, NULL, NULL, &texW, &texH) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
-        return -1;
-    }
-
-    const SDL_Rect dstrect = { (int) position.x, (int) position.y, texW, texH };
-
-    if (SDL_RenderCopy(renderer, sprite_font->texture, NULL, &dstrect) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
-        return -1;
-    }
-
-    return 0;
-}

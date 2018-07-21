@@ -16,8 +16,5 @@ int sprite_font_render_text(const sprite_font_t *sprite_font,
                             vec_t position,
                             int size,
                             const char *text);
-int sprite_font_debug_render_whole_texture(const sprite_font_t *sprite_font,
-                                           SDL_Renderer *renderer,
-                                           vec_t position);
 
 #endif  // SPRITE_FONT_H_
