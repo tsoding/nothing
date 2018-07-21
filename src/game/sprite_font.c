@@ -20,7 +20,6 @@ struct sprite_font_t
 };
 
 sprite_font_t *create_sprite_font_from_file(const char *bmp_file_path,
-                                            color_t color,
                                             SDL_Renderer *renderer)
 {
     assert(bmp_file_path);
@@ -51,22 +50,6 @@ sprite_font_t *create_sprite_font_from_file(const char *bmp_file_path,
         throw_error(ERROR_TYPE_SDL2);
         RETURN_LT(lt, NULL);
     }
-
-    const SDL_Color text_color = color_for_sdl(color);
-    const Uint32 actual_text_color =
-        SDL_MapRGB(sprite_font->surface->format,
-                   text_color.r,
-                   text_color.g,
-                   text_color.b);
-    SDL_LockSurface(sprite_font->surface);
-    for (int y = 0; y < sprite_font->surface->h; ++y) {
-        for (int x = 0; x < sprite_font->surface->w; ++x) {
-            if (getpixel(sprite_font->surface, x, y) == SDL_MapRGB(sprite_font->surface->format, 255, 255, 255)) {
-                putpixel(sprite_font->surface, x, y, actual_text_color);
-            }
-        }
-    }
-    SDL_UnlockSurface(sprite_font->surface);
 
     sprite_font->texture = PUSH_LT(
         lt,
@@ -109,11 +92,19 @@ int sprite_font_render_text(const sprite_font_t *sprite_font,
                             SDL_Renderer *renderer,
                             vec_t position,
                             int size,
+                            color_t color,
                             const char *text)
 {
     assert(sprite_font);
     assert(renderer);
     assert(text);
+
+    const SDL_Color sdl_color = color_for_sdl(color);
+
+    if (SDL_SetTextureColorMod(sprite_font->texture, sdl_color.r, sdl_color.g, sdl_color.b) < 0) {
+        throw_error(ERROR_TYPE_SDL2);
+        return -1;
+    }
 
     const size_t text_size = strlen(text);
     const int px = (int) roundf(position.x);
@@ -130,27 +121,5 @@ int sprite_font_render_text(const sprite_font_t *sprite_font,
             return -1;
         }
     }
-    return 0;
-}
-
-int sprite_font_debug_render_whole_texture(const sprite_font_t *sprite_font,
-                                           SDL_Renderer *renderer,
-                                           vec_t position)
-{
-    int texW = 0;
-    int texH = 0;
-
-    if (SDL_QueryTexture(sprite_font->texture, NULL, NULL, &texW, &texH) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
-        return -1;
-    }
-
-    const SDL_Rect dstrect = { (int) position.x, (int) position.y, texW, texH };
-
-    if (SDL_RenderCopy(renderer, sprite_font->texture, NULL, &dstrect) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
-        return -1;
-    }
-
     return 0;
 }

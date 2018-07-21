@@ -61,7 +61,16 @@ game_t *create_game(const char *level_file_path,
     }
     strcpy(game->level_file_path, level_file_path);
 
-    game->camera = PUSH_LT(lt, create_camera_from_renderer(renderer), destroy_camera);
+    game->font = PUSH_LT(
+        lt,
+        create_sprite_font_from_file("fonts/charmap-oldschool_white.bmp",
+                                     renderer),
+        destroy_sprite_font);
+    if (game->font == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    game->camera = PUSH_LT(lt, create_camera(renderer, game->font), destroy_camera);
     if (game->camera == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -75,17 +84,6 @@ game_t *create_game(const char *level_file_path,
     if (game->sound_samples == NULL) {
         RETURN_LT(lt, NULL);
     }
-
-    game->font = PUSH_LT(
-        lt,
-        create_sprite_font_from_file("fonts/charmap-oldschool_white.bmp",
-                                     color(1.0f, 0.0f, 0.0f, 1.0f),
-                                     renderer),
-        destroy_sprite_font);
-    if (game->font == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
 
     game->state = GAME_STATE_RUNNING;
     game->lt = lt;
@@ -111,7 +109,7 @@ int game_render(const game_t *game)
         return -1;
     }
 
-    if (camera_render_text(game->camera, "hello world", vec(-30.0f, 0.0f), game->font) < 0) {
+    if (camera_render_text(game->camera, "hello world", 4, color(1.0f, 0.0f, 0.0f, 1.0f), vec(-30.0f, 0.0f)) < 0) {
         return -1;
     }
 
