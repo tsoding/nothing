@@ -28,7 +28,7 @@ static triangle_t camera_triangle(const camera_t *camera,
                                   const SDL_Rect *view_port,
                                   const triangle_t t);
 
-camera_t *create_camera_from_renderer(SDL_Renderer *renderer)
+camera_t *create_camera(SDL_Renderer *renderer)
 {
     camera_t *camera = malloc(sizeof(camera_t));
 

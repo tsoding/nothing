@@ -61,7 +61,7 @@ game_t *create_game(const char *level_file_path,
     }
     strcpy(game->level_file_path, level_file_path);
 
-    game->camera = PUSH_LT(lt, create_camera_from_renderer(renderer), destroy_camera);
+    game->camera = PUSH_LT(lt, create_camera(renderer), destroy_camera);
     if (game->camera == NULL) {
         RETURN_LT(lt, NULL);
     }
