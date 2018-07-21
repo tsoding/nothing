@@ -22,15 +22,14 @@ sprite_font_t *create_sprite_font_from_file(const char *bmp_file_path,
                                             SDL_Renderer *renderer)
 {
     assert(bmp_file_path);
+    assert(renderer);
 
-    (void) color;
-
-    lt_t *lt = create_lt();
+    lt_t * const lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
 
-    sprite_font_t *sprite_font = PUSH_LT(lt, malloc(sizeof(sprite_font_t)), free);
+    sprite_font_t * const sprite_font = PUSH_LT(lt, malloc(sizeof(sprite_font_t)), free);
     if (sprite_font == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
