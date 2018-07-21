@@ -9,7 +9,8 @@
 
 typedef struct camera_t camera_t;
 
-camera_t *create_camera(SDL_Renderer *renderer);
+camera_t *create_camera(SDL_Renderer *renderer,
+                        sprite_font_t *font);
 void destroy_camera(camera_t *camera);
 
 int camera_clear_background(camera_t *camera,
@@ -33,8 +34,7 @@ int camera_fill_triangle(camera_t *camera,
 
 int camera_render_text(camera_t *camera,
                        const char *text,
-                       vec_t position,
-                       sprite_font_t *font);
+                       vec_t position);
 
 void camera_center_at(camera_t *camera, point_t position);
 
