@@ -15,7 +15,6 @@
 struct sprite_font_t
 {
     lt_t *lt;
-    SDL_Surface *surface;
     SDL_Texture *texture;
 };
 
@@ -37,15 +36,15 @@ sprite_font_t *create_sprite_font_from_file(const char *bmp_file_path,
         RETURN_LT(lt, NULL);
     }
 
-    sprite_font->surface = PUSH_LT(lt, SDL_LoadBMP(bmp_file_path), SDL_FreeSurface);
-    if (sprite_font->surface == NULL) {
+    SDL_Surface * const surface = PUSH_LT(lt, SDL_LoadBMP(bmp_file_path), SDL_FreeSurface);
+    if (surface == NULL) {
         throw_error(ERROR_TYPE_SDL2);
         RETURN_LT(lt, NULL);
     }
 
-    if (SDL_SetColorKey(sprite_font->surface,
+    if (SDL_SetColorKey(surface,
                         SDL_TRUE,
-                        SDL_MapRGB(sprite_font->surface->format,
+                        SDL_MapRGB(surface->format,
                                    0, 0, 0)) < 0) {
         throw_error(ERROR_TYPE_SDL2);
         RETURN_LT(lt, NULL);
@@ -53,12 +52,14 @@ sprite_font_t *create_sprite_font_from_file(const char *bmp_file_path,
 
     sprite_font->texture = PUSH_LT(
         lt,
-        SDL_CreateTextureFromSurface(renderer, sprite_font->surface),
+        SDL_CreateTextureFromSurface(renderer, surface),
         SDL_DestroyTexture);
     if (sprite_font->texture == NULL) {
         throw_error(ERROR_TYPE_SDL2);
         RETURN_LT(lt, NULL);
     }
+
+    SDL_FreeSurface(RELEASE_LT(lt, surface));
 
     sprite_font->lt = lt;
 
