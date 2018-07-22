@@ -108,7 +108,7 @@ int game_render(const game_t *game)
         return -1;
     }
 
-    if (camera_render_text(game->camera, "hello world", 4, color(1.0f, 0.0f, 0.0f, 1.0f), vec(-30.0f, 0.0f)) < 0) {
+    if (camera_render_text(game->camera, "hello world", vec(8.0f, 4.0f), color(1.0f, 0.0f, 0.0f, 1.0f), vec(-30.0f, 0.0f)) < 0) {
         return -1;
     }
 

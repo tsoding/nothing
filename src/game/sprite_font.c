@@ -92,7 +92,7 @@ static SDL_Rect sprite_font_char_rect(const sprite_font_t *sprite_font, char x)
 int sprite_font_render_text(const sprite_font_t *sprite_font,
                             SDL_Renderer *renderer,
                             vec_t position,
-                            float size,
+                            vec_t size,
                             color_t color,
                             const char *text)
 {
@@ -112,10 +112,10 @@ int sprite_font_render_text(const sprite_font_t *sprite_font,
         const SDL_Rect char_rect = sprite_font_char_rect(sprite_font, text[i]);
         const SDL_Rect dest_rect = rect_for_sdl(
             rect(
-                position.x + (float) CHAR_WIDTH * (float) i * size,
+                position.x + (float) CHAR_WIDTH * (float) i * size.x,
                 position.y,
-                (float) char_rect.w * size,
-                (float) char_rect.h * size));
+                (float) char_rect.w * size.x,
+                (float) char_rect.h * size.y));
         if (SDL_RenderCopy(renderer, sprite_font->texture, &char_rect, &dest_rect) < 0) {
             return -1;
         }
