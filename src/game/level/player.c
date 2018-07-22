@@ -151,6 +151,11 @@ void player_update(player_t *player,
         dying_rect_update(player->dying_body, delta_time);
 
         if (dying_rect_is_dead(player->dying_body)) {
+            rigid_rect_transform_velocity(
+                player->alive_body,
+                make_mat3x3(0.0f, 0.0f, 0.0f,
+                            0.0f, 0.0f, 0.0f,
+                            0.0f, 0.0f, 1.0f));
             rigid_rect_teleport_to(player->alive_body, player->checkpoint);
             player->state = PLAYER_STATE_ALIVE;
         }
