@@ -24,6 +24,7 @@ set(SOURCE_FILES
   src/game/level/background.c
   src/game/level/boxes.c
   src/game/level/goals.c
+  src/game/level/label.c
   src/game/level/lava.c
   src/game/level/lava/wavy_rect.c
   src/game/level/physical_world.c
@@ -55,6 +56,7 @@ set(HEADER_FILES
   src/game/level/background.h
   src/game/level/boxes.h
   src/game/level/goals.h
+  src/game/level/label.h
   src/game/level/lava.h
   src/game/level/lava/wavy_rect.h
   src/game/level/physical_world.c
