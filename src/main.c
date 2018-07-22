@@ -178,18 +178,17 @@ int main(int argc, char *argv[])
             RETURN_LT(lt, -1);
         }
 
-        if (game_render(game) < 0) {
-            print_current_error_msg("Failed rendering the game");
-            RETURN_LT(lt, -1);
-        }
-
-        const int64_t end_frame_time = (int64_t) SDL_GetTicks();
-
         render_timer -= delta_time;
         if (render_timer <= 0) {
+            if (game_render(game) < 0) {
+                print_current_error_msg("Failed rendering the game");
+                RETURN_LT(lt, -1);
+            }
             SDL_RenderPresent(renderer);
             render_timer = (int64_t) roundf(1000.0f / (float) fps);
         }
+
+        const int64_t end_frame_time = (int64_t) SDL_GetTicks();
 
         SDL_Delay((unsigned int) max_int64(10, delta_time - (end_frame_time - begin_frame_time)));
     }
