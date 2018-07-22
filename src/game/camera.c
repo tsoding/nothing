@@ -152,7 +152,6 @@ int camera_fill_triangle(camera_t *camera,
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
 
-
     if (camera->debug_mode) {
         if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a / 2) < 0) {
             throw_error(ERROR_TYPE_SDL2);
@@ -174,20 +173,21 @@ int camera_fill_triangle(camera_t *camera,
 
 int camera_render_text(camera_t *camera,
                        const char *text,
-                       int size,
+                       vec_t size,
                        color_t color,
                        vec_t position)
 {
     SDL_Rect view_port;
     SDL_RenderGetViewport(camera->renderer, &view_port);
 
+    const vec_t scale = effective_scale(&view_port);
     const vec_t screen_position = camera_point(camera, &view_port, position);
 
     if (sprite_font_render_text(
             camera->font,
             camera->renderer,
             screen_position,
-            size,
+            vec(size.x * scale.x, size.y * scale.y),
             camera->blackwhite_mode ? color_desaturate(color) : color,
             text) < 0) {
         return -1;
@@ -263,7 +263,6 @@ rect_t camera_view_port(const camera_t *camera)
                 camera->position.y - h * 0.5f,
                 w, h);
 }
-
 
 /* ---------- Private Function ---------- */
 

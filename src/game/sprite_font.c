@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "math/rect.h"
 #include "sdl/renderer.h"
 #include "sprite_font.h"
 #include "system/error.h"
@@ -91,7 +92,7 @@ static SDL_Rect sprite_font_char_rect(const sprite_font_t *sprite_font, char x)
 int sprite_font_render_text(const sprite_font_t *sprite_font,
                             SDL_Renderer *renderer,
                             vec_t position,
-                            int size,
+                            vec_t size,
                             color_t color,
                             const char *text)
 {
@@ -106,17 +107,20 @@ int sprite_font_render_text(const sprite_font_t *sprite_font,
         return -1;
     }
 
+    if (SDL_SetTextureAlphaMod(sprite_font->texture, sdl_color.a) < 0) {
+        throw_error(ERROR_TYPE_SDL2);
+        return -1;
+    }
+
     const size_t text_size = strlen(text);
-    const int px = (int) roundf(position.x);
-    const int py = (int) roundf(position.y);
     for (size_t i = 0; i < text_size; ++i) {
         const SDL_Rect char_rect = sprite_font_char_rect(sprite_font, text[i]);
-        const SDL_Rect dest_rect = {
-            .x = px + CHAR_WIDTH * (int) i * size,
-            .y = py,
-            .w = char_rect.w * size,
-            .h = char_rect.h * size
-        };
+        const SDL_Rect dest_rect = rect_for_sdl(
+            rect(
+                position.x + (float) CHAR_WIDTH * (float) i * size.x,
+                position.y,
+                (float) char_rect.w * size.x,
+                (float) char_rect.h * size.y));
         if (SDL_RenderCopy(renderer, sprite_font->texture, &char_rect, &dest_rect) < 0) {
             return -1;
         }
