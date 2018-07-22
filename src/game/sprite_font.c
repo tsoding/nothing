@@ -107,6 +107,11 @@ int sprite_font_render_text(const sprite_font_t *sprite_font,
         return -1;
     }
 
+    if (SDL_SetTextureAlphaMod(sprite_font->texture, sdl_color.a) < 0) {
+        throw_error(ERROR_TYPE_SDL2);
+        return -1;
+    }
+
     const size_t text_size = strlen(text);
     for (size_t i = 0; i < text_size; ++i) {
         const SDL_Rect char_rect = sprite_font_char_rect(sprite_font, text[i]);
