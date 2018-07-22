@@ -7,6 +7,7 @@
 #include "game/level/background.h"
 #include "game/level/boxes.h"
 #include "game/level/goals.h"
+#include "game/level/labels.h"
 #include "game/level/lava.h"
 #include "game/level/physical_world.h"
 #include "game/level/platforms.h"
@@ -28,6 +29,7 @@ struct level_t
     platforms_t *back_platforms;
     background_t *background;
     boxes_t *boxes;
+    labels_t *labels;
 };
 
 level_t *create_level_from_file(const char *file_name)
@@ -85,6 +87,11 @@ level_t *create_level_from_file(const char *file_name)
 
     level->boxes = PUSH_LT(lt, create_boxes_from_stream(level_file), destroy_boxes);
     if (level->boxes == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level->labels = PUSH_LT(lt, create_labels_from_stream(level_file), destroy_labels);
+    if (level->labels == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -152,6 +159,10 @@ int level_render(const level_t *level, camera_t *camera)
     }
 
     if (goals_render(level->goals, camera) < 0) {
+        return -1;
+    }
+
+    if (labels_render(level->labels, camera) < 0) {
         return -1;
     }
 
@@ -281,10 +292,16 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
     level->back_platforms = RESET_LT(level->lt, level->back_platforms, back_platforms);
 
     boxes_t * const boxes = create_boxes_from_stream(level_file);
-    if (level->boxes == NULL) {
+    if (boxes == NULL) {
         RETURN_LT(lt, -1);
     }
     level->boxes = RESET_LT(level->lt, level->boxes, boxes);
+
+    labels_t * const labels = create_labels_from_stream(level_file);
+    if (labels == NULL) {
+        RETURN_LT(lt, -1);
+    }
+    level->labels = RESET_LT(level->lt, level->labels, labels);
 
     physical_world_clean(level->physical_world);
     if (physical_world_add_solid(
