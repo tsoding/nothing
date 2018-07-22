@@ -13,7 +13,7 @@ void destroy_sprite_font(sprite_font_t *sprite_font);
 int sprite_font_render_text(const sprite_font_t *sprite_font,
                             SDL_Renderer *renderer,
                             vec_t position,
-                            int size,
+                            float size,
                             color_t color,
                             const char *text);
 
