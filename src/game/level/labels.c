@@ -31,6 +31,8 @@ static char *trim_endline(char *s)
     return s;
 }
 
+/* TODO: labels don't play appear animation when they get into the camera view */
+
 labels_t *create_labels_from_stream(FILE *stream)
 {
     assert(stream);
