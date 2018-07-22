@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     lt_t *const lt = create_lt();
 
     char *level_filename = NULL;
-    int fps = 60;
+    int fps = 30;
 
     for (int i = 1; i < argc;) {
         if (strcmp(argv[i], "--fps") == 0) {
