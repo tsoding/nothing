@@ -1,5 +1,7 @@
 declare namespace svg ="http://www.w3.org/2000/svg";
 
+(: TODO: svg2rects.xqe doesn't support labels :)
+
 let $rects := //svg:svg/svg:rect
 let $player := for $rect in $rects where $rect/@id = "player"
   return concat (
