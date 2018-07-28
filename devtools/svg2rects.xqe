@@ -3,6 +3,14 @@ declare namespace svg ="http://www.w3.org/2000/svg";
 (: TODO(#255): svg2rects.xqe doesn't support labels :)
 
 let $rects := //svg:svg/svg:rect
+let $texts := //svg:svg/svg:text
+let $labels := for $text in $texts where matches($text/@id , "^label.*")
+  return concat (
+    $text/@x, " ",
+    $text/@y, " ",
+    replace($text/@style, ".*fill:#([0-9a-z]{6}).*", "$1"), "&#10;",
+    $text/svg:tspan/text()
+  )
 let $player := for $rect in $rects where $rect/@id = "player"
   return concat (
     $rect/@x, " ",
@@ -69,5 +77,7 @@ return (
   count($backplatforms),
   $backplatforms,
   count($boxes),
-  $boxes
+  $boxes,
+  count($labels),
+  $labels
 )
