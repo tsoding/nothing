@@ -14,6 +14,7 @@ struct labels_t
     vec_t *positions;
     color_t *colors;
     char **texts;
+    float *states;
 };
 
 static char *trim_endline(char *s)
@@ -30,8 +31,6 @@ static char *trim_endline(char *s)
 
     return s;
 }
-
-/* TODO(#256): labels don't play appear animation when they get into the camera view */
 
 labels_t *create_labels_from_stream(FILE *stream)
 {
@@ -72,16 +71,22 @@ labels_t *create_labels_from_stream(FILE *stream)
         RETURN_LT(lt, NULL);
     }
 
+    labels->states = PUSH_LT(lt, malloc(sizeof(float) * labels->count), free);
+    if (labels->states == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
+    char color[7];
     for (size_t i = 0; i < labels->count; ++i) {
+        labels->states[i] = 1.0f;
+
         labels->texts[i] = PUSH_LT(lt, malloc(sizeof(char) * (LABEL_TEXT_MAX_LENGTH + 1)), free);
         if (labels->texts[i] == NULL) {
             throw_error(ERROR_TYPE_LIBC);
             RETURN_LT(lt, NULL);
         }
-    }
 
-    char color[7];
-    for (size_t i = 0; i < labels->count; ++i) {
         if (fscanf(stream, "%f%f%6s\n",
                    &labels->positions[i].x,
                    &labels->positions[i].y,
@@ -115,12 +120,17 @@ int labels_render(const labels_t *label,
     assert(label);
     assert(camera);
 
+    /* TODO: position and transparency of label is not dependent on its state */
     for (size_t i = 0; i < label->count; ++i) {
         if (camera_render_text(camera,
                                label->texts[i],
                                vec(2.0f, 2.0f),
-                               label->colors[i],
-                               label->positions[i]) < 0) {
+                               color(label->colors[i].r,
+                                     label->colors[i].g,
+                                     label->colors[i].b,
+                                     label->states[i]),
+                               vec_sum(label->positions[i],
+                                       vec(0.0f, -8.0f * label->states[i]))) < 0) {
             return -1;
         }
     }
@@ -129,8 +139,21 @@ int labels_render(const labels_t *label,
 }
 
 void labels_update(labels_t *label,
-                  float delta_time)
+                   float delta_time)
 {
     assert(label);
     (void) delta_time;
+
+    for (size_t i = 0; i < label->count; ++i) {
+        label->states[i] = fmodf(label->states[i] + delta_time, 1.0f);
+    }
+}
+
+void labels_enter_camera_event(labels_t *labels,
+                               const camera_t *camera)
+{
+    assert(labels);
+    assert(camera);
+
+    /* TODO: labels_enter_camera_event is not implemented */
 }
