@@ -120,7 +120,6 @@ int labels_render(const labels_t *label,
     assert(label);
     assert(camera);
 
-    /* TODO: position and transparency of label is not dependent on its state */
     for (size_t i = 0; i < label->count; ++i) {
         if (camera_render_text(camera,
                                label->texts[i],
@@ -145,7 +144,7 @@ void labels_update(labels_t *label,
     (void) delta_time;
 
     for (size_t i = 0; i < label->count; ++i) {
-        label->states[i] = fmodf(label->states[i] + delta_time, 1.0f);
+        label->states[i] = fminf(label->states[i] + delta_time, 1.0f);
     }
 }
 

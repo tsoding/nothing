@@ -46,10 +46,6 @@ void camera_disable_debug_mode(camera_t *camera);
 void camera_toggle_blackwhite_mode(camera_t *camera);
 
 int camera_is_point_visible(const camera_t *camera, point_t p);
-int camera_is_text_visible(const camera_t *camera,
-                           vec_t size,
-                           vec_t position,
-                           const char *text);
 
 rect_t camera_view_port(const camera_t *camera);
 
