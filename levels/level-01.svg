@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.24748737"
-     inkscape:cx="154.65373"
-     inkscape:cy="1622.0463"
+     inkscape:cx="3917.2259"
+     inkscape:cy="1753.7455"
      inkscape:document-units="mm"
      inkscape:current-layer="svg4541"
      showgrid="false"
@@ -41,7 +41,7 @@
      inkscape:bbox-nodes="true"
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:snap-bbox-midpoints="true"
-     inkscape:snap-global="true" />
+     inkscape:snap-global="false" />
   <metadata
      id="metadata4538">
     <rdf:RDF>
@@ -269,14 +269,38 @@
      y="-338.51266" />
   <text
      xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:25.17981339px;line-height:15.73738289px;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.62949532px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="9.1370544"
-     y="45.90918"
+     style="font-style:normal;font-weight:normal;font-size:25.17981339px;line-height:15.73738289px;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#fffda5;fill-opacity:1;stroke:none;stroke-width:0.62949532px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="14.48245"
+     y="200.42642"
      id="label-01"
      inkscape:label="#text38"><tspan
        sodipodi:role="line"
        id="tspan36"
-       x="9.1370544"
-       y="45.90918"
-       style="stroke-width:0.62949532px">WASD</tspan></text>
+       x="14.48245"
+       y="200.42642"
+       style="fill:#fffda5;fill-opacity:1;stroke-width:0.62949532px">WASD</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:25.17981339px;line-height:15.73738289px;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#fffda5;fill-opacity:1;stroke:none;stroke-width:0.62949532px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="1746.5709"
+     y="128.66734"
+     id="label-01-3"
+     inkscape:label="#text38"><tspan
+       sodipodi:role="line"
+       id="tspan36-6"
+       x="1746.5709"
+       y="128.66734"
+       style="fill:#fffda5;fill-opacity:1;stroke-width:0.62949532px">SPACE to Jump</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:25.17981339px;line-height:15.73738289px;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#fffda5;fill-opacity:1;stroke:none;stroke-width:0.62949532px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="769.29132"
+     y="-130.32047"
+     id="label-01-3-7"
+     inkscape:label="#text38"><tspan
+       sodipodi:role="line"
+       id="tspan36-6-5"
+       x="769.29132"
+       y="-130.32047"
+       style="fill:#fffda5;fill-opacity:1;stroke-width:0.62949532px">Double Jump</tspan></text>
 </svg>
