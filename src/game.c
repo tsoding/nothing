@@ -28,6 +28,7 @@ typedef struct game_t {
     camera_t *camera;
     sprite_font_t *font;
     debug_tree_t *debug_tree;
+    SDL_Renderer *renderer;
 } game_t;
 
 game_t *create_game(const char *level_file_path,
@@ -47,6 +48,9 @@ game_t *create_game(const char *level_file_path,
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
+    game->lt = lt;
+
+    game->renderer = renderer;
 
     game->level = PUSH_LT(
         lt,
@@ -95,7 +99,6 @@ game_t *create_game(const char *level_file_path,
     }
 
     game->state = GAME_STATE_RUNNING;
-    game->lt = lt;
 
     return game;
 }
@@ -115,6 +118,10 @@ int game_render(const game_t *game)
     }
 
     if (level_render(game->level, game->camera) < 0) {
+        return -1;
+    }
+
+    if (debug_tree_render(game->debug_tree, game->renderer) < 0) {
         return -1;
     }
 
@@ -169,6 +176,7 @@ static int game_event_pause(game_t *game, const SDL_Event *event)
         case SDLK_l:
             camera_toggle_debug_mode(game->camera);
             level_toggle_debug_mode(game->level);
+            debug_tree_toggle_enabled(game->debug_tree);
             break;
         }
         break;
@@ -226,6 +234,7 @@ static int game_event_running(game_t *game, const SDL_Event *event)
         case SDLK_l:
             camera_toggle_debug_mode(game->camera);
             level_toggle_debug_mode(game->level);
+            debug_tree_toggle_enabled(game->debug_tree);
             break;
         }
         break;
