@@ -8,9 +8,10 @@
 struct debug_tree_t
 {
     lt_t *lt;
+    const sprite_font_t *font;
 };
 
-debug_tree_t * create_debug_tree()
+debug_tree_t * create_debug_tree(const sprite_font_t *font)
 {
     lt_t * const lt = create_lt();
 
@@ -24,6 +25,8 @@ debug_tree_t * create_debug_tree()
         RETURN_LT(lt, NULL);
     }
     debug_tree->lt = lt;
+
+    debug_tree->font = font;
 
     return debug_tree;
 }

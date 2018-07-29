@@ -2,8 +2,9 @@
 #define DEBUG_TREE_H_
 
 typedef struct debug_tree_t debug_tree_t;
+typedef struct sprite_font_t sprite_font_t;
 
-debug_tree_t *create_debug_tree(void);
+debug_tree_t *create_debug_tree(const sprite_font_t *font);
 void destroy_debug_tree(debug_tree_t *debug_tree);
 
 #endif  // DEBUG_TREE_H_

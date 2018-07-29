@@ -73,7 +73,7 @@ game_t *create_game(const char *level_file_path,
 
     game->debug_tree = PUSH_LT(
         lt,
-        create_debug_tree(),
+        create_debug_tree(game->font),
         destroy_debug_tree);
     if (game->debug_tree == NULL) {
         RETURN_LT(lt, NULL);
