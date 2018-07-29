@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "game.h"
+#include "game/debug_tree.h"
 #include "game/level.h"
 #include "game/sound_samples.h"
 #include "system/error.h"
@@ -26,6 +27,7 @@ typedef struct game_t {
     sound_samples_t *sound_samples;
     camera_t *camera;
     sprite_font_t *font;
+    debug_tree_t *debug_tree;
 } game_t;
 
 game_t *create_game(const char *level_file_path,
@@ -66,6 +68,14 @@ game_t *create_game(const char *level_file_path,
         create_sprite_font_from_file("fonts/charmap-oldschool.bmp", renderer),
         destroy_sprite_font);
     if (game->font == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    game->debug_tree = PUSH_LT(
+        lt,
+        create_debug_tree(),
+        destroy_debug_tree);
+    if (game->debug_tree == NULL) {
         RETURN_LT(lt, NULL);
     }
 
