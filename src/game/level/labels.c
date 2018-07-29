@@ -129,16 +129,18 @@ int labels_render(const labels_t *label,
     assert(camera);
 
     for (size_t i = 0; i < label->count; ++i) {
-        if (camera_render_text(camera,
-                               label->texts[i],
-                               vec(2.0f, 2.0f),
-                               color(label->colors[i].r,
-                                     label->colors[i].g,
-                                     label->colors[i].b,
-                                     label->states[i]),
-                               vec_sum(label->positions[i],
-                                       vec(0.0f, -8.0f * label->states[i]))) < 0) {
-            return -1;
+        if (label->visible[i]) {
+            if (camera_render_text(camera,
+                                   label->texts[i],
+                                   vec(2.0f, 2.0f),
+                                   color(label->colors[i].r,
+                                         label->colors[i].g,
+                                         label->colors[i].b,
+                                         label->states[i]),
+                                   vec_sum(label->positions[i],
+                                           vec(0.0f, -8.0f * label->states[i]))) < 0) {
+                return -1;
+            }
         }
     }
 
