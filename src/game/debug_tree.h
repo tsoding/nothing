@@ -3,6 +3,8 @@
 
 #include <SDL2/SDL.h>
 
+#include "debug_node.h"
+
 typedef struct debug_tree_t debug_tree_t;
 typedef struct sprite_font_t sprite_font_t;
 
