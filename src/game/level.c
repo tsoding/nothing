@@ -186,6 +186,7 @@ int level_update(level_t *level, float delta_time)
 
     goals_update(level->goals, delta_time);
     lava_update(level->lava, delta_time);
+    labels_update(level->labels, delta_time);
 
     return 0;
 }
@@ -337,5 +338,6 @@ int level_enter_camera_event(level_t *level,
 {
     goals_cue(level->goals, camera);
     goals_checkpoint(level->goals, level->player);
+    labels_enter_camera_event(level->labels, camera);
     return 0;
 }
