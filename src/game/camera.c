@@ -174,7 +174,7 @@ int camera_fill_triangle(camera_t *camera,
 int camera_render_text(camera_t *camera,
                        const char *text,
                        vec_t size,
-                       color_t color,
+                       color_t c,
                        vec_t position)
 {
     SDL_Rect view_port;
@@ -188,7 +188,7 @@ int camera_render_text(camera_t *camera,
             camera->renderer,
             screen_position,
             vec(size.x * scale.x, size.y * scale.y),
-            camera->blackwhite_mode ? color_desaturate(color) : color,
+            camera->blackwhite_mode ? color_desaturate(c) : c,
             text) < 0) {
         return -1;
     }
@@ -262,6 +262,29 @@ rect_t camera_view_port(const camera_t *camera)
     return rect(camera->position.x - w * 0.5f,
                 camera->position.y - h * 0.5f,
                 w, h);
+}
+
+int camera_is_text_visible(const camera_t *camera,
+                           vec_t size,
+                           vec_t position,
+                           const char *text)
+{
+    assert(camera);
+    assert(text);
+
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(camera->renderer, &view_port);
+
+    return rects_overlap(
+        camera_rect(
+            camera,
+            &view_port,
+            sprite_font_boundary_box(
+                camera->font,
+                position,
+                size,
+                text)),
+        rect_from_sdl(&view_port));
 }
 
 /* ---------- Private Function ---------- */
