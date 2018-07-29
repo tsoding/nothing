@@ -271,12 +271,20 @@ int camera_is_text_visible(const camera_t *camera,
 {
     assert(camera);
     assert(text);
-    (void) size;
-    (void) position;
 
-    /* TODO: camera_is_text_visible not implemented */
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(camera->renderer, &view_port);
 
-    return 0;
+    return rects_overlap(
+        camera_rect(
+            camera,
+            &view_port,
+            sprite_font_boundary_box(
+                camera->font,
+                position,
+                size,
+                text)),
+        rect_from_sdl(&view_port));
 }
 
 /* ---------- Private Function ---------- */
