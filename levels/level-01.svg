@@ -25,16 +25,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.24748737"
-     inkscape:cx="3917.2259"
-     inkscape:cy="1753.7455"
+     inkscape:zoom="0.175"
+     inkscape:cx="5677.3443"
+     inkscape:cy="93.386028"
      inkscape:document-units="mm"
      inkscape:current-layer="svg4541"
      showgrid="false"
-     inkscape:window-width="1916"
-     inkscape:window-height="1041"
+     inkscape:window-width="956"
+     inkscape:window-height="1023"
      inkscape:window-x="0"
-     inkscape:window-y="18"
+     inkscape:window-y="36"
      inkscape:window-maximized="0"
      inkscape:snap-bbox="true"
      inkscape:bbox-paths="true"
@@ -270,26 +270,26 @@
   <text
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:25.17981339px;line-height:15.73738289px;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#fffda5;fill-opacity:1;stroke:none;stroke-width:0.62949532px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="14.48245"
+     x="-41.109612"
      y="200.42642"
      id="label-01"
      inkscape:label="#text38"><tspan
        sodipodi:role="line"
        id="tspan36"
-       x="14.48245"
+       x="-41.109612"
        y="200.42642"
-       style="fill:#fffda5;fill-opacity:1;stroke-width:0.62949532px">WASD</tspan></text>
+       style="fill:#fffda5;fill-opacity:1;stroke-width:0.62949532px">WASD to move</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:25.17981339px;line-height:15.73738289px;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#fffda5;fill-opacity:1;stroke:none;stroke-width:0.62949532px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="1746.5709"
-     y="128.66734"
+     x="1733.6071"
+     y="138.43834"
      id="label-01-3"
      inkscape:label="#text38"><tspan
        sodipodi:role="line"
        id="tspan36-6"
-       x="1746.5709"
-       y="128.66734"
+       x="1733.6071"
+       y="138.43834"
        style="fill:#fffda5;fill-opacity:1;stroke-width:0.62949532px">SPACE to Jump</tspan></text>
   <text
      xml:space="preserve"
@@ -303,4 +303,12 @@
        x="769.29132"
        y="-130.32047"
        style="fill:#fffda5;fill-opacity:1;stroke-width:0.62949532px">Double Jump</tspan></text>
+  <rect
+     style="fill:#a02c2c;fill-opacity:1;stroke:none;stroke-width:0.20266876"
+     id="box-1-3"
+     width="64.009789"
+     height="61.599514"
+     x="1761.9082"
+     y="-529.19391"
+     inkscape:label="#rect5109-3-5-3-6-2" />
 </svg>
