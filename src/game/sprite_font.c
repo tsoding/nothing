@@ -125,5 +125,16 @@ int sprite_font_render_text(const sprite_font_t *sprite_font,
             return -1;
         }
     }
+
     return 0;
+}
+
+rect_t sprite_font_boundary_box(const sprite_font_t *sprite_font,
+                                vec_t position,
+                                vec_t size,
+                                const char *text)
+{
+    assert(sprite_font);
+    assert(text);
+    return rect(position.x, position.y, size.x * CHAR_WIDTH * (float) strlen(text), size.y * CHAR_HEIGHT);
 }
