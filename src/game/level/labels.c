@@ -130,15 +130,17 @@ int labels_render(const labels_t *label,
 
     for (size_t i = 0; i < label->count; ++i) {
         if (label->visible[i]) {
+            const float state = label->states[i] * (2 - label->states[i]);
+
             if (camera_render_text(camera,
                                    label->texts[i],
                                    vec(2.0f, 2.0f),
                                    color(label->colors[i].r,
                                          label->colors[i].g,
                                          label->colors[i].b,
-                                         label->states[i]),
+                                         state),
                                    vec_sum(label->positions[i],
-                                           vec(0.0f, -8.0f * label->states[i]))) < 0) {
+                                           vec(0.0f, -8.0f * state))) < 0) {
                 return -1;
             }
         }
