@@ -264,6 +264,21 @@ rect_t camera_view_port(const camera_t *camera)
                 w, h);
 }
 
+int camera_is_text_visible(const camera_t *camera,
+                           vec_t size,
+                           vec_t position,
+                           const char *text)
+{
+    assert(camera);
+    assert(text);
+    (void) size;
+    (void) position;
+
+    /* TODO: camera_is_text_visible not implemented */
+
+    return 0;
+}
+
 /* ---------- Private Function ---------- */
 
 static vec_t effective_ratio(const SDL_Rect *view_port)

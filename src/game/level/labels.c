@@ -15,6 +15,7 @@ struct labels_t
     color_t *colors;
     char **texts;
     float *states;
+    int *visible;
 };
 
 static char *trim_endline(char *s)
@@ -77,9 +78,16 @@ labels_t *create_labels_from_stream(FILE *stream)
         RETURN_LT(lt, NULL);
     }
 
+    labels->visible = PUSH_LT(lt, malloc(sizeof(int) * labels->count), free);
+    if (labels->visible == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
     char color[7];
     for (size_t i = 0; i < labels->count; ++i) {
         labels->states[i] = 1.0f;
+        labels->visible[i] = 0;
 
         labels->texts[i] = PUSH_LT(lt, malloc(sizeof(char) * (LABEL_TEXT_MAX_LENGTH + 1)), free);
         if (labels->texts[i] == NULL) {
@@ -154,5 +162,17 @@ void labels_enter_camera_event(labels_t *labels,
     assert(labels);
     assert(camera);
 
-    /* TODO(#265): labels_enter_camera_event is not implemented */
+    for (size_t i = 0; i < labels->count; ++i) {
+        const int became_visible = camera_is_text_visible(
+            camera,
+            vec(2.0f, 2.0f),
+            labels->positions[i],
+            labels->texts[i]);
+
+        if (!labels->visible[i] && became_visible) {
+            labels->states[i] = 0.0f;
+        }
+
+        labels->visible[i] = became_visible;
+    }
 }
