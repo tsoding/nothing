@@ -154,5 +154,5 @@ void labels_enter_camera_event(labels_t *labels,
     assert(labels);
     assert(camera);
 
-    /* TODO: labels_enter_camera_event is not implemented */
+    /* TODO(#265): labels_enter_camera_event is not implemented */
 }
