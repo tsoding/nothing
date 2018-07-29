@@ -174,7 +174,7 @@ int camera_fill_triangle(camera_t *camera,
 int camera_render_text(camera_t *camera,
                        const char *text,
                        vec_t size,
-                       color_t color,
+                       color_t c,
                        vec_t position)
 {
     SDL_Rect view_port;
@@ -188,7 +188,7 @@ int camera_render_text(camera_t *camera,
             camera->renderer,
             screen_position,
             vec(size.x * scale.x, size.y * scale.y),
-            camera->blackwhite_mode ? color_desaturate(color) : color,
+            camera->blackwhite_mode ? color_desaturate(c) : c,
             text) < 0) {
         return -1;
     }
