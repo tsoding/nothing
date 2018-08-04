@@ -13,7 +13,6 @@ struct debug_tree_t
     int enabled;
 };
 
-/* TODO(#270): debug_tree doesn't render debug_node-s */
 debug_tree_t * create_debug_tree(const sprite_font_t *font)
 {
     lt_t * const lt = create_lt();
