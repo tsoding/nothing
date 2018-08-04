@@ -5,6 +5,9 @@
 #include "math/point.h"
 #include "math/rect.h"
 
+#define FONT_CHAR_WIDTH 7
+#define FONT_CHAR_HEIGHT 9
+
 typedef struct sprite_font_t sprite_font_t;
 
 sprite_font_t *create_sprite_font_from_file(const char *bmp_file_path,

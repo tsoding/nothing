@@ -2,6 +2,7 @@
 
 #include "edit_field.h"
 #include "game/sprite_font.h"
+#include "sdl/renderer.h"
 #include "system/error.h"
 #include "system/lt.h"
 
@@ -40,10 +41,15 @@ edit_field_t *create_edit_field(const sprite_font_t *font)
         RETURN_LT(lt, NULL);
     }
 
-    edit_field->size = 0;
+    const char *test_text = "Hello World";
+
+    strcpy(edit_field->buffer, test_text);
+    edit_field->size = strlen(test_text);
     edit_field->capacity = EDIT_FIELD_BUFFER_INIT_SIZE;
-    edit_field->cursor = 0;
+    edit_field->cursor = 5;
     edit_field->font = font;
+
+    edit_field->buffer[edit_field->size] = 0;
 
     return edit_field;
 }
@@ -60,7 +66,32 @@ int edit_field_render(const edit_field_t *edit_field,
 {
     assert(edit_field);
     assert(renderer);
-    (void) position;
+
+    const vec_t size = vec(5.0f, 5.0f);
+    const color_t field_color = color(1.0f, 1.0f, 1.0f, 1.0f);
+    const float cursor_y_overflow = 10.0f;
+    const float cursor_width = 2.0f;
+
+    /* TODO: size and color of edit_field should be customizable */
+    if (sprite_font_render_text(edit_field->font,
+                                renderer,
+                                position,
+                                size,
+                                field_color,
+                                edit_field->buffer) < 0) {
+        return -1;
+    }
+
+    if (fill_rect(
+            renderer,
+            rect(position.x + (float) edit_field->cursor * (float) FONT_CHAR_WIDTH * size.x,
+                 position.y - cursor_y_overflow,
+                 cursor_width,
+                 FONT_CHAR_HEIGHT * size.y + cursor_y_overflow * 2.0f),
+            field_color) < 0) {
+        return -1;
+    }
+
     return 0;
 }
 
@@ -75,5 +106,5 @@ int edit_field_handle_event(edit_field_t *edit_field,
 const char *edit_field_as_text(const edit_field_t *edit_field)
 {
     assert(edit_field);
-    return NULL;
+    return edit_field->buffer;
 }
