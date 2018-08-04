@@ -135,6 +135,27 @@ int fill_triangle(SDL_Renderer *render,
     return 0;
 }
 
+int fill_rect(SDL_Renderer *render, rect_t r, color_t c)
+{
+    const SDL_Rect sdl_rect = rect_for_sdl(r);
+    const SDL_Color sdl_color = color_for_sdl(c);
+
+    if (SDL_SetRenderDrawColor(
+            render,
+            sdl_color.r, sdl_color.g,
+            sdl_color.b, sdl_color.a) < 0) {
+        throw_error(ERROR_TYPE_SDL2);
+        return -1;
+    }
+
+    if (SDL_RenderFillRect(render, &sdl_rect) < 0) {
+        throw_error(ERROR_TYPE_SDL2);
+        return -1;
+    }
+
+    return 0;
+}
+
 /*
  * Return the pixel value at (x, y)
  * NOTE: The surface must be locked before calling this!

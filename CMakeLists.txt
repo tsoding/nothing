@@ -20,8 +20,8 @@ set(SOURCE_FILES
   src/color.c
   src/game.c
   src/game/camera.c
-  src/game/debug_node.h
   src/game/debug_tree.c
+  src/game/edit_field.c
   src/game/level.c
   src/game/level/background.c
   src/game/level/boxes.c
@@ -56,6 +56,7 @@ set(HEADER_FILES
   src/game/camera.h
   src/game/debug_node.h
   src/game/debug_tree.h
+  src/game/edit_field.h
   src/game/level.h
   src/game/level/background.h
   src/game/level/boxes.h

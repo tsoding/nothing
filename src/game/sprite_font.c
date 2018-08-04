@@ -10,8 +10,6 @@
 #include "system/lt.h"
 
 #define FONT_ROW_SIZE 18
-#define CHAR_WIDTH 7
-#define CHAR_HEIGHT 9
 
 struct sprite_font_t
 {
@@ -78,10 +76,10 @@ static SDL_Rect sprite_font_char_rect(const sprite_font_t *sprite_font, char x)
 
     if (32 <= x && x <= 126) {
         const SDL_Rect rect = {
-            .x = ((x - 32) % FONT_ROW_SIZE) * CHAR_WIDTH,
-            .y = ((x - 32) / FONT_ROW_SIZE) * CHAR_HEIGHT,
-            .w = CHAR_WIDTH,
-            .h = CHAR_HEIGHT
+            .x = ((x - 32) % FONT_ROW_SIZE) * FONT_CHAR_WIDTH,
+            .y = ((x - 32) / FONT_ROW_SIZE) * FONT_CHAR_HEIGHT,
+            .w = FONT_CHAR_WIDTH,
+            .h = FONT_CHAR_HEIGHT
         };
         return rect;
     } else {
@@ -117,7 +115,7 @@ int sprite_font_render_text(const sprite_font_t *sprite_font,
         const SDL_Rect char_rect = sprite_font_char_rect(sprite_font, text[i]);
         const SDL_Rect dest_rect = rect_for_sdl(
             rect(
-                position.x + (float) CHAR_WIDTH * (float) i * size.x,
+                position.x + (float) FONT_CHAR_WIDTH * (float) i * size.x,
                 position.y,
                 (float) char_rect.w * size.x,
                 (float) char_rect.h * size.y));
@@ -136,5 +134,8 @@ rect_t sprite_font_boundary_box(const sprite_font_t *sprite_font,
 {
     assert(sprite_font);
     assert(text);
-    return rect(position.x, position.y, size.x * CHAR_WIDTH * (float) strlen(text), size.y * CHAR_HEIGHT);
+    return rect(
+        position.x, position.y,
+        size.x * FONT_CHAR_WIDTH * (float) strlen(text),
+        size.y * FONT_CHAR_HEIGHT);
 }

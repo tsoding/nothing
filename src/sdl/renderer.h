@@ -13,6 +13,10 @@ int draw_triangle(SDL_Renderer *render,
 int fill_triangle(SDL_Renderer *render,
                   triangle_t t);
 
+int fill_rect(SDL_Renderer *render,
+              rect_t r,
+              color_t c);
+
 /* `getpixel()` and `putpixel()` were stolen from
  * https://www.libsdl.org/release/SDL-1.2.15/docs/html/guidevideo.html */
 Uint32 getpixel(SDL_Surface *surface, int x, int y);
