@@ -87,7 +87,10 @@ game_t *create_game(const char *level_file_path,
 
     game->edit_field = PUSH_LT(
         lt,
-        create_edit_field(game->font),
+        create_edit_field(
+            game->font,
+            vec(5.0f, 5.0f),
+            color(1.0f, 1.0f, 1.0f, 1.0f)),
         destroy_edit_field);
     if (game->edit_field == NULL) {
         RETURN_LT(lt, NULL);

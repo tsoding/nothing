@@ -12,13 +12,17 @@ struct edit_field_t
 {
     lt_t *lt;
     char *buffer;
-    size_t size;
-    size_t capacity;
+    size_t buffer_size;
+    size_t buffer_capacity;
     size_t cursor;
     const sprite_font_t *font;
+    vec_t font_size;
+    color_t font_color;
 };
 
-edit_field_t *create_edit_field(const sprite_font_t *font)
+edit_field_t *create_edit_field(const sprite_font_t *font,
+                                vec_t font_size,
+                                color_t font_color)
 {
     assert(font);
 
@@ -44,12 +48,14 @@ edit_field_t *create_edit_field(const sprite_font_t *font)
     const char *test_text = "Hello World";
 
     strcpy(edit_field->buffer, test_text);
-    edit_field->size = strlen(test_text);
-    edit_field->capacity = EDIT_FIELD_BUFFER_INIT_SIZE;
+    edit_field->buffer_size = strlen(test_text);
+    edit_field->buffer_capacity = EDIT_FIELD_BUFFER_INIT_SIZE;
     edit_field->cursor = 5;
     edit_field->font = font;
+    edit_field->font_size = font_size;
+    edit_field->font_color = font_color;
 
-    edit_field->buffer[edit_field->size] = 0;
+    edit_field->buffer[edit_field->buffer_size] = 0;
 
     return edit_field;
 }
@@ -67,28 +73,25 @@ int edit_field_render(const edit_field_t *edit_field,
     assert(edit_field);
     assert(renderer);
 
-    const vec_t size = vec(5.0f, 5.0f);
-    const color_t field_color = color(1.0f, 1.0f, 1.0f, 1.0f);
     const float cursor_y_overflow = 10.0f;
     const float cursor_width = 2.0f;
 
-    /* TODO: size and color of edit_field should be customizable */
     if (sprite_font_render_text(edit_field->font,
                                 renderer,
                                 position,
-                                size,
-                                field_color,
+                                edit_field->font_size,
+                                edit_field->font_color,
                                 edit_field->buffer) < 0) {
         return -1;
     }
 
     if (fill_rect(
             renderer,
-            rect(position.x + (float) edit_field->cursor * (float) FONT_CHAR_WIDTH * size.x,
+            rect(position.x + (float) edit_field->cursor * (float) FONT_CHAR_WIDTH * edit_field->font_size.x,
                  position.y - cursor_y_overflow,
                  cursor_width,
-                 FONT_CHAR_HEIGHT * size.y + cursor_y_overflow * 2.0f),
-            field_color) < 0) {
+                 FONT_CHAR_HEIGHT * edit_field->font_size.y + cursor_y_overflow * 2.0f),
+            edit_field->font_color) < 0) {
         return -1;
     }
 
