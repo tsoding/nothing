@@ -174,5 +174,5 @@ static void edit_field_backspace(edit_field_t *edit_field) {
 static void edit_field_insert_char(edit_field_t *edit_field, char c) {
     assert(edit_field);
     (void) c;
-    /* TODO: edit_field_insert_char is not implemented */
+    /* TODO(#274): edit_field_insert_char is not implemented */
 }
