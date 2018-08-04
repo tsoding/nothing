@@ -20,6 +20,11 @@ struct edit_field_t
     color_t font_color;
 };
 
+static void edit_field_left(edit_field_t *edit_field);
+static void edit_field_right(edit_field_t *edit_field);
+static void edit_field_backspace(edit_field_t *edit_field);
+static void edit_field_insert_char(edit_field_t *edit_field, char c);
+
 edit_field_t *create_edit_field(const sprite_font_t *font,
                                 vec_t font_size,
                                 color_t font_color)
@@ -45,6 +50,7 @@ edit_field_t *create_edit_field(const sprite_font_t *font,
         RETURN_LT(lt, NULL);
     }
 
+    /* TODO: remove test_text when edit_field_t functionality is fully implemented */
     const char *test_text = "Hello World";
 
     strcpy(edit_field->buffer, test_text);
@@ -108,18 +114,20 @@ int edit_field_handle_event(edit_field_t *edit_field,
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
         case SDLK_LEFT:
-            if (edit_field->cursor > 0) {
-                edit_field->cursor--;
-            }
+            edit_field_left(edit_field);
             break;
 
         case SDLK_RIGHT:
-            if (edit_field->cursor < edit_field->buffer_size) {
-                edit_field->cursor++;
-            }
+            edit_field_right(edit_field);
             break;
 
-        default: {}
+        case SDLK_BACKSPACE:
+            edit_field_backspace(edit_field);
+            break;
+
+        default: {
+            edit_field_insert_char(edit_field, (char) event->key.keysym.sym);
+        }
         }
         break;
 
@@ -133,4 +141,28 @@ const char *edit_field_as_text(const edit_field_t *edit_field)
 {
     assert(edit_field);
     return edit_field->buffer;
+}
+
+static void edit_field_left(edit_field_t *edit_field) {
+    if (edit_field->cursor > 0) {
+        edit_field->cursor--;
+    }
+}
+
+static void edit_field_right(edit_field_t *edit_field) {
+    assert(edit_field);
+    if (edit_field->cursor < edit_field->buffer_size) {
+        edit_field->cursor++;
+    }
+}
+
+static void edit_field_backspace(edit_field_t *edit_field) {
+    assert(edit_field);
+    /* TODO: edit_field_backspace is not implemented */
+}
+
+static void edit_field_insert_char(edit_field_t *edit_field, char c) {
+    assert(edit_field);
+    (void) c;
+    /* TODO: edit_field_insert_char is not implemented */
 }
