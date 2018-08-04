@@ -158,7 +158,17 @@ static void edit_field_right(edit_field_t *edit_field) {
 
 static void edit_field_backspace(edit_field_t *edit_field) {
     assert(edit_field);
-    /* TODO: edit_field_backspace is not implemented */
+
+    if (edit_field->cursor == 0) {
+        return;
+    }
+
+    for (size_t i = edit_field->cursor; i < edit_field->buffer_size; ++i) {
+        edit_field->buffer[i - 1] = edit_field->buffer[i];
+    }
+
+    edit_field->cursor--;
+    edit_field->buffer[--edit_field->buffer_size] = 0;
 }
 
 static void edit_field_insert_char(edit_field_t *edit_field, char c) {
