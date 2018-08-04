@@ -103,6 +103,29 @@ int edit_field_handle_event(edit_field_t *edit_field,
 {
     assert(edit_field);
     assert(event);
+
+    switch (event->type) {
+    case SDL_KEYDOWN:
+        switch (event->key.keysym.sym) {
+        case SDLK_LEFT:
+            if (edit_field->cursor > 0) {
+                edit_field->cursor--;
+            }
+            break;
+
+        case SDLK_RIGHT:
+            if (edit_field->cursor < edit_field->buffer_size) {
+                edit_field->cursor++;
+            }
+            break;
+
+        default: {}
+        }
+        break;
+
+    default: {}
+    }
+
     return 0;
 }
 

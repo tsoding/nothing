@@ -207,16 +207,16 @@ static int game_event_running(game_t *game, const SDL_Event *event)
     assert(game);
     assert(event);
 
+    if (edit_field_handle_event(game->edit_field, event) < 0) {
+        return -1;
+    }
+
     switch (event->type) {
     case SDL_QUIT:
         game->state = GAME_STATE_QUIT;
         break;
 
     case SDL_KEYDOWN:
-        if (edit_field_handle_event(game->edit_field, event) < 0) {
-            return -1;
-        }
-
         switch (event->key.keysym.sym) {
         case SDLK_r:
             printf("Reloading the level from '%s'...\n", game->level_file_path);
