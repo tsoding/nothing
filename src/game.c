@@ -29,7 +29,7 @@ typedef struct game_t {
     camera_t *camera;
     sprite_font_t *font;
     debug_tree_t *debug_tree;
-    /* TODO: remove edit_field from game when edit_field_t functionality is fully implemented */
+    /* TODO(#272): remove edit_field from game when edit_field_t functionality is fully implemented */
     edit_field_t *edit_field;
     SDL_Renderer *renderer;
 } game_t;
