@@ -5,6 +5,7 @@
 
 #include "game.h"
 #include "game/debug_tree.h"
+#include "game/edit_field.h"
 #include "game/level.h"
 #include "game/sound_samples.h"
 #include "system/error.h"
@@ -28,6 +29,7 @@ typedef struct game_t {
     camera_t *camera;
     sprite_font_t *font;
     debug_tree_t *debug_tree;
+    edit_field_t *edit_field;
     SDL_Renderer *renderer;
 } game_t;
 
@@ -83,6 +85,14 @@ game_t *create_game(const char *level_file_path,
         RETURN_LT(lt, NULL);
     }
 
+    game->edit_field = PUSH_LT(
+        lt,
+        create_edit_field(game->font),
+        destroy_edit_field);
+    if (game->edit_field == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     game->camera = PUSH_LT(lt, create_camera(renderer, game->font), destroy_camera);
     if (game->camera == NULL) {
         RETURN_LT(lt, NULL);
@@ -122,6 +132,10 @@ int game_render(const game_t *game)
     }
 
     if (debug_tree_render(game->debug_tree, game->renderer) < 0) {
+        return -1;
+    }
+
+    if (edit_field_render(game->edit_field, game->renderer, vec(100.0f, 100.0f)) < 0) {
         return -1;
     }
 
@@ -196,6 +210,10 @@ static int game_event_running(game_t *game, const SDL_Event *event)
         break;
 
     case SDL_KEYDOWN:
+        if (edit_field_handle_event(game->edit_field, event) < 0) {
+            return -1;
+        }
+
         switch (event->key.keysym.sym) {
         case SDLK_r:
             printf("Reloading the level from '%s'...\n", game->level_file_path);

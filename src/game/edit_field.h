@@ -2,8 +2,10 @@
 #define EDIT_FIELD_H_
 
 #include <SDL2/SDL.h>
+#include "math/point.h"
 
 typedef struct edit_field_t edit_field_t;
+typedef struct sprite_font_t sprite_font_t;
 
 edit_field_t *create_edit_field(const sprite_font_t *font);
 void destroy_edit_field(edit_field_t *edit_field);
