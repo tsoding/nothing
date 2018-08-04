@@ -2,9 +2,9 @@
 
 ## Examples
 
-- [player](../src/player.h)
-- [camera](../src/camera.h)
-- [level](../src/level.h)
+- [level](../src/game/level.h)
+- [player](../src/game/level/player.h)
+- [camera](../src/game/camera.h)
 - ...
 
 ## Conventions
