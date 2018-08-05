@@ -29,8 +29,6 @@ typedef struct game_t {
     camera_t *camera;
     sprite_font_t *font;
     debug_tree_t *debug_tree;
-    /* TODO(#272): remove edit_field from game when edit_field_t functionality is fully implemented */
-    edit_field_t *edit_field;
     SDL_Renderer *renderer;
 } game_t;
 
@@ -86,17 +84,6 @@ game_t *create_game(const char *level_file_path,
         RETURN_LT(lt, NULL);
     }
 
-    game->edit_field = PUSH_LT(
-        lt,
-        create_edit_field(
-            game->font,
-            vec(5.0f, 5.0f),
-            color(1.0f, 1.0f, 1.0f, 1.0f)),
-        destroy_edit_field);
-    if (game->edit_field == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
     game->camera = PUSH_LT(lt, create_camera(renderer, game->font), destroy_camera);
     if (game->camera == NULL) {
         RETURN_LT(lt, NULL);
@@ -136,10 +123,6 @@ int game_render(const game_t *game)
     }
 
     if (debug_tree_render(game->debug_tree, game->renderer) < 0) {
-        return -1;
-    }
-
-    if (edit_field_render(game->edit_field, game->renderer, vec(100.0f, 100.0f)) < 0) {
         return -1;
     }
 
@@ -207,10 +190,6 @@ static int game_event_running(game_t *game, const SDL_Event *event)
 {
     assert(game);
     assert(event);
-
-    if (edit_field_handle_event(game->edit_field, event) < 0) {
-        return -1;
-    }
 
     switch (event->type) {
     case SDL_QUIT:
