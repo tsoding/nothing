@@ -50,12 +50,8 @@ edit_field_t *create_edit_field(const sprite_font_t *font,
         RETURN_LT(lt, NULL);
     }
 
-    /* TODO(#273): remove test_text when edit_field_t functionality is fully implemented */
-    const char *test_text = "Hello World";
-
-    strcpy(edit_field->buffer, test_text);
-    edit_field->buffer_size = strlen(test_text);
-    edit_field->cursor = 5;
+    edit_field->buffer_size = 0;
+    edit_field->cursor = 0;
     edit_field->font = font;
     edit_field->font_size = font_size;
     edit_field->font_color = font_color;
