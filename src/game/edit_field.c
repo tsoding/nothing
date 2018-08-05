@@ -22,6 +22,7 @@ struct edit_field_t
 static void edit_field_left(edit_field_t *edit_field);
 static void edit_field_right(edit_field_t *edit_field);
 static void edit_field_backspace(edit_field_t *edit_field);
+static void edit_field_delete(edit_field_t *edit_field);
 static void edit_field_insert_char(edit_field_t *edit_field, char c);
 
 edit_field_t *create_edit_field(const sprite_font_t *font,
@@ -43,7 +44,7 @@ edit_field_t *create_edit_field(const sprite_font_t *font,
     }
     edit_field->lt = lt;
 
-    edit_field->buffer = PUSH_LT(lt, malloc(sizeof(char) * (BUFFER_CAPACITY + 1)), free);
+    edit_field->buffer = PUSH_LT(lt, malloc(sizeof(char) * (BUFFER_CAPACITY + 10)), free);
     if (edit_field->buffer == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -123,6 +124,10 @@ int edit_field_handle_event(edit_field_t *edit_field,
             edit_field_backspace(edit_field);
             break;
 
+        case SDLK_DELETE:
+            edit_field_delete(edit_field);
+            break;
+
         default: {
             edit_field_insert_char(edit_field, (char) event->key.keysym.sym);
         }
@@ -141,20 +146,23 @@ const char *edit_field_as_text(const edit_field_t *edit_field)
     return edit_field->buffer;
 }
 
-static void edit_field_left(edit_field_t *edit_field) {
+static void edit_field_left(edit_field_t *edit_field)
+{
     if (edit_field->cursor > 0) {
         edit_field->cursor--;
     }
 }
 
-static void edit_field_right(edit_field_t *edit_field) {
+static void edit_field_right(edit_field_t *edit_field)
+{
     assert(edit_field);
     if (edit_field->cursor < edit_field->buffer_size) {
         edit_field->cursor++;
     }
 }
 
-static void edit_field_backspace(edit_field_t *edit_field) {
+static void edit_field_backspace(edit_field_t *edit_field)
+{
     assert(edit_field);
 
     if (edit_field->cursor == 0) {
@@ -166,6 +174,21 @@ static void edit_field_backspace(edit_field_t *edit_field) {
     }
 
     edit_field->cursor--;
+    edit_field->buffer[--edit_field->buffer_size] = 0;
+}
+
+static void edit_field_delete(edit_field_t *edit_field)
+{
+    assert(edit_field);
+
+    if (edit_field->cursor >= edit_field->buffer_size) {
+        return;
+    }
+
+    for (size_t i = edit_field->cursor; i < edit_field->buffer_size; ++i) {
+        edit_field->buffer[i] = edit_field->buffer[i + 1];
+    }
+
     edit_field->buffer[--edit_field->buffer_size] = 0;
 }
 
