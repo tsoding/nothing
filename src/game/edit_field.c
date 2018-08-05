@@ -192,8 +192,18 @@ static void edit_field_delete(edit_field_t *edit_field)
     edit_field->buffer[--edit_field->buffer_size] = 0;
 }
 
-static void edit_field_insert_char(edit_field_t *edit_field, char c) {
+static void edit_field_insert_char(edit_field_t *edit_field, char c)
+{
     assert(edit_field);
-    (void) c;
-    /* TODO(#274): edit_field_insert_char is not implemented */
+
+    if (edit_field->buffer_size >= BUFFER_CAPACITY) {
+        return;
+    }
+
+    for (int64_t i = (int64_t) edit_field->buffer_size - 1; i >= (int64_t) edit_field->cursor; --i) {
+        edit_field->buffer[i + 1] = edit_field->buffer[i];
+    }
+
+    edit_field->buffer[edit_field->cursor++] = c;
+    edit_field->buffer[++edit_field->buffer_size] = 0;
 }
