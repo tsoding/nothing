@@ -6,14 +6,13 @@
 #include "system/error.h"
 #include "system/lt.h"
 
-#define EDIT_FIELD_BUFFER_INIT_SIZE 256
+#define BUFFER_CAPACITY 256
 
 struct edit_field_t
 {
     lt_t *lt;
     char *buffer;
     size_t buffer_size;
-    size_t buffer_capacity;
     size_t cursor;
     const sprite_font_t *font;
     vec_t font_size;
@@ -23,6 +22,7 @@ struct edit_field_t
 static void edit_field_left(edit_field_t *edit_field);
 static void edit_field_right(edit_field_t *edit_field);
 static void edit_field_backspace(edit_field_t *edit_field);
+static void edit_field_delete(edit_field_t *edit_field);
 static void edit_field_insert_char(edit_field_t *edit_field, char c);
 
 edit_field_t *create_edit_field(const sprite_font_t *font,
@@ -44,7 +44,7 @@ edit_field_t *create_edit_field(const sprite_font_t *font,
     }
     edit_field->lt = lt;
 
-    edit_field->buffer = PUSH_LT(lt, malloc(sizeof(char) * EDIT_FIELD_BUFFER_INIT_SIZE), free);
+    edit_field->buffer = PUSH_LT(lt, malloc(sizeof(char) * (BUFFER_CAPACITY + 10)), free);
     if (edit_field->buffer == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -55,7 +55,6 @@ edit_field_t *create_edit_field(const sprite_font_t *font,
 
     strcpy(edit_field->buffer, test_text);
     edit_field->buffer_size = strlen(test_text);
-    edit_field->buffer_capacity = EDIT_FIELD_BUFFER_INIT_SIZE;
     edit_field->cursor = 5;
     edit_field->font = font;
     edit_field->font_size = font_size;
@@ -125,6 +124,10 @@ int edit_field_handle_event(edit_field_t *edit_field,
             edit_field_backspace(edit_field);
             break;
 
+        case SDLK_DELETE:
+            edit_field_delete(edit_field);
+            break;
+
         default: {
             edit_field_insert_char(edit_field, (char) event->key.keysym.sym);
         }
@@ -143,20 +146,23 @@ const char *edit_field_as_text(const edit_field_t *edit_field)
     return edit_field->buffer;
 }
 
-static void edit_field_left(edit_field_t *edit_field) {
+static void edit_field_left(edit_field_t *edit_field)
+{
     if (edit_field->cursor > 0) {
         edit_field->cursor--;
     }
 }
 
-static void edit_field_right(edit_field_t *edit_field) {
+static void edit_field_right(edit_field_t *edit_field)
+{
     assert(edit_field);
     if (edit_field->cursor < edit_field->buffer_size) {
         edit_field->cursor++;
     }
 }
 
-static void edit_field_backspace(edit_field_t *edit_field) {
+static void edit_field_backspace(edit_field_t *edit_field)
+{
     assert(edit_field);
 
     if (edit_field->cursor == 0) {
@@ -171,8 +177,33 @@ static void edit_field_backspace(edit_field_t *edit_field) {
     edit_field->buffer[--edit_field->buffer_size] = 0;
 }
 
-static void edit_field_insert_char(edit_field_t *edit_field, char c) {
+static void edit_field_delete(edit_field_t *edit_field)
+{
     assert(edit_field);
-    (void) c;
-    /* TODO(#274): edit_field_insert_char is not implemented */
+
+    if (edit_field->cursor >= edit_field->buffer_size) {
+        return;
+    }
+
+    for (size_t i = edit_field->cursor; i < edit_field->buffer_size; ++i) {
+        edit_field->buffer[i] = edit_field->buffer[i + 1];
+    }
+
+    edit_field->buffer[--edit_field->buffer_size] = 0;
+}
+
+static void edit_field_insert_char(edit_field_t *edit_field, char c)
+{
+    assert(edit_field);
+
+    if (edit_field->buffer_size >= BUFFER_CAPACITY) {
+        return;
+    }
+
+    for (int64_t i = (int64_t) edit_field->buffer_size - 1; i >= (int64_t) edit_field->cursor; --i) {
+        edit_field->buffer[i + 1] = edit_field->buffer[i];
+    }
+
+    edit_field->buffer[edit_field->cursor++] = c;
+    edit_field->buffer[++edit_field->buffer_size] = 0;
 }
