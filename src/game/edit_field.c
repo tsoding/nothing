@@ -6,14 +6,13 @@
 #include "system/error.h"
 #include "system/lt.h"
 
-#define EDIT_FIELD_BUFFER_INIT_SIZE 256
+#define BUFFER_CAPACITY 256
 
 struct edit_field_t
 {
     lt_t *lt;
     char *buffer;
     size_t buffer_size;
-    size_t buffer_capacity;
     size_t cursor;
     const sprite_font_t *font;
     vec_t font_size;
@@ -44,7 +43,7 @@ edit_field_t *create_edit_field(const sprite_font_t *font,
     }
     edit_field->lt = lt;
 
-    edit_field->buffer = PUSH_LT(lt, malloc(sizeof(char) * EDIT_FIELD_BUFFER_INIT_SIZE), free);
+    edit_field->buffer = PUSH_LT(lt, malloc(sizeof(char) * (BUFFER_CAPACITY + 1)), free);
     if (edit_field->buffer == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -55,7 +54,6 @@ edit_field_t *create_edit_field(const sprite_font_t *font,
 
     strcpy(edit_field->buffer, test_text);
     edit_field->buffer_size = strlen(test_text);
-    edit_field->buffer_capacity = EDIT_FIELD_BUFFER_INIT_SIZE;
     edit_field->cursor = 5;
     edit_field->font = font;
     edit_field->font_size = font_size;
