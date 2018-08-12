@@ -18,9 +18,6 @@ int wavy_rect_render(const wavy_rect_t *wavy_rect,
 int wavy_rect_update(wavy_rect_t *wavy_rect,
                      float delta_time);
 
-int wavy_rect_overlaps(const wavy_rect_t *wavy_rect,
-                       rect_t rect);
-rect_t wavy_rect_overlap_area(const wavy_rect_t *wavy_rect,
-                              rect_t rect);
+rect_t wavy_rect_hitbox(const wavy_rect_t *wavy_rect);
 
 #endif  // WAVY_RECT_H_

@@ -4,10 +4,13 @@
 
 #include "color.h"
 #include "game/level/lava/wavy_rect.h"
+#include "game/level/player/rigid_rect.h"
 #include "lava.h"
 #include "math/rect.h"
 #include "system/error.h"
 #include "system/lt.h"
+
+#define LAVA_BOINGNESS 2500.0f
 
 struct lava_t {
     lt_t *lt;
@@ -59,7 +62,7 @@ void destroy_lava(lava_t *lava)
     RETURN_LT0(lava->lt);
 }
 
-int lava_render(const lava_t   *lava,
+int lava_render(const lava_t *lava,
                 camera_t *camera)
 {
     assert(lava);
@@ -87,28 +90,34 @@ int lava_update(lava_t *lava, float delta_time)
     return 0;
 }
 
-int lava_overlaps_rect(const lava_t *lava,
-                      rect_t rect)
+bool lava_overlaps_rect(const lava_t *lava,
+                        rect_t rect)
 {
     assert(lava);
 
     for (size_t i = 0; i < lava->rects_count; ++i) {
-        if (wavy_rect_overlaps(lava->rects[i], rect)) {
-            return 1;
+        if (rects_overlap(wavy_rect_hitbox(lava->rects[i]), rect)) {
+            return true;
         }
     }
 
     return 0;
 }
 
-rect_t lava_overlap_area(const lava_t *lava,
-                         rect_t object)
+void lava_float_rigid_rect(lava_t *lava, rigid_rect_t *object)
 {
+    assert(lava);
+
+    const rect_t object_hitbox = rigid_rect_hitbox(object);
     for (size_t i = 0; i < lava->rects_count; ++i) {
-        if (wavy_rect_overlaps(lava->rects[i], object)) {
-            return wavy_rect_overlap_area(lava->rects[i], object);
+        const rect_t lava_hitbox = wavy_rect_hitbox(lava->rects[i]);
+        if (rects_overlap(object_hitbox, lava_hitbox)) {
+            const rect_t overlap_area = rects_overlap_area(object_hitbox, lava_hitbox);
+            const float k = overlap_area.w * overlap_area.h / (object_hitbox.w * object_hitbox.h);
+            rigid_rect_apply_force(
+                object,
+                vec(0.0f, -k * LAVA_BOINGNESS));
+            rigid_rect_damper(object, vec(0.0f, -0.9f));
         }
     }
-
-    return rect(0.0f, 0.0f, 0.0f, 0.0f);
 }

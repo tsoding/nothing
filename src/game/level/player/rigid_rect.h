@@ -31,8 +31,6 @@ void rigid_rect_touches_rect_sides(rigid_rect_t *rigid_rect,
 
 void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
                                    solid_ref_t solid);
-void rigid_rect_collide_with_lava(rigid_rect_t *rigid_rect,
-                                  lava_t *lava);
 
 rect_t rigid_rect_hitbox(const rigid_rect_t *rigid_rect);
 
@@ -51,5 +49,8 @@ void rigid_rect_transform_velocity(rigid_rect_t *rigid_rect,
 
 void rigid_rect_teleport_to(rigid_rect_t *rigid_rect,
                             vec_t position);
+
+void rigid_rect_damper(rigid_rect_t *rigid_rect,
+                       vec_t v);
 
 #endif  // RIGID_RECT_H_

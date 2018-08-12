@@ -19,7 +19,6 @@ struct rigid_rect_t {
     vec_t size;
     color_t color;
     int touches_ground;
-    float floating;
     vec_t forces;
 };
 
@@ -69,7 +68,6 @@ rigid_rect_t *create_rigid_rect(rect_t rect, color_t color)
     rigid_rect->size = vec(rect.w, rect.h);
     rigid_rect->color = color;
     rigid_rect->touches_ground = 0;
-    rigid_rect->floating = 0.0f;
     rigid_rect->forces = vec(0.0f, 0.0f);
 
     return rigid_rect;
@@ -229,16 +227,6 @@ int rigid_rect_touches_ground(const rigid_rect_t *rigid_rect)
     return rigid_rect->touches_ground;
 }
 
-void rigid_rect_collide_with_lava(rigid_rect_t *rigid_rect,
-                                  lava_t *lava)
-{
-    assert(rigid_rect);
-    assert(lava);
-
-    rect_t overlap_area = lava_overlap_area(lava, rigid_rect_hitbox(rigid_rect));
-    rigid_rect->floating = (overlap_area.w * overlap_area.h) / (rigid_rect->size.x * rigid_rect->size.y);
-}
-
 void rigid_rect_apply_force(rigid_rect_t * rigid_rect,
                             vec_t force)
 {
@@ -256,4 +244,11 @@ void rigid_rect_teleport_to(rigid_rect_t *rigid_rect,
                             vec_t position)
 {
     rigid_rect->position = position;
+}
+
+void rigid_rect_damper(rigid_rect_t *rigid_rect, vec_t v)
+{
+    rigid_rect_apply_force(
+        rigid_rect,
+        vec(rigid_rect->velocity.x * v.x, rigid_rect->velocity.y * v.y));
 }

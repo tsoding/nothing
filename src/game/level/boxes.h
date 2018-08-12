@@ -15,6 +15,8 @@ void destroy_boxes(boxes_t *boxes);
 int boxes_render(boxes_t *boxes, camera_t *camera);
 int boxes_update(boxes_t *boxes, float delta_time);
 
+void boxes_float_in_lava(boxes_t *boxes, lava_t *lava);
+
 int boxes_add_to_physical_world(const boxes_t *boxes,
                                 physical_world_t *physical_world_t);
 

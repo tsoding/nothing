@@ -175,6 +175,7 @@ int level_update(level_t *level, float delta_time)
     assert(delta_time > 0);
 
     physical_world_apply_gravity(level->physical_world);
+    boxes_float_in_lava(level->boxes, level->lava);
 
     boxes_update(level->boxes, delta_time);
     player_update(level->player, delta_time);
