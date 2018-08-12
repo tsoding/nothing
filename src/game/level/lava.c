@@ -10,6 +10,8 @@
 #include "system/error.h"
 #include "system/lt.h"
 
+#define LAVA_BOINGNESS 2500.0f
+
 struct lava_t {
     lt_t *lt;
     size_t rects_count;
@@ -60,7 +62,7 @@ void destroy_lava(lava_t *lava)
     RETURN_LT0(lava->lt);
 }
 
-int lava_render(const lava_t   *lava,
+int lava_render(const lava_t *lava,
                 camera_t *camera)
 {
     assert(lava);
@@ -102,7 +104,7 @@ bool lava_overlaps_rect(const lava_t *lava,
     return 0;
 }
 
-void lava_float_rigid_rect(const lava_t *lava, rigid_rect_t *object)
+void lava_float_rigid_rect(lava_t *lava, rigid_rect_t *object)
 {
     assert(lava);
 
@@ -111,10 +113,11 @@ void lava_float_rigid_rect(const lava_t *lava, rigid_rect_t *object)
         const rect_t lava_hitbox = wavy_rect_hitbox(lava->rects[i]);
         if (rects_overlap(object_hitbox, lava_hitbox)) {
             const rect_t overlap_area = rects_overlap_area(object_hitbox, lava_hitbox);
-            const float area = overlap_area.w * overlap_area.h;
+            const float k = overlap_area.w * overlap_area.h / (object_hitbox.w * object_hitbox.h);
             rigid_rect_apply_force(
                 object,
-                vec(0.0f, -area));
+                vec(0.0f, -k * LAVA_BOINGNESS));
+            rigid_rect_damper(object, vec(0.0f, -0.9f));
         }
     }
 }

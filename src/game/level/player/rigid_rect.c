@@ -245,3 +245,10 @@ void rigid_rect_teleport_to(rigid_rect_t *rigid_rect,
 {
     rigid_rect->position = position;
 }
+
+void rigid_rect_damper(rigid_rect_t *rigid_rect, vec_t v)
+{
+    rigid_rect_apply_force(
+        rigid_rect,
+        vec(rigid_rect->velocity.x * v.x, rigid_rect->velocity.y * v.y));
+}

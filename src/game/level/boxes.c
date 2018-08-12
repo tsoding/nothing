@@ -107,3 +107,10 @@ int boxes_add_to_physical_world(const boxes_t *boxes,
 
     return 0;
 }
+
+void boxes_float_in_lava(boxes_t *boxes, lava_t *lava)
+{
+    for (size_t i = 0; i < boxes->count; ++i) {
+        lava_float_rigid_rect(lava, boxes->bodies[i]);
+    }
+}

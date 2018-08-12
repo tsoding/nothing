@@ -18,6 +18,6 @@ int lava_update(lava_t *lava, float delta_time);
 
 bool lava_overlaps_rect(const lava_t *lava, rect_t rect);
 
-void lava_float_rigid_rect(const lava_t *lava, rigid_rect_t *rigid_rect);
+void lava_float_rigid_rect(lava_t *lava, rigid_rect_t *rigid_rect);
 
 #endif  // LAVA_H_
