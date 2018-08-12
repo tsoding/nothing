@@ -101,8 +101,8 @@ bool lava_overlaps_rect(const lava_t *lava,
     return 0;
 }
 
-void lava_float_solid(const lava_t *lava, solid_ref_t solid)
+void lava_float_rigid_rect(const lava_t *lava, rigid_rect_t *rigid_rect)
 {
     assert(lava);
-    (void) solid;
+    (void) rigid_rect;
 }
