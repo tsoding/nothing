@@ -101,18 +101,6 @@ int lava_overlaps_rect(const lava_t *lava,
     return 0;
 }
 
-rect_t lava_overlap_area(const lava_t *lava,
-                         rect_t object)
-{
-    for (size_t i = 0; i < lava->rects_count; ++i) {
-        if (wavy_rect_overlaps(lava->rects[i], object)) {
-            return wavy_rect_overlap_area(lava->rects[i], object);
-        }
-    }
-
-    return rect(0.0f, 0.0f, 0.0f, 0.0f);
-}
-
 void lava_float_solid(const lava_t *lava, solid_ref_t solid)
 {
     assert(lava);
