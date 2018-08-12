@@ -4,6 +4,7 @@
 
 #include "color.h"
 #include "game/level/lava/wavy_rect.h"
+#include "game/level/player/rigid_rect.h"
 #include "lava.h"
 #include "math/rect.h"
 #include "system/error.h"
@@ -101,8 +102,19 @@ bool lava_overlaps_rect(const lava_t *lava,
     return 0;
 }
 
-void lava_float_rigid_rect(const lava_t *lava, rigid_rect_t *rigid_rect)
+void lava_float_rigid_rect(const lava_t *lava, rigid_rect_t *object)
 {
     assert(lava);
-    (void) rigid_rect;
+
+    const rect_t object_hitbox = rigid_rect_hitbox(object);
+    for (size_t i = 0; i < lava->rects_count; ++i) {
+        const rect_t lava_hitbox = wavy_rect_hitbox(lava->rects[i]);
+        if (rects_overlap(object_hitbox, lava_hitbox)) {
+            const rect_t overlap_area = rects_overlap_area(object_hitbox, lava_hitbox);
+            const float area = overlap_area.w * overlap_area.h;
+            rigid_rect_apply_force(
+                object,
+                vec(0.0f, -area));
+        }
+    }
 }
