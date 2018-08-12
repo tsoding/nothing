@@ -93,7 +93,7 @@ bool lava_overlaps_rect(const lava_t *lava,
     assert(lava);
 
     for (size_t i = 0; i < lava->rects_count; ++i) {
-        if (wavy_rect_overlaps(lava->rects[i], rect)) {
+        if (rects_overlap(wavy_rect_hitbox(lava->rects[i]), rect)) {
             return true;
         }
     }

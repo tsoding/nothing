@@ -107,10 +107,3 @@ rect_t wavy_rect_hitbox(const wavy_rect_t *wavy_rect)
 {
     return wavy_rect->rect;
 }
-
-int wavy_rect_overlaps(const wavy_rect_t *wavy_rect,
-                       rect_t rect)
-{
-    assert(wavy_rect);
-    return rects_overlap(wavy_rect->rect, rect);
-}
