@@ -20,7 +20,5 @@ int wavy_rect_update(wavy_rect_t *wavy_rect,
 
 int wavy_rect_overlaps(const wavy_rect_t *wavy_rect,
                        rect_t rect);
-rect_t wavy_rect_overlap_area(const wavy_rect_t *wavy_rect,
-                              rect_t rect);
 
 #endif  // WAVY_RECT_H_
