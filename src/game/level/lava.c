@@ -87,14 +87,14 @@ int lava_update(lava_t *lava, float delta_time)
     return 0;
 }
 
-int lava_overlaps_rect(const lava_t *lava,
-                      rect_t rect)
+bool lava_overlaps_rect(const lava_t *lava,
+                        rect_t rect)
 {
     assert(lava);
 
     for (size_t i = 0; i < lava->rects_count; ++i) {
         if (wavy_rect_overlaps(lava->rects[i], rect)) {
-            return 1;
+            return true;
         }
     }
 

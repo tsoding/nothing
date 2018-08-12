@@ -1,6 +1,8 @@
 #ifndef LAVA_H_
 #define LAVA_H_
 
+#include <stdbool.h>
+
 #include "game/camera.h"
 #include "game/level/solid.h"
 #include "math/rect.h"
@@ -14,7 +16,7 @@ int lava_render(const lava_t *lava,
                 camera_t *camera);
 int lava_update(lava_t *lava, float delta_time);
 
-int lava_overlaps_rect(const lava_t *lava, rect_t rect);
+bool lava_overlaps_rect(const lava_t *lava, rect_t rect);
 
 void lava_float_solid(const lava_t *lava, solid_ref_t solid);
 
