@@ -103,6 +103,11 @@ int wavy_rect_update(wavy_rect_t *wavy_rect,
     return 0;
 }
 
+rect_t wavy_rect_hitbox(const wavy_rect_t *wavy_rect)
+{
+    return wavy_rect->rect;
+}
+
 int wavy_rect_overlaps(const wavy_rect_t *wavy_rect,
                        rect_t rect)
 {
