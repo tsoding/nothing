@@ -43,6 +43,7 @@ set(SOURCE_FILES
   src/math/rand.c
   src/math/rect.c
   src/math/triangle.c
+  src/script/expr.c
   src/sdl/renderer.c
   src/system/error.c
   src/system/lt.c
@@ -78,6 +79,7 @@ set(HEADER_FILES
   src/math/rand.h
   src/math/rect.h
   src/math/triangle.h
+  src/script/expr.h
   src/sdl/renderer.h
   src/system/error.h
   src/system/lt.h
