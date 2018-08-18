@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 {
     srand((unsigned int) time(NULL));
 
-    lt_t *const lt = create_lt();
+    Lt *const lt = create_lt();
 
     char *level_filename = NULL;
     int fps = 30;
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
     };
     const size_t sound_sample_files_count = sizeof(sound_sample_files) / sizeof(char*);
 
-    game_t *const game = PUSH_LT(
+    Game *const game = PUSH_LT(
         lt,
         create_game(
             level_filename,

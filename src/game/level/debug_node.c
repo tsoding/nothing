@@ -1,11 +1,11 @@
 #include "debug_node.h"
 
-const char *debug_node_name(debug_node_ref_t debug_node)
+const char *debug_node_name(Debug_node_ref debug_node)
 {
     return NULL;
 }
 
-debug_node_ref_t *debug_node_children(debug_node_ref_t debug_node)
+Debug_node_ref *debug_node_children(Debug_node_ref debug_node)
 {
     return NULL;
 }

@@ -16,32 +16,32 @@
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
 
-struct level_t
+struct Level
 {
-    lt_t *lt;
+    Lt *lt;
 
-    physical_world_t *physical_world;
-    player_t *player;
-    platforms_t *platforms;
-    goals_t *goals;
-    lava_t *lava;
-    color_t background_color;
-    platforms_t *back_platforms;
-    background_t *background;
-    boxes_t *boxes;
-    labels_t *labels;
+    Physical_world *physical_world;
+    Player *player;
+    Platforms *platforms;
+    Goals *goals;
+    Lava *lava;
+    Color background_color;
+    Platforms *back_platforms;
+    Background *background;
+    Boxes *boxes;
+    Labels *labels;
 };
 
-level_t *create_level_from_file(const char *file_name)
+Level *create_level_from_file(const char *file_name)
 {
     assert(file_name);
 
-    lt_t *const lt = create_lt();
+    Lt *const lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
 
-    level_t *const level = PUSH_LT(lt, malloc(sizeof(level_t)), free);
+    Level *const level = PUSH_LT(lt, malloc(sizeof(Level)), free);
     if (level == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -118,13 +118,13 @@ level_t *create_level_from_file(const char *file_name)
     return level;
 }
 
-void destroy_level(level_t *level)
+void destroy_level(Level *level)
 {
     assert(level);
     RETURN_LT0(level->lt);
 }
 
-int level_render(const level_t *level, camera_t *camera)
+int level_render(const Level *level, Camera *camera)
 {
     assert(level);
 
@@ -169,7 +169,7 @@ int level_render(const level_t *level, camera_t *camera)
     return 0;
 }
 
-int level_update(level_t *level, float delta_time)
+int level_update(Level *level, float delta_time)
 {
     assert(level);
     assert(delta_time > 0);
@@ -192,7 +192,7 @@ int level_update(level_t *level, float delta_time)
     return 0;
 }
 
-int level_event(level_t *level, const SDL_Event *event)
+int level_event(Level *level, const SDL_Event *event)
 {
     assert(level);
     assert(event);
@@ -216,7 +216,7 @@ int level_event(level_t *level, const SDL_Event *event)
     return 0;
 }
 
-int level_input(level_t *level,
+int level_input(Level *level,
                 const Uint8 *const keyboard_state,
                 SDL_Joystick *the_stick_of_joy)
 {
@@ -239,9 +239,9 @@ int level_input(level_t *level,
     return 0;
 }
 
-int level_reload_preserve_player(level_t *level, const char *file_name)
+int level_reload_preserve_player(Level *level, const char *file_name)
 {
-    lt_t * const lt = create_lt();
+    Lt * const lt = create_lt();
     if (lt == NULL) {
         return -1;
     }
@@ -263,43 +263,43 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
     }
     level->background_color = color_from_hexstr(color);
 
-    player_t * const skipped_player = create_player_from_stream(level_file);
+    Player * const skipped_player = create_player_from_stream(level_file);
     if (skipped_player == NULL) {
         RETURN_LT(lt, -1);
     }
     destroy_player(skipped_player);
 
-    platforms_t * const platforms = create_platforms_from_stream(level_file);
+    Platforms * const platforms = create_platforms_from_stream(level_file);
     if (platforms == NULL) {
         RETURN_LT(lt, -1);
     }
     level->platforms = RESET_LT(level->lt, level->platforms, platforms);
 
-    goals_t * const goals = create_goals_from_stream(level_file);
+    Goals * const goals = create_goals_from_stream(level_file);
     if (goals == NULL) {
         RETURN_LT(lt, -1);
     }
     level->goals = RESET_LT(level->lt, level->goals, goals);
 
-    lava_t * const lava = create_lava_from_stream(level_file);
+    Lava * const lava = create_lava_from_stream(level_file);
     if (lava == NULL) {
         RETURN_LT(lt, -1);
     }
     level->lava = RESET_LT(level->lt, level->lava, lava);
 
-    platforms_t * const back_platforms = create_platforms_from_stream(level_file);
+    Platforms * const back_platforms = create_platforms_from_stream(level_file);
     if (back_platforms == NULL) {
         RETURN_LT(lt, -1);
     }
     level->back_platforms = RESET_LT(level->lt, level->back_platforms, back_platforms);
 
-    boxes_t * const boxes = create_boxes_from_stream(level_file);
+    Boxes * const boxes = create_boxes_from_stream(level_file);
     if (boxes == NULL) {
         RETURN_LT(lt, -1);
     }
     level->boxes = RESET_LT(level->lt, level->boxes, boxes);
 
-    labels_t * const labels = create_labels_from_stream(level_file);
+    Labels * const labels = create_labels_from_stream(level_file);
     if (labels == NULL) {
         RETURN_LT(lt, -1);
     }
@@ -316,7 +316,7 @@ int level_reload_preserve_player(level_t *level, const char *file_name)
     RETURN_LT(lt, 0);
 }
 
-int level_sound(level_t *level, sound_samples_t *sound_samples)
+int level_sound(Level *level, Sound_samples *sound_samples)
 {
     if (goals_sound(level->goals, sound_samples) < 0) {
         return -1;
@@ -329,13 +329,13 @@ int level_sound(level_t *level, sound_samples_t *sound_samples)
     return 0;
 }
 
-void level_toggle_debug_mode(level_t *level)
+void level_toggle_debug_mode(Level *level)
 {
     background_toggle_debug_mode(level->background);
 }
 
-int level_enter_camera_event(level_t *level,
-                             const camera_t *camera)
+int level_enter_camera_event(Level *level,
+                             const Camera *camera)
 {
     goals_cue(level->goals, camera);
     goals_checkpoint(level->goals, level->player);

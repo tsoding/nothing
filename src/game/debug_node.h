@@ -1,16 +1,16 @@
 #ifndef DEBUG_NODE_H_
 #define DEBUG_NODE_H_
 
-typedef enum debug_node_tag_t {
+typedef enum Debug_node_tag {
     DEBUG_NODE_TAG_N
-} debug_node_tag_t;
+} Debug_node_tag;
 
-typedef struct debug_node_ref_t {
-    debug_node_tag_t tag;
+typedef struct Debug_node_ref {
+    Debug_node_tag tag;
     void *ptr;
-} debug_node_ref_t;
+} Debug_node_ref;
 
-const char *debug_node_name(debug_node_ref_t debug_node);
-debug_node_ref_t *debug_node_children(debug_node_ref_t debug_node);
+const char *debug_node_name(Debug_node_ref debug_node);
+Debug_node_ref *debug_node_children(Debug_node_ref debug_node);
 
 #endif  // DEBUG_NODE_H_

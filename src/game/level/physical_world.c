@@ -9,23 +9,23 @@
 #define PHYSICAL_WORLD_CAPACITY 256
 #define PHYSICAL_WORLD_GRAVITY 1500.0f
 
-struct physical_world_t
+struct Physical_world
 {
-    lt_t *lt;
+    Lt *lt;
     size_t capacity;
     size_t size;
-    solid_ref_t *solids;
+    Solid_ref *solids;
 };
 
-physical_world_t *create_physical_world(void)
+Physical_world *create_physical_world(void)
 {
-    lt_t *lt = create_lt();
+    Lt *lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
 
-    physical_world_t * const physical_world =
-        PUSH_LT(lt, malloc(sizeof(physical_world_t)), free);
+    Physical_world * const physical_world =
+        PUSH_LT(lt, malloc(sizeof(Physical_world)), free);
     if (physical_world == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -34,7 +34,7 @@ physical_world_t *create_physical_world(void)
     physical_world->solids =
         PUSH_LT(
             lt,
-            malloc(sizeof(solid_ref_t) * PHYSICAL_WORLD_CAPACITY),
+            malloc(sizeof(Solid_ref) * PHYSICAL_WORLD_CAPACITY),
             free);
     if (physical_world->solids == NULL) {
         throw_error(ERROR_TYPE_LIBC);
@@ -48,13 +48,13 @@ physical_world_t *create_physical_world(void)
     return physical_world;
 }
 
-void destroy_physical_world(physical_world_t *physical_world)
+void destroy_physical_world(Physical_world *physical_world)
 {
     assert(physical_world);
     RETURN_LT0(physical_world->lt);
 }
 
-void physical_world_apply_gravity(physical_world_t *physical_world)
+void physical_world_apply_gravity(Physical_world *physical_world)
 {
     for (size_t i = 0; i < physical_world->size; ++i) {
         solid_apply_force(
@@ -63,8 +63,8 @@ void physical_world_apply_gravity(physical_world_t *physical_world)
     }
 }
 
-void physical_world_collide_solids(physical_world_t *physical_world,
-                                   platforms_t *platforms)
+void physical_world_collide_solids(Physical_world *physical_world,
+                                   Platforms *platforms)
 {
     assert(physical_world);
 
@@ -87,16 +87,16 @@ void physical_world_collide_solids(physical_world_t *physical_world,
     }
 }
 
-int physical_world_add_solid(physical_world_t *physical_world,
-                             solid_ref_t solid)
+int physical_world_add_solid(Physical_world *physical_world,
+                             Solid_ref solid)
 {
     assert(physical_world);
 
     if (physical_world->size >= physical_world->capacity) {
         const size_t new_capacity = physical_world->capacity * 2;
-        solid_ref_t * const new_solids = realloc(
+        Solid_ref * const new_solids = realloc(
             physical_world->solids,
-            sizeof(solid_ref_t) * new_capacity);
+            sizeof(Solid_ref) * new_capacity);
 
         if (new_solids == NULL) {
             return -1;
@@ -114,7 +114,7 @@ int physical_world_add_solid(physical_world_t *physical_world,
     return 0;
 }
 
-void physical_world_clean(physical_world_t *physical_world)
+void physical_world_clean(Physical_world *physical_world)
 {
     assert(physical_world);
     physical_world->size = 0;

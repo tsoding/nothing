@@ -6,14 +6,14 @@
 #include "color.h"
 #include "game/camera.h"
 
-typedef struct background_t background_t;
+typedef struct Background Background;
 
-background_t *create_background(color_t base_color);
-void destroy_background(background_t *background);
+Background *create_background(Color base_color);
+void destroy_background(Background *background);
 
-int background_render(const background_t *background,
-                      camera_t *camera);
+int background_render(const Background *background,
+                      Camera *camera);
 
-void background_toggle_debug_mode(background_t *background);
+void background_toggle_debug_mode(Background *background);
 
 #endif  // BACKGROUND_H_

@@ -7,17 +7,17 @@
 #include "game/camera.h"
 #include "math/rect.h"
 
-typedef struct wavy_rect_t wavy_rect_t;
+typedef struct Wavy_rect Wavy_rect;
 
-wavy_rect_t *create_wavy_rect(rect_t rect, color_t color);
-wavy_rect_t *create_wavy_rect_from_stream(FILE *stream);
-void destroy_wavy_rect(wavy_rect_t *wavy_rect);
+Wavy_rect *create_wavy_rect(Rect rect, Color color);
+Wavy_rect *create_wavy_rect_from_stream(FILE *stream);
+void destroy_wavy_rect(Wavy_rect *wavy_rect);
 
-int wavy_rect_render(const wavy_rect_t *wavy_rect,
-                     camera_t *camera);
-int wavy_rect_update(wavy_rect_t *wavy_rect,
+int wavy_rect_render(const Wavy_rect *wavy_rect,
+                     Camera *camera);
+int wavy_rect_update(Wavy_rect *wavy_rect,
                      float delta_time);
 
-rect_t wavy_rect_hitbox(const wavy_rect_t *wavy_rect);
+Rect wavy_rect_hitbox(const Wavy_rect *wavy_rect);
 
 #endif  // WAVY_RECT_H_

@@ -3,29 +3,29 @@
 
 #include "math/rect.h"
 
-typedef enum solid_tag_t {
+typedef enum Solid_tag {
     SOLID_PLATFORMS = 0,
     SOLID_RIGID_RECT,
     SOLID_PLAYER
-} solid_tag_t;
+} Solid_tag;
 
-typedef struct solid_ref_t {
-    solid_tag_t tag;
+typedef struct Solid_ref {
+    Solid_tag tag;
     void *ptr;
-} solid_ref_t;
+} Solid_ref;
 
 /** \brief Answers what sides of the rectangular object the solid entity touches
  */
-void solid_touches_rect_sides(solid_ref_t solid,
-                              rect_t object,
+void solid_touches_rect_sides(Solid_ref solid,
+                              Rect object,
                               int sides[RECT_SIDE_N]);
 
 /** \brief Applies a force vector to the solid body
  */
-void solid_apply_force(solid_ref_t solid,
-                       vec_t force);
+void solid_apply_force(Solid_ref solid,
+                       Vec force);
 
-void solid_collide_with_solid(solid_ref_t solid,
-                              solid_ref_t other_solid);
+void solid_collide_with_solid(Solid_ref solid,
+                              Solid_ref other_solid);
 
 #endif  // SOLID_H_

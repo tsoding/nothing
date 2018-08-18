@@ -7,24 +7,24 @@
 #include "system/error.h"
 #include "system/lt.h"
 
-struct boxes_t
+struct Boxes
 {
-    lt_t *lt;
+    Lt *lt;
     size_t count;
-    rigid_rect_t **bodies;
+    Rigid_rect **bodies;
 };
 
-boxes_t *create_boxes_from_stream(FILE *stream)
+Boxes *create_boxes_from_stream(FILE *stream)
 {
     assert(stream);
 
-    lt_t *lt = create_lt();
+    Lt *lt = create_lt();
 
     if (lt == NULL) {
         return NULL;
     }
 
-    boxes_t *boxes = PUSH_LT(lt, malloc(sizeof(boxes_t)), free);
+    Boxes *boxes = PUSH_LT(lt, malloc(sizeof(Boxes)), free);
     if (boxes == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -35,7 +35,7 @@ boxes_t *create_boxes_from_stream(FILE *stream)
         RETURN_LT(lt, NULL);
     }
 
-    boxes->bodies = PUSH_LT(lt, malloc(sizeof(rigid_rect_t*) * boxes->count), free);
+    boxes->bodies = PUSH_LT(lt, malloc(sizeof(Rigid_rect*) * boxes->count), free);
     if (boxes->bodies == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -56,13 +56,13 @@ boxes_t *create_boxes_from_stream(FILE *stream)
     return boxes;
 }
 
-void destroy_boxes(boxes_t *boxes)
+void destroy_boxes(Boxes *boxes)
 {
     assert(boxes);
     RETURN_LT0(boxes->lt);
 }
 
-int boxes_render(boxes_t *boxes, camera_t *camera)
+int boxes_render(Boxes *boxes, Camera *camera)
 {
     assert(boxes);
     assert(camera);
@@ -76,7 +76,7 @@ int boxes_render(boxes_t *boxes, camera_t *camera)
     return 0;
 }
 
-int boxes_update(boxes_t *boxes,
+int boxes_update(Boxes *boxes,
                  float delta_time)
 {
     assert(boxes);
@@ -91,8 +91,8 @@ int boxes_update(boxes_t *boxes,
     return 0;
 }
 
-int boxes_add_to_physical_world(const boxes_t *boxes,
-                                physical_world_t *physical_world)
+int boxes_add_to_physical_world(const Boxes *boxes,
+                                Physical_world *physical_world)
 {
     assert(boxes);
     assert(physical_world);
@@ -108,7 +108,7 @@ int boxes_add_to_physical_world(const boxes_t *boxes,
     return 0;
 }
 
-void boxes_float_in_lava(boxes_t *boxes, lava_t *lava)
+void boxes_float_in_lava(Boxes *boxes, Lava *lava)
 {
     for (size_t i = 0; i < boxes->count; ++i) {
         lava_float_rigid_rect(lava, boxes->bodies[i]);

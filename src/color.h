@@ -3,17 +3,17 @@
 
 #include <SDL2/SDL.h>
 
-typedef struct color_t {
+typedef struct Color {
     float r, g, b, a;
-} color_t;
+} Color;
 
-color_t color(float r, float g, float b, float a);
-color_t color256(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-color_t color_from_hexstr(const char *hexstr);
-SDL_Color color_for_sdl(color_t color);
+Color color(float r, float g, float b, float a);
+Color color256(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+Color color_from_hexstr(const char *hexstr);
+SDL_Color color_for_sdl(Color color);
 
-color_t color_darker(color_t color, float d);
+Color color_darker(Color color, float d);
 
-color_t color_desaturate(color_t color);
+Color color_desaturate(Color color);
 
 #endif  // COLOR_H_

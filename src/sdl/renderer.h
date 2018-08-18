@@ -8,14 +8,14 @@
 #include "math/triangle.h"
 
 int draw_triangle(SDL_Renderer *render,
-                  triangle_t t);
+                  Triangle t);
 
 int fill_triangle(SDL_Renderer *render,
-                  triangle_t t);
+                  Triangle t);
 
 int fill_rect(SDL_Renderer *render,
-              rect_t r,
-              color_t c);
+              Rect r,
+              Color c);
 
 /* `getpixel()` and `putpixel()` were stolen from
  * https://www.libsdl.org/release/SDL-1.2.15/docs/html/guidevideo.html */

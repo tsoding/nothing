@@ -7,12 +7,12 @@
 
 #define LABEL_TEXT_MAX_LENGTH 64
 
-struct labels_t
+struct Labels
 {
-    lt_t *lt;
+    Lt *lt;
     size_t count;
-    vec_t *positions;
-    color_t *colors;
+    Vec *positions;
+    Color *colors;
     char **texts;
     float *states;
     int *visible;
@@ -33,16 +33,16 @@ static char *trim_endline(char *s)
     return s;
 }
 
-labels_t *create_labels_from_stream(FILE *stream)
+Labels *create_labels_from_stream(FILE *stream)
 {
     assert(stream);
 
-    lt_t *const lt = create_lt();
+    Lt *const lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
 
-    labels_t * const labels = PUSH_LT(lt, malloc(sizeof(labels_t)), free);
+    Labels * const labels = PUSH_LT(lt, malloc(sizeof(Labels)), free);
     if (labels == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -54,13 +54,13 @@ labels_t *create_labels_from_stream(FILE *stream)
         RETURN_LT(lt, NULL);
     }
 
-    labels->positions = PUSH_LT(lt, malloc(sizeof(vec_t) * labels->count), free);
+    labels->positions = PUSH_LT(lt, malloc(sizeof(Vec) * labels->count), free);
     if (labels->positions == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
-    labels->colors = PUSH_LT(lt, malloc(sizeof(color_t) * labels->count), free);
+    labels->colors = PUSH_LT(lt, malloc(sizeof(Color) * labels->count), free);
     if (labels->colors == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -116,14 +116,14 @@ labels_t *create_labels_from_stream(FILE *stream)
     return labels;
 }
 
-void destroy_labels(labels_t *label)
+void destroy_labels(Labels *label)
 {
     assert(label);
     RETURN_LT0(label->lt);
 }
 
-int labels_render(const labels_t *label,
-                 camera_t *camera)
+int labels_render(const Labels *label,
+                 Camera *camera)
 {
     assert(label);
     assert(camera);
@@ -149,7 +149,7 @@ int labels_render(const labels_t *label,
     return 0;
 }
 
-void labels_update(labels_t *label,
+void labels_update(Labels *label,
                    float delta_time)
 {
     assert(label);
@@ -160,8 +160,8 @@ void labels_update(labels_t *label,
     }
 }
 
-void labels_enter_camera_event(labels_t *labels,
-                               const camera_t *camera)
+void labels_enter_camera_event(Labels *labels,
+                               const Camera *camera)
 {
     assert(labels);
     assert(camera);

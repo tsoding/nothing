@@ -10,35 +10,35 @@
 
 #define GOAL_RADIUS 10.0f
 
-static int goals_is_goal_hidden(const goals_t *goals, size_t i);
+static int goals_is_goal_hidden(const Goals *goals, size_t i);
 
-typedef enum cue_state_t {
+typedef enum Cue_state {
     CUE_STATE_VIRGIN = 0,
     CUE_STATE_HIT_NOTHING,
     CUE_STATE_SEEN_NOTHING
-} cue_state_t;
+} Cue_state;
 
-struct goals_t {
-    lt_t *lt;
-    point_t *points;
-    rect_t *regions;
-    color_t *colors;
-    cue_state_t *cue_states;
+struct Goals {
+    Lt *lt;
+    Point *points;
+    Rect *regions;
+    Color *colors;
+    Cue_state *cue_states;
     size_t goals_count;
-    rect_t player_hitbox;
+    Rect player_hitbox;
     float angle;
 };
 
-goals_t *create_goals_from_stream(FILE *stream)
+Goals *create_goals_from_stream(FILE *stream)
 {
     assert(stream);
 
-    lt_t *const lt = create_lt();
+    Lt *const lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
 
-    goals_t *const goals = PUSH_LT(lt, malloc(sizeof(goals_t)), free);
+    Goals *const goals = PUSH_LT(lt, malloc(sizeof(Goals)), free);
     if (goals == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -50,19 +50,19 @@ goals_t *create_goals_from_stream(FILE *stream)
         RETURN_LT(lt, NULL);
     }
 
-    goals->points = PUSH_LT(lt, malloc(sizeof(point_t) * goals->goals_count), free);
+    goals->points = PUSH_LT(lt, malloc(sizeof(Point) * goals->goals_count), free);
     if (goals->points == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
-    goals->regions = PUSH_LT(lt, malloc(sizeof(rect_t) * goals->goals_count), free);
+    goals->regions = PUSH_LT(lt, malloc(sizeof(Rect) * goals->goals_count), free);
     if (goals->regions == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
-    goals->colors = PUSH_LT(lt, malloc(sizeof(color_t) * goals->goals_count), free);
+    goals->colors = PUSH_LT(lt, malloc(sizeof(Color) * goals->goals_count), free);
     if (goals->colors == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -97,20 +97,20 @@ goals_t *create_goals_from_stream(FILE *stream)
     return goals;
 }
 
-void destroy_goals(goals_t *goals)
+void destroy_goals(Goals *goals)
 {
     assert(goals);
     RETURN_LT0(goals->lt);
 }
 
-static int goals_render_core(const goals_t *goals,
+static int goals_render_core(const Goals *goals,
                              size_t goal_index,
-                             camera_t *camera)
+                             Camera *camera)
 {
     assert(goals);
     assert(camera);
 
-    const point_t position = vec_sum(
+    const Point position = vec_sum(
         goals->points[goal_index],
         vec(0.0f, sinf(goals->angle) * 10.0f));
 
@@ -125,8 +125,8 @@ static int goals_render_core(const goals_t *goals,
         goals->colors[goal_index]);
 }
 
-int goals_render(const goals_t *goals,
-                 camera_t *camera)
+int goals_render(const Goals *goals,
+                 Camera *camera)
 
 {
     assert(goals);
@@ -143,7 +143,7 @@ int goals_render(const goals_t *goals,
     return 0;
 }
 
-void goals_update(goals_t *goals,
+void goals_update(Goals *goals,
                   float delta_time)
 {
     assert(goals);
@@ -151,15 +151,15 @@ void goals_update(goals_t *goals,
     goals->angle = fmodf(goals->angle + 2.0f * delta_time, 2.0f * PI);
 }
 
-void goals_hide(goals_t *goals,
-                rect_t player_hitbox)
+void goals_hide(Goals *goals,
+                Rect player_hitbox)
 {
     goals->player_hitbox = player_hitbox;
 
 }
 
-int goals_sound(goals_t *goals,
-                sound_samples_t *sound_samples)
+int goals_sound(Goals *goals,
+                Sound_samples *sound_samples)
 {
     for (size_t i = 0; i < goals->goals_count; ++i) {
         switch (goals->cue_states[i]) {
@@ -175,8 +175,8 @@ int goals_sound(goals_t *goals,
     return 0;
 }
 
-void goals_cue(goals_t *goals,
-               const camera_t *camera)
+void goals_cue(Goals *goals,
+               const Camera *camera)
 {
     for (size_t i = 0; i < goals->goals_count; ++i) {
         switch (goals->cue_states[i]) {
@@ -198,8 +198,8 @@ void goals_cue(goals_t *goals,
     }
 }
 
-void goals_checkpoint(const goals_t *goals,
-                      player_t *player)
+void goals_checkpoint(const Goals *goals,
+                      Player *player)
 {
     assert(goals);
     assert(player);
@@ -213,7 +213,7 @@ void goals_checkpoint(const goals_t *goals,
 
 /* Private Functions */
 
-static int goals_is_goal_hidden(const goals_t *goals, size_t i)
+static int goals_is_goal_hidden(const Goals *goals, size_t i)
 {
     return rects_overlap(goals->regions[i], goals->player_hitbox);
 }

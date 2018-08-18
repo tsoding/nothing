@@ -7,24 +7,24 @@
 #include "game/level/player.h"
 #include "game/sound_samples.h"
 
-typedef struct goals_t goals_t;
+typedef struct Goals Goals;
 
-goals_t *create_goals_from_stream(FILE *stream);
-void destroy_goals(goals_t *goals);
+Goals *create_goals_from_stream(FILE *stream);
+void destroy_goals(Goals *goals);
 
-rect_t goals_hitbox(const goals_t *goals);
+Rect goals_hitbox(const Goals *goals);
 
-int goals_render(const goals_t *goals,
-                 camera_t *camera);
-int goals_sound(goals_t *goals,
-                sound_samples_t *sound_samples);
-void goals_update(goals_t *goals,
+int goals_render(const Goals *goals,
+                 Camera *camera);
+int goals_sound(Goals *goals,
+                Sound_samples *sound_samples);
+void goals_update(Goals *goals,
                   float delta_time);
-void goals_hide(goals_t *goals,
-                rect_t player_hitbox);
-void goals_checkpoint(const goals_t *goals,
-                      player_t *player);
-void goals_cue(goals_t *goals,
-               const camera_t *camera);
+void goals_hide(Goals *goals,
+                Rect player_hitbox);
+void goals_checkpoint(const Goals *goals,
+                      Player *player);
+void goals_cue(Goals *goals,
+               const Camera *camera);
 
 #endif  // GOALS_H_

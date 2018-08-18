@@ -9,24 +9,24 @@
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
 
-struct platforms_t {
-    lt_t *lt;
+struct Platforms {
+    Lt *lt;
 
-    rect_t *rects;
-    color_t *colors;
+    Rect *rects;
+    Color *colors;
     size_t rects_size;
 };
 
-platforms_t *create_platforms_from_stream(FILE *stream)
+Platforms *create_platforms_from_stream(FILE *stream)
 {
     assert(stream);
 
-    lt_t *const lt = create_lt();
+    Lt *const lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
 
-    platforms_t *platforms = PUSH_LT(lt, malloc(sizeof(platforms_t)), free);
+    Platforms *platforms = PUSH_LT(lt, malloc(sizeof(Platforms)), free);
     if (platforms == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -38,13 +38,13 @@ platforms_t *create_platforms_from_stream(FILE *stream)
         RETURN_LT(lt, NULL);
     }
 
-    platforms->rects = PUSH_LT(lt, malloc(sizeof(rect_t) * platforms->rects_size), free);
+    platforms->rects = PUSH_LT(lt, malloc(sizeof(Rect) * platforms->rects_size), free);
     if (platforms->rects == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
-    platforms->colors = PUSH_LT(lt, malloc(sizeof(color_t) * platforms->rects_size), free);
+    platforms->colors = PUSH_LT(lt, malloc(sizeof(Color) * platforms->rects_size), free);
     if (platforms->colors == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -67,7 +67,7 @@ platforms_t *create_platforms_from_stream(FILE *stream)
     return platforms;
 }
 
-platforms_t *create_platforms_from_file(const char *filename)
+Platforms *create_platforms_from_file(const char *filename)
 {
     assert(filename);
 
@@ -77,7 +77,7 @@ platforms_t *create_platforms_from_file(const char *filename)
         return NULL;
     }
 
-    platforms_t *platforms = create_platforms_from_stream(platforms_file);
+    Platforms *platforms = create_platforms_from_stream(platforms_file);
     if (platforms != NULL) {
         fclose(platforms_file);
         return NULL;
@@ -87,19 +87,19 @@ platforms_t *create_platforms_from_file(const char *filename)
     return platforms;
 }
 
-void destroy_platforms(platforms_t *platforms)
+void destroy_platforms(Platforms *platforms)
 {
     assert(platforms);
     RETURN_LT0(platforms->lt);
 }
 
-int platforms_save_to_file(const platforms_t *platforms,
+int platforms_save_to_file(const Platforms *platforms,
                            const char *filename)
 {
     assert(platforms);
     assert(filename);
 
-    lt_t *const lt = create_lt();
+    Lt *const lt = create_lt();
     if (lt == NULL) {
         return -1;
     }
@@ -123,9 +123,9 @@ int platforms_save_to_file(const platforms_t *platforms,
     RETURN_LT(lt, 0);
 }
 
-solid_ref_t platforms_as_solid(platforms_t *platforms)
+Solid_ref platforms_as_solid(Platforms *platforms)
 {
-    solid_ref_t ref = {
+    Solid_ref ref = {
         .tag = SOLID_PLATFORMS,
         .ptr = (void*)platforms
     };
@@ -133,8 +133,8 @@ solid_ref_t platforms_as_solid(platforms_t *platforms)
     return ref;
 }
 
-int platforms_render(const platforms_t *platforms,
-                     camera_t *camera)
+int platforms_render(const Platforms *platforms,
+                     Camera *camera)
 {
     for (size_t i = 0; i < platforms->rects_size; ++i) {
         if (camera_fill_rect(
@@ -149,8 +149,8 @@ int platforms_render(const platforms_t *platforms,
     return 0;
 }
 
-void platforms_touches_rect_sides(const platforms_t *platforms,
-                                  rect_t object,
+void platforms_touches_rect_sides(const Platforms *platforms,
+                                  Rect object,
                                   int sides[RECT_SIDE_N])
 {
     assert(platforms);

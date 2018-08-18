@@ -11,24 +11,24 @@
 
 #define FONT_ROW_SIZE 18
 
-struct sprite_font_t
+struct Sprite_font
 {
-    lt_t *lt;
+    Lt *lt;
     SDL_Texture *texture;
 };
 
-sprite_font_t *create_sprite_font_from_file(const char *bmp_file_path,
+Sprite_font *create_sprite_font_from_file(const char *bmp_file_path,
                                             SDL_Renderer *renderer)
 {
     assert(bmp_file_path);
     assert(renderer);
 
-    lt_t * const lt = create_lt();
+    Lt * const lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
 
-    sprite_font_t * const sprite_font = PUSH_LT(lt, malloc(sizeof(sprite_font_t)), free);
+    Sprite_font * const sprite_font = PUSH_LT(lt, malloc(sizeof(Sprite_font)), free);
     if (sprite_font == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -64,13 +64,13 @@ sprite_font_t *create_sprite_font_from_file(const char *bmp_file_path,
     return sprite_font;
 }
 
-void destroy_sprite_font(sprite_font_t *sprite_font)
+void destroy_sprite_font(Sprite_font *sprite_font)
 {
     assert(sprite_font);
     RETURN_LT0(sprite_font->lt);
 }
 
-static SDL_Rect sprite_font_char_rect(const sprite_font_t *sprite_font, char x)
+static SDL_Rect sprite_font_char_rect(const Sprite_font *sprite_font, char x)
 {
     assert(sprite_font);
 
@@ -87,11 +87,11 @@ static SDL_Rect sprite_font_char_rect(const sprite_font_t *sprite_font, char x)
     }
 }
 
-int sprite_font_render_text(const sprite_font_t *sprite_font,
+int sprite_font_render_text(const Sprite_font *sprite_font,
                             SDL_Renderer *renderer,
-                            vec_t position,
-                            vec_t size,
-                            color_t color,
+                            Vec position,
+                            Vec size,
+                            Color color,
                             const char *text)
 {
     assert(sprite_font);
@@ -127,9 +127,9 @@ int sprite_font_render_text(const sprite_font_t *sprite_font,
     return 0;
 }
 
-rect_t sprite_font_boundary_box(const sprite_font_t *sprite_font,
-                                vec_t position,
-                                vec_t size,
+Rect sprite_font_boundary_box(const Sprite_font *sprite_font,
+                                Vec position,
+                                Vec size,
                                 const char *text)
 {
     assert(sprite_font);

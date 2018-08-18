@@ -5,9 +5,9 @@
 
 #include "rect.h"
 
-rect_t rect(float x, float y, float w, float h)
+Rect rect(float x, float y, float w, float h)
 {
-    const rect_t result = {
+    const Rect result = {
         .x = x,
         .y = y,
         .w = w,
@@ -17,14 +17,14 @@ rect_t rect(float x, float y, float w, float h)
     return result;
 }
 
-rect_t rect_from_vecs(point_t position, vec_t size)
+Rect rect_from_vecs(Point position, Vec size)
 {
     return rect(position.x, position.y, size.x, size.y);
 }
 
-rect_t rect_from_sdl(const SDL_Rect *rect)
+Rect rect_from_sdl(const SDL_Rect *rect)
 {
-    const rect_t result = {
+    const Rect result = {
         .x = (float) rect->x,
         .y = (float) rect->y,
         .w = (float) rect->w,
@@ -34,14 +34,14 @@ rect_t rect_from_sdl(const SDL_Rect *rect)
     return result;
 }
 
-rect_t rects_overlap_area(rect_t rect1, rect_t rect2)
+Rect rects_overlap_area(Rect rect1, Rect rect2)
 {
     float x1 = fmaxf(rect1.x, rect2.x);
     float y1 = fmaxf(rect1.y, rect2.y);
     float x2 = fminf(rect1.x + rect1.w, rect2.x + rect2.w);
     float y2 = fminf(rect1.y + rect1.h, rect2.y + rect2.h);
 
-    rect_t result = {
+    Rect result = {
         .x = x1,
         .y = y1,
         .w = fmaxf(0.0f, x2 - x1),
@@ -50,7 +50,7 @@ rect_t rects_overlap_area(rect_t rect1, rect_t rect2)
     return result;
 }
 
-int rects_overlap(rect_t rect1, rect_t rect2)
+int rects_overlap(Rect rect1, Rect rect2)
 {
     return rect1.x + rect1.w >= rect2.x
         && rect2.x + rect2.w >= rect1.x
@@ -58,23 +58,23 @@ int rects_overlap(rect_t rect1, rect_t rect2)
         && rect1.y + rect1.h >= rect2.y;
 }
 
-float line_length(line_t line)
+float line_length(Line line)
 {
     float dx = line.p1.x - line.p2.x;
     float dy = line.p1.y - line.p2.y;
     return sqrtf(dx * dx + dy * dy);
 }
 
-void rect_object_impact(rect_t object, rect_t obstacle, int *sides)
+void rect_object_impact(Rect object, Rect obstacle, int *sides)
 {
     assert(sides);
 
-    rect_t int_area = rects_overlap_area(object, obstacle);
+    Rect int_area = rects_overlap_area(object, obstacle);
 
     if (int_area.w * int_area.h > 0.0f) {
         for (int side = 0; side < RECT_SIDE_N; ++side) {
-            line_t object_side = rect_side(object, side);
-            line_t int_side = rect_side(int_area, side);
+            Line object_side = rect_side(object, side);
+            Line int_side = rect_side(int_area, side);
 
             if (line_length(int_side) > 10.0f) {
                 sides[side] = sides[side] ||
@@ -89,14 +89,14 @@ void rect_object_impact(rect_t object, rect_t obstacle, int *sides)
     }
 }
 
-line_t rect_side(rect_t rect, rect_side_t side)
+Line rect_side(Rect rect, Rect_side side)
 {
     const float x1 = rect.x;
     const float y1 = rect.y;
     const float x2 = rect.x + rect.w;
     const float y2 = rect.y + rect.h;
 
-    line_t result;
+    Line result;
 
     switch (side) {
     case RECT_SIDE_LEFT:
@@ -129,9 +129,9 @@ line_t rect_side(rect_t rect, rect_side_t side)
     return result;
 }
 
-rect_t rect_from_point(point_t p, float w, float h)
+Rect rect_from_point(Point p, float w, float h)
 {
-    rect_t result = {
+    Rect result = {
         .x = p.x,
         .y = p.y,
         .w = w,
@@ -141,13 +141,13 @@ rect_t rect_from_point(point_t p, float w, float h)
     return result;
 }
 
-int rect_contains_point(rect_t rect, point_t p)
+int rect_contains_point(Rect rect, Point p)
 {
     return rect.x <= p.x && p.x <= rect.x + rect.w
         && rect.y <= p.y && p.y <= rect.y + rect.h;
 }
 
-SDL_Rect rect_for_sdl(rect_t rect)
+SDL_Rect rect_for_sdl(Rect rect)
 {
     const SDL_Rect result = {
         .x = (int) roundf(rect.x),

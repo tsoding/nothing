@@ -4,17 +4,17 @@
 #include "math/point.h"
 #include "color.h"
 
-typedef struct labels_t labels_t;
-typedef struct camera_t camera_t;
+typedef struct Labels Labels;
+typedef struct Camera Camera;
 
-labels_t *create_labels_from_stream(FILE *stream);
-void destroy_labels(labels_t *label);
+Labels *create_labels_from_stream(FILE *stream);
+void destroy_labels(Labels *label);
 
-int labels_render(const labels_t *label,
-                  camera_t *camera);
-void labels_update(labels_t *label,
+int labels_render(const Labels *label,
+                  Camera *camera);
+void labels_update(Labels *label,
                    float delta_time);
-void labels_enter_camera_event(labels_t *label,
-                               const camera_t *camera);
+void labels_enter_camera_event(Labels *label,
+                               const Camera *camera);
 
 #endif  // LABELS_H_

@@ -9,48 +9,48 @@
 #include "math/mat3x3.h"
 #include "math/rect.h"
 
-// TODO(#215): replace rigid_rect_t with rigid_bodies_t
+// TODO(#215): replace Rigid_rect with Rigid_bodies
 
-typedef struct rigid_rect_t rigid_rect_t;
-typedef struct boxes_t boxes_t;
+typedef struct Rigid_rect Rigid_rect;
+typedef struct Boxes Boxes;
 
-rigid_rect_t *create_rigid_rect(rect_t rect, color_t color);
-rigid_rect_t *create_rigid_rect_from_stream(FILE *stream);
-void destroy_rigid_rect(rigid_rect_t *rigid_rect);
+Rigid_rect *create_rigid_rect(Rect rect, Color color);
+Rigid_rect *create_rigid_rect_from_stream(FILE *stream);
+void destroy_rigid_rect(Rigid_rect *rigid_rect);
 
-solid_ref_t rigid_rect_as_solid(rigid_rect_t *rigid_rect);
+Solid_ref rigid_rect_as_solid(Rigid_rect *rigid_rect);
 
-int rigid_rect_render(const rigid_rect_t *rigid_rect,
-                      camera_t *camera);
-int rigid_rect_update(rigid_rect_t * rigid_rect,
+int rigid_rect_render(const Rigid_rect *rigid_rect,
+                      Camera *camera);
+int rigid_rect_update(Rigid_rect * rigid_rect,
                       float delta_time);
 
-void rigid_rect_touches_rect_sides(rigid_rect_t *rigid_rect,
-                                   rect_t object,
+void rigid_rect_touches_rect_sides(Rigid_rect *rigid_rect,
+                                   Rect object,
                                    int sides[RECT_SIDE_N]);
 
-void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
-                                   solid_ref_t solid);
+void rigid_rect_collide_with_solid(Rigid_rect * rigid_rect,
+                                   Solid_ref solid);
 
-rect_t rigid_rect_hitbox(const rigid_rect_t *rigid_rect);
+Rect rigid_rect_hitbox(const Rigid_rect *rigid_rect);
 
-void rigid_rect_move(rigid_rect_t *rigid_rect,
-                     vec_t movement);
+void rigid_rect_move(Rigid_rect *rigid_rect,
+                     Vec movement);
 
-int rigid_rect_touches_ground(const rigid_rect_t *rigid_rect);
+int rigid_rect_touches_ground(const Rigid_rect *rigid_rect);
 
 /** \brief implements solid_apply_force
  */
-void rigid_rect_apply_force(rigid_rect_t * rigid_rect,
-                            vec_t force);
+void rigid_rect_apply_force(Rigid_rect * rigid_rect,
+                            Vec force);
 
-void rigid_rect_transform_velocity(rigid_rect_t *rigid_rect,
+void rigid_rect_transform_velocity(Rigid_rect *rigid_rect,
                                    mat3x3 trans_mat);
 
-void rigid_rect_teleport_to(rigid_rect_t *rigid_rect,
-                            vec_t position);
+void rigid_rect_teleport_to(Rigid_rect *rigid_rect,
+                            Vec position);
 
-void rigid_rect_damper(rigid_rect_t *rigid_rect,
-                       vec_t v);
+void rigid_rect_damper(Rigid_rect *rigid_rect,
+                       Vec v);
 
 #endif  // RIGID_RECT_H_

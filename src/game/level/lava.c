@@ -12,22 +12,22 @@
 
 #define LAVA_BOINGNESS 2500.0f
 
-struct lava_t {
-    lt_t *lt;
+struct Lava {
+    Lt *lt;
     size_t rects_count;
-    wavy_rect_t **rects;
+    Wavy_rect **rects;
 };
 
-lava_t *create_lava_from_stream(FILE *stream)
+Lava *create_lava_from_stream(FILE *stream)
 {
     assert(stream);
 
-    lt_t *lt = create_lt();
+    Lt *lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
 
-    lava_t *lava = PUSH_LT(lt, malloc(sizeof(lava_t)), free);
+    Lava *lava = PUSH_LT(lt, malloc(sizeof(Lava)), free);
     if (lava == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -38,7 +38,7 @@ lava_t *create_lava_from_stream(FILE *stream)
         RETURN_LT(lt, NULL);
     }
 
-    lava->rects = PUSH_LT(lt, malloc(sizeof(wavy_rect_t*) * lava->rects_count), free);
+    lava->rects = PUSH_LT(lt, malloc(sizeof(Wavy_rect*) * lava->rects_count), free);
     if (lava->rects == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -56,14 +56,14 @@ lava_t *create_lava_from_stream(FILE *stream)
     return lava;
 }
 
-void destroy_lava(lava_t *lava)
+void destroy_lava(Lava *lava)
 {
     assert(lava);
     RETURN_LT0(lava->lt);
 }
 
-int lava_render(const lava_t *lava,
-                camera_t *camera)
+int lava_render(const Lava *lava,
+                Camera *camera)
 {
     assert(lava);
     assert(camera);
@@ -77,7 +77,7 @@ int lava_render(const lava_t *lava,
     return 0;
 }
 
-int lava_update(lava_t *lava, float delta_time)
+int lava_update(Lava *lava, float delta_time)
 {
     assert(lava);
 
@@ -90,8 +90,8 @@ int lava_update(lava_t *lava, float delta_time)
     return 0;
 }
 
-bool lava_overlaps_rect(const lava_t *lava,
-                        rect_t rect)
+bool lava_overlaps_rect(const Lava *lava,
+                        Rect rect)
 {
     assert(lava);
 
@@ -104,15 +104,15 @@ bool lava_overlaps_rect(const lava_t *lava,
     return 0;
 }
 
-void lava_float_rigid_rect(lava_t *lava, rigid_rect_t *object)
+void lava_float_rigid_rect(Lava *lava, Rigid_rect *object)
 {
     assert(lava);
 
-    const rect_t object_hitbox = rigid_rect_hitbox(object);
+    const Rect object_hitbox = rigid_rect_hitbox(object);
     for (size_t i = 0; i < lava->rects_count; ++i) {
-        const rect_t lava_hitbox = wavy_rect_hitbox(lava->rects[i]);
+        const Rect lava_hitbox = wavy_rect_hitbox(lava->rects[i]);
         if (rects_overlap(object_hitbox, lava_hitbox)) {
-            const rect_t overlap_area = rects_overlap_area(object_hitbox, lava_hitbox);
+            const Rect overlap_area = rects_overlap_area(object_hitbox, lava_hitbox);
             const float k = overlap_area.w * overlap_area.h / (object_hitbox.w * object_hitbox.h);
             rigid_rect_apply_force(
                 object,
