@@ -26,6 +26,13 @@ struct Expr cons_as_expr(struct Cons *cons)
     return expr;
 }
 
+struct Expr create_expr_from_str(const char *str)
+{
+    /* TODO: create_expr_from_str is not implemented */
+    assert(str);
+    return atom_as_expr(0);
+}
+
 void destroy_expr(struct Expr expr)
 {
     switch (expr.type) {
@@ -109,4 +116,10 @@ void destroy_atom(struct Atom *atom)
     }
 
     free(atom);
+}
+
+void print_expr_as_sexpr(struct Expr expr)
+{
+    (void) expr;
+    /* TODO: print_expr_as_sexpr is not implemented */
 }

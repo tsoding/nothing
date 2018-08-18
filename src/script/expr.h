@@ -10,6 +10,7 @@ enum ExprType
     EXPR_CONS
 };
 
+// TODO: there is no way to execute struct Expr
 struct Expr
 {
     enum ExprType type;
@@ -21,7 +22,9 @@ struct Expr
 
 struct Expr atom_as_expr(struct Atom *atom);
 struct Expr cons_as_expr(struct Cons *cons);
+struct Expr create_expr_from_str(const char *str);
 void destroy_expr(struct Expr expr);
+void print_expr_as_sexpr(struct Expr expr);
 
 enum AtomType
 {
