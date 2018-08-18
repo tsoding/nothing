@@ -11,23 +11,23 @@
 
 #define WAVE_PILLAR_WIDTH 10.0f
 
-struct wavy_rect_t
+struct Wavy_rect
 {
-    lt_t *lt;
+    Lt *lt;
 
-    rect_t rect;
-    color_t color;
+    Rect rect;
+    Color color;
     float angle;
 };
 
-wavy_rect_t *create_wavy_rect(rect_t rect, color_t color)
+Wavy_rect *create_wavy_rect(Rect rect, Color color)
 {
-    lt_t *lt = create_lt();
+    Lt *lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
 
-    wavy_rect_t *wavy_rect = PUSH_LT(lt, malloc(sizeof(wavy_rect_t)), free);
+    Wavy_rect *wavy_rect = PUSH_LT(lt, malloc(sizeof(Wavy_rect)), free);
     if (wavy_rect == NULL) {
         throw_error(ERROR_TYPE_SDL2);
         RETURN_LT(lt, NULL);
@@ -41,11 +41,11 @@ wavy_rect_t *create_wavy_rect(rect_t rect, color_t color)
     return wavy_rect;
 }
 
-wavy_rect_t *create_wavy_rect_from_stream(FILE *stream)
+Wavy_rect *create_wavy_rect_from_stream(FILE *stream)
 {
     assert(stream);
     char color_name[7];
-    rect_t rect;
+    Rect rect;
 
     if (fscanf(stream, "%f%f%f%f%6s\n",
                &rect.x, &rect.y,
@@ -55,19 +55,19 @@ wavy_rect_t *create_wavy_rect_from_stream(FILE *stream)
         return NULL;
     }
 
-    color_t color = color_from_hexstr(color_name);
+    Color color = color_from_hexstr(color_name);
 
     return create_wavy_rect(rect, color);
 }
 
-void destroy_wavy_rect(wavy_rect_t *wavy_rect)
+void destroy_wavy_rect(Wavy_rect *wavy_rect)
 {
     assert(wavy_rect);
     RETURN_LT0(wavy_rect->lt);
 }
 
-int wavy_rect_render(const wavy_rect_t *wavy_rect,
-                     camera_t *camera)
+int wavy_rect_render(const Wavy_rect *wavy_rect,
+                     Camera *camera)
 {
     assert(wavy_rect);
     assert(camera);
@@ -94,7 +94,7 @@ int wavy_rect_render(const wavy_rect_t *wavy_rect,
     return 0;
 }
 
-int wavy_rect_update(wavy_rect_t *wavy_rect,
+int wavy_rect_update(Wavy_rect *wavy_rect,
                      float delta_time)
 {
     assert(wavy_rect);
@@ -103,7 +103,7 @@ int wavy_rect_update(wavy_rect_t *wavy_rect,
     return 0;
 }
 
-rect_t wavy_rect_hitbox(const wavy_rect_t *wavy_rect)
+Rect wavy_rect_hitbox(const Wavy_rect *wavy_rect)
 {
     return wavy_rect->rect;
 }

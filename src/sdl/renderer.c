@@ -6,7 +6,7 @@
 #include "system/lt.h"
 
 int draw_triangle(SDL_Renderer *render,
-                  triangle_t t)
+                  Triangle t)
 {
     assert(render);
 
@@ -41,7 +41,7 @@ int draw_triangle(SDL_Renderer *render,
 }
 
 static int fill_bottom_flat_triangle(SDL_Renderer *render,
-                                     triangle_t t)
+                                     Triangle t)
 {
     assert(render);
 
@@ -70,7 +70,7 @@ static int fill_bottom_flat_triangle(SDL_Renderer *render,
 }
 
 static int fill_top_flat_triangle(SDL_Renderer *render,
-                                  triangle_t t)
+                                  Triangle t)
 {
     assert(render);
 
@@ -100,7 +100,7 @@ static int fill_top_flat_triangle(SDL_Renderer *render,
 }
 
 int fill_triangle(SDL_Renderer *render,
-                  triangle_t t)
+                  Triangle t)
 {
     t = triangle_sorted_by_y(t);
 
@@ -113,7 +113,7 @@ int fill_triangle(SDL_Renderer *render,
             return -1;
         }
     } else {
-        const point_t p4 = vec(t.p1.x + ((t.p2.y - t.p1.y) / (t.p3.y - t.p1.y)) * (t.p3.x - t.p1.x), t.p2.y);
+        const Point p4 = vec(t.p1.x + ((t.p2.y - t.p1.y) / (t.p3.y - t.p1.y)) * (t.p3.x - t.p1.x), t.p2.y);
 
         if (fill_bottom_flat_triangle(render, triangle(t.p1, t.p2, p4)) < 0) {
             return -1;
@@ -135,7 +135,7 @@ int fill_triangle(SDL_Renderer *render,
     return 0;
 }
 
-int fill_rect(SDL_Renderer *render, rect_t r, color_t c)
+int fill_rect(SDL_Renderer *render, Rect r, Color c)
 {
     const SDL_Rect sdl_rect = rect_for_sdl(r);
     const SDL_Color sdl_color = color_for_sdl(c);

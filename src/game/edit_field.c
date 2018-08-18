@@ -8,36 +8,36 @@
 
 #define BUFFER_CAPACITY 256
 
-struct edit_field_t
+struct Edit_field
 {
-    lt_t *lt;
+    Lt *lt;
     char *buffer;
     size_t buffer_size;
     size_t cursor;
-    const sprite_font_t *font;
-    vec_t font_size;
-    color_t font_color;
+    const Sprite_font *font;
+    Vec font_size;
+    Color font_color;
 };
 
-static void edit_field_left(edit_field_t *edit_field);
-static void edit_field_right(edit_field_t *edit_field);
-static void edit_field_backspace(edit_field_t *edit_field);
-static void edit_field_delete(edit_field_t *edit_field);
-static void edit_field_insert_char(edit_field_t *edit_field, char c);
+static void edit_field_left(Edit_field *edit_field);
+static void edit_field_right(Edit_field *edit_field);
+static void edit_field_backspace(Edit_field *edit_field);
+static void edit_field_delete(Edit_field *edit_field);
+static void edit_field_insert_char(Edit_field *edit_field, char c);
 
-edit_field_t *create_edit_field(const sprite_font_t *font,
-                                vec_t font_size,
-                                color_t font_color)
+Edit_field *create_edit_field(const Sprite_font *font,
+                                Vec font_size,
+                                Color font_color)
 {
     assert(font);
 
-    lt_t *lt = create_lt();
+    Lt *lt = create_lt();
 
     if (lt == NULL) {
         return NULL;
     }
 
-    edit_field_t *const edit_field = PUSH_LT(lt, malloc(sizeof(edit_field_t)), free);
+    Edit_field *const edit_field = PUSH_LT(lt, malloc(sizeof(Edit_field)), free);
     if (edit_field == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -61,15 +61,15 @@ edit_field_t *create_edit_field(const sprite_font_t *font,
     return edit_field;
 }
 
-void destroy_edit_field(edit_field_t *edit_field)
+void destroy_edit_field(Edit_field *edit_field)
 {
     assert(edit_field);
     RETURN_LT0(edit_field->lt);
 }
 
-int edit_field_render(const edit_field_t *edit_field,
+int edit_field_render(const Edit_field *edit_field,
                       SDL_Renderer *renderer,
-                      point_t position)
+                      Point position)
 {
     assert(edit_field);
     assert(renderer);
@@ -99,7 +99,7 @@ int edit_field_render(const edit_field_t *edit_field,
     return 0;
 }
 
-int edit_field_handle_event(edit_field_t *edit_field,
+int edit_field_handle_event(Edit_field *edit_field,
                             const SDL_Event *event)
 {
     assert(edit_field);
@@ -136,20 +136,20 @@ int edit_field_handle_event(edit_field_t *edit_field,
     return 0;
 }
 
-const char *edit_field_as_text(const edit_field_t *edit_field)
+const char *edit_field_as_text(const Edit_field *edit_field)
 {
     assert(edit_field);
     return edit_field->buffer;
 }
 
-static void edit_field_left(edit_field_t *edit_field)
+static void edit_field_left(Edit_field *edit_field)
 {
     if (edit_field->cursor > 0) {
         edit_field->cursor--;
     }
 }
 
-static void edit_field_right(edit_field_t *edit_field)
+static void edit_field_right(Edit_field *edit_field)
 {
     assert(edit_field);
     if (edit_field->cursor < edit_field->buffer_size) {
@@ -157,7 +157,7 @@ static void edit_field_right(edit_field_t *edit_field)
     }
 }
 
-static void edit_field_backspace(edit_field_t *edit_field)
+static void edit_field_backspace(Edit_field *edit_field)
 {
     assert(edit_field);
 
@@ -173,7 +173,7 @@ static void edit_field_backspace(edit_field_t *edit_field)
     edit_field->buffer[--edit_field->buffer_size] = 0;
 }
 
-static void edit_field_delete(edit_field_t *edit_field)
+static void edit_field_delete(Edit_field *edit_field)
 {
     assert(edit_field);
 
@@ -188,7 +188,7 @@ static void edit_field_delete(edit_field_t *edit_field)
     edit_field->buffer[--edit_field->buffer_size] = 0;
 }
 
-static void edit_field_insert_char(edit_field_t *edit_field, char c)
+static void edit_field_insert_char(Edit_field *edit_field, char c)
 {
     assert(edit_field);
 

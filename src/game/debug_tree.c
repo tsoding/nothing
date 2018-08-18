@@ -6,22 +6,22 @@
 #include "system/error.h"
 #include "system/lt.h"
 
-struct debug_tree_t
+struct Debug_tree
 {
-    lt_t *lt;
-    const sprite_font_t *font;
+    Lt *lt;
+    const Sprite_font *font;
     int enabled;
 };
 
-debug_tree_t * create_debug_tree(const sprite_font_t *font)
+Debug_tree * create_debug_tree(const Sprite_font *font)
 {
-    lt_t * const lt = create_lt();
+    Lt * const lt = create_lt();
 
     if (lt == NULL) {
         return NULL;
     }
 
-    debug_tree_t * const debug_tree = PUSH_LT(lt, malloc(sizeof(debug_tree_t)), free);
+    Debug_tree * const debug_tree = PUSH_LT(lt, malloc(sizeof(Debug_tree)), free);
     if (debug_tree == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -34,13 +34,13 @@ debug_tree_t * create_debug_tree(const sprite_font_t *font)
     return debug_tree;
 }
 
-void destroy_debug_tree(debug_tree_t *debug_tree)
+void destroy_debug_tree(Debug_tree *debug_tree)
 {
     assert(debug_tree);
     RETURN_LT0(debug_tree->lt);
 }
 
-int debug_tree_render(const debug_tree_t *debug_tree,
+int debug_tree_render(const Debug_tree *debug_tree,
                       SDL_Renderer *renderer)
 {
     assert(debug_tree);
@@ -63,7 +63,7 @@ int debug_tree_render(const debug_tree_t *debug_tree,
     return 0;
 }
 
-void debug_tree_toggle_enabled(debug_tree_t *debug_tree)
+void debug_tree_toggle_enabled(Debug_tree *debug_tree)
 {
     debug_tree->enabled = !debug_tree->enabled;
 }

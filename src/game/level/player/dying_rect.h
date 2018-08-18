@@ -7,20 +7,20 @@
 #include "game/camera.h"
 #include "math/rect.h"
 
-typedef struct dying_rect_t dying_rect_t;
+typedef struct Dying_rect Dying_rect;
 
-dying_rect_t *create_dying_rect(color_t color,
+Dying_rect *create_dying_rect(Color color,
                                 float duration);
-void destroy_dying_rect(dying_rect_t *dying_rect);
+void destroy_dying_rect(Dying_rect *dying_rect);
 
-int dying_rect_render(const dying_rect_t *dying_rect,
-                      camera_t *camera);
-int dying_rect_update(dying_rect_t *dying_rect,
+int dying_rect_render(const Dying_rect *dying_rect,
+                      Camera *camera);
+int dying_rect_update(Dying_rect *dying_rect,
                       float delta_time);
 
-int dying_rect_is_dead(const dying_rect_t *dying_rect);
+int dying_rect_is_dead(const Dying_rect *dying_rect);
 
-void dying_rect_start_dying(dying_rect_t *dying_rect,
-                            vec_t position);
+void dying_rect_start_dying(Dying_rect *dying_rect,
+                            Vec position);
 
 #endif  // DYING_RECT_H_

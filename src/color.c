@@ -3,9 +3,9 @@
 
 #include "color.h"
 
-color_t color(float r, float g, float b, float a)
+Color color(float r, float g, float b, float a)
 {
-    const color_t result = {
+    const Color result = {
         .r = r,
         .g = g,
         .b = b,
@@ -15,7 +15,7 @@ color_t color(float r, float g, float b, float a)
     return result;
 }
 
-color_t color256(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
+Color color256(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 {
     return color(
         (float) r / 255.0f,
@@ -46,7 +46,7 @@ static Uint8 parse_color_component(const char *component)
     return (Uint8) (hex2dec_digit(component[0]) * 16 + hex2dec_digit(component[1]));
 }
 
-color_t color_from_hexstr(const char *hexstr)
+Color color_from_hexstr(const char *hexstr)
 {
     if (strlen(hexstr) != 6) {
         return color(0.0f, 0.0f, 0.0f, 1.0f);
@@ -59,7 +59,7 @@ color_t color_from_hexstr(const char *hexstr)
         255);
 }
 
-SDL_Color color_for_sdl(color_t color)
+SDL_Color color_for_sdl(Color color)
 {
     const SDL_Color result = {
         .r = (Uint8)roundf(color.r * 255.0f),
@@ -71,13 +71,13 @@ SDL_Color color_for_sdl(color_t color)
     return result;
 }
 
-color_t color_desaturate(color_t c)
+Color color_desaturate(Color c)
 {
     const float k = (c.r + c.g + c.b) / 3.0f;
     return color(k, k, k, c.a);
 }
 
-color_t color_darker(color_t c, float d)
+Color color_darker(Color c, float d)
 {
     return color(fmaxf(c.r - d, 0.0f),
                  fmaxf(c.g - d, 0.0f),

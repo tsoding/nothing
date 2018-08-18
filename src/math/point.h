@@ -4,30 +4,30 @@
 #include "math/mat3x3.h"
 #include "math/pi.h"
 
-typedef struct point_t {
+typedef struct Point {
     float x, y;
-} point_t;
+} Point;
 
-typedef point_t vec_t;
+typedef Point Vec;
 
-vec_t vec(float x, float y);
-vec_t vec_from_polar(float arg, float mag);
-vec_t vec_from_ps(point_t p1, point_t p2);
+Vec vec(float x, float y);
+Vec vec_from_polar(float arg, float mag);
+Vec vec_from_ps(Point p1, Point p2);
 
-float vec_arg(vec_t v);
-float vec_mag(vec_t v);
+float vec_arg(Vec v);
+float vec_mag(Vec v);
 
 float rad_to_deg(float a);
 
-vec_t vec_sum(vec_t v1, vec_t v2);
-vec_t vec_neg(vec_t v);
-void vec_add(vec_t *v1, vec_t v2);
-float vec_length(vec_t v);
-vec_t vec_scala_mult(vec_t v, float scalar);
-vec_t vec_entry_mult(vec_t v1, vec_t v2);
-vec_t vec_entry_div(vec_t v1, vec_t v2);
-vec_t vec_norm(vec_t v);
+Vec vec_sum(Vec v1, Vec v2);
+Vec vec_neg(Vec v);
+void vec_add(Vec *v1, Vec v2);
+float vec_length(Vec v);
+Vec vec_scala_mult(Vec v, float scalar);
+Vec vec_entry_mult(Vec v1, Vec v2);
+Vec vec_entry_div(Vec v1, Vec v2);
+Vec vec_norm(Vec v);
 
-point_t point_mat3x3_product(point_t p, mat3x3 m);
+Point point_mat3x3_product(Point p, mat3x3 m);
 
 #endif  // POINT_H_

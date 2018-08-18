@@ -8,22 +8,22 @@
 
 #define INITIAL_FRAME_BUFFER_SIZE 16
 
-struct lt_t
+struct Lt
 {
-    lt_slot_t **frames;
+    Lt_slot **frames;
     size_t capacity;
     size_t size;
 };
 
-lt_t *create_lt()
+Lt *create_lt()
 {
-    lt_t *lt = malloc(sizeof(lt_t));
+    Lt *lt = malloc(sizeof(Lt));
     if(lt == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         goto malloc_lt_fail;
     }
 
-    lt->frames = malloc(sizeof(lt_slot_t*) * INITIAL_FRAME_BUFFER_SIZE);
+    lt->frames = malloc(sizeof(Lt_slot*) * INITIAL_FRAME_BUFFER_SIZE);
     if (lt->frames == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         goto malloc_lt_slots_fail;
@@ -40,7 +40,7 @@ malloc_lt_fail:
     return NULL;
 }
 
-void destroy_lt(lt_t *lt)
+void destroy_lt(Lt *lt)
 {
     assert(lt);
 
@@ -54,7 +54,7 @@ void destroy_lt(lt_t *lt)
     free(lt);
 }
 
-void *lt_push(lt_t *lt, void *resource, lt_destroy_t resource_destroy)
+void *lt_push(Lt *lt, void *resource, Lt_destroy resource_destroy)
 {
     assert(lt);
     assert(resource_destroy);
@@ -66,7 +66,7 @@ void *lt_push(lt_t *lt, void *resource, lt_destroy_t resource_destroy)
 
     if (lt->size >= lt->capacity) {
         lt->capacity *= 2;
-        if ((lt->frames = realloc(lt->frames, sizeof(lt_slot_t*) * lt->capacity)) == NULL) {
+        if ((lt->frames = realloc(lt->frames, sizeof(Lt_slot*) * lt->capacity)) == NULL) {
             throw_error(ERROR_TYPE_LIBC);
             return NULL;
         }
@@ -79,7 +79,7 @@ void *lt_push(lt_t *lt, void *resource, lt_destroy_t resource_destroy)
     return resource;
 }
 
-void* lt_reset(lt_t *lt, void *old_resource, void *new_resource)
+void* lt_reset(Lt *lt, void *old_resource, void *new_resource)
 {
     assert(lt);
     assert(old_resource);
@@ -96,7 +96,7 @@ void* lt_reset(lt_t *lt, void *old_resource, void *new_resource)
     return old_resource;
 }
 
-void *lt_release(lt_t *lt, void *resource)
+void *lt_release(Lt *lt, void *resource)
 {
     assert(lt);
     assert(resource);
@@ -112,7 +112,7 @@ void *lt_release(lt_t *lt, void *resource)
     return resource;
 }
 
-void *lt_replace(lt_t *lt, void *old_resource, void *new_resource)
+void *lt_replace(Lt *lt, void *old_resource, void *new_resource)
 {
     assert(lt);
     assert(old_resource);

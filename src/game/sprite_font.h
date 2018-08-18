@@ -8,22 +8,22 @@
 #define FONT_CHAR_WIDTH 7
 #define FONT_CHAR_HEIGHT 9
 
-typedef struct sprite_font_t sprite_font_t;
+typedef struct Sprite_font Sprite_font;
 
-sprite_font_t *create_sprite_font_from_file(const char *bmp_file_path,
+Sprite_font *create_sprite_font_from_file(const char *bmp_file_path,
                                             SDL_Renderer *renderer);
-void destroy_sprite_font(sprite_font_t *sprite_font);
+void destroy_sprite_font(Sprite_font *sprite_font);
 
-int sprite_font_render_text(const sprite_font_t *sprite_font,
+int sprite_font_render_text(const Sprite_font *sprite_font,
                             SDL_Renderer *renderer,
-                            vec_t position,
-                            vec_t size,
-                            color_t color,
+                            Vec position,
+                            Vec size,
+                            Color color,
                             const char *text);
 
-rect_t sprite_font_boundary_box(const sprite_font_t *sprite_font,
-                                vec_t position,
-                                vec_t size,
+Rect sprite_font_boundary_box(const Sprite_font *sprite_font,
+                                Vec position,
+                                Vec size,
                                 const char *text);
 
 #endif  // SPRITE_FONT_H_

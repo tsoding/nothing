@@ -11,40 +11,40 @@
 #include "system/error.h"
 #include "system/lt.h"
 
-typedef enum game_state_t {
+typedef enum Game_state {
     GAME_STATE_RUNNING = 0,
     GAME_STATE_PAUSE,
     GAME_STATE_QUIT,
 
     GAME_STATE_N
-} game_state_t;
+} Game_state;
 
-typedef struct game_t {
-    lt_t *lt;
+typedef struct Game {
+    Lt *lt;
 
-    game_state_t state;
-    level_t *level;
+    Game_state state;
+    Level *level;
     char *level_file_path;
-    sound_samples_t *sound_samples;
-    camera_t *camera;
-    sprite_font_t *font;
-    debug_tree_t *debug_tree;
+    Sound_samples *sound_samples;
+    Camera *camera;
+    Sprite_font *font;
+    Debug_tree *debug_tree;
     SDL_Renderer *renderer;
-} game_t;
+} Game;
 
-game_t *create_game(const char *level_file_path,
+Game *create_game(const char *level_file_path,
                     const char *sound_sample_files[],
                     size_t sound_sample_files_count,
                     SDL_Renderer *renderer)
 {
     assert(level_file_path);
 
-    lt_t *const lt = create_lt();
+    Lt *const lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
 
-    game_t *game = PUSH_LT(lt, malloc(sizeof(game_t)), free);
+    Game *game = PUSH_LT(lt, malloc(sizeof(Game)), free);
     if (game == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -104,13 +104,13 @@ game_t *create_game(const char *level_file_path,
     return game;
 }
 
-void destroy_game(game_t *game)
+void destroy_game(Game *game)
 {
     assert(game);
     RETURN_LT0(game->lt);
 }
 
-int game_render(const game_t *game)
+int game_render(const Game *game)
 {
     assert(game);
 
@@ -129,12 +129,12 @@ int game_render(const game_t *game)
     return 0;
 }
 
-int game_sound(game_t *game)
+int game_sound(Game *game)
 {
     return level_sound(game->level, game->sound_samples);
 }
 
-int game_update(game_t *game, float delta_time)
+int game_update(Game *game, float delta_time)
 {
     assert(game);
     assert(delta_time > 0.0f);
@@ -157,7 +157,7 @@ int game_update(game_t *game, float delta_time)
 }
 
 
-static int game_event_pause(game_t *game, const SDL_Event *event)
+static int game_event_pause(Game *game, const SDL_Event *event)
 {
     assert(game);
     assert(event);
@@ -186,7 +186,7 @@ static int game_event_pause(game_t *game, const SDL_Event *event)
     return level_event(game->level, event);
 }
 
-static int game_event_running(game_t *game, const SDL_Event *event)
+static int game_event_running(Game *game, const SDL_Event *event)
 {
     assert(game);
     assert(event);
@@ -245,7 +245,7 @@ static int game_event_running(game_t *game, const SDL_Event *event)
     return level_event(game->level, event);
 }
 
-int game_event(game_t *game, const SDL_Event *event)
+int game_event(Game *game, const SDL_Event *event)
 {
     assert(game);
     assert(event);
@@ -264,7 +264,7 @@ int game_event(game_t *game, const SDL_Event *event)
 }
 
 
-int game_input(game_t *game,
+int game_input(Game *game,
                const Uint8 *const keyboard_state,
                SDL_Joystick *the_stick_of_joy)
 {
@@ -278,7 +278,7 @@ int game_input(game_t *game,
     return level_input(game->level, keyboard_state, the_stick_of_joy);
 }
 
-int game_over_check(const game_t *game)
+int game_over_check(const Game *game)
 {
     return game->state == GAME_STATE_QUIT;
 }

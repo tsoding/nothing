@@ -9,34 +9,34 @@
 #define DYING_RECT_PIECE_COUNT 20
 #define DYING_RECT_PIECE_SIZE 20.0f
 
-typedef struct piece_t {
-    point_t position;
+typedef struct Piece {
+    Point position;
     float angle;
     float angle_velocity;
-    vec_t direction;
-    triangle_t body;
-} piece_t;
+    Vec direction;
+    Triangle body;
+} Piece;
 
-struct dying_rect_t
+struct Dying_rect
 {
-    lt_t *lt;
+    Lt *lt;
 
-    vec_t position;
-    color_t color;
+    Vec position;
+    Color color;
     float duration;
     float time_passed;
-    piece_t *pieces;
+    Piece *pieces;
 };
 
-dying_rect_t *create_dying_rect(color_t color,
+Dying_rect *create_dying_rect(Color color,
                                 float duration)
 {
-    lt_t *lt = create_lt();
+    Lt *lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
 
-    dying_rect_t *dying_rect = PUSH_LT(lt, malloc(sizeof(dying_rect_t)), free);
+    Dying_rect *dying_rect = PUSH_LT(lt, malloc(sizeof(Dying_rect)), free);
     if (dying_rect == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -48,7 +48,7 @@ dying_rect_t *create_dying_rect(color_t color,
     dying_rect->duration = duration;
     dying_rect->time_passed = duration;
 
-    dying_rect->pieces = PUSH_LT(lt, malloc(sizeof(piece_t) * DYING_RECT_PIECE_COUNT), free);
+    dying_rect->pieces = PUSH_LT(lt, malloc(sizeof(Piece) * DYING_RECT_PIECE_COUNT), free);
     if (dying_rect->pieces == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -57,20 +57,20 @@ dying_rect_t *create_dying_rect(color_t color,
     return dying_rect;
 }
 
-void destroy_dying_rect(dying_rect_t *dying_rect)
+void destroy_dying_rect(Dying_rect *dying_rect)
 {
     assert(dying_rect);
     RETURN_LT0(dying_rect->lt);
 }
 
-int dying_rect_render(const dying_rect_t *dying_rect,
-                      camera_t *camera)
+int dying_rect_render(const Dying_rect *dying_rect,
+                      Camera *camera)
 {
     assert(dying_rect);
     assert(camera);
 
     for (size_t i = 0; i < DYING_RECT_PIECE_COUNT; ++i) {
-        color_t color = dying_rect->color;
+        Color color = dying_rect->color;
         color.a = fminf(1.0f, 4.0f - (float) dying_rect->time_passed / (float) dying_rect->duration * 4.0f);
 
         if (camera_fill_triangle(
@@ -89,7 +89,7 @@ int dying_rect_render(const dying_rect_t *dying_rect,
     return 0;
 }
 
-int dying_rect_update(dying_rect_t *dying_rect,
+int dying_rect_update(Dying_rect *dying_rect,
                       float delta_time)
 {
     assert(dying_rect);
@@ -115,14 +115,14 @@ int dying_rect_update(dying_rect_t *dying_rect,
     return 0;
 }
 
-int dying_rect_is_dead(const dying_rect_t *dying_rect)
+int dying_rect_is_dead(const Dying_rect *dying_rect)
 {
     assert(dying_rect);
     return dying_rect->time_passed >= dying_rect->duration;
 }
 
-void dying_rect_start_dying(dying_rect_t *dying_rect,
-                            vec_t position)
+void dying_rect_start_dying(Dying_rect *dying_rect,
+                            Vec position)
 {
     dying_rect->position = position;
     dying_rect->time_passed = 0;

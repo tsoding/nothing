@@ -9,30 +9,30 @@
 #define BACKGROUND_CHUNK_WIDTH 250.0f
 #define BACKGROUND_CHUNK_HEIGHT 250.0f
 
-static void chunk_of_point(point_t p, int *x, int *y);
-int render_chunk(const background_t *background,
-                 camera_t *camera,
+static void chunk_of_point(Point p, int *x, int *y);
+int render_chunk(const Background *background,
+                 Camera *camera,
                  int x, int y,
-                 color_t color,
-                 vec_t position,
+                 Color color,
+                 Vec position,
                  float parallax);
 
-struct background_t
+struct Background
 {
-    lt_t *lt;
-    color_t base_color;
-    vec_t position;
+    Lt *lt;
+    Color base_color;
+    Vec position;
     int debug_mode;
 };
 
-background_t *create_background(color_t base_color)
+Background *create_background(Color base_color)
 {
-    lt_t *lt = create_lt();
+    Lt *lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
 
-    background_t *background = PUSH_LT(lt, malloc(sizeof(background_t)), free);
+    Background *background = PUSH_LT(lt, malloc(sizeof(Background)), free);
     if (background == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -45,21 +45,21 @@ background_t *create_background(color_t base_color)
     return background;
 }
 
-void destroy_background(background_t *background)
+void destroy_background(Background *background)
 {
     assert(background);
     RETURN_LT0(background->lt);
 }
 
 /* TODO(#182): background chunks are randomly disappearing when the size of the window is less than size of the chunk  */
-int background_render(const background_t *background,
-                      camera_t *camera)
+int background_render(const Background *background,
+                      Camera *camera)
 {
     assert(background);
     assert(camera);
 
-    const rect_t view_port = camera_view_port(camera);
-    const vec_t position = vec(view_port.x, view_port.y);
+    const Rect view_port = camera_view_port(camera);
+    const Vec position = vec(view_port.x, view_port.y);
 
     for (int l = 0; l < 3; ++l) {
         const float parallax = 1.0f - 0.2f * (float)l;
@@ -94,7 +94,7 @@ int background_render(const background_t *background,
 
 /* Private Function */
 
-static void chunk_of_point(point_t p, int *x, int *y)
+static void chunk_of_point(Point p, int *x, int *y)
 {
     assert(x);
     assert(y);
@@ -102,11 +102,11 @@ static void chunk_of_point(point_t p, int *x, int *y)
     *y = (int) (p.y / BACKGROUND_CHUNK_HEIGHT);
 }
 
-int render_chunk(const background_t *background,
-                 camera_t *camera,
+int render_chunk(const Background *background,
+                 Camera *camera,
                  int chunk_x, int chunk_y,
-                 color_t color,
-                 vec_t position,
+                 Color color,
+                 Vec position,
                  float parallax)
 {
     (void) background;
@@ -139,7 +139,7 @@ int render_chunk(const background_t *background,
     return 0;
 }
 
-void background_toggle_debug_mode(background_t *background)
+void background_toggle_debug_mode(Background *background)
 {
     background->debug_mode = !background->debug_mode;
 }

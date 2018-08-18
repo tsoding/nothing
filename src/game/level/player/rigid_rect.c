@@ -11,32 +11,32 @@
 
 
 
-struct rigid_rect_t {
-    lt_t *lt;
-    vec_t position;
-    vec_t velocity;
-    vec_t movement;
-    vec_t size;
-    color_t color;
+struct Rigid_rect {
+    Lt *lt;
+    Vec position;
+    Vec velocity;
+    Vec movement;
+    Vec size;
+    Color color;
     int touches_ground;
-    vec_t forces;
+    Vec forces;
 };
 
-static const vec_t opposing_rect_side_forces[RECT_SIDE_N] = {
+static const Vec opposing_rect_side_forces[RECT_SIDE_N] = {
     { .x = 1.0f,  .y =  0.0f  },  /* RECT_SIDE_LEFT = 0, */
     { .x = -1.0f, .y =  0.0f  },  /* RECT_SIDE_RIGHT, */
     { .x = 0.0f,  .y =  1.0f, },  /* RECT_SIDE_TOP, */
     { .x = 0.0f,  .y = -1.0f, }   /* RECT_SIDE_BOTTOM, */
 };
 
-static vec_t opposing_force_by_sides(int sides[RECT_SIDE_N])
+static Vec opposing_force_by_sides(int sides[RECT_SIDE_N])
 {
-    vec_t opposing_force = {
+    Vec opposing_force = {
         .x = 0.0f,
         .y = 0.0f
     };
 
-    for (rect_side_t side = 0; side < RECT_SIDE_N; ++side) {
+    for (Rect_side side = 0; side < RECT_SIDE_N; ++side) {
         if (sides[side]) {
             vec_add(
                 &opposing_force,
@@ -47,15 +47,15 @@ static vec_t opposing_force_by_sides(int sides[RECT_SIDE_N])
     return opposing_force;
 }
 
-rigid_rect_t *create_rigid_rect(rect_t rect, color_t color)
+Rigid_rect *create_rigid_rect(Rect rect, Color color)
 {
-    lt_t *lt = create_lt();
+    Lt *lt = create_lt();
 
     if (lt == NULL) {
         return NULL;
     }
 
-    rigid_rect_t *rigid_rect = PUSH_LT(lt, malloc(sizeof(rigid_rect_t)), free);
+    Rigid_rect *rigid_rect = PUSH_LT(lt, malloc(sizeof(Rigid_rect)), free);
     if (rigid_rect == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -73,12 +73,12 @@ rigid_rect_t *create_rigid_rect(rect_t rect, color_t color)
     return rigid_rect;
 }
 
-rigid_rect_t *create_rigid_rect_from_stream(FILE *stream)
+Rigid_rect *create_rigid_rect_from_stream(FILE *stream)
 {
     assert(stream);
 
     char color[7];
-    rect_t rect;
+    Rect rect;
 
     if (fscanf(stream, "%f%f%f%f%6s\n",
                &rect.x, &rect.y,
@@ -91,14 +91,14 @@ rigid_rect_t *create_rigid_rect_from_stream(FILE *stream)
     return create_rigid_rect(rect, color_from_hexstr(color));
 }
 
-void destroy_rigid_rect(rigid_rect_t *rigid_rect)
+void destroy_rigid_rect(Rigid_rect *rigid_rect)
 {
     RETURN_LT0(rigid_rect->lt);
 }
 
-solid_ref_t rigid_rect_as_solid(rigid_rect_t *rigid_rect)
+Solid_ref rigid_rect_as_solid(Rigid_rect *rigid_rect)
 {
-    const solid_ref_t ref = {
+    const Solid_ref ref = {
         .tag = SOLID_RIGID_RECT,
         .ptr = rigid_rect
     };
@@ -106,15 +106,15 @@ solid_ref_t rigid_rect_as_solid(rigid_rect_t *rigid_rect)
     return ref;
 }
 
-void rigid_rect_touches_rect_sides(rigid_rect_t *rigid_rect,
-                                   rect_t object,
+void rigid_rect_touches_rect_sides(Rigid_rect *rigid_rect,
+                                   Rect object,
                                    int sides[RECT_SIDE_N])
 {
     rect_object_impact(object, rigid_rect_hitbox(rigid_rect), sides);
 }
 
-int rigid_rect_render(const rigid_rect_t *rigid_rect,
-                      camera_t *camera)
+int rigid_rect_render(const Rigid_rect *rigid_rect,
+                      Camera *camera)
 {
     return camera_fill_rect(
         camera,
@@ -122,7 +122,7 @@ int rigid_rect_render(const rigid_rect_t *rigid_rect,
         rigid_rect->color);
 }
 
-int rigid_rect_update(rigid_rect_t * rigid_rect,
+int rigid_rect_update(Rigid_rect * rigid_rect,
                       float delta_time)
 {
     assert(rigid_rect);
@@ -149,8 +149,8 @@ int rigid_rect_update(rigid_rect_t * rigid_rect,
     return 0;
 }
 
-void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
-                                   solid_ref_t solid)
+void rigid_rect_collide_with_solid(Rigid_rect * rigid_rect,
+                                   Solid_ref solid)
 {
     assert(rigid_rect);
     assert(rigid_rect != solid.ptr);
@@ -163,7 +163,7 @@ void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
         rigid_rect->touches_ground = 1;
     }
 
-    vec_t opforce_direction = opposing_force_by_sides(sides);
+    Vec opforce_direction = opposing_force_by_sides(sides);
 
     solid_apply_force(
         solid,
@@ -209,44 +209,44 @@ void rigid_rect_collide_with_solid(rigid_rect_t * rigid_rect,
     }
 }
 
-rect_t rigid_rect_hitbox(const rigid_rect_t *rigid_rect)
+Rect rigid_rect_hitbox(const Rigid_rect *rigid_rect)
 {
     return rect_from_vecs(
         rigid_rect->position,
         rigid_rect->size);
 }
 
-void rigid_rect_move(rigid_rect_t *rigid_rect,
-                           vec_t movement)
+void rigid_rect_move(Rigid_rect *rigid_rect,
+                           Vec movement)
 {
     rigid_rect->movement = movement;
 }
 
-int rigid_rect_touches_ground(const rigid_rect_t *rigid_rect)
+int rigid_rect_touches_ground(const Rigid_rect *rigid_rect)
 {
     return rigid_rect->touches_ground;
 }
 
-void rigid_rect_apply_force(rigid_rect_t * rigid_rect,
-                            vec_t force)
+void rigid_rect_apply_force(Rigid_rect * rigid_rect,
+                            Vec force)
 {
     rigid_rect->forces = vec_sum(rigid_rect->forces, force);
 }
 
-void rigid_rect_transform_velocity(rigid_rect_t *rigid_rect,
+void rigid_rect_transform_velocity(Rigid_rect *rigid_rect,
                                    mat3x3 trans_mat)
 {
     rigid_rect->velocity = point_mat3x3_product(rigid_rect->velocity,
                                                 trans_mat);
 }
 
-void rigid_rect_teleport_to(rigid_rect_t *rigid_rect,
-                            vec_t position)
+void rigid_rect_teleport_to(Rigid_rect *rigid_rect,
+                            Vec position)
 {
     rigid_rect->position = position;
 }
 
-void rigid_rect_damper(rigid_rect_t *rigid_rect, vec_t v)
+void rigid_rect_damper(Rigid_rect *rigid_rect, Vec v)
 {
     rigid_rect_apply_force(
         rigid_rect,
