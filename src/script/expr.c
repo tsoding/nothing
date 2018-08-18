@@ -121,5 +121,5 @@ void destroy_atom(struct Atom *atom)
 void print_expr_as_sexpr(struct Expr expr)
 {
     (void) expr;
-    /* TODO: print_expr_as_sexpr is not implemented */
+    /* TODO(#284): print_expr_as_sexpr is not implemented */
 }
