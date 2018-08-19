@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     (void) argc;
     (void) argv;
 
-    const char *code = "(1 . 2)";
+    const char *code = "(1 . (2 . 3))";
     size_t cursor = 0;
     const size_t n = strlen(code);
 
