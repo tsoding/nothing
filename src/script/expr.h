@@ -38,14 +38,15 @@ struct Atom
     enum AtomType type;
     union
     {
-        int number;             // ATOM_NUMBER
-        char *name;             // ATOM_SYMBOL
-        char *text;             // ATOM_STRING
+        float num;             // ATOM_NUMBER
+        char *sym;             // ATOM_SYMBOL
+        char *str;             // ATOM_STRING
     };
 };
 
 struct Atom *create_atom(enum AtomType type, ...);
 void destroy_atom(struct Atom *atom);
+void print_atom_as_sexpr(struct Atom *atom);
 
 struct Cons
 {
@@ -55,5 +56,6 @@ struct Cons
 
 struct Cons *create_cons(struct Expr car, struct Expr cdr);
 void destroy_cons(struct Cons *cons);
+void print_cons_as_sexpr(struct Cons *cons);
 
 #endif  // ATOM_H_

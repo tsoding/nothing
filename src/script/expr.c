@@ -26,6 +26,49 @@ struct Expr cons_as_expr(struct Cons *cons)
     return expr;
 }
 
+void print_atom_as_sexpr(struct Atom *atom)
+{
+    assert(atom);
+
+    switch (atom->type) {
+    case ATOM_SYMBOL:
+        printf("%s", atom->sym);
+        break;
+
+    case ATOM_NUMBER:
+        printf("%f", atom->num);
+        break;
+
+    case ATOM_STRING:
+        printf("\"%s\"", atom->str);
+        break;
+    }
+}
+
+void print_cons_as_sexpr(struct Cons *cons)
+{
+    assert(cons);
+
+    printf("(");
+    print_expr_as_sexpr(cons->car);
+    printf(" . ");
+    print_expr_as_sexpr(cons->cdr);
+    printf(")");
+}
+
+void print_expr_as_sexpr(struct Expr expr)
+{
+    switch (expr.type) {
+    case EXPR_ATOM:
+        print_atom_as_sexpr(expr.atom);
+        break;
+
+    case EXPR_CONS:
+        print_cons_as_sexpr(expr.cons);
+        break;
+    }
+}
+
 struct Expr create_expr_from_str(const char *str)
 {
     /* TODO(#283): create_expr_from_str is not implemented */
@@ -76,6 +119,8 @@ struct Atom *create_atom(enum AtomType type, ...)
     va_list args;
     va_start(args, type);
 
+    atom->type = type;
+
     switch (type) {
     case ATOM_SYMBOL:
     case ATOM_STRING: {
@@ -88,12 +133,12 @@ struct Atom *create_atom(enum AtomType type, ...)
             return NULL;
         }
 
-        strncpy(str, arg_str, n);
-        atom->text = str;
+        memcpy(str, arg_str, n + 1);
+        atom->str = str;
     } break;
 
     case ATOM_NUMBER: {
-        atom->number = va_arg(args, int);
+        atom->num = (float) va_arg(args, double);
     } break;
     }
 
@@ -107,7 +152,7 @@ void destroy_atom(struct Atom *atom)
     switch (atom->type) {
     case ATOM_SYMBOL:
     case ATOM_STRING: {
-        free(atom->text);
+        free(atom->str);
     } break;
 
     case ATOM_NUMBER: {
@@ -116,10 +161,4 @@ void destroy_atom(struct Atom *atom)
     }
 
     free(atom);
-}
-
-void print_expr_as_sexpr(struct Expr expr)
-{
-    (void) expr;
-    /* TODO(#284): print_expr_as_sexpr is not implemented */
 }
