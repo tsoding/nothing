@@ -87,7 +87,7 @@ struct ParseResult create_expr_from_str(const char *str,
 
             return parse_success(atom_as_expr(create_atom(ATOM_NUMBER, x)));
         } else if (isalpha(str[*cursor])) {
-            /* TODO: create_expr_from_str does not support symbols */
+            /* TODO(#289): create_expr_from_str does not support symbols */
             return parse_failure("Symbols are not supported");
         }
     }
