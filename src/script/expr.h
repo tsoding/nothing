@@ -1,6 +1,8 @@
 #ifndef ATOM_H_
 #define ATOM_H_
 
+#include <stdbool.h>
+
 struct Cons;
 struct Atom;
 
@@ -20,9 +22,23 @@ struct Expr
     };
 };
 
+struct ParseResult
+{
+    bool is_error;
+    union {
+        struct Expr expr;
+        const char *error;
+    };
+};
+
+struct ParseResult parse_success(struct Expr expr);
+struct ParseResult parse_failure(const char *error);
+
 struct Expr atom_as_expr(struct Atom *atom);
 struct Expr cons_as_expr(struct Cons *cons);
-struct Expr create_expr_from_str(const char *str);
+struct ParseResult create_expr_from_str(const char *str,
+                                        size_t *cursor,
+                                        size_t n);
 void destroy_expr(struct Expr expr);
 void print_expr_as_sexpr(struct Expr expr);
 
