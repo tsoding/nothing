@@ -1,26 +1,24 @@
 #include <stdio.h>
+#include <string.h>
 
-#include "script/expr.h"
+#include "script/parser.h"
 
 int main(int argc, char *argv[])
 {
     (void) argc;
     (void) argv;
 
-    struct Expr expr = cons_as_expr(
-        create_cons(
-            atom_as_expr(create_atom(ATOM_NUMBER, 1.0)),
-            cons_as_expr(
-                create_cons(
-                    atom_as_expr(create_atom(ATOM_SYMBOL, "hello")),
-                    cons_as_expr(
-                        create_cons(
-                            atom_as_expr(create_atom(ATOM_STRING, "world")),
-                            atom_as_expr(create_atom(ATOM_SYMBOL, "nil"))))))));
+    const char *code = "(1 . (2 . 3))";
+    size_t cursor = 0;
+    const size_t n = strlen(code);
 
-    print_expr_as_sexpr(expr);
+    struct ParseResult result = create_expr_from_str(code, &cursor, n);
 
-    destroy_expr(expr);
+    if (result.is_error) {
+        fprintf(stderr, "[ERROR] %s", result.error);
+    } else {
+        print_expr_as_sexpr(result.expr);
+    }
 
     return 0;
 }

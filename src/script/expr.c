@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -69,12 +70,7 @@ void print_expr_as_sexpr(struct Expr expr)
     }
 }
 
-struct Expr create_expr_from_str(const char *str)
-{
-    /* TODO(#283): create_expr_from_str is not implemented */
-    assert(str);
-    return atom_as_expr(0);
-}
+
 
 void destroy_expr(struct Expr expr)
 {

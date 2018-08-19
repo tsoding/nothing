@@ -1,6 +1,8 @@
 #ifndef ATOM_H_
 #define ATOM_H_
 
+#include <stdbool.h>
+
 struct Cons;
 struct Atom;
 
@@ -20,9 +22,11 @@ struct Expr
     };
 };
 
+
+
 struct Expr atom_as_expr(struct Atom *atom);
 struct Expr cons_as_expr(struct Cons *cons);
-struct Expr create_expr_from_str(const char *str);
+
 void destroy_expr(struct Expr expr);
 void print_expr_as_sexpr(struct Expr expr);
 
