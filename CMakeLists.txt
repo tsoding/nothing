@@ -44,6 +44,7 @@ set(SOURCE_FILES
   src/math/rect.c
   src/math/triangle.c
   src/script/expr.c
+  src/script/parser.c
   src/sdl/renderer.c
   src/system/error.c
   src/system/lt.c
@@ -80,6 +81,7 @@ set(HEADER_FILES
   src/math/rect.h
   src/math/triangle.h
   src/script/expr.h
+  src/script/parser.h
   src/sdl/renderer.h
   src/system/error.h
   src/system/lt.h
