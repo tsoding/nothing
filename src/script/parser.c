@@ -69,7 +69,7 @@ struct ParseResult create_expr_from_str(const char *str,
     }
 
     case '"': {
-        /* TODO: create_expr_from_str does not support strings */
+        /* TODO(#288): create_expr_from_str does not support strings */
         return parse_failure("Strings are not supported");
     }
 
