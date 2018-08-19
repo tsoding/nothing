@@ -8,9 +8,10 @@ static void skip_whitespaces(const char *str, size_t *cursor, size_t n)
 {
     assert(str);
     assert(cursor);
-    (void) n;
 
-    /* TODO: skip_whitespaces is not implemented */
+    while (*cursor < n && isspace(str[*cursor])) {
+        (*cursor)++;
+    }
 }
 
 struct ParseResult create_expr_from_str(const char *str,
@@ -74,8 +75,17 @@ struct ParseResult create_expr_from_str(const char *str,
 
     default: {
         if (isdigit(str[*cursor])) {
-            /* TODO: create_expr_from_str does not support numbers */
-            return parse_failure("Numbers are not supported");
+            const char *nptr = str + *cursor;
+            char *endptr = 0;
+            const double x = strtod(nptr, &endptr);
+
+            if (nptr == endptr) {
+                return parse_failure("Number expected");
+            }
+
+            *cursor += (size_t) (endptr - nptr);
+
+            return parse_success(atom_as_expr(create_atom(ATOM_NUMBER, x)));
         } else if (isalpha(str[*cursor])) {
             /* TODO: create_expr_from_str does not support symbols */
             return parse_failure("Symbols are not supported");
