@@ -71,8 +71,23 @@ struct ParseResult create_expr_from_str(const char *str,
     }
 
     case '"': {
-        /* TODO(#288): create_expr_from_str does not support strings */
-        return parse_failure("Strings are not supported", *cursor);
+        /* TODO: parser does not support escaped string characters */
+        const size_t str_begin = *cursor + 1;
+        size_t str_end = str_begin;
+
+        while(str_end < n && str[str_end] != '"') {
+            str_end++;
+        }
+
+        if (str_end >= n) {
+            return parse_failure("Unclosed string", str_begin);
+        }
+
+        *cursor = str_end + 1;
+
+        return parse_success(
+            atom_as_expr(
+                create_string_atom(str + str_begin, str + str_end)));
     }
 
     default: {
