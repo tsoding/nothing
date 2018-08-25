@@ -48,7 +48,9 @@ struct Atom
     };
 };
 
-struct Atom *create_atom(enum AtomType type, ...);
+struct Atom *create_number_atom(float num);
+struct Atom *create_string_atom(const char *str, const char *str_end);
+struct Atom *create_symbol_atom(const char *sym, const char *sym_end);
 void destroy_atom(struct Atom *atom);
 void print_atom_as_sexpr(struct Atom *atom);
 

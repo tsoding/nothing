@@ -21,9 +21,11 @@ struct ParseResult create_expr_from_str(const char *str,
     assert(str);
     assert(cursor);
 
+    /* TODO(#291): create_expr_from_str doesn't no support comments */
+
     skip_whitespaces(str, cursor, n);
     if (*cursor >= n) {
-        return parse_failure("EOF");
+        return parse_failure("EOF", *cursor);
     }
 
     switch (str[*cursor]) {
@@ -36,17 +38,17 @@ struct ParseResult create_expr_from_str(const char *str,
 
         skip_whitespaces(str, cursor, n);
         if (*cursor >= n) {
-            return parse_failure("EOF");
+            return parse_failure("EOF", *cursor);
         }
 
         if (str[*cursor] != '.') {
-            return parse_failure("Expected .");
+            return parse_failure("Expected .", *cursor);
         }
         (*cursor)++;
 
         skip_whitespaces(str, cursor, n);
         if (*cursor >= n) {
-            return parse_failure("EOF");
+            return parse_failure("EOF", *cursor);
         }
 
         struct ParseResult cdr = create_expr_from_str(str, cursor, n);
@@ -56,11 +58,11 @@ struct ParseResult create_expr_from_str(const char *str,
 
         skip_whitespaces(str, cursor, n);
         if (*cursor >= n) {
-            return parse_failure("EOF");
+            return parse_failure("EOF", *cursor);
         }
 
         if (str[*cursor] != ')') {
-            return parse_failure("Expected )");
+            return parse_failure("Expected )", *cursor);
         }
 
         (*cursor)++;
@@ -69,31 +71,46 @@ struct ParseResult create_expr_from_str(const char *str,
     }
 
     case '"': {
-        /* TODO(#288): create_expr_from_str does not support strings */
-        return parse_failure("Strings are not supported");
+        /* TODO(#292): parser does not support escaped string characters */
+        const size_t str_begin = *cursor + 1;
+        size_t str_end = str_begin;
+
+        while(str_end < n && str[str_end] != '"') {
+            str_end++;
+        }
+
+        if (str_end >= n) {
+            return parse_failure("Unclosed string", str_begin);
+        }
+
+        *cursor = str_end + 1;
+
+        return parse_success(
+            atom_as_expr(
+                create_string_atom(str + str_begin, str + str_end)));
     }
 
     default: {
         if (isdigit(str[*cursor])) {
             const char *nptr = str + *cursor;
             char *endptr = 0;
-            const double x = strtod(nptr, &endptr);
+            const float x = strtof(nptr, &endptr);
 
             if (nptr == endptr) {
-                return parse_failure("Number expected");
+                return parse_failure("Number expected", *cursor);
             }
 
             *cursor += (size_t) (endptr - nptr);
 
-            return parse_success(atom_as_expr(create_atom(ATOM_NUMBER, x)));
+            return parse_success(atom_as_expr(create_number_atom(x)));
         } else if (isalpha(str[*cursor])) {
             /* TODO(#289): create_expr_from_str does not support symbols */
-            return parse_failure("Symbols are not supported");
+            return parse_failure("Symbols are not supported", *cursor);
         }
     }
     }
 
-    return parse_failure("Unexpected sequence of characters");
+    return parse_failure("Unexpected sequence of characters", *cursor);
 }
 
 struct ParseResult parse_success(struct Expr expr)
@@ -106,12 +123,31 @@ struct ParseResult parse_success(struct Expr expr)
     return result;
 }
 
-struct ParseResult parse_failure(const char *error)
+struct ParseResult parse_failure(const char *error_message,
+                                 size_t error_cursor)
 {
     struct ParseResult result = {
         .is_error = true,
-        .error = error
+        .error = {
+            .error_message = error_message,
+            .error_cursor = error_cursor
+        }
     };
 
     return result;
+}
+
+void print_parse_error(FILE *stream,
+                       const char *str,
+                       struct ParseError error)
+{
+    /* TODO(#293): print_parse_error doesn't support colors */
+    /* TODO(#294): print_parse_error doesn't support multiple lines */
+
+    fprintf(stream, "%s\n", str);
+    for (size_t i = 0; i < error.error_cursor; ++i) {
+        fprintf(stream, " ");
+    }
+    fprintf(stream, "^\n");
+    fprintf(stream, "%s\n", error.error_message);
 }

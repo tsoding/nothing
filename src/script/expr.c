@@ -7,6 +7,23 @@
 
 #include "script/expr.h"
 
+static char *string_duplicate(const char *str,
+                              const char *str_end)
+{
+    if (str_end != NULL && str > str_end) {
+        return NULL;
+    }
+
+    const size_t n = str_end == NULL ? strlen(str) : (size_t) (str_end - str);
+    char *dup_str = malloc(sizeof(char) * (n + 1));
+    if (dup_str == NULL) {
+        return NULL;
+    }
+
+    memcpy(dup_str, str, n);
+    return dup_str;
+}
+
 struct Expr atom_as_expr(struct Atom *atom)
 {
     struct Expr expr = {
@@ -70,8 +87,6 @@ void print_expr_as_sexpr(struct Expr expr)
     }
 }
 
-
-
 void destroy_expr(struct Expr expr)
 {
     switch (expr.type) {
@@ -105,40 +120,45 @@ void destroy_cons(struct Cons *cons)
     free(cons);
 }
 
-struct Atom *create_atom(enum AtomType type, ...)
+struct Atom *create_number_atom(float num)
 {
     struct Atom *atom = malloc(sizeof(struct Atom));
     if (atom == NULL) {
         return NULL;
     }
+    atom->type = ATOM_NUMBER;
+    atom->num = num;
+    return atom;
+}
 
-    va_list args;
-    va_start(args, type);
-
-    atom->type = type;
-
-    switch (type) {
-    case ATOM_SYMBOL:
-    case ATOM_STRING: {
-        const char *arg_str = va_arg(args, const char *);
-        const size_t n = strlen(arg_str);
-        char *str = malloc(sizeof(char) * (n + 1));
-
-        if (str == NULL) {
-            free(atom);
-            return NULL;
-        }
-
-        memcpy(str, arg_str, n + 1);
-        atom->str = str;
-    } break;
-
-    case ATOM_NUMBER: {
-        atom->num = (float) va_arg(args, double);
-    } break;
+struct Atom *create_string_atom(const char *str, const char *str_end)
+{
+    struct Atom *atom = malloc(sizeof(struct Atom));
+    if (atom == NULL) {
+        return NULL;
+    }
+    atom->type = ATOM_STRING;
+    atom->str = string_duplicate(str, str_end);
+    if (atom->str == NULL) {
+        free(atom);
+        return NULL;
     }
 
-    va_end(args);
+    return atom;
+}
+
+struct Atom *create_symbol_atom(const char *sym, const char *sym_end)
+{
+    struct Atom *atom = malloc(sizeof(struct Atom));
+    if (atom == NULL) {
+        return NULL;
+    }
+    atom->type = ATOM_SYMBOL;
+    atom->sym = string_duplicate(sym, sym_end);
+    if (atom->sym == NULL) {
+        free(atom);
+        return NULL;
+    }
 
     return atom;
 }
