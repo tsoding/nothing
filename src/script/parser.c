@@ -123,13 +123,13 @@ struct ParseResult parse_success(struct Expr expr)
     return result;
 }
 
-struct ParseResult parse_failure(const char *error,
+struct ParseResult parse_failure(const char *error_message,
                                  size_t error_cursor)
 {
     struct ParseResult result = {
         .is_error = true,
-        {
-            .error = error,
+        .error = {
+            .error_message = error_message,
             .error_cursor = error_cursor
         }
     };
@@ -139,19 +139,15 @@ struct ParseResult parse_failure(const char *error,
 
 void print_parse_error(FILE *stream,
                        const char *str,
-                       struct ParseResult result)
+                       struct ParseError error)
 {
-    if (!result.is_error) {
-        return;
-    }
-
     /* TODO: print_parse_error doesn't support colors */
     /* TODO: print_parse_error doesn't support multiple lines */
 
     fprintf(stream, "%s\n", str);
-    for (size_t i = 0; i < result.error_cursor; ++i) {
+    for (size_t i = 0; i < error.error_cursor; ++i) {
         fprintf(stream, " ");
     }
     fprintf(stream, "^\n");
-    fprintf(stream, "%s\n", result.error);
+    fprintf(stream, "%s\n", error.error_message);
 }

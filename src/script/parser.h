@@ -5,15 +5,18 @@
 #include <stdbool.h>
 #include "script/expr.h"
 
+struct ParseError
+{
+    const char *error_message;
+    size_t error_cursor;
+};
+
 struct ParseResult
 {
     bool is_error;
     union {
         struct Expr expr;
-        struct {
-            const char *error;
-            size_t error_cursor;
-        };
+        struct ParseError error;
     };
 };
 
@@ -25,6 +28,8 @@ struct ParseResult create_expr_from_str(const char *str,
                                         size_t *cursor,
                                         size_t n);
 
-void print_parse_error(FILE *stream, const char *str, struct ParseResult result);
+void print_parse_error(FILE *stream,
+                       const char *str,
+                       struct ParseError result);
 
 #endif  // PARSER_H_
