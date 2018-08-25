@@ -128,8 +128,10 @@ struct ParseResult parse_failure(const char *error,
 {
     struct ParseResult result = {
         .is_error = true,
-        .error = error,
-        .error_cursor = error_cursor
+        {
+            .error = error,
+            .error_cursor = error_cursor
+        }
     };
 
     return result;

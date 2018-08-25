@@ -124,6 +124,7 @@ if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" ST
      -Wstrict-prototypes \
      -Wwrite-strings \
      -Wswitch \
+     -Wmissing-field-initializers \
      -fno-common \
      -pedantic \
      -std=c11 \
