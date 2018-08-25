@@ -9,12 +9,16 @@ struct ParseResult
     bool is_error;
     union {
         struct Expr expr;
-        const char *error;
+        struct {
+            const char *error;
+            size_t error_cursor;
+        };
     };
 };
 
 struct ParseResult parse_success(struct Expr expr);
-struct ParseResult parse_failure(const char *error);
+struct ParseResult parse_failure(const char *error,
+                                 size_t error_cursor);
 
 struct ParseResult create_expr_from_str(const char *str,
                                         size_t *cursor,

@@ -25,7 +25,7 @@ struct ParseResult create_expr_from_str(const char *str,
 
     skip_whitespaces(str, cursor, n);
     if (*cursor >= n) {
-        return parse_failure("EOF");
+        return parse_failure("EOF", *cursor);
     }
 
     switch (str[*cursor]) {
@@ -38,17 +38,17 @@ struct ParseResult create_expr_from_str(const char *str,
 
         skip_whitespaces(str, cursor, n);
         if (*cursor >= n) {
-            return parse_failure("EOF");
+            return parse_failure("EOF", *cursor);
         }
 
         if (str[*cursor] != '.') {
-            return parse_failure("Expected .");
+            return parse_failure("Expected .", *cursor);
         }
         (*cursor)++;
 
         skip_whitespaces(str, cursor, n);
         if (*cursor >= n) {
-            return parse_failure("EOF");
+            return parse_failure("EOF", *cursor);
         }
 
         struct ParseResult cdr = create_expr_from_str(str, cursor, n);
@@ -58,11 +58,11 @@ struct ParseResult create_expr_from_str(const char *str,
 
         skip_whitespaces(str, cursor, n);
         if (*cursor >= n) {
-            return parse_failure("EOF");
+            return parse_failure("EOF", *cursor);
         }
 
         if (str[*cursor] != ')') {
-            return parse_failure("Expected )");
+            return parse_failure("Expected )", *cursor);
         }
 
         (*cursor)++;
@@ -72,7 +72,7 @@ struct ParseResult create_expr_from_str(const char *str,
 
     case '"': {
         /* TODO(#288): create_expr_from_str does not support strings */
-        return parse_failure("Strings are not supported");
+        return parse_failure("Strings are not supported", *cursor);
     }
 
     default: {
@@ -82,7 +82,7 @@ struct ParseResult create_expr_from_str(const char *str,
             const double x = strtod(nptr, &endptr);
 
             if (nptr == endptr) {
-                return parse_failure("Number expected");
+                return parse_failure("Number expected", *cursor);
             }
 
             *cursor += (size_t) (endptr - nptr);
@@ -90,12 +90,12 @@ struct ParseResult create_expr_from_str(const char *str,
             return parse_success(atom_as_expr(create_atom(ATOM_NUMBER, x)));
         } else if (isalpha(str[*cursor])) {
             /* TODO(#289): create_expr_from_str does not support symbols */
-            return parse_failure("Symbols are not supported");
+            return parse_failure("Symbols are not supported", *cursor);
         }
     }
     }
 
-    return parse_failure("Unexpected sequence of characters");
+    return parse_failure("Unexpected sequence of characters", *cursor);
 }
 
 struct ParseResult parse_success(struct Expr expr)
@@ -108,12 +108,16 @@ struct ParseResult parse_success(struct Expr expr)
     return result;
 }
 
-struct ParseResult parse_failure(const char *error)
+struct ParseResult parse_failure(const char *error,
+                                 size_t error_cursor)
 {
     struct ParseResult result = {
         .is_error = true,
-        .error = error
+        .error = error,
+        .error_cursor = error_cursor
     };
 
     return result;
 }
+
+/* TODO: there is no way to create a pretty report from ParseResult in case of an error */

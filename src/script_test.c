@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     struct ParseResult result = create_expr_from_str(code, &cursor, n);
 
     if (result.is_error) {
-        fprintf(stderr, "[ERROR] %s", result.error);
+        fprintf(stderr, "[ERROR] %s on character %ld", result.error, result.error_cursor);
     } else {
         print_expr_as_sexpr(result.expr);
     }
