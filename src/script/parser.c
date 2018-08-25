@@ -120,4 +120,21 @@ struct ParseResult parse_failure(const char *error,
     return result;
 }
 
-/* TODO: there is no way to create a pretty report from ParseResult in case of an error */
+void print_parse_error(FILE *stream,
+                       const char *str,
+                       struct ParseResult result)
+{
+    if (!result.is_error) {
+        return;
+    }
+
+    /* TODO: print_parse_error doesn't support colors */
+    /* TODO: print_parse_error doesn't support multiple lines */
+
+    fprintf(stream, "%s\n", str);
+    for (size_t i = 0; i < result.error_cursor; ++i) {
+        fprintf(stream, " ")
+    }
+    fprintf(stream, "^\n");
+    fprintf(stream, "%s\n", result.error);
+}

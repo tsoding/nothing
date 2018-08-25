@@ -1,6 +1,7 @@
 #ifndef PARSER_H_
 #define PARSER_H_
 
+#include <stdio.h>
 #include <stdbool.h>
 #include "script/expr.h"
 
@@ -24,5 +25,6 @@ struct ParseResult create_expr_from_str(const char *str,
                                         size_t *cursor,
                                         size_t n);
 
+void print_parse_error(FILE *stream, const char *str, struct ParseResult result);
 
 #endif  // PARSER_H_
