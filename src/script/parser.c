@@ -79,7 +79,7 @@ struct ParseResult create_expr_from_str(const char *str,
         if (isdigit(str[*cursor])) {
             const char *nptr = str + *cursor;
             char *endptr = 0;
-            const double x = strtod(nptr, &endptr);
+            const float x = strtof(nptr, &endptr);
 
             if (nptr == endptr) {
                 return parse_failure("Number expected", *cursor);
@@ -87,7 +87,7 @@ struct ParseResult create_expr_from_str(const char *str,
 
             *cursor += (size_t) (endptr - nptr);
 
-            return parse_success(atom_as_expr(create_atom(ATOM_NUMBER, x)));
+            return parse_success(atom_as_expr(create_number_atom(x)));
         } else if (isalpha(str[*cursor])) {
             /* TODO(#289): create_expr_from_str does not support symbols */
             return parse_failure("Symbols are not supported", *cursor);
@@ -133,7 +133,7 @@ void print_parse_error(FILE *stream,
 
     fprintf(stream, "%s\n", str);
     for (size_t i = 0; i < result.error_cursor; ++i) {
-        fprintf(stream, " ")
+        fprintf(stream, " ");
     }
     fprintf(stream, "^\n");
     fprintf(stream, "%s\n", result.error);
