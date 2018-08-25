@@ -141,7 +141,7 @@ void print_parse_error(FILE *stream,
                        const char *str,
                        struct ParseError error)
 {
-    /* TODO: print_parse_error doesn't support colors */
+    /* TODO(#293): print_parse_error doesn't support colors */
     /* TODO: print_parse_error doesn't support multiple lines */
 
     fprintf(stream, "%s\n", str);
