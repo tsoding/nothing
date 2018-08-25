@@ -63,14 +63,27 @@ void print_atom_as_sexpr(struct Atom *atom)
     }
 }
 
-void print_cons_as_sexpr(struct Cons *cons)
+void print_cons_as_sexpr(struct Cons *head)
 {
-    assert(cons);
+    assert(head);
+
+    struct Cons *cons = head;
 
     printf("(");
     print_expr_as_sexpr(cons->car);
-    printf(" . ");
-    print_expr_as_sexpr(cons->cdr);
+
+    while (cons->cdr.type == EXPR_CONS) {
+        cons = cons->cdr.cons;
+        printf(" ");
+        print_expr_as_sexpr(cons->car);
+    }
+
+    if (cons->cdr.atom->type != ATOM_SYMBOL ||
+        strcmp("nil", cons->cdr.atom->sym) != 0) {
+        printf(" . ");
+        print_expr_as_sexpr(cons->cdr);
+    }
+
     printf(")");
 }
 
