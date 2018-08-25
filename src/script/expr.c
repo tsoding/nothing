@@ -76,6 +76,7 @@ void print_cons_as_sexpr(struct Cons *cons)
 
 void print_expr_as_sexpr(struct Expr expr)
 {
+    /* TODO(#296): print_expr_as_sexpr doesn't support lists */
     switch (expr.type) {
     case EXPR_ATOM:
         print_atom_as_sexpr(expr.atom);

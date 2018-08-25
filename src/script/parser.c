@@ -4,6 +4,22 @@
 
 #include "script/parser.h"
 
+static bool is_symbol_char(char x)
+{
+    static const char forbidden_symbol_chars[] = {
+        '(', ')', '"', '\'', ';'
+    };
+    static const size_t n = sizeof(forbidden_symbol_chars) / sizeof(char);
+
+    for (size_t i = 0; i < n; ++i) {
+        if (x == forbidden_symbol_chars[i] || isspace(x)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 static void skip_whitespaces(const char *str, size_t *cursor, size_t n)
 {
     assert(str);
@@ -21,6 +37,7 @@ struct ParseResult create_expr_from_str(const char *str,
     assert(str);
     assert(cursor);
 
+    /* TODO(#297): create_expr_from_str doesn't parse lists */
     /* TODO(#291): create_expr_from_str doesn't no support comments */
 
     skip_whitespaces(str, cursor, n);
@@ -103,9 +120,19 @@ struct ParseResult create_expr_from_str(const char *str,
             *cursor += (size_t) (endptr - nptr);
 
             return parse_success(atom_as_expr(create_number_atom(x)));
-        } else if (isalpha(str[*cursor])) {
-            /* TODO(#289): create_expr_from_str does not support symbols */
-            return parse_failure("Symbols are not supported", *cursor);
+        } else if (is_symbol_char(str[*cursor])) {
+            const size_t sym_begin = *cursor;
+            size_t sym_end = sym_begin;
+
+            while (sym_end < n && is_symbol_char(str[sym_end])) {
+                sym_end++;
+            }
+
+            *cursor = sym_end;
+
+            return parse_success(
+                atom_as_expr(
+                    create_symbol_atom(str + sym_begin, str + sym_end)));
         }
     }
     }
