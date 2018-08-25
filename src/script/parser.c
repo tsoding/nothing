@@ -71,7 +71,7 @@ struct ParseResult create_expr_from_str(const char *str,
     }
 
     case '"': {
-        /* TODO: parser does not support escaped string characters */
+        /* TODO(#292): parser does not support escaped string characters */
         const size_t str_begin = *cursor + 1;
         size_t str_end = str_begin;
 
