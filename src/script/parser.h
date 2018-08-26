@@ -4,32 +4,33 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "script/expr.h"
+#include "script/tokenizer.h"
 
 struct ParseError
 {
-    const char *error_message;
+
     size_t error_cursor;
 };
 
 struct ParseResult
 {
     bool is_error;
+    const char *end;
     union {
         struct Expr expr;
-        struct ParseError error;
+        const char *error_message;
     };
 };
 
-struct ParseResult parse_success(struct Expr expr);
+struct ParseResult parse_success(struct Expr expr,
+                                 const char *end);
 struct ParseResult parse_failure(const char *error,
-                                 size_t error_cursor);
+                                 const char *end);
 
-struct ParseResult create_expr_from_str(const char *str,
-                                        size_t *cursor,
-                                        size_t n);
+struct ParseResult parse_expr(struct Token token);
 
 void print_parse_error(FILE *stream,
                        const char *str,
-                       struct ParseError result);
+                       struct ParseResult result);
 
 #endif  // PARSER_H_
