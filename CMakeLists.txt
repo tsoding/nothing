@@ -45,6 +45,7 @@ set(SOURCE_FILES
   src/math/triangle.c
   src/script/expr.c
   src/script/parser.c
+  src/script/tokenizer.c
   src/sdl/renderer.c
   src/system/error.c
   src/system/lt.c
@@ -82,6 +83,7 @@ set(HEADER_FILES
   src/math/triangle.h
   src/script/expr.h
   src/script/parser.h
+  src/script/tokenizer.h
   src/sdl/renderer.h
   src/system/error.h
   src/system/lt.h
@@ -96,6 +98,8 @@ add_executable(script_test
   src/script/expr.c
   src/script/parser.h
   src/script/parser.c
+  src/script/tokenizer.h
+  src/script/tokenizer.c
 )
 target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
 
