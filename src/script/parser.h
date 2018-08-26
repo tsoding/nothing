@@ -24,9 +24,9 @@ struct ParseResult parse_success(struct Expr expr);
 struct ParseResult parse_failure(const char *error,
                                  size_t error_cursor);
 
-struct ParseResult create_expr_from_str(const char *str,
-                                        size_t *cursor,
-                                        size_t n);
+struct ParseResult parse_expr(const char *str,
+                              size_t *cursor,
+                              size_t n);
 
 void print_parse_error(FILE *stream,
                        const char *str,

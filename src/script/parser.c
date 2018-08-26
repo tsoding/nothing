@@ -30,15 +30,14 @@ static void skip_whitespaces(const char *str, size_t *cursor, size_t n)
     }
 }
 
-struct ParseResult create_expr_from_str(const char *str,
+struct ParseResult parse_expr(const char *str,
                                         size_t *cursor,
                                         size_t n)
 {
     assert(str);
     assert(cursor);
 
-    /* TODO(#297): create_expr_from_str doesn't parse lists */
-    /* TODO(#291): create_expr_from_str doesn't no support comments */
+    /* TODO: parse_expr doesn't parse lists */
 
     skip_whitespaces(str, cursor, n);
     if (*cursor >= n) {
@@ -48,7 +47,7 @@ struct ParseResult create_expr_from_str(const char *str,
     switch (str[*cursor]) {
     case '(': {
         (*cursor)++;
-        struct ParseResult car = create_expr_from_str(str, cursor, n);
+        struct ParseResult car = parse_expr(str, cursor, n);
         if (car.is_error) {
             return car;
         }
@@ -68,7 +67,7 @@ struct ParseResult create_expr_from_str(const char *str,
             return parse_failure("EOF", *cursor);
         }
 
-        struct ParseResult cdr = create_expr_from_str(str, cursor, n);
+        struct ParseResult cdr = parse_expr(str, cursor, n);
         if (cdr.is_error) {
             return cdr;
         }

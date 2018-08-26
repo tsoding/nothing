@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     size_t cursor = 0;
     const size_t n = strlen(code);
 
-    struct ParseResult result = create_expr_from_str(code, &cursor, n);
+    struct ParseResult result = parse_expr(code, &cursor, n);
 
     if (result.is_error) {
         print_parse_error(stderr, code, result.error);
