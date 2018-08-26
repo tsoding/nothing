@@ -9,7 +9,8 @@ struct Atom;
 enum ExprType
 {
     EXPR_ATOM = 0,
-    EXPR_CONS
+    EXPR_CONS,
+    EXPR_VOID
 };
 
 // TODO(#285): there is no way to execute struct Expr
@@ -22,10 +23,9 @@ struct Expr
     };
 };
 
-
-
 struct Expr atom_as_expr(struct Atom *atom);
 struct Expr cons_as_expr(struct Cons *cons);
+struct Expr void_expr(void);
 
 void destroy_expr(struct Expr expr);
 void print_expr_as_sexpr(struct Expr expr);
