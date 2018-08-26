@@ -44,6 +44,15 @@ struct Expr cons_as_expr(struct Cons *cons)
     return expr;
 }
 
+struct Expr void_expr(void)
+{
+    struct Expr expr = {
+        .type = EXPR_VOID
+    };
+
+    return expr;
+}
+
 void print_atom_as_sexpr(struct Atom *atom)
 {
     assert(atom);
@@ -98,6 +107,9 @@ void print_expr_as_sexpr(struct Expr expr)
     case EXPR_CONS:
         print_cons_as_sexpr(expr.cons);
         break;
+
+    case EXPR_VOID:
+        break;
     }
 }
 
@@ -110,6 +122,9 @@ void destroy_expr(struct Expr expr)
 
     case EXPR_CONS:
         destroy_cons(expr.cons);
+        break;
+
+    case EXPR_VOID:
         break;
     }
 }

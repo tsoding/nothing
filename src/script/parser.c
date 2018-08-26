@@ -25,7 +25,17 @@ static struct ParseResult parse_cdr(struct Token current_token)
     return parse_success(cdr.expr, current_token.end);
 }
 
-static struct ParseResult parse_cons(struct Token current_token)
+static struct ParseResult parse_list_end(struct Token current_token)
+{
+    if (*current_token.begin != ')') {
+        return parse_failure("Expected )", current_token.begin);
+    }
+
+    return parse_success(atom_as_expr(create_symbol_atom("nil", NULL)),
+                         current_token.end);
+}
+
+static struct ParseResult parse_list(struct Token current_token)
 {
     if (*current_token.begin != '(') {
         return parse_failure("Expected (", current_token.begin);
@@ -34,7 +44,7 @@ static struct ParseResult parse_cons(struct Token current_token)
     current_token = next_token(current_token.end);
 
     if (*current_token.begin == ')') {
-        return parse_success(atom_as_expr(create_symbol_atom("nil", NULL)), current_token.end);
+        return parse_list_end(current_token);
     }
 
     struct ParseResult car = parse_expr(current_token);
@@ -42,13 +52,37 @@ static struct ParseResult parse_cons(struct Token current_token)
         return car;
     }
 
-    struct ParseResult cdr = parse_cdr(next_token(car.end));
+    struct Cons *list = create_cons(car.expr, void_expr());
+    struct Cons *cons = list;
+    current_token = next_token(car.end);
+
+    while (*current_token.begin != '.' &&
+           *current_token.begin != ')' &&
+           *current_token.begin != 0) {
+        car = parse_expr(current_token);
+        if (car.is_error) {
+            destroy_cons(list);
+            return car;
+        }
+
+        cons->cdr = cons_as_expr(create_cons(car.expr, void_expr()));
+        cons = cons->cdr.cons;
+
+        current_token = next_token(car.end);
+    }
+
+    struct ParseResult cdr = *current_token.begin == '.'
+        ? parse_cdr(current_token)
+        : parse_list_end(current_token);
+
     if (cdr.is_error) {
-        destroy_expr(car.expr);
+        destroy_cons(list);
         return cdr;
     }
 
-    return parse_success(cons_as_expr(create_cons(car.expr, cdr.expr)), cdr.end);
+    cons->cdr = cdr.expr;
+
+    return parse_success(cons_as_expr(list), cdr.end);
 }
 
 static struct ParseResult parse_string(struct Token current_token)
@@ -103,10 +137,8 @@ struct ParseResult parse_expr(struct Token current_token)
         return parse_failure("EOF", current_token.begin);
     }
 
-    /* TODO(#301): parse_expr doesn't parse lists */
-
     switch (*current_token.begin) {
-    case '(': return parse_cons(current_token);
+    case '(': return parse_list(current_token);
     /* TODO(#292): parser does not support escaped string characters */
     case '"': return parse_string(current_token);
     default: {}
