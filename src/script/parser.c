@@ -179,7 +179,6 @@ void print_parse_error(FILE *stream,
                        const char *str,
                        struct ParseResult result)
 {
-    /* TODO(#293): print_parse_error doesn't support colors */
     /* TODO(#294): print_parse_error doesn't support multiple lines */
     if (!result.is_error) {
         return;
