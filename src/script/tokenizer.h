@@ -7,16 +7,6 @@ struct Token
     const char *end;
 };
 
-inline struct Token token(const char *begin, const char *end)
-{
-    struct Token token = {
-        .begin = begin,
-        .end = end
-    };
-
-    return token;
-}
-
 struct Token next_token(const char *str);
 
 #endif  // TOKENIZER_H_

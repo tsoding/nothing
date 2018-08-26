@@ -5,6 +5,16 @@
 
 #include "./tokenizer.h"
 
+static struct Token token(const char *begin, const char *end)
+{
+    struct Token token = {
+        .begin = begin,
+        .end = end
+    };
+
+    return token;
+}
+
 static bool is_symbol_char(char x)
 {
     static const char forbidden_symbol_chars[] = {
