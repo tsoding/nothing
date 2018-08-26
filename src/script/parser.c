@@ -103,7 +103,7 @@ struct ParseResult parse_expr(struct Token current_token)
         return parse_failure("EOF", current_token.begin);
     }
 
-    /* TODO: parse_expr doesn't parse lists */
+    /* TODO(#301): parse_expr doesn't parse lists */
 
     switch (*current_token.begin) {
     case '(': return parse_cons(current_token);
