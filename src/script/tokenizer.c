@@ -8,7 +8,7 @@
 static bool is_symbol_char(char x)
 {
     static const char forbidden_symbol_chars[] = {
-        '(', ')', '"', '\'', ';'
+        '(', ')', '"', '\'', ';', '.'
     };
     static const size_t n = sizeof(forbidden_symbol_chars) / sizeof(char);
 
@@ -67,13 +67,11 @@ static const char *next_non_symbol(const char *str)
 
 struct Token next_token(const char *str)
 {
-    if (!str) {
-        return token(NULL, NULL);
-    }
+    assert(str);
 
     str = skip_whitespace(str);
     if (*str == 0) {
-        return token(NULL, NULL);
+        return token(str, str);
     }
 
     while (*str != 0 && *str == ';') {
@@ -84,6 +82,7 @@ struct Token next_token(const char *str)
     switch (*str) {
     case '(':
     case ')':
+    case '.':
         return token(str, str + 1);
 
     case '"': {

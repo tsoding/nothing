@@ -4,160 +4,140 @@
 
 #include "script/parser.h"
 
-static bool is_symbol_char(char x)
+static struct ParseResult parse_cdr(struct Token current_token)
 {
-    static const char forbidden_symbol_chars[] = {
-        '(', ')', '"', '\'', ';'
-    };
-    static const size_t n = sizeof(forbidden_symbol_chars) / sizeof(char);
-
-    for (size_t i = 0; i < n; ++i) {
-        if (x == forbidden_symbol_chars[i] || isspace(x)) {
-            return false;
-        }
+    if (*current_token.begin != '.') {
+        return parse_failure("Expected .", current_token.begin);
     }
 
-    return true;
-}
-
-static void skip_whitespaces(const char *str, size_t *cursor, size_t n)
-{
-    assert(str);
-    assert(cursor);
-
-    while (*cursor < n && isspace(str[*cursor])) {
-        (*cursor)++;
+    struct ParseResult cdr = parse_expr(next_token(current_token.end));
+    if (cdr.is_error) {
+        return cdr;
     }
+
+    current_token = next_token(cdr.end);
+
+    if (*current_token.begin != ')') {
+        destroy_expr(cdr.expr);
+        return parse_failure("Expected )", current_token.begin);
+    }
+
+    return parse_success(cdr.expr, current_token.end);
 }
 
-struct ParseResult parse_expr(const char *str,
-                                        size_t *cursor,
-                                        size_t n)
+static struct ParseResult parse_cons(struct Token current_token)
 {
-    assert(str);
-    assert(cursor);
+    if (*current_token.begin != '(') {
+        return parse_failure("Expected (", current_token.begin);
+    }
+
+    current_token = next_token(current_token.end);
+
+    if (*current_token.begin == ')') {
+        return parse_success(atom_as_expr(create_symbol_atom("nil", NULL)), current_token.end);
+    }
+
+    struct ParseResult car = parse_expr(current_token);
+    if (car.is_error) {
+        return car;
+    }
+
+    struct ParseResult cdr = parse_cdr(next_token(car.end));
+    if (cdr.is_error) {
+        destroy_expr(car.expr);
+        return cdr;
+    }
+
+    return parse_success(cons_as_expr(create_cons(car.expr, cdr.expr)), cdr.end);
+}
+
+static struct ParseResult parse_string(struct Token current_token)
+{
+    if (*current_token.begin != '"') {
+        return parse_failure("Expected \"", current_token.begin);
+    }
+
+    if (*(current_token.end - 1) != '"') {
+        return parse_failure("Unclosed string", current_token.begin);
+    }
+
+    if (current_token.begin + 1 == current_token.end) {
+        return parse_success(atom_as_expr(create_string_atom("", NULL)),
+                             current_token.end);
+    }
+
+    return parse_success(
+        atom_as_expr(
+            create_string_atom(current_token.begin + 1, current_token.end - 1)),
+        current_token.end);
+}
+
+static struct ParseResult parse_number(struct Token current_token)
+{
+    char *endptr = 0;
+    const float x = strtof(current_token.begin, &endptr);
+
+    if (current_token.begin == endptr || current_token.end != endptr) {
+        return parse_failure("Expected number", current_token.begin);
+    }
+
+    return parse_success(
+        atom_as_expr(create_number_atom(x)),
+        current_token.end);
+}
+
+static struct ParseResult parse_symbol(struct Token current_token)
+{
+    if (*current_token.begin == 0) {
+        return parse_failure("EOF", current_token.begin);
+    }
+
+    return parse_success(
+        atom_as_expr(create_symbol_atom(current_token.begin, current_token.end)),
+        current_token.end);
+}
+
+struct ParseResult parse_expr(struct Token current_token)
+{
+    if (*current_token.begin == 0) {
+        return parse_failure("EOF", current_token.begin);
+    }
 
     /* TODO: parse_expr doesn't parse lists */
 
-    skip_whitespaces(str, cursor, n);
-    if (*cursor >= n) {
-        return parse_failure("EOF", *cursor);
+    switch (*current_token.begin) {
+    case '(': return parse_cons(current_token);
+    /* TODO(#292): parser does not support escaped string characters */
+    case '"': return parse_string(current_token);
+    default: {}
     }
 
-    switch (str[*cursor]) {
-    case '(': {
-        (*cursor)++;
-        struct ParseResult car = parse_expr(str, cursor, n);
-        if (car.is_error) {
-            return car;
-        }
-
-        skip_whitespaces(str, cursor, n);
-        if (*cursor >= n) {
-            return parse_failure("EOF", *cursor);
-        }
-
-        if (str[*cursor] != '.') {
-            return parse_failure("Expected .", *cursor);
-        }
-        (*cursor)++;
-
-        skip_whitespaces(str, cursor, n);
-        if (*cursor >= n) {
-            return parse_failure("EOF", *cursor);
-        }
-
-        struct ParseResult cdr = parse_expr(str, cursor, n);
-        if (cdr.is_error) {
-            return cdr;
-        }
-
-        skip_whitespaces(str, cursor, n);
-        if (*cursor >= n) {
-            return parse_failure("EOF", *cursor);
-        }
-
-        if (str[*cursor] != ')') {
-            return parse_failure("Expected )", *cursor);
-        }
-
-        (*cursor)++;
-
-        return parse_success(cons_as_expr(create_cons(car.expr, cdr.expr)));
+    if (isdigit(*current_token.begin)) {
+        return parse_number(current_token);
     }
 
-    case '"': {
-        /* TODO(#292): parser does not support escaped string characters */
-        const size_t str_begin = *cursor + 1;
-        size_t str_end = str_begin;
-
-        while(str_end < n && str[str_end] != '"') {
-            str_end++;
-        }
-
-        if (str_end >= n) {
-            return parse_failure("Unclosed string", str_begin);
-        }
-
-        *cursor = str_end + 1;
-
-        return parse_success(
-            atom_as_expr(
-                create_string_atom(str + str_begin, str + str_end)));
-    }
-
-    default: {
-        if (isdigit(str[*cursor])) {
-            const char *nptr = str + *cursor;
-            char *endptr = 0;
-            const float x = strtof(nptr, &endptr);
-
-            if (nptr == endptr) {
-                return parse_failure("Number expected", *cursor);
-            }
-
-            *cursor += (size_t) (endptr - nptr);
-
-            return parse_success(atom_as_expr(create_number_atom(x)));
-        } else if (is_symbol_char(str[*cursor])) {
-            const size_t sym_begin = *cursor;
-            size_t sym_end = sym_begin;
-
-            while (sym_end < n && is_symbol_char(str[sym_end])) {
-                sym_end++;
-            }
-
-            *cursor = sym_end;
-
-            return parse_success(
-                atom_as_expr(
-                    create_symbol_atom(str + sym_begin, str + sym_end)));
-        }
-    }
-    }
-
-    return parse_failure("Unexpected sequence of characters", *cursor);
+    return parse_symbol(current_token);
 }
 
-struct ParseResult parse_success(struct Expr expr)
+struct ParseResult parse_success(struct Expr expr,
+                                 const char *end)
 {
     struct ParseResult result = {
         .is_error = false,
-        .expr = expr
+        .expr = expr,
+        .end = end
     };
 
     return result;
 }
 
 struct ParseResult parse_failure(const char *error_message,
-                                 size_t error_cursor)
+                                 const char *end)
 {
     struct ParseResult result = {
         .is_error = true,
-        .error = {
-            .error_message = error_message,
-            .error_cursor = error_cursor
-        }
+        .error_message = error_message,
+        .end = end
     };
 
     return result;
@@ -165,15 +145,18 @@ struct ParseResult parse_failure(const char *error_message,
 
 void print_parse_error(FILE *stream,
                        const char *str,
-                       struct ParseError error)
+                       struct ParseResult result)
 {
     /* TODO(#293): print_parse_error doesn't support colors */
     /* TODO(#294): print_parse_error doesn't support multiple lines */
+    if (!result.is_error) {
+        return;
+    }
 
     fprintf(stream, "%s\n", str);
-    for (size_t i = 0; i < error.error_cursor; ++i) {
+    for (size_t i = 0; i < (size_t) (result.end - str); ++i) {
         fprintf(stream, " ");
     }
     fprintf(stream, "^\n");
-    fprintf(stream, "%s\n", error.error_message);
+    fprintf(stream, "%s\n", result.error_message);
 }
