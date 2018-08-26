@@ -6,12 +6,6 @@
 #include "script/expr.h"
 #include "script/tokenizer.h"
 
-struct ParseError
-{
-
-    size_t error_cursor;
-};
-
 struct ParseResult
 {
     bool is_error;
