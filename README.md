@@ -14,6 +14,7 @@ $ cd build/
 $ cmake ..
 $ make
 $ ./nothing <level-file>
+$ ./nothing_test
 ```
 
 ## Build on Windows
