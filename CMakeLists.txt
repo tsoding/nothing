@@ -97,15 +97,6 @@ add_executable(nothing_test
   src/script/tokenizer.h
   test/main.c
   )
-add_executable(script_test
-  src/script_test.c
-  src/script/expr.h
-  src/script/expr.c
-  src/script/parser.h
-  src/script/parser.c
-  src/script/tokenizer.h
-  src/script/tokenizer.c
-)
 target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
 
 if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "CLANG"))
