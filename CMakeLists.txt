@@ -92,6 +92,11 @@ set(HEADER_FILES
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
+add_executable(nothing_test
+  src/script/tokenizer.c
+  src/script/tokenizer.h
+  test/main.c
+  )
 add_executable(script_test
   src/script_test.c
   src/script/expr.h
