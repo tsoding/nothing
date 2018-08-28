@@ -1,8 +1,11 @@
 #include <assert.h>
-#include <stdlib.h>
 #include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "script/parser.h"
+
+static struct ParseResult parse_expr(struct Token current_token);
 
 static struct ParseResult parse_cdr(struct Token current_token)
 {
@@ -10,7 +13,7 @@ static struct ParseResult parse_cdr(struct Token current_token)
         return parse_failure("Expected .", current_token.begin);
     }
 
-    struct ParseResult cdr = parse_expr(next_token(current_token.end));
+    struct ParseResult cdr = read_expr_from_string(current_token.end);
     if (cdr.is_error) {
         return cdr;
     }
@@ -131,7 +134,7 @@ static struct ParseResult parse_symbol(struct Token current_token)
         current_token.end);
 }
 
-struct ParseResult parse_expr(struct Token current_token)
+static struct ParseResult parse_expr(struct Token current_token)
 {
     if (*current_token.begin == 0) {
         return parse_failure("EOF", current_token.begin);
@@ -149,6 +152,18 @@ struct ParseResult parse_expr(struct Token current_token)
     }
 
     return parse_symbol(current_token);
+}
+
+struct ParseResult read_expr_from_string(const char *str)
+{
+    assert(str);
+    return parse_expr(next_token(str));
+}
+
+struct ParseResult read_expr_from_stream(FILE *stream)
+{
+    assert(stream);
+    return parse_failure("not implemented", NULL);
 }
 
 struct ParseResult parse_success(struct Expr expr,
