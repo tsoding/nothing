@@ -160,9 +160,9 @@ struct ParseResult read_expr_from_string(const char *str)
     return parse_expr(next_token(str));
 }
 
-struct ParseResult read_expr_from_stream(FILE *stream)
+struct ParseResult read_expr_from_file(const char *filename)
 {
-    assert(stream);
+    assert(filename);
     return parse_failure("not implemented", NULL);
 }
 

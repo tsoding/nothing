@@ -22,7 +22,7 @@ struct ParseResult parse_failure(const char *error,
                                  const char *end);
 
 struct ParseResult read_expr_from_string(const char *str);
-struct ParseResult read_expr_from_stream(FILE *stream);
+struct ParseResult read_expr_from_file(const char *filename);
 
 void print_parse_error(FILE *stream,
                        const char *str,
