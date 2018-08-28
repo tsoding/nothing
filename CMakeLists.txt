@@ -93,11 +93,26 @@ set(HEADER_FILES
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
 add_executable(nothing_test
+  src/script/expr.c
+  src/script/expr.h
+  src/script/parser.c
+  src/script/parser.h
   src/script/tokenizer.c
   src/script/tokenizer.h
+  src/system/lt.c
+  src/system/lt.h
+  src/system/error.c
+  src/system/error.h
+  src/system/lt/lt_adapters.c
+  src/system/lt/lt_adapters.h
+  src/system/lt/lt_slot.c
+  src/system/lt/lt_slot.h
   test/main.c
+  test/test.h
+  test/tokenizer_suite.h
   )
 target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
+target_link_libraries(nothing_test ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
 
 if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "CLANG"))
   set(CMAKE_C_FLAGS
@@ -137,3 +152,4 @@ endif()
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/sounds DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/fonts DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/test-data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

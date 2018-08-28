@@ -1,6 +1,8 @@
 #ifndef TEST_H_
 #define TEST_H_
 
+#include "math.h"
+
 #define TEST_RUN(name)                          \
     if (name() < 0) {                           \
         return -1;                              \
@@ -20,6 +22,8 @@
     }                                           \
     static int name##_body(void)
 
+// TODO: ASSERT_* macros evaluate expressions several times
+
 #define ASSERT_STREQN(expected, actual, n)                              \
     if (strncmp(expected, actual, n) != 0) {                            \
         fprintf(stderr, "\n%s:%d: ASSERT_STREQN: \n",                   \
@@ -30,6 +34,42 @@
         fprintf(stderr, "  Actual: ");                                  \
         fwrite(actual, sizeof(char), n, stderr);                        \
         fprintf(stderr, "\n");                                          \
+        return -1;                                                      \
+    }
+
+#define ASSERT_STREQ(expected, actual)                                  \
+    if (strcmp(expected, actual) != 0) {                                \
+        fprintf(stderr, "\n%s:%d: ASSERT_STREQ: \n",                    \
+                __FILE__, __LINE__);                                    \
+        fprintf(stderr, "  Expected: %s\n", expected);                  \
+        fprintf(stderr, "  Actual: %s\n", actual);                      \
+        return -1;                                                      \
+    }
+
+#define ASSERT_INTEQ(expected, actual)                                  \
+    if (expected != actual) {                                           \
+        fprintf(stderr, "\n%s:%d: ASSERT_INTEQ: \n",                    \
+                __FILE__, __LINE__);                                    \
+        fprintf(stderr, "  Expected: %d\n", expected);                  \
+        fprintf(stderr, "  Actual: %d\n", actual);                      \
+        return -1;                                                      \
+    }
+
+#define ASSERT_FLOATEQ(expected, actual, margin)                        \
+    if (fabsf(expected - actual) > margin) {                            \
+        fprintf(stderr, "\n%s:%d: ASSERT_INTEQ: \n",                    \
+                __FILE__, __LINE__);                                    \
+        fprintf(stderr, "  Expected: %f\n", expected);                  \
+        fprintf(stderr, "  Actual: %f\n", actual);                      \
+        fprintf(stderr, "  Margin: %f\n", margin);                      \
+        return -1;                                                      \
+    }
+
+#define ASSERT_TRUE(condition, message)                                 \
+    if (!condition) {                                                   \
+        fprintf(stderr, "\n%s:%d: ASSERT_TRUE: false\n",                \
+                __FILE__, __LINE__);                                    \
+        fprintf(stderr, "%s\n", message);                               \
         return -1;                                                      \
     }
 
