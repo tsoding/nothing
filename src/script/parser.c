@@ -178,7 +178,7 @@ struct ParseResult read_expr_from_file(const char *filename)
 
     FILE *stream = PUSH_LT(lt, fopen(filename, "rb"), fclose_lt);
     if (!stream) {
-        /* TODO: ParseResult should not be used for reporting IO failures */
+        /* TODO(#307): ParseResult should not be used for reporting IO failures */
         RETURN_LT(lt, parse_failure(strerror(errno), NULL));
     }
 
