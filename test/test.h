@@ -22,7 +22,7 @@
     }                                           \
     static int name##_body(void)
 
-// TODO: ASSERT_* macros evaluate expressions several times
+// TODO(#308): ASSERT_* macros evaluate expressions several times
 
 #define ASSERT_STREQN(expected, actual, n)                              \
     if (strncmp(expected, actual, n) != 0) {                            \
