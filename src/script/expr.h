@@ -6,6 +6,12 @@
 struct Cons;
 struct Atom;
 
+#define NUMBER(X) atom_as_expr(create_number_atom(X))
+#define STRING(S) atom_as_expr(create_string_atom(S, NULL))
+#define SYMBOL(S) atom_as_expr(create_symbol_atom(S, NULL))
+#define CONS(CAR, CDR) cons_as_expr(create_cons(CAR, CDR))
+#define NIL SYMBOL("nil")
+
 enum ExprType
 {
     EXPR_ATOM = 0,
