@@ -30,10 +30,20 @@ struct EvalResult eval_failure(const char *error, struct Expr expr)
 
 static struct EvalResult eval_atom(struct Expr scope, struct Atom *atom)
 {
-    /* TODO: eval_atom is not implemented */
-    assert(atom);
     (void) scope;
-    return eval_failure("not implemented", void_expr());
+
+    switch (atom->type) {
+    case ATOM_NUMBER:
+    case ATOM_STRING:
+        return eval_success(atom_as_expr(atom));
+
+    case ATOM_SYMBOL:
+        /* TODO: Evaluating symbols is not implemented */
+        return eval_failure("Evaluating symbols is not implemented",
+                            atom_as_expr(atom));
+    }
+
+    return eval_failure("Unexpected expression", atom_as_expr(atom));
 }
 
 static struct EvalResult eval_args(struct Expr scope, struct Expr args)
