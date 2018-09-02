@@ -32,7 +32,7 @@ static struct EvalResult eval_atom(struct Expr scope, struct Atom *atom)
 {
     (void) scope;
 
-    /* TODO: Evaluating symbols is not implemented */
+    /* TODO(#314): Evaluating symbols is not implemented */
     switch (atom->type) {
     case ATOM_NUMBER:
     case ATOM_SYMBOL:
