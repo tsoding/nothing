@@ -2,6 +2,8 @@
 #define INTERPRETER_H_
 
 #include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include "expr.h"
 
 struct EvalResult
@@ -15,5 +17,7 @@ struct EvalResult eval_success(struct Expr expr);
 struct EvalResult eval_failure(const char *error, struct Expr expr);
 
 struct EvalResult eval(struct Expr scope, struct Expr expr);
+
+void print_eval_error(FILE *stream, struct EvalResult result);
 
 #endif  // INTERPRETER_H_

@@ -32,15 +32,12 @@ static struct EvalResult eval_atom(struct Expr scope, struct Atom *atom)
 {
     (void) scope;
 
+    /* TODO: Evaluating symbols is not implemented */
     switch (atom->type) {
     case ATOM_NUMBER:
+    case ATOM_SYMBOL:
     case ATOM_STRING:
         return eval_success(atom_as_expr(atom));
-
-    case ATOM_SYMBOL:
-        /* TODO: Evaluating symbols is not implemented */
-        return eval_failure("Evaluating symbols is not implemented",
-                            atom_as_expr(atom));
     }
 
     return eval_failure("Unexpected expression", atom_as_expr(atom));
@@ -106,7 +103,7 @@ static struct EvalResult eval_funcall(struct Expr scope, struct Cons *cons)
         return eval_failure("Not a function", cons->car);
     }
 
-    if (strcmp(cons->car.atom->sym, "+")) {
+    if (strcmp(cons->car.atom->sym, "+") == 0) {
         struct EvalResult args = eval_args(scope, cons->cdr);
         if (args.is_error) {
             return args;
@@ -130,4 +127,14 @@ struct EvalResult eval(struct Expr scope, struct Expr expr)
     }
 
     return eval_failure("Unexpected expression", expr);
+}
+
+void print_eval_error(FILE *stream, struct EvalResult result)
+{
+    if (!result.is_error) {
+        return;
+    }
+
+    fprintf(stream, "%s\n", result.error);
+    print_expr_as_sexpr(result.expr);
 }

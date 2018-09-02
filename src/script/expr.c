@@ -113,6 +113,8 @@ void print_expr_as_sexpr(struct Expr expr)
     case EXPR_VOID:
         break;
     }
+
+    printf("\n");
 }
 
 void destroy_expr(struct Expr expr)
