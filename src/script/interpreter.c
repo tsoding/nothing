@@ -2,6 +2,7 @@
 #include <math.h>
 #include <string.h>
 
+#include "./expr.h"
 #include "./interpreter.h"
 
 struct EvalResult eval_success(struct Expr expr)
@@ -38,8 +39,30 @@ static struct EvalResult eval_args(struct Expr scope, struct Expr args)
 {
     (void) scope;
     (void) args;
-    /* TODO: eval_args is not implemented */
-    return eval_failure("not implemented", void_expr());
+
+    switch(args.type) {
+    case EXPR_ATOM:
+        return eval_atom(scope, args.atom);
+
+    case EXPR_CONS: {
+        struct EvalResult car = eval(scope, args.cons->car);
+        if (car.is_error) {
+            return car;
+        }
+
+        struct EvalResult cdr = eval_args(scope, args.cons->cdr);
+        if (cdr.is_error) {
+            return cdr;
+        }
+
+        /* TODO: memory leak */
+        return eval_success(cons_as_expr(create_cons(car.expr, cdr.expr)));
+    }
+
+    default: {}
+    }
+
+    return eval_failure("Unexpected expression", args);
 }
 
 static struct EvalResult plus_op(struct Expr scope, struct Expr args)
