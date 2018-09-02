@@ -46,6 +46,42 @@ struct Expr cons_as_expr(struct Cons *cons)
     return expr;
 }
 
+static struct Atom *clone_atom(struct Atom *atom)
+{
+    assert(atom);
+
+    switch(atom->type) {
+    case ATOM_NUMBER:
+        return create_number_atom(atom->num);
+
+    case ATOM_STRING:
+        return create_string_atom(atom->str, NULL);
+
+    case ATOM_SYMBOL:
+        return create_symbol_atom(atom->sym, NULL);
+    }
+
+    return atom;
+}
+
+struct Expr clone_expr(struct Expr expr)
+{
+    switch (expr.type) {
+    case EXPR_ATOM:
+        return atom_as_expr(clone_atom(expr.atom));
+
+    case EXPR_CONS:
+        return cons_as_expr(
+            create_cons(
+                clone_expr(expr.cons->car),
+                clone_expr(expr.cons->cdr)));
+
+    default: {}
+    }
+
+    return expr;
+}
+
 struct Expr void_expr(void)
 {
     struct Expr expr = {
@@ -113,6 +149,8 @@ void print_expr_as_sexpr(struct Expr expr)
     case EXPR_VOID:
         break;
     }
+
+    printf("\n");
 }
 
 void destroy_expr(struct Expr expr)

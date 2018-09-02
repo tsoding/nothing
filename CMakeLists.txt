@@ -82,6 +82,8 @@ set(HEADER_FILES
   src/math/rand.h
   src/math/rect.h
   src/math/triangle.h
+  src/script/builtins.c
+  src/script/builtins.h
   src/script/expr.h
   src/script/interpreter.h
   src/script/parser.h
@@ -94,6 +96,29 @@ set(HEADER_FILES
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
+add_executable(repl
+  src/script/builtins.c
+  src/script/builtins.h
+  src/script/expr.c
+  src/script/expr.h
+  src/script/interpreter.c
+  src/script/interpreter.h
+  src/script/parser.c
+  src/script/parser.h
+  src/script/scope.c
+  src/script/scope.h
+  src/script/tokenizer.c
+  src/script/tokenizer.h
+  src/script/repl.c
+  src/system/lt.c
+  src/system/lt.h
+  src/system/lt/lt_adapters.c
+  src/system/lt/lt_adapters.h
+  src/system/lt/lt_slot.c
+  src/system/lt/lt_slot.h
+  src/system/error.c
+  src/system/error.h
+  )
 add_executable(nothing_test
   src/script/builtins.c
   src/script/builtins.h
@@ -121,6 +146,7 @@ add_executable(nothing_test
   )
 target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
 target_link_libraries(nothing_test ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
+target_link_libraries(repl ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
 
 if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "CLANG"))
   set(CMAKE_C_FLAGS
