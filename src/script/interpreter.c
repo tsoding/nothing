@@ -37,10 +37,10 @@ static struct EvalResult eval_atom(struct Expr scope, struct Atom *atom)
     case ATOM_NUMBER:
     case ATOM_SYMBOL:
     case ATOM_STRING:
-        return eval_success(atom_as_expr(atom));
+        return eval_success(clone_expr(atom_as_expr(atom)));
     }
 
-    return eval_failure("Unexpected expression", atom_as_expr(atom));
+    return eval_failure("Unexpected expression", clone_expr(atom_as_expr(atom)));
 }
 
 static struct EvalResult eval_args(struct Expr scope, struct Expr args)
@@ -60,17 +60,17 @@ static struct EvalResult eval_args(struct Expr scope, struct Expr args)
 
         struct EvalResult cdr = eval_args(scope, args.cons->cdr);
         if (cdr.is_error) {
+            destroy_expr(car.expr);
             return cdr;
         }
 
-        /* TODO: memory leak */
         return eval_success(cons_as_expr(create_cons(car.expr, cdr.expr)));
     }
 
     default: {}
     }
 
-    return eval_failure("Unexpected expression", args);
+    return eval_failure("Unexpected expression", clone_expr(args));
 }
 
 static struct EvalResult plus_op(struct Expr args)
@@ -79,12 +79,12 @@ static struct EvalResult plus_op(struct Expr args)
 
     while (!nil_p(args)) {
         if (args.type != EXPR_CONS) {
-            return eval_failure("Expected cons", args);
+            return eval_failure("Expected cons", clone_expr(args));
         }
 
         if (args.cons->car.type != EXPR_ATOM ||
             args.cons->car.atom->type != ATOM_NUMBER) {
-            return eval_failure("Expected number", args.cons->car);
+            return eval_failure("Expected number", clone_expr(args.cons->car));
         }
 
         result += args.cons->car.atom->num;
@@ -99,8 +99,8 @@ static struct EvalResult eval_funcall(struct Expr scope, struct Cons *cons)
     assert(cons);
     (void) scope;
 
-    if (cons->car.type != EXPR_ATOM && cons->car.atom->type != ATOM_SYMBOL) {
-        return eval_failure("Not a function", cons->car);
+    if (!symbol_p(cons->car)) {
+        return eval_failure("Expected symbol", clone_expr(cons->car));
     }
 
     if (strcmp(cons->car.atom->sym, "+") == 0) {
@@ -111,7 +111,7 @@ static struct EvalResult eval_funcall(struct Expr scope, struct Cons *cons)
         return plus_op(args.expr);
     }
 
-    return eval_failure("Unknown function", cons->car);
+    return eval_failure("Unknown function", clone_expr(cons->car));
 }
 
 struct EvalResult eval(struct Expr scope, struct Expr expr)
@@ -126,7 +126,7 @@ struct EvalResult eval(struct Expr scope, struct Expr expr)
     default: {}
     }
 
-    return eval_failure("Unexpected expression", expr);
+    return eval_failure("Unexpected expression", clone_expr(expr));
 }
 
 void print_eval_error(FILE *stream, struct EvalResult result)
