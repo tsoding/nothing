@@ -1,6 +1,7 @@
 #ifndef ATOM_H_
 #define ATOM_H_
 
+#include <stdlib.h>
 #include <stdbool.h>
 
 struct Cons;

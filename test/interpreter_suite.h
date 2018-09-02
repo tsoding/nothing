@@ -2,7 +2,7 @@
 #define INTERPRETER_SUITE_H_
 
 #include "test.h"
-#include "script/interpreter.h"
+#include "script/builtins.h"
 
 TEST(equal_test)
 {
@@ -13,23 +13,49 @@ TEST(equal_test)
     destroy_expr(nil2);
 
     struct Expr list1 =
-        CONS(NUMBER(1.0f),
-             CONS(NUMBER(2.0f),
-                  CONS(NUMBER(3.0f),
+        CONS(SYMBOL("a"),
+             CONS(SYMBOL("b"),
+                  CONS(SYMBOL("c"),
                        NIL)));
     struct Expr list2 =
-        CONS(NUMBER(1.0f),
-             CONS(NUMBER(2.0f),
-                  CONS(NUMBER(3.0f),
+        CONS(SYMBOL("a"),
+             CONS(SYMBOL("b"),
+                  CONS(SYMBOL("c"),
                        NIL)));
     ASSERT_TRUE(equal(list1, list2), "lists are not equal");
+    destroy_expr(list1);
+    destroy_expr(list2);
 
+    return 0;
+}
+
+TEST(assoc_test)
+{
+    struct Expr nil = NIL;
+
+    struct Expr a = SYMBOL("a");
+    struct Expr b = SYMBOL("b");
+    struct Expr c = SYMBOL("c");
+
+    struct Expr a_pair = CONS(a, NUMBER(10.0f));
+    struct Expr b_pair = CONS(b, NUMBER(20.0f));
+    struct Expr c_pair = CONS(c, NUMBER(30.0f));
+
+    struct Expr alist =
+        CONS(a_pair,
+             CONS(b_pair,
+                  CONS(c_pair, nil)));
+
+    equal(a_pair, assoc(b, alist));
+
+    destroy_expr(alist);
     return 0;
 }
 
 TEST_SUITE(interpreter_suite)
 {
     TEST_RUN(equal_test);
+    TEST_RUN(assoc_test);
 
     return 0;
 }
