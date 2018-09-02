@@ -46,6 +46,31 @@ struct Expr cons_as_expr(struct Cons *cons)
     return expr;
 }
 
+static struct Atom *clone_atom(struct Atom *atom)
+{
+    assert(atom);
+    /* TODO: clone_atom is not implemented */
+    return atom;
+}
+
+struct Expr clone_expr(struct Expr expr)
+{
+    switch (expr.type) {
+    case EXPR_ATOM:
+        return atom_as_expr(clone_atom(expr.atom));
+
+    case EXPR_CONS:
+        return cons_as_expr(
+            create_cons(
+                clone_expr(expr.cons->car),
+                clone_expr(expr.cons->cdr)));
+
+    default: {}
+    }
+
+    return expr;
+}
+
 struct Expr void_expr(void)
 {
     struct Expr expr = {
