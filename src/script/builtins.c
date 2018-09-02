@@ -66,7 +66,7 @@ bool nil_p(struct Expr obj)
 
 struct Expr assoc(struct Expr key, struct Expr alist)
 {
-    /* TODO: assoc has a recursive implementation */
+    /* TODO(#310): assoc has a recursive implementation */
 
     switch (alist.type) {
     case EXPR_CONS:
