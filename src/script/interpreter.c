@@ -2,6 +2,7 @@
 #include <math.h>
 #include <string.h>
 
+#include "./builtins.h"
 #include "./expr.h"
 #include "./interpreter.h"
 
@@ -65,12 +66,25 @@ static struct EvalResult eval_args(struct Expr scope, struct Expr args)
     return eval_failure("Unexpected expression", args);
 }
 
-static struct EvalResult plus_op(struct Expr scope, struct Expr args)
+static struct EvalResult plus_op(struct Expr args)
 {
-    (void) scope;
-    (void) args;
-    /* TODO: plus_op is not implemented*/
-    return eval_failure("not implemnted", void_expr());
+    float result = 0.0f;
+
+    while (!nil_p(args)) {
+        if (args.type != EXPR_CONS) {
+            return eval_failure("Expected cons", args);
+        }
+
+        if (args.cons->car.type != EXPR_ATOM ||
+            args.cons->car.atom->type != ATOM_NUMBER) {
+            return eval_failure("Expected number", args.cons->car);
+        }
+
+        result += args.cons->car.atom->num;
+        args = args.cons->cdr;
+    }
+
+    return eval_success(atom_as_expr(create_number_atom(result)));
 }
 
 static struct EvalResult eval_funcall(struct Expr scope, struct Cons *cons)
@@ -87,7 +101,7 @@ static struct EvalResult eval_funcall(struct Expr scope, struct Cons *cons)
         if (args.is_error) {
             return args;
         }
-        return plus_op(scope, args.expr);
+        return plus_op(args.expr);
     }
 
     return eval_failure("Unknown function", cons->car);

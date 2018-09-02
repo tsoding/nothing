@@ -82,6 +82,8 @@ set(HEADER_FILES
   src/math/rand.h
   src/math/rect.h
   src/math/triangle.h
+  src/script/builtins.c
+  src/script/builtins.h
   src/script/expr.h
   src/script/interpreter.h
   src/script/parser.h
