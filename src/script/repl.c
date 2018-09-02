@@ -13,7 +13,6 @@ int main(int argc, char *argv[])
     (void) argc;
     (void) argv;
 
-    /* TODO: memory leak */
     while (true) {
         printf("> ");
 
@@ -30,10 +29,14 @@ int main(int argc, char *argv[])
         struct EvalResult eval_result = eval(empty_scope(), parse_result.expr);
         if (eval_result.is_error) {
             print_eval_error(stderr, eval_result);
+            destroy_expr(parse_result.expr);
+            destroy_expr(eval_result.expr);
             continue;
         }
 
         print_expr_as_sexpr(eval_result.expr);
+        destroy_expr(parse_result.expr);
+        destroy_expr(eval_result.expr);
     }
 
     return 0;
