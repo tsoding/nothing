@@ -61,7 +61,7 @@ bool nil_p(struct Expr obj)
 {
     return obj.type == EXPR_ATOM
         && obj.atom->type == ATOM_SYMBOL
-        && strcmp(obj.atom->sym, "nil");
+        && strcmp(obj.atom->sym, "nil") == 0;
 }
 
 struct Expr assoc(struct Expr key, struct Expr alist)
