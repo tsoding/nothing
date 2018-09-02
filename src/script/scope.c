@@ -23,7 +23,7 @@ struct Expr set_scope_value(struct Expr scope, struct Expr name, struct Expr val
     (void) name;
     (void) value;
 
-    /* TODO: set_scope_value is not implemented */
+    /* TODO(#312): set_scope_value is not implemented */
 
     return scope;
 }
