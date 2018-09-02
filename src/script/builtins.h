@@ -6,6 +6,7 @@
 bool equal(struct Expr obj1, struct Expr obj2);
 
 bool nil_p(struct Expr obj);
+bool symbol_p(struct Expr obj);
 
 /// You should never detroy the result of assoc because it always
 /// returns the subexpression of alist

@@ -59,9 +59,14 @@ bool equal(struct Expr obj1, struct Expr obj2)
 
 bool nil_p(struct Expr obj)
 {
-    return obj.type == EXPR_ATOM
-        && obj.atom->type == ATOM_SYMBOL
+    return symbol_p(obj)
         && strcmp(obj.atom->sym, "nil") == 0;
+}
+
+bool symbol_p(struct Expr obj)
+{
+    return obj.type == EXPR_ATOM
+        && obj.atom->type == ATOM_SYMBOL;
 }
 
 struct Expr assoc(struct Expr key, struct Expr alist)
