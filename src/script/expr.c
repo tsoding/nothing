@@ -49,7 +49,18 @@ struct Expr cons_as_expr(struct Cons *cons)
 static struct Atom *clone_atom(struct Atom *atom)
 {
     assert(atom);
-    /* TODO: clone_atom is not implemented */
+
+    switch(atom->type) {
+    case ATOM_NUMBER:
+        return create_number_atom(atom->num);
+
+    case ATOM_STRING:
+        return create_string_atom(atom->str, NULL);
+
+    case ATOM_SYMBOL:
+        return create_symbol_atom(atom->sym, NULL);
+    }
+
     return atom;
 }
 
