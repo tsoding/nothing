@@ -44,6 +44,7 @@ set(SOURCE_FILES
   src/math/rect.c
   src/math/triangle.c
   src/script/expr.c
+  src/script/interpreter.c
   src/script/parser.c
   src/script/tokenizer.c
   src/sdl/renderer.c
@@ -82,6 +83,7 @@ set(HEADER_FILES
   src/math/rect.h
   src/math/triangle.h
   src/script/expr.h
+  src/script/interpreter.h
   src/script/parser.h
   src/script/tokenizer.h
   src/sdl/renderer.h
@@ -93,16 +95,22 @@ set(HEADER_FILES
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
 add_executable(nothing_test
+  src/script/builtins.c
+  src/script/builtins.h
   src/script/expr.c
   src/script/expr.h
+  src/script/interpreter.c
+  src/script/interpreter.h
   src/script/parser.c
   src/script/parser.h
+  src/script/scope.c
+  src/script/scope.h
   src/script/tokenizer.c
   src/script/tokenizer.h
-  src/system/lt.c
-  src/system/lt.h
   src/system/error.c
   src/system/error.h
+  src/system/lt.c
+  src/system/lt.h
   src/system/lt/lt_adapters.c
   src/system/lt/lt_adapters.h
   src/system/lt/lt_slot.c

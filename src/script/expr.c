@@ -21,6 +21,8 @@ static char *string_duplicate(const char *str,
     }
 
     memcpy(dup_str, str, n);
+    dup_str[n] = '\0';
+
     return dup_str;
 }
 
