@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <math.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "builtins.h"
@@ -53,7 +54,7 @@ bool equal(struct Expr obj1, struct Expr obj2)
         return true;
     }
 
-    return false;
+    return true;
 }
 
 bool nil_p(struct Expr obj)

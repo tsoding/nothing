@@ -46,7 +46,7 @@ TEST(assoc_test)
              CONS(b_pair,
                   CONS(c_pair, nil)));
 
-    equal(a_pair, assoc(b, alist));
+    ASSERT_TRUE(equal(a_pair, assoc(a, alist)), "unexpected pair retrieved");
 
     destroy_expr(alist);
     return 0;
