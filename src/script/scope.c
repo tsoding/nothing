@@ -2,9 +2,20 @@
 
 static struct Expr find_frame_with_name(struct Expr scope, struct Expr name)
 {
-    (void) name;
+    struct Expr frame = scope;
 
-    /* TODO: find_frame_with_name is not implemented */
+    while (cons_p(frame)) {
+        if (!nil_p(assoc(name, frame))) {
+            return frame;
+        }
+
+        frame = frame.cons->car;
+    }
+
+    if (cons_p(scope)) {
+        return scope.cons->car;
+    }
+
     return scope;
 }
 
