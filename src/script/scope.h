@@ -9,11 +9,8 @@
 //  ((x . 10)
 //   (name . "Alexey")))
 
-struct Expr empty_scope(void);
 struct Expr get_scope_value(struct Expr scope, struct Expr name);
-void set_scope_value(struct Expr scope, struct Expr name, struct Expr value);
-struct Expr push_scope_frame(struct Expr scope);
-struct Expr pop_scope_frame(struct Expr scope);
+struct Expr set_scope_value(struct Expr scope, struct Expr name, struct Expr value);
 
 
 #endif  // SCOPE_H_

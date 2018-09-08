@@ -13,6 +13,4 @@ bool cons_p(struct Expr obj);
 /// returns the subexpression of alist
 struct Expr assoc(struct Expr key, struct Expr alist);
 
-struct Expr push(struct Expr newelt, struct Expr place);
-
 #endif  // BUILTINS_H_

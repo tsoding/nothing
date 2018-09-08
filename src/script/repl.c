@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        struct EvalResult eval_result = eval(empty_scope(), parse_result.expr);
+        struct EvalResult eval_result = eval(NIL, parse_result.expr);
         if (eval_result.is_error) {
             print_eval_error(stderr, eval_result);
             destroy_expr(parse_result.expr);

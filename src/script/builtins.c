@@ -86,13 +86,3 @@ struct Expr assoc(struct Expr key, struct Expr alist)
 
     return alist;
 }
-
-struct Expr push(struct Expr newelt, struct Expr place)
-{
-    if (cons_p(place)) {
-        place.cons->cdr = CONS(place.cons->car, place.cons->cdr);
-        place.cons->car = newelt;
-    }
-
-    return place;
-}
