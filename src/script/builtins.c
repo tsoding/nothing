@@ -89,6 +89,10 @@ struct Expr assoc(struct Expr key, struct Expr alist)
 
 struct Expr push(struct Expr newelt, struct Expr place)
 {
-    (void) newelt;
+    if (cons_p(place)) {
+        place.cons->cdr = CONS(place.cons->car, place.cons->cdr);
+        place.cons->car = newelt;
+    }
+
     return place;
 }
