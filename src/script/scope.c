@@ -20,7 +20,7 @@ struct Expr set_scope_value(struct Expr scope, struct Expr name, struct Expr val
             return scope;
         }
     } else {
-        /* TODO: set_scope_value creates redundant global scopes */
+        /* TODO(#318): set_scope_value creates redundant global scopes */
         return CONS(CONS(name, value), NIL);
     }
 }
