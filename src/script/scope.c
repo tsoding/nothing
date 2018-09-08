@@ -1,43 +1,26 @@
 #include "./scope.h"
 
-struct Expr empty_scope(void)
-{
-    return CONS(NIL, NIL);
-}
-
 struct Expr get_scope_value(struct Expr scope, struct Expr name)
 {
-    switch (scope.type) {
-    case EXPR_CONS: {
+    if (cons_p(scope)) {
         struct Expr value = assoc(name, scope.cons->car);
         return nil_p(value) ? get_scope_value(scope.cons->cdr, name) : value;
-    } break;
-
-    default:
-        return scope;
     }
-}
-
-struct Expr set_scope_value(struct Expr scope, struct Expr name, struct Expr value)
-{
-    (void) name;
-    (void) value;
-
-    /* TODO(#312): set_scope_value is not implemented */
 
     return scope;
 }
 
-struct Expr push_scope_frame(struct Expr scope)
+struct Expr set_scope_value(struct Expr scope, struct Expr name, struct Expr value)
 {
-    return CONS(empty_scope(), scope);
-}
-
-struct Expr pop_scope_frame(struct Expr scope)
-{
-    if (scope.type == EXPR_CONS) {
-        return scope.cons->cdr;
+    if (cons_p(scope)) {
+        if (!nil_p(assoc(name, scope.cons->car))) {
+            return CONS(CONS(name, value), scope);
+        } else {
+            scope.cons->cdr = set_scope_value(scope.cons->cdr, name, value);
+            return scope;
+        }
     } else {
-        return scope;
+        /* TODO(#318): set_scope_value creates redundant global scopes */
+        return CONS(CONS(name, value), NIL);
     }
 }

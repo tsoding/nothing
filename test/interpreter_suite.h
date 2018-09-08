@@ -51,7 +51,6 @@ TEST(assoc_test)
     destroy_expr(alist);
     return 0;
 }
-
 TEST_SUITE(interpreter_suite)
 {
     TEST_RUN(equal_test);

@@ -114,6 +114,7 @@ static struct EvalResult eval_funcall(struct Expr scope, struct Cons *cons)
     return eval_failure("Unknown function", clone_expr(cons->car));
 }
 
+/* TODO(#317): eval does not return new scope after the evaluation */
 struct EvalResult eval(struct Expr scope, struct Expr expr)
 {
     switch(expr.type) {
