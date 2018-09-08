@@ -69,26 +69,20 @@ bool symbol_p(struct Expr obj)
         && obj.atom->type == ATOM_SYMBOL;
 }
 
+bool cons_p(struct Expr obj)
+{
+    return obj.type == EXPR_CONS;
+}
+
 struct Expr assoc(struct Expr key, struct Expr alist)
 {
-    /* TODO(#310): assoc has a recursive implementation */
-
-    switch (alist.type) {
-    case EXPR_CONS:
-        switch (alist.cons->car.type) {
-        case EXPR_CONS:
-            if (equal(alist.cons->car.cons->car, key)) {
-                return alist.cons->car;
-            } else {
-                return assoc(key, alist.cons->cdr);
-            }
-            break;
-
-        default:
-            return assoc(key, alist.cons->cdr);
+    while (cons_p(alist)) {
+        if (cons_p(alist.cons->car) && equal(alist.cons->car.cons->car, key)) {
+            return alist.cons->car;
         }
 
-    default:
-        return alist;
+        alist = alist.cons->cdr;
     }
+
+    return alist;
 }
