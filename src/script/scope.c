@@ -1,8 +1,16 @@
 #include "./scope.h"
 
+static struct Expr find_frame_with_name(struct Expr scope, struct Expr name)
+{
+    (void) name;
+
+    /* TODO: find_frame_with_name is not implemented */
+    return scope;
+}
+
 struct Expr empty_scope(void)
 {
-    return CONS(NIL, NIL);
+    return CONS(NIL, NIL);      /* '(()) */
 }
 
 struct Expr get_scope_value(struct Expr scope, struct Expr name)
@@ -18,14 +26,10 @@ struct Expr get_scope_value(struct Expr scope, struct Expr name)
     }
 }
 
-struct Expr set_scope_value(struct Expr scope, struct Expr name, struct Expr value)
+void set_scope_value(struct Expr scope, struct Expr name, struct Expr value)
 {
-    (void) name;
-    (void) value;
-
-    /* TODO(#312): set_scope_value is not implemented */
-
-    return scope;
+    struct Expr frame = find_frame_with_name(scope, name);
+    push(CONS(name, value), frame);
 }
 
 struct Expr push_scope_frame(struct Expr scope)

@@ -86,3 +86,9 @@ struct Expr assoc(struct Expr key, struct Expr alist)
 
     return alist;
 }
+
+struct Expr push(struct Expr newelt, struct Expr place)
+{
+    (void) newelt;
+    return place;
+}
