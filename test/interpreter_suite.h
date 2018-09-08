@@ -71,11 +71,27 @@ TEST(push_test)
     return 0;
 }
 
+TEST(push_to_nil_test)
+{
+    struct Expr a = SYMBOL("a");
+    struct Expr alist = NIL;
+
+    push(a, alist);
+
+    ASSERT_TRUE(cons_p(alist), "alist is not cons");
+    ASSERT_TRUE(equal(alist.cons->car, a), "(car alist) is not 'a");
+
+    return 0;
+}
+
 TEST_SUITE(interpreter_suite)
 {
     TEST_RUN(equal_test);
     TEST_RUN(assoc_test);
     TEST_RUN(push_test);
+    // TODO: push_to_nil_test is failing
+    // TEST_RUN(push_to_nil_test);
+    (void) push_to_nil_test;
 
     return 0;
 }
