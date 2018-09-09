@@ -6,7 +6,7 @@
 #include "system/error.h"
 #include "system/lt.h"
 
-#define GC_INITIAL_EXPRS_CAPACITY 100
+#define GC_INITIAL_EXPRS_CAPACITY 256
 
 struct Gc
 {
@@ -47,16 +47,27 @@ void destroy_gc(Gc *gc)
     RETURN_LT0(gc->lt);
 }
 
-void gc_add_atom(Gc *gc, const struct Atom *atom)
+int gc_add_expr(Gc *gc, struct Expr expr)
 {
     assert(gc);
-    assert(atom);
-}
 
-void gc_add_cons(Gc *gc, const struct Cons *cons)
-{
-    assert(gc);
-    assert(cons);
+    if (gc->exprs_size >= gc->exprs_capacity) {
+        const size_t new_capacity = gc->exprs_capacity * 2;
+        struct Expr *const new_exprs = realloc(
+            gc->exprs,
+            sizeof(struct Expr) * new_capacity);
+
+        if (new_exprs == NULL) {
+            return -1;
+        }
+
+        gc->exprs_capacity = new_capacity;
+        gc->exprs = REPLACE_LT(gc->lt, gc->exprs, new_exprs);
+    }
+
+    gc->exprs[gc->exprs_size++] = expr;
+
+    return 0;
 }
 
 void gc_collect(Gc *gc, struct Expr root)
