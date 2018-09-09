@@ -21,8 +21,8 @@ struct ParseResult parse_success(struct Expr expr,
 struct ParseResult parse_failure(const char *error,
                                  const char *end);
 
-struct ParseResult read_expr_from_string(const char *str);
-struct ParseResult read_expr_from_file(const char *filename);
+struct ParseResult read_expr_from_string(Gc *gc, const char *str);
+struct ParseResult read_expr_from_file(Gc *gc, const char *filename);
 
 void print_parse_error(FILE *stream,
                        const char *str,

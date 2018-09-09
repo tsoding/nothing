@@ -10,17 +10,17 @@ struct Expr get_scope_value(struct Expr scope, struct Expr name)
     return scope;
 }
 
-struct Expr set_scope_value(struct Expr scope, struct Expr name, struct Expr value)
+struct Expr set_scope_value(Gc *gc, struct Expr scope, struct Expr name, struct Expr value)
 {
     if (cons_p(scope)) {
         if (!nil_p(assoc(name, scope.cons->car))) {
-            return CONS(CONS(name, value), scope);
+            return CONS(gc, CONS(gc, name, value), scope);
         } else {
-            scope.cons->cdr = set_scope_value(scope.cons->cdr, name, value);
+            scope.cons->cdr = set_scope_value(gc, scope.cons->cdr, name, value);
             return scope;
         }
     } else {
         /* TODO(#318): set_scope_value creates redundant global scopes */
-        return CONS(CONS(name, value), NIL);
+        return CONS(gc, CONS(gc, name, value), NIL(gc));
     }
 }

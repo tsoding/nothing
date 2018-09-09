@@ -120,6 +120,8 @@ add_executable(repl
   src/system/lt/lt_slot.h
   src/system/error.c
   src/system/error.h
+  src/script/gc.h
+  src/script/gc.c
   )
 add_executable(nothing_test
   src/script/builtins.c
@@ -134,6 +136,8 @@ add_executable(nothing_test
   src/script/scope.h
   src/script/tokenizer.c
   src/script/tokenizer.h
+  src/script/gc.h
+  src/script/gc.c
   src/system/error.c
   src/system/error.h
   src/system/lt.c

@@ -12,15 +12,15 @@
 
 #define MAX_BUFFER_LENGTH (5 * 1000 * 1000)
 
-static struct ParseResult parse_expr(struct Token current_token);
+static struct ParseResult parse_expr(Gc *gc, struct Token current_token);
 
-static struct ParseResult parse_cdr(struct Token current_token)
+static struct ParseResult parse_cdr(Gc *gc, struct Token current_token)
 {
     if (*current_token.begin != '.') {
         return parse_failure("Expected .", current_token.begin);
     }
 
-    struct ParseResult cdr = read_expr_from_string(current_token.end);
+    struct ParseResult cdr = read_expr_from_string(gc, current_token.end);
     if (cdr.is_error) {
         return cdr;
     }
@@ -28,24 +28,24 @@ static struct ParseResult parse_cdr(struct Token current_token)
     current_token = next_token(cdr.end);
 
     if (*current_token.begin != ')') {
-        destroy_expr(cdr.expr);
+        destroy_expr_rec(cdr.expr);
         return parse_failure("Expected )", current_token.begin);
     }
 
     return parse_success(cdr.expr, current_token.end);
 }
 
-static struct ParseResult parse_list_end(struct Token current_token)
+static struct ParseResult parse_list_end(Gc *gc, struct Token current_token)
 {
     if (*current_token.begin != ')') {
         return parse_failure("Expected )", current_token.begin);
     }
 
-    return parse_success(atom_as_expr(create_symbol_atom("nil", NULL)),
+    return parse_success(atom_as_expr(create_symbol_atom(gc, "nil", NULL)),
                          current_token.end);
 }
 
-static struct ParseResult parse_list(struct Token current_token)
+static struct ParseResult parse_list(Gc *gc, struct Token current_token)
 {
     if (*current_token.begin != '(') {
         return parse_failure("Expected (", current_token.begin);
@@ -54,39 +54,39 @@ static struct ParseResult parse_list(struct Token current_token)
     current_token = next_token(current_token.end);
 
     if (*current_token.begin == ')') {
-        return parse_list_end(current_token);
+        return parse_list_end(gc, current_token);
     }
 
-    struct ParseResult car = parse_expr(current_token);
+    struct ParseResult car = parse_expr(gc, current_token);
     if (car.is_error) {
         return car;
     }
 
-    struct Cons *list = create_cons(car.expr, void_expr());
+    struct Cons *list = create_cons(gc, car.expr, void_expr());
     struct Cons *cons = list;
     current_token = next_token(car.end);
 
     while (*current_token.begin != '.' &&
            *current_token.begin != ')' &&
            *current_token.begin != 0) {
-        car = parse_expr(current_token);
+        car = parse_expr(gc, current_token);
         if (car.is_error) {
-            destroy_cons(list);
+            destroy_cons_rec(list);
             return car;
         }
 
-        cons->cdr = cons_as_expr(create_cons(car.expr, void_expr()));
+        cons->cdr = cons_as_expr(create_cons(gc, car.expr, void_expr()));
         cons = cons->cdr.cons;
 
         current_token = next_token(car.end);
     }
 
     struct ParseResult cdr = *current_token.begin == '.'
-        ? parse_cdr(current_token)
-        : parse_list_end(current_token);
+        ? parse_cdr(gc, current_token)
+        : parse_list_end(gc, current_token);
 
     if (cdr.is_error) {
-        destroy_cons(list);
+        destroy_cons_rec(list);
         return cdr;
     }
 
@@ -95,7 +95,7 @@ static struct ParseResult parse_list(struct Token current_token)
     return parse_success(cons_as_expr(list), cdr.end);
 }
 
-static struct ParseResult parse_string(struct Token current_token)
+static struct ParseResult parse_string(Gc *gc, struct Token current_token)
 {
     if (*current_token.begin != '"') {
         return parse_failure("Expected \"", current_token.begin);
@@ -106,17 +106,17 @@ static struct ParseResult parse_string(struct Token current_token)
     }
 
     if (current_token.begin + 1 == current_token.end) {
-        return parse_success(atom_as_expr(create_string_atom("", NULL)),
+        return parse_success(atom_as_expr(create_string_atom(gc, "", NULL)),
                              current_token.end);
     }
 
     return parse_success(
         atom_as_expr(
-            create_string_atom(current_token.begin + 1, current_token.end - 1)),
+            create_string_atom(gc, current_token.begin + 1, current_token.end - 1)),
         current_token.end);
 }
 
-static struct ParseResult parse_number(struct Token current_token)
+static struct ParseResult parse_number(Gc *gc, struct Token current_token)
 {
     char *endptr = 0;
     const float x = strtof(current_token.begin, &endptr);
@@ -126,48 +126,48 @@ static struct ParseResult parse_number(struct Token current_token)
     }
 
     return parse_success(
-        atom_as_expr(create_number_atom(x)),
+        atom_as_expr(create_number_atom(gc, x)),
         current_token.end);
 }
 
-static struct ParseResult parse_symbol(struct Token current_token)
+static struct ParseResult parse_symbol(Gc *gc, struct Token current_token)
 {
     if (*current_token.begin == 0) {
         return parse_failure("EOF", current_token.begin);
     }
 
     return parse_success(
-        atom_as_expr(create_symbol_atom(current_token.begin, current_token.end)),
+        atom_as_expr(create_symbol_atom(gc, current_token.begin, current_token.end)),
         current_token.end);
 }
 
-static struct ParseResult parse_expr(struct Token current_token)
+static struct ParseResult parse_expr(Gc *gc, struct Token current_token)
 {
     if (*current_token.begin == 0) {
         return parse_failure("EOF", current_token.begin);
     }
 
     switch (*current_token.begin) {
-    case '(': return parse_list(current_token);
+    case '(': return parse_list(gc, current_token);
     /* TODO(#292): parser does not support escaped string characters */
-    case '"': return parse_string(current_token);
+    case '"': return parse_string(gc, current_token);
     default: {}
     }
 
     if (isdigit(*current_token.begin)) {
-        return parse_number(current_token);
+        return parse_number(gc, current_token);
     }
 
-    return parse_symbol(current_token);
+    return parse_symbol(gc, current_token);
 }
 
-struct ParseResult read_expr_from_string(const char *str)
+struct ParseResult read_expr_from_string(Gc *gc, const char *str)
 {
     assert(str);
-    return parse_expr(next_token(str));
+    return parse_expr(gc, next_token(str));
 }
 
-struct ParseResult read_expr_from_file(const char *filename)
+struct ParseResult read_expr_from_file(Gc *gc, const char *filename)
 {
     assert(filename);
 
@@ -213,7 +213,7 @@ struct ParseResult read_expr_from_file(const char *filename)
         RETURN_LT(lt, parse_failure("Could not read the file", NULL));
     }
 
-    struct ParseResult result = read_expr_from_string(buffer);
+    struct ParseResult result = read_expr_from_string(gc, buffer);
 
     RETURN_LT(lt, result);
 }
