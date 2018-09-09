@@ -47,6 +47,7 @@ set(SOURCE_FILES
   src/script/interpreter.c
   src/script/parser.c
   src/script/tokenizer.c
+  src/script/gc.c
   src/sdl/renderer.c
   src/system/error.c
   src/system/lt.c
@@ -85,6 +86,7 @@ set(HEADER_FILES
   src/script/builtins.c
   src/script/builtins.h
   src/script/expr.h
+  src/script/gc.h
   src/script/interpreter.h
   src/script/parser.h
   src/script/tokenizer.h
@@ -118,6 +120,8 @@ add_executable(repl
   src/system/lt/lt_slot.h
   src/system/error.c
   src/system/error.h
+  src/script/gc.h
+  src/script/gc.c
   )
 add_executable(nothing_test
   src/script/builtins.c
@@ -132,6 +136,8 @@ add_executable(nothing_test
   src/script/scope.h
   src/script/tokenizer.c
   src/script/tokenizer.h
+  src/script/gc.h
+  src/script/gc.c
   src/system/error.c
   src/system/error.h
   src/system/lt.c

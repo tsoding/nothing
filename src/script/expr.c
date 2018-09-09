@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "script/expr.h"
+#include "script/gc.h"
 
 static char *string_duplicate(const char *str,
                               const char *str_end)
@@ -46,35 +47,35 @@ struct Expr cons_as_expr(struct Cons *cons)
     return expr;
 }
 
-static struct Atom *clone_atom(struct Atom *atom)
+static struct Atom *clone_atom(Gc *gc, struct Atom *atom)
 {
     assert(atom);
 
     switch(atom->type) {
     case ATOM_NUMBER:
-        return create_number_atom(atom->num);
+        return create_number_atom(gc, atom->num);
 
     case ATOM_STRING:
-        return create_string_atom(atom->str, NULL);
+        return create_string_atom(gc, atom->str, NULL);
 
     case ATOM_SYMBOL:
-        return create_symbol_atom(atom->sym, NULL);
+        return create_symbol_atom(gc, atom->sym, NULL);
     }
 
     return atom;
 }
 
-struct Expr clone_expr(struct Expr expr)
+struct Expr clone_expr(Gc *gc, struct Expr expr)
 {
     switch (expr.type) {
     case EXPR_ATOM:
-        return atom_as_expr(clone_atom(expr.atom));
+        return atom_as_expr(clone_atom(gc, expr.atom));
 
     case EXPR_CONS:
         return cons_as_expr(
-            create_cons(
-                clone_expr(expr.cons->car),
-                clone_expr(expr.cons->cdr)));
+            create_cons(gc,
+                clone_expr(gc, expr.cons->car),
+                clone_expr(gc, expr.cons->cdr)));
 
     default: {}
     }
@@ -149,8 +150,6 @@ void print_expr_as_sexpr(struct Expr expr)
     case EXPR_VOID:
         break;
     }
-
-    printf("\n");
 }
 
 void destroy_expr(struct Expr expr)
@@ -169,7 +168,7 @@ void destroy_expr(struct Expr expr)
     }
 }
 
-struct Cons *create_cons(struct Expr car, struct Expr cdr)
+struct Cons *create_cons(Gc *gc, struct Expr car, struct Expr cdr)
 {
     struct Cons *cons = malloc(sizeof(struct Cons));
     if (cons == NULL) {
@@ -179,17 +178,20 @@ struct Cons *create_cons(struct Expr car, struct Expr cdr)
     cons->car = car;
     cons->cdr = cdr;
 
+    if (gc_add_expr(gc, cons_as_expr(cons)) < 0) {
+        free(cons);
+        return NULL;
+    }
+
     return cons;
 }
 
 void destroy_cons(struct Cons *cons)
 {
-    destroy_expr(cons->car);
-    destroy_expr(cons->cdr);
     free(cons);
 }
 
-struct Atom *create_number_atom(float num)
+struct Atom *create_number_atom(Gc *gc, float num)
 {
     struct Atom *atom = malloc(sizeof(struct Atom));
     if (atom == NULL) {
@@ -197,39 +199,77 @@ struct Atom *create_number_atom(float num)
     }
     atom->type = ATOM_NUMBER;
     atom->num = num;
+
+    if (gc_add_expr(gc, atom_as_expr(atom)) < 0) {
+        free(atom);
+        return NULL;
+    }
+
     return atom;
 }
 
-struct Atom *create_string_atom(const char *str, const char *str_end)
+struct Atom *create_string_atom(Gc *gc, const char *str, const char *str_end)
 {
     struct Atom *atom = malloc(sizeof(struct Atom));
+
     if (atom == NULL) {
-        return NULL;
+        goto error;
     }
+
     atom->type = ATOM_STRING;
     atom->str = string_duplicate(str, str_end);
+
     if (atom->str == NULL) {
-        free(atom);
-        return NULL;
+        goto error;
+    }
+
+    if (gc_add_expr(gc, atom_as_expr(atom)) < 0) {
+        goto error;
     }
 
     return atom;
+
+error:
+    if (atom != NULL) {
+        if (atom->str != NULL) {
+            free(atom->str);
+        }
+        free(atom);
+    }
+
+    return NULL;
 }
 
-struct Atom *create_symbol_atom(const char *sym, const char *sym_end)
+struct Atom *create_symbol_atom(Gc *gc, const char *sym, const char *sym_end)
 {
     struct Atom *atom = malloc(sizeof(struct Atom));
+
     if (atom == NULL) {
-        return NULL;
+        goto error;
     }
+
     atom->type = ATOM_SYMBOL;
     atom->sym = string_duplicate(sym, sym_end);
+
     if (atom->sym == NULL) {
-        free(atom);
-        return NULL;
+        goto error;
+    }
+
+    if (gc_add_expr(gc, atom_as_expr(atom)) < 0) {
+        goto error;
     }
 
     return atom;
+
+error:
+    if (atom != NULL) {
+        if (atom->sym != NULL) {
+            free(atom->sym);
+        }
+        free(atom);
+    }
+
+    return NULL;
 }
 
 void destroy_atom(struct Atom *atom)

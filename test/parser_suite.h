@@ -3,10 +3,13 @@
 
 #include "test.h"
 #include "script/parser.h"
+#include "script/gc.h"
 
 TEST(read_expr_from_file_test)
 {
-    struct ParseResult result = read_expr_from_file("test-data/simple-sum.lisp");
+    Gc *gc = create_gc();
+
+    struct ParseResult result = read_expr_from_file(gc, "test-data/simple-sum.lisp");
 
     ASSERT_TRUE(!result.is_error, result.error_message);
 
@@ -41,7 +44,8 @@ TEST(read_expr_from_file_test)
     ASSERT_INTEQ(ATOM_SYMBOL, expr.atom->type);
     ASSERT_STREQ("nil", expr.atom->sym);
 
-    destroy_expr(head);
+    destroy_gc(gc);
+
     return 0;
 }
 

@@ -6,51 +6,55 @@
 
 TEST(equal_test)
 {
-    struct Expr nil1 = NIL;
-    struct Expr nil2 = NIL;
+    Gc *gc = create_gc();
+
+    struct Expr nil1 = NIL(gc);
+    struct Expr nil2 = NIL(gc);
     ASSERT_TRUE(equal(nil1, nil2), "nils are not equal");
-    destroy_expr(nil1);
-    destroy_expr(nil2);
 
     struct Expr list1 =
-        CONS(SYMBOL("a"),
-             CONS(SYMBOL("b"),
-                  CONS(SYMBOL("c"),
-                       NIL)));
+        CONS(gc, SYMBOL(gc, "a"),
+             CONS(gc, SYMBOL(gc, "b"),
+                  CONS(gc, SYMBOL(gc, "c"),
+                       NIL(gc))));
     struct Expr list2 =
-        CONS(SYMBOL("a"),
-             CONS(SYMBOL("b"),
-                  CONS(SYMBOL("c"),
-                       NIL)));
+        CONS(gc, SYMBOL(gc, "a"),
+             CONS(gc, SYMBOL(gc, "b"),
+                  CONS(gc, SYMBOL(gc, "c"),
+                       NIL(gc))));
     ASSERT_TRUE(equal(list1, list2), "lists are not equal");
-    destroy_expr(list1);
-    destroy_expr(list2);
+
+    destroy_gc(gc);
 
     return 0;
 }
 
 TEST(assoc_test)
 {
-    struct Expr nil = NIL;
+    Gc *gc = create_gc();
 
-    struct Expr a = SYMBOL("a");
-    struct Expr b = SYMBOL("b");
-    struct Expr c = SYMBOL("c");
+    struct Expr nil = NIL(gc);
 
-    struct Expr a_pair = CONS(a, NUMBER(10.0f));
-    struct Expr b_pair = CONS(b, NUMBER(20.0f));
-    struct Expr c_pair = CONS(c, NUMBER(30.0f));
+    struct Expr a = SYMBOL(gc, "a");
+    struct Expr b = SYMBOL(gc, "b");
+    struct Expr c = SYMBOL(gc, "c");
+
+    struct Expr a_pair = CONS(gc, a, NUMBER(gc, 10.0f));
+    struct Expr b_pair = CONS(gc, b, NUMBER(gc, 20.0f));
+    struct Expr c_pair = CONS(gc, c, NUMBER(gc, 30.0f));
 
     struct Expr alist =
-        CONS(a_pair,
-             CONS(b_pair,
-                  CONS(c_pair, nil)));
+        CONS(gc, a_pair,
+             CONS(gc, b_pair,
+                  CONS(gc, c_pair, nil)));
 
     ASSERT_TRUE(equal(a_pair, assoc(a, alist)), "unexpected pair retrieved");
 
-    destroy_expr(alist);
+    destroy_gc(gc);
+
     return 0;
 }
+
 TEST_SUITE(interpreter_suite)
 {
     TEST_RUN(equal_test);
