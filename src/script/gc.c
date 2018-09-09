@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "builtins.h"
 #include "expr.h"
 #include "gc.h"
 #include "system/error.h"
@@ -113,11 +114,30 @@ int gc_add_expr(Gc *gc, struct Expr expr)
     return 0;
 }
 
+static int gc_find_expr(Gc *gc, struct Expr expr)
+{
+    assert(gc);
+    (void) expr;
+    /* TODO: gc_find_expr is not implemented  */
+    return 0;
+}
+
 static void gc_traverse_expr(Gc *gc, struct Expr root)
 {
     assert(gc);
-    (void) root;
-    /* TODO: gc_traverse_expr is not implemented */
+    const int root_index = gc_find_expr(gc, root);
+    assert(root_index >= 0);
+
+    if (gc->visited[root_index]) {
+        return;
+    }
+
+    if (cons_p(root)) {
+        gc_traverse_expr(gc, root.cons->car);
+        gc_traverse_expr(gc, root.cons->cdr);
+    }
+
+    gc->visited[root_index] = 1;
 }
 
 void gc_collect(Gc *gc, struct Expr root)
