@@ -47,6 +47,7 @@ set(SOURCE_FILES
   src/script/interpreter.c
   src/script/parser.c
   src/script/tokenizer.c
+  src/script/gc.c
   src/sdl/renderer.c
   src/system/error.c
   src/system/lt.c
@@ -85,6 +86,7 @@ set(HEADER_FILES
   src/script/builtins.c
   src/script/builtins.h
   src/script/expr.h
+  src/script/gc.h
   src/script/interpreter.h
   src/script/parser.h
   src/script/tokenizer.h
