@@ -84,6 +84,11 @@ Gc *create_gc(void)
 void destroy_gc(Gc *gc)
 {
     assert(gc);
+
+    for (size_t i = 0; i < gc->size; ++i) {
+        destroy_expr(gc->exprs[i]);
+    }
+
     RETURN_LT0(gc->lt);
 }
 
