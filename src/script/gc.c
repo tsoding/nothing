@@ -176,3 +176,15 @@ void gc_collect(Gc *gc, struct Expr root)
         }
     }
 }
+
+void gc_inspect(const Gc *gc)
+{
+    for (size_t i = 0; i < gc->size; ++i) {
+        if (gc->exprs[i].type == EXPR_VOID) {
+            printf(".");
+        } else {
+            printf("+");
+        }
+    }
+    printf("\n");
+}
