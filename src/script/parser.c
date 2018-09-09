@@ -28,7 +28,6 @@ static struct ParseResult parse_cdr(Gc *gc, struct Token current_token)
     current_token = next_token(cdr.end);
 
     if (*current_token.begin != ')') {
-        destroy_expr_rec(cdr.expr);
         return parse_failure("Expected )", current_token.begin);
     }
 
@@ -71,7 +70,6 @@ static struct ParseResult parse_list(Gc *gc, struct Token current_token)
            *current_token.begin != 0) {
         car = parse_expr(gc, current_token);
         if (car.is_error) {
-            destroy_cons_rec(list);
             return car;
         }
 
@@ -86,7 +84,6 @@ static struct ParseResult parse_list(Gc *gc, struct Token current_token)
         : parse_list_end(gc, current_token);
 
     if (cdr.is_error) {
-        destroy_cons_rec(list);
         return cdr;
     }
 

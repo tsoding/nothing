@@ -37,7 +37,6 @@ struct Expr cons_as_expr(struct Cons *cons);
 struct Expr void_expr(void);
 struct Expr clone_expr(Gc *gc, struct Expr expr);
 
-void destroy_expr_rec(struct Expr expr);
 void destroy_expr(struct Expr expr);
 void print_expr_as_sexpr(struct Expr expr);
 
@@ -73,7 +72,6 @@ struct Cons
 
 struct Cons *create_cons(Gc *gc, struct Expr car, struct Expr cdr);
 void destroy_cons(struct Cons *cons);
-void destroy_cons_rec(struct Cons *cons);
 void print_cons_as_sexpr(struct Cons *cons);
 
 #endif  // ATOM_H_

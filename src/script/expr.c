@@ -154,22 +154,6 @@ void print_expr_as_sexpr(struct Expr expr)
     printf("\n");
 }
 
-void destroy_expr_rec(struct Expr expr)
-{
-    switch (expr.type) {
-    case EXPR_ATOM:
-        destroy_atom(expr.atom);
-        break;
-
-    case EXPR_CONS:
-        destroy_cons_rec(expr.cons);
-        break;
-
-    case EXPR_VOID:
-        break;
-    }
-}
-
 void destroy_expr(struct Expr expr)
 {
     switch (expr.type) {
@@ -202,13 +186,6 @@ struct Cons *create_cons(Gc *gc, struct Expr car, struct Expr cdr)
     }
 
     return cons;
-}
-
-void destroy_cons_rec(struct Cons *cons)
-{
-    destroy_expr_rec(cons->car);
-    destroy_expr_rec(cons->cdr);
-    free(cons);
 }
 
 void destroy_cons(struct Cons *cons)

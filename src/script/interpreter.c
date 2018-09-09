@@ -60,7 +60,6 @@ static struct EvalResult eval_args(Gc *gc, struct Expr scope, struct Expr args)
 
         struct EvalResult cdr = eval_args(gc, scope, args.cons->cdr);
         if (cdr.is_error) {
-            destroy_expr_rec(car.expr);
             return cdr;
         }
 
