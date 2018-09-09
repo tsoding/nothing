@@ -20,29 +20,25 @@ struct Gc
     size_t capacity;
 };
 
+static long int value_of_expr(struct Expr expr)
+{
+    if (expr.type == EXPR_CONS) {
+        return (long int) expr.cons;
+    } else if (expr.type == EXPR_ATOM) {
+        return (long int) expr.atom;
+    } else {
+        return 0;
+    }
+}
+
 static int compare_exprs(const void *a, const void *b)
 {
     assert(a);
     assert(b);
 
-    const struct Expr *expr_a = (const struct Expr *)a;
-    const struct Expr *expr_b = (const struct Expr *)b;
-
-    const void *ptr_a = NULL;
-    if (expr_a->type == EXPR_CONS) {
-        ptr_a = expr_a->cons;
-    } else if (expr_a->type == EXPR_ATOM) {
-        ptr_a = expr_a->atom;
-    }
-
-    const void *ptr_b = NULL;
-    if (expr_b->type == EXPR_CONS) {
-        ptr_b = expr_b->cons;
-    } else if (expr_b->type == EXPR_ATOM) {
-        ptr_b = expr_b->atom;
-    }
-
-    const long int d = (long int) ptr_b - (long int) ptr_a;
+    const long int ptr_a = value_of_expr(*(const struct Expr *)a);
+    const long int ptr_b = value_of_expr(*(const struct Expr *)b);
+    const long int d = ptr_b - ptr_a;
 
     if (d < 0) {
         return -1;
@@ -114,18 +110,26 @@ int gc_add_expr(Gc *gc, struct Expr expr)
     return 0;
 }
 
-static int gc_find_expr(Gc *gc, struct Expr expr)
+static long int gc_find_expr(Gc *gc, struct Expr expr)
 {
     assert(gc);
     (void) expr;
-    /* TODO: gc_find_expr is not implemented  */
-    return 0;
+
+    struct Expr *result =
+        (struct Expr *) bsearch(&expr, gc->exprs, gc->size,
+                                sizeof(struct Expr), compare_exprs);
+
+    if (result == NULL) {
+        return -1;
+    }
+
+    return (long int) (result - gc->exprs);
 }
 
 static void gc_traverse_expr(Gc *gc, struct Expr root)
 {
     assert(gc);
-    const int root_index = gc_find_expr(gc, root);
+    const long int root_index = gc_find_expr(gc, root);
     assert(root_index >= 0);
 
     if (gc->visited[root_index]) {
