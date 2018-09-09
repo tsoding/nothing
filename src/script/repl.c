@@ -32,14 +32,11 @@ int main(int argc, char *argv[])
         struct EvalResult eval_result = eval(gc, NIL(gc), parse_result.expr);
         if (eval_result.is_error) {
             print_eval_error(stderr, eval_result);
-            destroy_expr_rec(parse_result.expr);
-            destroy_expr_rec(eval_result.expr);
             continue;
         }
 
+        gc_collect(gc, eval_result.expr);
         print_expr_as_sexpr(eval_result.expr);
-        destroy_expr_rec(parse_result.expr);
-        destroy_expr_rec(eval_result.expr);
     }
 
     return 0;
