@@ -37,11 +37,6 @@ int main(int argc, char *argv[])
         gc_inspect(gc);
 
         struct EvalResult eval_result = eval(gc, scope, parse_result.expr);
-        scope = eval_result.scope;
-        if (eval_result.is_error) {
-            print_eval_error(stderr, eval_result);
-            continue;
-        }
         printf("After eval:\t");
         gc_inspect(gc);
 
@@ -52,6 +47,10 @@ int main(int argc, char *argv[])
         printf("Scope:\t");
         print_expr_as_sexpr(eval_result.scope);
         printf("\n");
+
+        if (eval_result.is_error) {
+            printf("Error:\t");
+        }
 
         print_expr_as_sexpr(eval_result.expr);
         printf("\n");
