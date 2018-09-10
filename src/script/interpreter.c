@@ -37,7 +37,7 @@ static struct EvalResult eval_atom(Gc *gc, struct Expr scope, struct Atom *atom)
     case ATOM_NUMBER:
     case ATOM_SYMBOL:
     case ATOM_STRING:
-        /* TODO: get rid of unnecessary clone_expr from interpreter */
+        /* TODO(#322): get rid of unnecessary clone_expr from interpreter */
         return eval_success(clone_expr(gc, atom_as_expr(atom)));
     }
 
