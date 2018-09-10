@@ -52,13 +52,14 @@ struct Atom
     enum AtomType type;
     union
     {
-        float num;             // ATOM_NUMBER
+        // TODO: Atom doesn't support floats
+        long int num;               // ATOM_NUMBER
         char *sym;             // ATOM_SYMBOL
         char *str;             // ATOM_STRING
     };
 };
 
-struct Atom *create_number_atom(Gc *gc, float num);
+struct Atom *create_number_atom(Gc *gc, long int num);
 struct Atom *create_string_atom(Gc *gc, const char *str, const char *str_end);
 struct Atom *create_symbol_atom(Gc *gc, const char *sym, const char *sym_end);
 void destroy_atom(struct Atom *atom);

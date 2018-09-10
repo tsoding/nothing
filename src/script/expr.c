@@ -66,7 +66,7 @@ void print_atom_as_sexpr(struct Atom *atom)
         break;
 
     case ATOM_NUMBER:
-        printf("%f", atom->num);
+        printf("%ld", atom->num);
         break;
 
     case ATOM_STRING:
@@ -155,7 +155,7 @@ void destroy_cons(struct Cons *cons)
     free(cons);
 }
 
-struct Atom *create_number_atom(Gc *gc, float num)
+struct Atom *create_number_atom(Gc *gc, long int num)
 {
     struct Atom *atom = malloc(sizeof(struct Atom));
     if (atom == NULL) {

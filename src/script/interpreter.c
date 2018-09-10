@@ -82,7 +82,7 @@ static struct EvalResult eval_all_args(Gc *gc, struct Expr scope, struct Expr ar
 
 static struct EvalResult plus_op(Gc *gc, struct Expr args, struct Expr scope)
 {
-    float result = 0.0f;
+    long int result = 0.0f;
 
     while (!nil_p(args)) {
         if (args.type != EXPR_CONS) {
