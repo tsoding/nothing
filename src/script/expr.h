@@ -52,7 +52,7 @@ struct Atom
     enum AtomType type;
     union
     {
-        // TODO: Atom doesn't support floats
+        // TODO(#330): Atom doesn't support floats
         long int num;               // ATOM_NUMBER
         char *sym;             // ATOM_SYMBOL
         char *str;             // ATOM_STRING
