@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
         gc_inspect(gc);
 
         struct EvalResult eval_result = eval(gc, scope, parse_result.expr);
+        scope = eval_result.scope;
         printf("After eval:\t");
         gc_inspect(gc);
 
