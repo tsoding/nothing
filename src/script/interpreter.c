@@ -54,12 +54,27 @@ static struct EvalResult eval_atom(Gc *gc, struct Expr scope, struct Atom *atom)
     (void) scope;
     (void) gc;
 
-    /* TODO(#314): Evaluating symbols is not implemented */
     switch (atom->type) {
     case ATOM_NUMBER:
-    case ATOM_SYMBOL:
     case ATOM_STRING:
         return eval_success(atom_as_expr(atom), scope);
+
+    case ATOM_SYMBOL: {
+        if (nil_p(atom_as_expr(atom))) {
+            return eval_success(atom_as_expr(atom), scope);
+        }
+
+        struct Expr value = get_scope_value(scope, atom_as_expr(atom));
+
+        if (nil_p(value)) {
+            return eval_failure(CONS(gc,
+                                     SYMBOL(gc, "void-variable"),
+                                     atom_as_expr(atom)),
+                                scope);
+        }
+
+        return eval_success(value.cons->cdr, scope);
+    }
     }
 
     return eval_failure(CONS(gc,
