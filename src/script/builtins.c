@@ -75,6 +75,19 @@ bool cons_p(struct Expr obj)
     return obj.type == EXPR_CONS;
 }
 
+bool list_p(struct Expr obj)
+{
+    if (nil_p(obj)) {
+        return true;
+    }
+
+    if (obj.type == EXPR_CONS) {
+        return list_p(obj.cons->cdr);
+    }
+
+    return false;
+}
+
 struct Expr assoc(struct Expr key, struct Expr alist)
 {
     while (cons_p(alist)) {
