@@ -48,7 +48,7 @@ static struct EvalResult eval_atom(Gc *gc, struct Expr scope, struct Atom *atom)
                         scope);
 }
 
-static struct EvalResult eval_args(Gc *gc, struct Expr scope, struct Expr args)
+static struct EvalResult eval_all_args(Gc *gc, struct Expr scope, struct Expr args)
 {
     (void) scope;
     (void) args;
@@ -63,7 +63,7 @@ static struct EvalResult eval_args(Gc *gc, struct Expr scope, struct Expr args)
             return car;
         }
 
-        struct EvalResult cdr = eval_args(gc, scope, args.cons->cdr);
+        struct EvalResult cdr = eval_all_args(gc, scope, args.cons->cdr);
         if (cdr.is_error) {
             return cdr;
         }
@@ -121,7 +121,7 @@ static struct EvalResult eval_funcall(Gc *gc, struct Expr scope, struct Cons *co
 
     /* TODO(#323): set builtin function is not implemented */
     if (strcmp(cons->car.atom->sym, "+") == 0) {
-        struct EvalResult args = eval_args(gc, scope, cons->cdr);
+        struct EvalResult args = eval_all_args(gc, scope, cons->cdr);
         if (args.is_error) {
             return args;
         }
