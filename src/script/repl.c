@@ -16,6 +16,8 @@ int main(int argc, char *argv[])
 
     Gc *gc = create_gc();
 
+    struct Expr scope = NIL(gc);
+
     while (true) {
         printf("> ");
 
@@ -34,7 +36,8 @@ int main(int argc, char *argv[])
         printf("After parse:\t");
         gc_inspect(gc);
 
-        struct EvalResult eval_result = eval(gc, NIL(gc), parse_result.expr);
+        struct EvalResult eval_result = eval(gc, scope, parse_result.expr);
+        scope = eval_result.scope;
         if (eval_result.is_error) {
             print_eval_error(stderr, eval_result);
             continue;
@@ -42,9 +45,13 @@ int main(int argc, char *argv[])
         printf("After eval:\t");
         gc_inspect(gc);
 
-        gc_collect(gc, eval_result.expr);
+        gc_collect(gc, CONS(gc, scope, eval_result.expr));
         printf("After collect:\t");
         gc_inspect(gc);
+
+        printf("Scope:\t");
+        print_expr_as_sexpr(eval_result.scope);
+        printf("\n");
 
         print_expr_as_sexpr(eval_result.expr);
         printf("\n");
