@@ -37,6 +37,7 @@ static struct EvalResult eval_atom(Gc *gc, struct Expr scope, struct Atom *atom)
     case ATOM_NUMBER:
     case ATOM_SYMBOL:
     case ATOM_STRING:
+        /* TODO: get rid of unnecessary clone_expr from interpreter */
         return eval_success(clone_expr(gc, atom_as_expr(atom)));
     }
 
@@ -102,6 +103,8 @@ static struct EvalResult eval_funcall(Gc *gc, struct Expr scope, struct Cons *co
         return eval_failure("Expected symbol", clone_expr(gc, cons->car));
     }
 
+    /* TODO: set builtin function is not implemented */
+    /* depends on #317 */
     if (strcmp(cons->car.atom->sym, "+") == 0) {
         struct EvalResult args = eval_args(gc, scope, cons->cdr);
         if (args.is_error) {

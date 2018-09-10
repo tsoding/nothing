@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <math.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -85,4 +86,23 @@ struct Expr assoc(struct Expr key, struct Expr alist)
     }
 
     return alist;
+}
+
+static struct Expr list_rec(Gc *gc, size_t n, va_list args)
+{
+    if (n == 0) {
+        return NIL(gc);
+    }
+
+    struct Expr obj = va_arg(args, struct Expr);
+    return CONS(gc, obj, list_rec(gc, n - 1, args));
+}
+
+struct Expr list(Gc *gc, size_t n, ...)
+{
+    va_list args;
+    va_start(args, n);
+    struct Expr obj = list_rec(gc, n, args);
+    va_end(args);
+    return obj;
 }
