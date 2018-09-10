@@ -11,7 +11,7 @@ struct EvalResult
     bool is_error;
     struct Expr expr;
     struct Expr scope;
-    // TODO: make EvalResult.error a struct Expr
+    // TODO(#326): make EvalResult.error a struct Expr
     const char *error;
 };
 
