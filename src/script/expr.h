@@ -36,7 +36,6 @@ struct Expr
 struct Expr atom_as_expr(struct Atom *atom);
 struct Expr cons_as_expr(struct Cons *cons);
 struct Expr void_expr(void);
-struct Expr clone_expr(Gc *gc, struct Expr expr);
 
 void destroy_expr(struct Expr expr);
 void print_expr_as_sexpr(struct Expr expr);
