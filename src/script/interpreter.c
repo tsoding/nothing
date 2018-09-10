@@ -29,6 +29,26 @@ struct EvalResult eval_failure(struct Expr error, struct Expr scope)
     return result;
 }
 
+static struct EvalResult length(Gc *gc, struct Expr scope, struct Expr obj)
+{
+    if (!list_p(obj)) {
+        return eval_failure(list(gc, 3,
+                                 SYMBOL(gc, "wrong-argument-type"),
+                                 SYMBOL(gc, "listp"),
+                                 obj),
+                            scope);
+    }
+
+    long int count = 0;
+
+    while (!nil_p(obj)) {
+        count++;
+        obj = obj.cons->cdr;
+    }
+
+    return eval_success(NUMBER(gc, count), scope);
+}
+
 static struct EvalResult eval_atom(Gc *gc, struct Expr scope, struct Atom *atom)
 {
     (void) scope;
@@ -48,7 +68,7 @@ static struct EvalResult eval_atom(Gc *gc, struct Expr scope, struct Atom *atom)
                         scope);
 }
 
-static struct EvalResult eval_args(Gc *gc, struct Expr scope, struct Expr args)
+static struct EvalResult eval_all_args(Gc *gc, struct Expr scope, struct Expr args)
 {
     (void) scope;
     (void) args;
@@ -63,7 +83,7 @@ static struct EvalResult eval_args(Gc *gc, struct Expr scope, struct Expr args)
             return car;
         }
 
-        struct EvalResult cdr = eval_args(gc, scope, args.cons->cdr);
+        struct EvalResult cdr = eval_all_args(gc, scope, args.cons->cdr);
         if (cdr.is_error) {
             return cdr;
         }
@@ -82,7 +102,7 @@ static struct EvalResult eval_args(Gc *gc, struct Expr scope, struct Expr args)
 
 static struct EvalResult plus_op(Gc *gc, struct Expr args, struct Expr scope)
 {
-    float result = 0.0f;
+    long int result = 0.0f;
 
     while (!nil_p(args)) {
         if (args.type != EXPR_CONS) {
@@ -121,11 +141,44 @@ static struct EvalResult eval_funcall(Gc *gc, struct Expr scope, struct Cons *co
 
     /* TODO(#323): set builtin function is not implemented */
     if (strcmp(cons->car.atom->sym, "+") == 0) {
-        struct EvalResult args = eval_args(gc, scope, cons->cdr);
+        struct EvalResult args = eval_all_args(gc, scope, cons->cdr);
         if (args.is_error) {
             return args;
         }
         return plus_op(gc, args.expr, scope);
+    } else if (strcmp(cons->car.atom->sym, "set") == 0) {
+        struct Expr args = cons->cdr;
+        struct EvalResult n = length(gc, scope, args);
+
+        if (n.is_error) {
+            return n;
+        }
+        scope = n.scope;
+
+        if (n.expr.atom->num != 2) {
+            return eval_failure(list(gc, 3,
+                                     SYMBOL(gc, "wrong-number-of-arguments"),
+                                     SYMBOL(gc, "set"),
+                                     NUMBER(gc, n.expr.atom->num)),
+                                scope);
+        }
+
+        struct Expr name = args.cons->car;
+        if (!symbol_p(name)) {
+            return eval_failure(list(gc, 3,
+                                     SYMBOL(gc, "wrong-type-argument"),
+                                     SYMBOL(gc, "symbolp"),
+                                     name),
+                                scope);
+        }
+
+        struct EvalResult value = eval(gc, scope, args.cons->cdr.cons->car);
+        if (value.is_error) {
+            return value;
+        }
+        scope = value.scope;
+
+        return eval_success(value.expr, set_scope_value(gc, scope, name, value.expr));
     }
 
     return eval_failure(CONS(gc,

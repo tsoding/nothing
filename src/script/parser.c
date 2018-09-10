@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "script/parser.h"
 #include "system/lt.h"
@@ -116,7 +117,7 @@ static struct ParseResult parse_string(Gc *gc, struct Token current_token)
 static struct ParseResult parse_number(Gc *gc, struct Token current_token)
 {
     char *endptr = 0;
-    const float x = strtof(current_token.begin, &endptr);
+    const long int x = strtoimax(current_token.begin, &endptr, 10);
 
     if (current_token.begin == endptr || current_token.end != endptr) {
         return parse_failure("Expected number", current_token.begin);

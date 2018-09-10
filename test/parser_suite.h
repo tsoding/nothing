@@ -25,19 +25,19 @@ TEST(read_expr_from_file_test)
     ASSERT_INTEQ(EXPR_CONS, expr.type);
     ASSERT_INTEQ(EXPR_ATOM, expr.cons->car.type);
     ASSERT_INTEQ(ATOM_NUMBER, expr.cons->car.atom->type);
-    ASSERT_FLOATEQ(1.0f, expr.cons->car.atom->num, 1e-3f);
+    ASSERT_LONGINTEQ(1L, expr.cons->car.atom->num);
 
     expr = expr.cons->cdr;
     ASSERT_INTEQ(EXPR_CONS, expr.type);
     ASSERT_INTEQ(EXPR_ATOM, expr.cons->car.type);
     ASSERT_INTEQ(ATOM_NUMBER, expr.cons->car.atom->type);
-    ASSERT_FLOATEQ(2.0f, expr.cons->car.atom->num, 1e-3f);
+    ASSERT_LONGINTEQ(2L, expr.cons->car.atom->num);
 
     expr = expr.cons->cdr;
     ASSERT_INTEQ(EXPR_CONS, expr.type);
     ASSERT_INTEQ(EXPR_ATOM, expr.cons->car.type);
     ASSERT_INTEQ(ATOM_NUMBER, expr.cons->car.atom->type);
-    ASSERT_FLOATEQ(3.0f, expr.cons->car.atom->num, 1e-3f);
+    ASSERT_LONGINTEQ(3L, expr.cons->car.atom->num);
 
     expr = expr.cons->cdr;
     ASSERT_INTEQ(EXPR_ATOM, expr.type);

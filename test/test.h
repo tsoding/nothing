@@ -55,9 +55,19 @@
         return -1;                                                      \
     }
 
+#define ASSERT_LONGINTEQ(expected, actual)                              \
+    if (expected != actual) {                                           \
+        fprintf(stderr, "\n%s:%d: ASSERT_LONGINTEQ: \n",                \
+                __FILE__, __LINE__);                                    \
+        fprintf(stderr, "  Expected: %ld\n", expected);                 \
+        fprintf(stderr, "  Actual: %ld\n", actual);                     \
+        return -1;                                                      \
+    }
+
+
 #define ASSERT_FLOATEQ(expected, actual, margin)                        \
     if (fabsf(expected - actual) > margin) {                            \
-        fprintf(stderr, "\n%s:%d: ASSERT_INTEQ: \n",                    \
+        fprintf(stderr, "\n%s:%d: ASSERT_FLOATEQ: \n",                  \
                 __FILE__, __LINE__);                                    \
         fprintf(stderr, "  Expected: %f\n", expected);                  \
         fprintf(stderr, "  Actual: %f\n", actual);                      \

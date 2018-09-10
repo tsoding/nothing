@@ -6,8 +6,6 @@
 
 #include "builtins.h"
 
-#define FLOAT_EQUALS_MARGIN 1e-6
-
 static bool equal_atoms(struct Atom *atom1, struct Atom *atom2)
 {
     assert(atom1);
@@ -22,7 +20,7 @@ static bool equal_atoms(struct Atom *atom1, struct Atom *atom2)
         return strcmp(atom1->sym, atom2->sym) == 0;
 
     case ATOM_NUMBER:
-        return fabsf(atom1->num - atom2->num) <= FLOAT_EQUALS_MARGIN;
+        return atom1->num == atom2->num;
 
     case ATOM_STRING:
         return strcmp(atom1->str, atom2->str) == 0;
@@ -73,6 +71,19 @@ bool symbol_p(struct Expr obj)
 bool cons_p(struct Expr obj)
 {
     return obj.type == EXPR_CONS;
+}
+
+bool list_p(struct Expr obj)
+{
+    if (nil_p(obj)) {
+        return true;
+    }
+
+    if (obj.type == EXPR_CONS) {
+        return list_p(obj.cons->cdr);
+    }
+
+    return false;
 }
 
 struct Expr assoc(struct Expr key, struct Expr alist)
