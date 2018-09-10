@@ -9,8 +9,8 @@ bool nil_p(struct Expr obj);
 bool symbol_p(struct Expr obj);
 bool cons_p(struct Expr obj);
 
-/// You should never detroy the result of assoc because it always
-/// returns the subexpression of alist
 struct Expr assoc(struct Expr key, struct Expr alist);
+
+struct Expr list(Gc *gc, size_t n, ...);
 
 #endif  // BUILTINS_H_

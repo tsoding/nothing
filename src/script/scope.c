@@ -13,14 +13,18 @@ struct Expr get_scope_value(struct Expr scope, struct Expr name)
 struct Expr set_scope_value(Gc *gc, struct Expr scope, struct Expr name, struct Expr value)
 {
     if (cons_p(scope)) {
-        if (!nil_p(assoc(name, scope.cons->car))) {
-            return CONS(gc, CONS(gc, name, value), scope);
+        if (!nil_p(assoc(name, scope.cons->car)) || nil_p(scope.cons->cdr)) {
+            return CONS(gc,
+                        CONS(gc, CONS(gc, name, value), scope.cons->car),
+                        scope.cons->cdr);
         } else {
-            scope.cons->cdr = set_scope_value(gc, scope.cons->cdr, name, value);
-            return scope;
+            return CONS(gc,
+                        scope.cons->car,
+                        set_scope_value(gc, scope.cons->cdr, name, value));
         }
     } else {
-        /* TODO(#318): set_scope_value creates redundant global scopes */
-        return CONS(gc, CONS(gc, name, value), NIL(gc));
+        return CONS(gc,
+                    CONS(gc, CONS(gc, name, value), NIL(gc)),
+                    scope);
     }
 }
