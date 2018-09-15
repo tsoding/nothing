@@ -36,14 +36,7 @@ static struct EvalResult length(Gc *gc, struct Expr obj)
                                  obj));
     }
 
-    long int count = 0;
-
-    while (!nil_p(obj)) {
-        count++;
-        obj = obj.cons->cdr;
-    }
-
-    return eval_success(NUMBER(gc, count));
+    return eval_success(NUMBER(gc, length_of_list(obj)));
 }
 
 static struct EvalResult eval_atom(Gc *gc, struct Scope *scope, struct Atom *atom)

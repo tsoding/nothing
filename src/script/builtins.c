@@ -86,6 +86,18 @@ bool list_p(struct Expr obj)
     return false;
 }
 
+long int length_of_list(struct Expr obj)
+{
+    long int count = 0;
+
+    while (!nil_p(obj)) {
+        count++;
+        obj = obj.cons->cdr;
+    }
+
+    return count;
+}
+
 struct Expr assoc(struct Expr key, struct Expr alist)
 {
     while (cons_p(alist)) {

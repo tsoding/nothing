@@ -10,6 +10,8 @@ bool symbol_p(struct Expr obj);
 bool cons_p(struct Expr obj);
 bool list_p(struct Expr obj);
 
+long int length_of_list(struct Expr obj);
+
 struct Expr assoc(struct Expr key, struct Expr alist);
 
 struct Expr list(Gc *gc, size_t n, ...);
