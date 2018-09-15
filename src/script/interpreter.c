@@ -7,36 +7,33 @@
 #include "./interpreter.h"
 #include "./scope.h"
 
-struct EvalResult eval_success(struct Expr expr, struct Expr scope)
+struct EvalResult eval_success(struct Expr expr)
 {
     struct EvalResult result = {
         .is_error = false,
         .expr = expr,
-        .scope = scope,
     };
 
     return result;
 }
 
-struct EvalResult eval_failure(struct Expr error, struct Expr scope)
+struct EvalResult eval_failure(struct Expr error)
 {
     struct EvalResult result = {
         .is_error = true,
         .expr = error,
-        .scope = scope
     };
 
     return result;
 }
 
-static struct EvalResult length(Gc *gc, struct Expr scope, struct Expr obj)
+static struct EvalResult length(Gc *gc, struct Expr obj)
 {
     if (!list_p(obj)) {
         return eval_failure(list(gc, 3,
                                  SYMBOL(gc, "wrong-argument-type"),
                                  SYMBOL(gc, "listp"),
-                                 obj),
-                            scope);
+                                 obj));
     }
 
     long int count = 0;
@@ -46,10 +43,10 @@ static struct EvalResult length(Gc *gc, struct Expr scope, struct Expr obj)
         obj = obj.cons->cdr;
     }
 
-    return eval_success(NUMBER(gc, count), scope);
+    return eval_success(NUMBER(gc, count));
 }
 
-static struct EvalResult eval_atom(Gc *gc, struct Expr scope, struct Atom *atom)
+static struct EvalResult eval_atom(Gc *gc, struct Scope *scope, struct Atom *atom)
 {
     (void) scope;
     (void) gc;
@@ -57,11 +54,11 @@ static struct EvalResult eval_atom(Gc *gc, struct Expr scope, struct Atom *atom)
     switch (atom->type) {
     case ATOM_NUMBER:
     case ATOM_STRING:
-        return eval_success(atom_as_expr(atom), scope);
+        return eval_success(atom_as_expr(atom));
 
     case ATOM_SYMBOL: {
         if (nil_p(atom_as_expr(atom))) {
-            return eval_success(atom_as_expr(atom), scope);
+            return eval_success(atom_as_expr(atom));
         }
 
         struct Expr value = get_scope_value(scope, atom_as_expr(atom));
@@ -69,21 +66,19 @@ static struct EvalResult eval_atom(Gc *gc, struct Expr scope, struct Atom *atom)
         if (nil_p(value)) {
             return eval_failure(CONS(gc,
                                      SYMBOL(gc, "void-variable"),
-                                     atom_as_expr(atom)),
-                                scope);
+                                     atom_as_expr(atom)));
         }
 
-        return eval_success(value.cons->cdr, scope);
+        return eval_success(value.cons->cdr);
     }
     }
 
     return eval_failure(CONS(gc,
                              SYMBOL(gc, "unexpected-expression"),
-                             atom_as_expr(atom)),
-                        scope);
+                             atom_as_expr(atom)));
 }
 
-static struct EvalResult eval_all_args(Gc *gc, struct Expr scope, struct Expr args)
+static struct EvalResult eval_all_args(Gc *gc, struct Scope *scope, struct Expr args)
 {
     (void) scope;
     (void) args;
@@ -103,7 +98,7 @@ static struct EvalResult eval_all_args(Gc *gc, struct Expr scope, struct Expr ar
             return cdr;
         }
 
-        return eval_success(cons_as_expr(create_cons(gc, car.expr, cdr.expr)), scope);
+        return eval_success(cons_as_expr(create_cons(gc, car.expr, cdr.expr)));
     }
 
     default: {}
@@ -111,11 +106,10 @@ static struct EvalResult eval_all_args(Gc *gc, struct Expr scope, struct Expr ar
 
     return eval_failure(CONS(gc,
                              SYMBOL(gc, "unexpected-expression"),
-                             args),
-                        scope);
+                             args));
 }
 
-static struct EvalResult plus_op(Gc *gc, struct Expr args, struct Expr scope)
+static struct EvalResult plus_op(Gc *gc, struct Expr args)
 {
     long int result = 0.0f;
 
@@ -123,26 +117,24 @@ static struct EvalResult plus_op(Gc *gc, struct Expr args, struct Expr scope)
         if (args.type != EXPR_CONS) {
             return eval_failure(CONS(gc,
                                      SYMBOL(gc, "expected-cons"),
-                                     args),
-                                scope);
+                                     args));
         }
 
         if (args.cons->car.type != EXPR_ATOM ||
             args.cons->car.atom->type != ATOM_NUMBER) {
             return eval_failure(CONS(gc,
                                      SYMBOL(gc, "expected-number"),
-                                     args.cons->car),
-                                scope);
+                                     args.cons->car));
         }
 
         result += args.cons->car.atom->num;
         args = args.cons->cdr;
     }
 
-    return eval_success(atom_as_expr(create_number_atom(gc, result)), scope);
+    return eval_success(atom_as_expr(create_number_atom(gc, result)));
 }
 
-static struct EvalResult eval_funcall(Gc *gc, struct Expr scope, struct Cons *cons)
+static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *cons)
 {
     assert(cons);
     (void) scope;
@@ -150,8 +142,7 @@ static struct EvalResult eval_funcall(Gc *gc, struct Expr scope, struct Cons *co
     if (!symbol_p(cons->car)) {
         return eval_failure(CONS(gc,
                                  SYMBOL(gc, "expected-symbol"),
-                                 cons->car),
-                            scope);
+                                 cons->car));
     }
 
     /* TODO(#323): set builtin function is not implemented */
@@ -160,22 +151,20 @@ static struct EvalResult eval_funcall(Gc *gc, struct Expr scope, struct Cons *co
         if (args.is_error) {
             return args;
         }
-        return plus_op(gc, args.expr, scope);
+        return plus_op(gc, args.expr);
     } else if (strcmp(cons->car.atom->sym, "set") == 0) {
         struct Expr args = cons->cdr;
-        struct EvalResult n = length(gc, scope, args);
+        struct EvalResult n = length(gc, args);
 
         if (n.is_error) {
             return n;
         }
-        scope = n.scope;
 
         if (n.expr.atom->num != 2) {
             return eval_failure(list(gc, 3,
                                      SYMBOL(gc, "wrong-number-of-arguments"),
                                      SYMBOL(gc, "set"),
-                                     NUMBER(gc, n.expr.atom->num)),
-                                scope);
+                                     NUMBER(gc, n.expr.atom->num)));
         }
 
         struct Expr name = args.cons->car;
@@ -183,26 +172,25 @@ static struct EvalResult eval_funcall(Gc *gc, struct Expr scope, struct Cons *co
             return eval_failure(list(gc, 3,
                                      SYMBOL(gc, "wrong-type-argument"),
                                      SYMBOL(gc, "symbolp"),
-                                     name),
-                                scope);
+                                     name));
         }
 
         struct EvalResult value = eval(gc, scope, args.cons->cdr.cons->car);
         if (value.is_error) {
             return value;
         }
-        scope = value.scope;
 
-        return eval_success(value.expr, set_scope_value(gc, scope, name, value.expr));
+        set_scope_value(gc, scope, name, value.expr);
+
+        return eval_success(value.expr);
     }
 
     return eval_failure(CONS(gc,
                              SYMBOL(gc, "unknown-function"),
-                             cons->car),
-                        scope);
+                             cons->car));
 }
 
-struct EvalResult eval(Gc *gc, struct Expr scope, struct Expr expr)
+struct EvalResult eval(Gc *gc, struct Scope *scope, struct Expr expr)
 {
     switch(expr.type) {
     case EXPR_ATOM:
@@ -216,6 +204,5 @@ struct EvalResult eval(Gc *gc, struct Expr scope, struct Expr expr)
 
     return eval_failure(CONS(gc,
                              SYMBOL(gc, "unexpected-expression"),
-                             expr),
-                        scope);
+                             expr));
 }

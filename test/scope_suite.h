@@ -13,14 +13,15 @@ TEST(set_scope_value_test)
     struct Expr x = SYMBOL(gc, "x");
     struct Expr y = SYMBOL(gc, "y");
 
-    struct Expr initial_scope =
-        list(gc, 2,
-             list(gc, 2,
-                  CONS(gc, x, STRING(gc, "hello")),
-                  CONS(gc, y, STRING(gc, "world"))),
-             NIL(gc));
+    struct Scope initial_scope = {
+        .expr = list(gc, 2,
+                     list(gc, 2,
+                          CONS(gc, x, STRING(gc, "hello")),
+                          CONS(gc, y, STRING(gc, "world"))),
+                     NIL(gc))
+    };
 
-    struct Expr expected_scope =
+    struct Expr expected_scope_expr =
         list(gc, 2,
              list(gc, 2,
                   CONS(gc, x, STRING(gc, "hello")),
@@ -28,9 +29,9 @@ TEST(set_scope_value_test)
              list(gc, 1,
                   CONS(gc, z, STRING(gc, "foo"))));
 
-    struct Expr actual_scope = set_scope_value(gc, initial_scope, z, STRING(gc, "foo"));
+    set_scope_value(gc, &initial_scope, z, STRING(gc, "foo"));
 
-    ASSERT_TRUE(equal(expected_scope, actual_scope), "Unexpected scope");
+    ASSERT_TRUE(equal(expected_scope_expr, initial_scope.expr), "Unexpected scope");
 
     destroy_gc(gc);
 
