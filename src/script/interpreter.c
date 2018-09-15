@@ -127,55 +127,114 @@ static struct EvalResult plus_op(Gc *gc, struct Expr args)
     return eval_success(atom_as_expr(create_number_atom(gc, result)));
 }
 
+static struct EvalResult call_callable(Gc *gc,
+                                       struct Scope *scope,
+                                       struct Expr callable,
+                                       struct Expr args) {
+    if (!callable_p(callable)) {
+        return eval_failure(CONS(gc,
+                                 SYMBOL(gc, "expected-callable"),
+                                 callable));
+    }
+
+    if (!list_p(args)) {
+        return eval_failure(CONS(gc,
+                                 SYMBOL(gc, "expected-list"),
+                                 args));
+    }
+
+    struct Expr vars = callable.cons->cdr.cons->car;
+
+    if (length_of_list(args) != length_of_list(vars)) {
+        return eval_failure(CONS(gc,
+                                 SYMBOL(gc, "wrong-number-of-arguments"),
+                                 NUMBER(gc, length_of_list(args))));
+    }
+
+    push_scope_frame(gc, scope, vars, args);
+    struct Expr body = callable.cons->cdr.cons->cdr;
+
+    struct EvalResult result = eval_success(NIL(gc));
+
+    while (!nil_p(body)) {
+        print_expr_as_sexpr(body.cons->car);
+        result = eval(gc, scope, body.cons->car);
+        if (result.is_error) {
+            return result;
+        }
+        body = body.cons->cdr;
+    }
+
+    pop_scope_frame(gc, scope);
+
+    return result;
+}
+
 static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *cons)
 {
     assert(cons);
     (void) scope;
 
-    if (!symbol_p(cons->car)) {
-        return eval_failure(CONS(gc,
-                                 SYMBOL(gc, "expected-symbol"),
-                                 cons->car));
-    }
+    if (symbol_p(cons->car)) {
+        if (strcmp(cons->car.atom->sym, "+") == 0) {
+            struct EvalResult args = eval_all_args(gc, scope, cons->cdr);
+            if (args.is_error) {
+                return args;
+            }
+            return plus_op(gc, args.expr);
+        } else if (strcmp(cons->car.atom->sym, "set") == 0) {
+            struct Expr args = cons->cdr;
+            struct EvalResult n = length(gc, args);
 
-    /* TODO(#323): set builtin function is not implemented */
-    if (strcmp(cons->car.atom->sym, "+") == 0) {
-        struct EvalResult args = eval_all_args(gc, scope, cons->cdr);
-        if (args.is_error) {
-            return args;
+            if (n.is_error) {
+                return n;
+            }
+
+            if (n.expr.atom->num != 2) {
+                return eval_failure(list(gc, 3,
+                                         SYMBOL(gc, "wrong-number-of-arguments"),
+                                         SYMBOL(gc, "set"),
+                                         NUMBER(gc, n.expr.atom->num)));
+            }
+
+            struct Expr name = args.cons->car;
+            if (!symbol_p(name)) {
+                return eval_failure(list(gc, 3,
+                                         SYMBOL(gc, "wrong-type-argument"),
+                                         SYMBOL(gc, "symbolp"),
+                                         name));
+            }
+
+            struct EvalResult value = eval(gc, scope, args.cons->cdr.cons->car);
+            if (value.is_error) {
+                return value;
+            }
+
+            set_scope_value(gc, scope, name, value.expr);
+
+            return eval_success(value.expr);
+        } else if (strcmp(cons->car.atom->sym, "quote") == 0) {
+            /* TODO: quote does not check the amout of it's arguments */
+            return eval_success(cons->cdr.cons->car);
+        } else if (strcmp(cons->car.atom->sym, "lambda") == 0) {
+            return eval_success(cons_as_expr(cons));
+        } else {
+            struct EvalResult r = eval_all_args(gc, scope, cons_as_expr(cons));
+
+            if (r.is_error) {
+                return r;
+            }
+
+            if (!callable_p(r.expr.cons->car)) {
+                return eval_failure(CONS(gc,
+                                         SYMBOL(gc, "not-callable"),
+                                         r.expr.cons->car));
+            }
+
+            return call_callable(gc, scope, r.expr.cons->car, r.expr.cons->cdr);
         }
-        return plus_op(gc, args.expr);
-    } else if (strcmp(cons->car.atom->sym, "set") == 0) {
-        struct Expr args = cons->cdr;
-        struct EvalResult n = length(gc, args);
-
-        if (n.is_error) {
-            return n;
-        }
-
-        if (n.expr.atom->num != 2) {
-            return eval_failure(list(gc, 3,
-                                     SYMBOL(gc, "wrong-number-of-arguments"),
-                                     SYMBOL(gc, "set"),
-                                     NUMBER(gc, n.expr.atom->num)));
-        }
-
-        struct Expr name = args.cons->car;
-        if (!symbol_p(name)) {
-            return eval_failure(list(gc, 3,
-                                     SYMBOL(gc, "wrong-type-argument"),
-                                     SYMBOL(gc, "symbolp"),
-                                     name));
-        }
-
-        struct EvalResult value = eval(gc, scope, args.cons->cdr.cons->car);
-        if (value.is_error) {
-            return value;
-        }
-
-        set_scope_value(gc, scope, name, value.expr);
-
-        return eval_success(value.expr);
+    } else if (callable_p(cons->car)) {
+        /* TODO: Call cons->car */
     }
 
     return eval_failure(CONS(gc,
