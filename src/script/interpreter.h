@@ -6,16 +6,17 @@
 #include <stdio.h>
 #include "expr.h"
 
+struct Scope;
+
 struct EvalResult
 {
     bool is_error;
     struct Expr expr;
-    struct Expr scope;
 };
 
-struct EvalResult eval_success(struct Expr expr, struct Expr scope);
-struct EvalResult eval_failure(struct Expr expr, struct Expr scope);
+struct EvalResult eval_success(struct Expr expr);
+struct EvalResult eval_failure(struct Expr expr);
 
-struct EvalResult eval(Gc *gc, struct Expr scope, struct Expr expr);
+struct EvalResult eval(Gc *gc, struct Scope *scope, struct Expr expr);
 
 #endif  // INTERPRETER_H_
