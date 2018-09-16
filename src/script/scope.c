@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "./scope.h"
 
 static struct Expr get_scope_value_impl(struct Expr scope, struct Expr name)
@@ -37,4 +38,32 @@ static struct Expr set_scope_value_impl(Gc *gc, struct Expr scope, struct Expr n
 void set_scope_value(Gc *gc, struct Scope *scope, struct Expr name, struct Expr value)
 {
     scope->expr = set_scope_value_impl(gc, scope->expr, name, value);
+}
+
+void push_scope_frame(Gc *gc, struct Scope *scope, struct Expr vars, struct Expr args)
+{
+    assert(gc);
+    assert(scope);
+
+    struct Expr frame = NIL(gc);
+
+    while(!nil_p(vars) && !nil_p(args)) {
+        frame = CONS(gc,
+                     CONS(gc, vars.cons->car, args.cons->car),
+                     frame);
+        vars = vars.cons->cdr;
+        args = args.cons->cdr;
+    }
+
+    scope->expr = CONS(gc, frame, scope->expr);
+}
+
+void pop_scope_frame(Gc *gc, struct Scope *scope)
+{
+    assert(gc);
+    assert(scope);
+
+    if (!nil_p(scope->expr)) {
+        scope->expr = scope->expr.cons->cdr;
+    }
 }

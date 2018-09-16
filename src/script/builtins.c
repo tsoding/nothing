@@ -86,6 +86,56 @@ bool list_p(struct Expr obj)
     return false;
 }
 
+bool list_of_symbols_p(struct Expr obj)
+{
+    if (nil_p(obj)) {
+        return true;
+    }
+
+    if (obj.type == EXPR_CONS && symbol_p(obj.cons->car)) {
+        return list_of_symbols_p(obj.cons->cdr);
+    }
+
+    return false;
+}
+
+bool callable_p(struct Expr obj)
+{
+    if (!list_p(obj)) {
+        return false;
+    }
+
+    if (length_of_list(obj) < 2) {
+        return false;
+    }
+
+    if (!symbol_p(obj.cons->car)) {
+        return false;
+    }
+
+    if (strcmp("lambda", obj.cons->car.atom->sym) != 0) {
+        return false;
+    }
+
+    if (!list_of_symbols_p(obj.cons->cdr.cons->car)) {
+        return false;
+    }
+
+    return true;
+}
+
+long int length_of_list(struct Expr obj)
+{
+    long int count = 0;
+
+    while (!nil_p(obj)) {
+        count++;
+        obj = obj.cons->cdr;
+    }
+
+    return count;
+}
+
 struct Expr assoc(struct Expr key, struct Expr alist)
 {
     while (cons_p(alist)) {
