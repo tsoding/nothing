@@ -24,6 +24,9 @@ static bool equal_atoms(struct Atom *atom1, struct Atom *atom2)
 
     case ATOM_STRING:
         return strcmp(atom1->str, atom2->str) == 0;
+
+    case ATOM_NATIVE:
+        return atom1->fun == atom2->fun;
     }
 
     return false;

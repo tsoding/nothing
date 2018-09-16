@@ -1,5 +1,5 @@
-#ifndef ATOM_H_
-#define ATOM_H_
+#ifndef EXPR_H_
+#define EXPR_H_
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -45,6 +45,7 @@ enum AtomType
     ATOM_SYMBOL = 0,
     ATOM_NUMBER,
     ATOM_STRING,
+    ATOM_NATIVE
 };
 
 struct Atom
@@ -53,9 +54,10 @@ struct Atom
     union
     {
         // TODO(#330): Atom doesn't support floats
-        long int num;               // ATOM_NUMBER
-        char *sym;             // ATOM_SYMBOL
-        char *str;             // ATOM_STRING
+        long int num;           // ATOM_NUMBER
+        char *sym;              // ATOM_SYMBOL
+        char *str;              // ATOM_STRING
+        void *fun;              // ATOM_NATIVE
     };
 };
 
@@ -75,4 +77,4 @@ struct Cons *create_cons(Gc *gc, struct Expr car, struct Expr cdr);
 void destroy_cons(struct Cons *cons);
 void print_cons_as_sexpr(struct Cons *cons);
 
-#endif  // ATOM_H_
+#endif  // EXPR_H_

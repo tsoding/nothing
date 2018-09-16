@@ -72,6 +72,10 @@ void print_atom_as_sexpr(struct Atom *atom)
     case ATOM_STRING:
         printf("\"%s\"", atom->str);
         break;
+
+    case ATOM_NATIVE:
+        printf("<native>");
+        break;
     }
 }
 
@@ -244,6 +248,7 @@ void destroy_atom(struct Atom *atom)
         free(atom->str);
     } break;
 
+    case ATOM_NATIVE:
     case ATOM_NUMBER: {
         /* Nothing */
     } break;

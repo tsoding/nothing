@@ -7,12 +7,15 @@
 #include "expr.h"
 
 struct Scope;
+struct Gc;
 
 struct EvalResult
 {
     bool is_error;
     struct Expr expr;
 };
+
+typedef struct EvalResult (*NativeFunction)(Gc *gc, struct Scope *scope, struct Expr args);
 
 struct EvalResult eval_success(struct Expr expr);
 struct EvalResult eval_failure(struct Expr expr);
