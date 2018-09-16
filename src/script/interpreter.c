@@ -47,6 +47,7 @@ static struct EvalResult eval_atom(Gc *gc, struct Scope *scope, struct Atom *ato
     switch (atom->type) {
     case ATOM_NUMBER:
     case ATOM_STRING:
+    case ATOM_NATIVE:
         return eval_success(atom_as_expr(atom));
 
     case ATOM_SYMBOL: {
@@ -127,14 +128,14 @@ static struct EvalResult plus_op(Gc *gc, struct Expr args)
     return eval_success(atom_as_expr(create_number_atom(gc, result)));
 }
 
-static struct EvalResult call_callable(Gc *gc,
-                                       struct Scope *scope,
-                                       struct Expr callable,
-                                       struct Expr args) {
-    if (!callable_p(callable)) {
+static struct EvalResult call_lambda(Gc *gc,
+                                     struct Scope *scope,
+                                     struct Expr lambda,
+                                     struct Expr args) {
+    if (!lambda_p(lambda)) {
         return eval_failure(CONS(gc,
                                  SYMBOL(gc, "expected-callable"),
-                                 callable));
+                                 lambda));
     }
 
     if (!list_p(args)) {
@@ -143,7 +144,7 @@ static struct EvalResult call_callable(Gc *gc,
                                  args));
     }
 
-    struct Expr vars = callable.cons->cdr.cons->car;
+    struct Expr vars = lambda.cons->cdr.cons->car;
 
     if (length_of_list(args) != length_of_list(vars)) {
         return eval_failure(CONS(gc,
@@ -152,7 +153,7 @@ static struct EvalResult call_callable(Gc *gc,
     }
 
     push_scope_frame(gc, scope, vars, args);
-    struct Expr body = callable.cons->cdr.cons->cdr;
+    struct Expr body = lambda.cons->cdr.cons->cdr;
 
     struct EvalResult result = eval_success(NIL(gc));
 
@@ -168,6 +169,17 @@ static struct EvalResult call_callable(Gc *gc,
     pop_scope_frame(gc, scope);
 
     return result;
+}
+
+static struct EvalResult call_callable(Gc *gc,
+                                       struct Scope *scope,
+                                       struct Expr callable,
+                                       struct Expr args) {
+    if (callable.type == EXPR_ATOM && callable.atom->type == ATOM_NATIVE) {
+        return ((NativeFunction)callable.atom->fun)(gc, scope, args);
+    }
+
+    return call_lambda(gc, scope, callable, args);
 }
 
 static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *cons)

@@ -4,27 +4,27 @@
 #include "test.h"
 #include "script/gc.h"
 
-TEST(callable_p_test)
+TEST(lambda_p_test)
 {
     Gc *gc = create_gc();
 
-    ASSERT_TRUE(!callable_p(NIL(gc)),
-                "nil should not be callable");
-    ASSERT_TRUE(!callable_p(list(gc, 1, SYMBOL(gc, "lambda"))),
-                "(lambda) should not be callable");
-    ASSERT_TRUE(!callable_p(list(gc, 2,
+    ASSERT_TRUE(!lambda_p(NIL(gc)),
+                "nil should not be lambda");
+    ASSERT_TRUE(!lambda_p(list(gc, 1, SYMBOL(gc, "lambda"))),
+                "(lambda) should not be lambda");
+    ASSERT_TRUE(!lambda_p(list(gc, 2,
                                 SYMBOL(gc, "lambda"),
                                 list(gc, 1, NUMBER(gc, 1)))),
-                "(lambda (1)) should not be callable");
-    ASSERT_TRUE(callable_p(list(gc, 2,
+                "(lambda (1)) should not be lambda");
+    ASSERT_TRUE(lambda_p(list(gc, 2,
                                  SYMBOL(gc, "lambda"),
                                  list(gc, 1, SYMBOL(gc, "a")))),
-                "(lambda (a)) should be callable");
-    ASSERT_TRUE(callable_p(list(gc, 3,
+                "(lambda (a)) should be lambda");
+    ASSERT_TRUE(lambda_p(list(gc, 3,
                                 SYMBOL(gc, "lambda"),
                                 list(gc, 1, SYMBOL(gc, "a")),
                                 STRING(gc, "hello"))),
-                "(lambda (a) \"hello\") should be callable");
+                "(lambda (a) \"hello\") should be lambda");
 
     destroy_gc(gc);
 
@@ -33,7 +33,7 @@ TEST(callable_p_test)
 
 TEST_SUITE(builtins_suite)
 {
-    TEST_RUN(callable_p_test);
+    TEST_RUN(lambda_p_test);
 
     return 0;
 }

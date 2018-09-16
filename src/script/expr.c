@@ -72,6 +72,10 @@ void print_atom_as_sexpr(struct Atom *atom)
     case ATOM_STRING:
         printf("\"%s\"", atom->str);
         break;
+
+    case ATOM_NATIVE:
+        printf("<native>");
+        break;
     }
 }
 
@@ -236,6 +240,31 @@ error:
     return NULL;
 }
 
+struct Atom *create_native_atom(Gc *gc, NativeFunction fun)
+{
+    struct Atom *atom = malloc(sizeof(struct Atom));
+
+    if (atom == NULL) {
+        goto error;
+    }
+
+    atom->type = ATOM_NATIVE;
+    atom->fun = fun;
+
+    if (gc_add_expr(gc, atom_as_expr(atom)) < 0) {
+        goto error;
+    }
+
+    return atom;
+
+error:
+    if (atom != NULL) {
+        free(atom);
+    }
+
+    return NULL;
+}
+
 void destroy_atom(struct Atom *atom)
 {
     switch (atom->type) {
@@ -244,6 +273,7 @@ void destroy_atom(struct Atom *atom)
         free(atom->str);
     } break;
 
+    case ATOM_NATIVE:
     case ATOM_NUMBER: {
         /* Nothing */
     } break;

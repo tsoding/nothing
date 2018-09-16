@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdbool.h>
 
 #include "parser.h"
@@ -6,6 +7,16 @@
 #include "gc.h"
 
 #define REPL_BUFFER_MAX 1024
+
+static struct EvalResult f(Gc *gc, struct Scope *scope, struct Expr args)
+{
+    assert(scope);
+    (void) args;
+
+    printf("Hello from C!\n");
+
+    return eval_success(NIL(gc));
+}
 
 char buffer[REPL_BUFFER_MAX + 1];
 
@@ -18,6 +29,8 @@ int main(int argc, char *argv[])
     struct Scope scope = {
         .expr = NIL(gc)
     };
+
+    set_scope_value(gc, &scope, SYMBOL(gc, "f"), NATIVE(gc, f));
 
     while (true) {
         printf("> ");
