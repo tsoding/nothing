@@ -132,7 +132,7 @@ static struct EvalResult call_callable(Gc *gc,
                                        struct Scope *scope,
                                        struct Expr callable,
                                        struct Expr args) {
-    if (!callable_p(callable)) {
+    if (!lambda_p(callable)) {
         return eval_failure(CONS(gc,
                                  SYMBOL(gc, "expected-callable"),
                                  callable));

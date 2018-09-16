@@ -102,7 +102,7 @@ bool list_of_symbols_p(struct Expr obj)
     return false;
 }
 
-bool callable_p(struct Expr obj)
+bool lambda_p(struct Expr obj)
 {
     if (!list_p(obj)) {
         return false;
