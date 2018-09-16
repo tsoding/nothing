@@ -217,29 +217,18 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
             /* TODO: quote does not check the amout of it's arguments */
             return eval_success(cons->cdr.cons->car);
         } else if (strcmp(cons->car.atom->sym, "lambda") == 0) {
+            /* TODO: lambda special form doesn't check if it forms a callable object */
             return eval_success(cons_as_expr(cons));
-        } else {
-            struct EvalResult r = eval_all_args(gc, scope, cons_as_expr(cons));
-
-            if (r.is_error) {
-                return r;
-            }
-
-            if (!callable_p(r.expr.cons->car)) {
-                return eval_failure(CONS(gc,
-                                         SYMBOL(gc, "not-callable"),
-                                         r.expr.cons->car));
-            }
-
-            return call_callable(gc, scope, r.expr.cons->car, r.expr.cons->cdr);
         }
-    } else if (callable_p(cons->car)) {
-        /* TODO: Call cons->car */
     }
 
-    return eval_failure(CONS(gc,
-                             SYMBOL(gc, "unknown-function"),
-                             cons->car));
+    struct EvalResult r = eval_all_args(gc, scope, cons_as_expr(cons));
+
+    if (r.is_error) {
+        return r;
+    }
+
+    return call_callable(gc, scope, r.expr.cons->car, r.expr.cons->cdr);
 }
 
 struct EvalResult eval(Gc *gc, struct Scope *scope, struct Expr expr)
