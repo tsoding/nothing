@@ -10,7 +10,6 @@ typedef struct Scope Scope;
 struct Cons;
 struct Atom;
 
-// TODO(#321): get rid of gc argument from expr macros (just assume that it's `gc` in the current scope)
 #define NUMBER(G, X) atom_as_expr(create_number_atom(G, X))
 #define STRING(G, S) atom_as_expr(create_string_atom(G, S, NULL))
 #define SYMBOL(G, S) atom_as_expr(create_symbol_atom(G, S, NULL))
