@@ -25,7 +25,6 @@ enum ExprType
     EXPR_VOID
 };
 
-// TODO(#285): there is no way to execute struct Expr
 struct Expr
 {
     enum ExprType type;
