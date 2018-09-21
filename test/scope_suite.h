@@ -13,25 +13,32 @@ TEST(set_scope_value_test)
     struct Expr x = SYMBOL(gc, "x");
     struct Expr y = SYMBOL(gc, "y");
 
-    struct Scope initial_scope = {
-        .expr = list(gc, 2,
-                     list(gc, 2,
-                          CONS(gc, x, STRING(gc, "hello")),
-                          CONS(gc, y, STRING(gc, "world"))),
-                     NIL(gc))
+    struct Scope scope = {
+        .expr = CONS(gc, NIL(gc), NIL(gc))
     };
 
-    struct Expr expected_scope_expr =
-        list(gc, 2,
-             list(gc, 2,
-                  CONS(gc, x, STRING(gc, "hello")),
-                  CONS(gc, y, STRING(gc, "world"))),
-             list(gc, 1,
-                  CONS(gc, z, STRING(gc, "foo"))));
+    push_scope_frame(gc, &scope,
+                     list(gc, 2, x, y),
+                     list(gc, 2, STRING(gc, "hello"), STRING(gc, "world")));
 
-    set_scope_value(gc, &initial_scope, z, STRING(gc, "foo"));
+    set_scope_value(gc, &scope, z, STRING(gc, "foo"));
 
-    ASSERT_TRUE(equal(expected_scope_expr, initial_scope.expr), "Unexpected scope");
+    ASSERT_TRUE(equal(CONS(gc, x, STRING(gc, "hello")), get_scope_value(&scope, x)),
+                "Unexpected value of `x`");
+    ASSERT_TRUE(equal(CONS(gc, y, STRING(gc, "world")), get_scope_value(&scope, y)),
+                "Unexpected value of `y`");
+    ASSERT_TRUE(equal(CONS(gc, z, STRING(gc, "foo")), get_scope_value(&scope, z)),
+                "Unexpected value of `z`");
+
+    pop_scope_frame(gc, &scope);
+
+    ASSERT_TRUE(equal(NIL(gc), get_scope_value(&scope, x)),
+                "Unexpected value of `x`");
+    ASSERT_TRUE(equal(NIL(gc), get_scope_value(&scope, y)),
+                "Unexpected value of `y`");
+    ASSERT_TRUE(equal(CONS(gc, z, STRING(gc, "foo")), get_scope_value(&scope, z)),
+                "Unexpected value of `z`");
+
 
     destroy_gc(gc);
 
