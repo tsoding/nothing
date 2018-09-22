@@ -14,7 +14,7 @@
 typedef struct Rigid_rect Rigid_rect;
 typedef struct Boxes Boxes;
 
-Rigid_rect *create_rigid_rect(Rect rect, Color color);
+Rigid_rect *create_rigid_rect(Rect rect, Color color, const char *id);
 Rigid_rect *create_rigid_rect_from_stream(FILE *stream);
 void destroy_rigid_rect(Rigid_rect *rigid_rect);
 

@@ -1,18 +1,21 @@
 #include <SDL2/SDL.h>
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "color.h"
 #include "game/level/boxes.h"
 #include "game/level/solid.h"
+#include "math/minmax.h"
 #include "rigid_rect.h"
 #include "system/error.h"
 #include "system/lt.h"
 
-
+#define MAX_ID_SIZE 36
 
 struct Rigid_rect {
     Lt *lt;
+    char *id;
     Vec position;
     Vec velocity;
     Vec movement;
@@ -47,8 +50,10 @@ static Vec opposing_force_by_sides(int sides[RECT_SIDE_N])
     return opposing_force;
 }
 
-Rigid_rect *create_rigid_rect(Rect rect, Color color)
+Rigid_rect *create_rigid_rect(Rect rect, Color color, const char *id)
 {
+    assert(id);
+
     Lt *lt = create_lt();
 
     if (lt == NULL) {
@@ -60,8 +65,18 @@ Rigid_rect *create_rigid_rect(Rect rect, Color color)
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
-
     rigid_rect->lt = lt;
+
+    rigid_rect->id = malloc(sizeof(char) * MAX_ID_SIZE);
+    if (rigid_rect->id == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
+    const size_t len_id = min_size(MAX_ID_SIZE - 1, strlen(id));
+    memcpy(rigid_rect->id, id, len_id);
+    rigid_rect->id[len_id] = 0;
+
     rigid_rect->position = vec(rect.x, rect.y);
     rigid_rect->velocity = vec(0.0f, 0.0f);
     rigid_rect->movement = vec(0.0f, 0.0f);
@@ -79,8 +94,11 @@ Rigid_rect *create_rigid_rect_from_stream(FILE *stream)
 
     char color[7];
     Rect rect;
+    char id[MAX_ID_SIZE];
 
-    if (fscanf(stream, "%f%f%f%f%6s\n",
+    /* TODO: MAX_ID_SIZE is not used properly in fscanf */
+    if (fscanf(stream, "%36s%f%f%f%f%6s\n",
+               id,
                &rect.x, &rect.y,
                &rect.w, &rect.h,
                color) < 0) {
@@ -88,7 +106,7 @@ Rigid_rect *create_rigid_rect_from_stream(FILE *stream)
         return NULL;
     }
 
-    return create_rigid_rect(rect, color_from_hexstr(color));
+    return create_rigid_rect(rect, color_from_hexstr(color), id);
 }
 
 void destroy_rigid_rect(Rigid_rect *rigid_rect)
@@ -116,10 +134,14 @@ void rigid_rect_touches_rect_sides(Rigid_rect *rigid_rect,
 int rigid_rect_render(const Rigid_rect *rigid_rect,
                       Camera *camera)
 {
-    return camera_fill_rect(
-        camera,
-        rigid_rect_hitbox(rigid_rect),
-        rigid_rect->color);
+    if (camera_fill_rect(
+            camera,
+            rigid_rect_hitbox(rigid_rect),
+            rigid_rect->color) < 0) {
+        return -1;
+    }
+
+    return 0;
 }
 
 int rigid_rect_update(Rigid_rect * rigid_rect,

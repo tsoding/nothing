@@ -27,6 +27,7 @@ let $platforms := for $rect in $rects where matches($rect/@id, "^rect.*")
   )
 let $boxes := for $rect in $rects where matches($rect/@id, "^box.*")
   return concat (
+    $rect/@id, " ",
     $rect/@x, " ",
     $rect/@y, " ",
     $rect/@width, " ",

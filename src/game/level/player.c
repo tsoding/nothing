@@ -59,7 +59,8 @@ Player *create_player(float x, float y, Color color)
         lt,
         create_rigid_rect(
             rect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT),
-            color),
+            color,
+            "player"),
         destroy_rigid_rect);
     if (player->alive_body == NULL) {
         RETURN_LT(lt, NULL);
