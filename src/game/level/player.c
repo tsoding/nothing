@@ -59,7 +59,8 @@ Player *create_player(float x, float y, Color color)
         lt,
         create_rigid_rect(
             rect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT),
-            color),
+            color,
+            "player"),
         destroy_rigid_rect);
     if (player->alive_body == NULL) {
         RETURN_LT(lt, NULL);
@@ -288,4 +289,18 @@ void player_apply_force(Player *player, Vec force)
     if (player->state == PLAYER_STATE_ALIVE) {
         rigid_rect_apply_force(player->alive_body, force);
     }
+}
+
+Rigid_rect *player_rigid_rect(Player *player, const char *id)
+{
+    assert(player);
+    assert(id);
+
+    if (player->state == PLAYER_STATE_ALIVE) {
+        if (rigid_rect_has_id(player->alive_body, id)) {
+            return player->alive_body;
+        }
+    }
+
+    return NULL;
 }

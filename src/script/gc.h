@@ -1,6 +1,8 @@
 #ifndef GC_H_
 #define GC_H_
 
+#include "expr.h"
+
 typedef struct Gc Gc;
 
 Gc *create_gc(void);
