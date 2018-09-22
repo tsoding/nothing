@@ -54,6 +54,7 @@ set(SOURCE_FILES
   src/system/lt.c
   src/system/lt/lt_adapters.c
   src/system/lt/lt_slot.c
+  src/game/level/console.c
 )
 
 set(HEADER_FILES
@@ -97,6 +98,7 @@ set(HEADER_FILES
   src/system/lt.h
   src/system/lt/lt_adapters.h
   src/system/lt/lt_slot.h
+  src/game/level/console.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
