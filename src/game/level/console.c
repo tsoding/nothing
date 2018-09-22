@@ -47,7 +47,7 @@ Console *create_console(Level *level,
         lt,
         create_edit_field(
             font,
-            vec(2.0f, 2.0f),
+            vec(3.0f, 3.0f),
             color(0.0f, 0.0f, 0.0f, 1.0f)),
         destroy_edit_field);
     if (console->edit_field == NULL) {

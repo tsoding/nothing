@@ -15,6 +15,7 @@
 typedef enum Game_state {
     GAME_STATE_RUNNING = 0,
     GAME_STATE_PAUSE,
+    GAME_STATE_CONSOLE,
     GAME_STATE_QUIT,
 
     GAME_STATE_N
@@ -136,6 +137,12 @@ int game_render(const Game *game)
         return -1;
     }
 
+    if (game->state == GAME_STATE_CONSOLE) {
+        if (console_render(game->console, game->renderer) < 0) {
+            return -1;
+        }
+    }
+
     return 0;
 }
 
@@ -153,7 +160,7 @@ int game_update(Game *game, float delta_time)
         return 0;
     }
 
-    if (game->state == GAME_STATE_RUNNING) {
+    if (game->state == GAME_STATE_RUNNING || game->state == GAME_STATE_CONSOLE) {
         if (level_update(game->level, delta_time) < 0) {
             return -1;
         }
@@ -247,12 +254,38 @@ static int game_event_running(Game *game, const SDL_Event *event)
             level_toggle_debug_mode(game->level);
             debug_tree_toggle_enabled(game->debug_tree);
             break;
+
+        case SDLK_c:
+            game->state = GAME_STATE_CONSOLE;
+            break;
         }
         break;
 
     }
 
     return level_event(game->level, event);
+}
+
+static int game_event_console(Game *game, const SDL_Event *event)
+{
+    switch (event->type) {
+    case SDL_QUIT:
+        game->state = GAME_STATE_QUIT;
+        break;
+
+    case SDL_KEYDOWN:
+        switch (event->key.keysym.sym) {
+        case SDLK_ESCAPE:
+            game->state = GAME_STATE_RUNNING;
+            break;
+
+        default: {}
+        }
+
+    default: {}
+    }
+
+    return console_handle_event(game->console, event);
 }
 
 int game_event(Game *game, const SDL_Event *event)
@@ -266,6 +299,9 @@ int game_event(Game *game, const SDL_Event *event)
 
     case GAME_STATE_PAUSE:
         return game_event_pause(game, event);
+
+    case GAME_STATE_CONSOLE:
+        return game_event_console(game, event);
 
     default: {}
     }
@@ -281,7 +317,9 @@ int game_input(Game *game,
     assert(game);
     assert(keyboard_state);
 
-    if (game->state == GAME_STATE_QUIT || game->state == GAME_STATE_PAUSE) {
+    if (game->state == GAME_STATE_QUIT  ||
+        game->state == GAME_STATE_PAUSE ||
+        game->state == GAME_STATE_CONSOLE) {
         return 0;
     }
 
