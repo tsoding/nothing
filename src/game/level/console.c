@@ -68,5 +68,14 @@ void destroy_console(Console *console)
 int console_handle_event(Console *console,
                          const SDL_Event *event)
 {
-    return edit_field_handle_event(console->edit_field, event);
+    return edit_field_handle_event(console->edit_field,
+                                   event);
+}
+
+int console_render(const Console *console,
+                   SDL_Renderer *renderer)
+{
+    return edit_field_render(console->edit_field,
+                             renderer,
+                             vec(0.0f, 0.0f));
 }
