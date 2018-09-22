@@ -96,7 +96,7 @@ Rigid_rect *create_rigid_rect_from_stream(FILE *stream)
     Rect rect;
     char id[MAX_ID_SIZE];
 
-    /* TODO: MAX_ID_SIZE is not used properly in fscanf */
+    /* TODO(#348): MAX_ID_SIZE is not used properly in fscanf */
     if (fscanf(stream, "%36s%f%f%f%f%6s\n",
                id,
                &rect.x, &rect.y,
