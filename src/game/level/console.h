@@ -8,7 +8,7 @@ typedef struct Level Level;
 typedef struct Sprite_font Sprite_font;
 typedef struct Camera Camera;
 
-// TODO: console does evaluate script expressions
+// TODO(#345): console does evaluate script expressions
 // TODO: console doesn't have any background
 // TODO: console doesn't slide down when it's summoned
 
