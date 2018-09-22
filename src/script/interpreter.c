@@ -158,7 +158,6 @@ static struct EvalResult call_lambda(Gc *gc,
     struct EvalResult result = eval_success(NIL(gc));
 
     while (!nil_p(body)) {
-        print_expr_as_sexpr(body.cons->car);
         result = eval(gc, scope, body.cons->car);
         if (result.is_error) {
             return result;
