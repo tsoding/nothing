@@ -7,6 +7,7 @@
 #include "game/debug_tree.h"
 #include "game/edit_field.h"
 #include "game/level.h"
+#include "game/level/console.h"
 #include "game/sound_samples.h"
 #include "system/error.h"
 #include "system/lt.h"
@@ -29,6 +30,7 @@ typedef struct Game {
     Camera *camera;
     Sprite_font *font;
     Debug_tree *debug_tree;
+    Console *console;
     SDL_Renderer *renderer;
 } Game;
 
@@ -96,6 +98,14 @@ Game *create_game(const char *level_file_path,
             sound_sample_files_count),
         destroy_sound_samples);
     if (game->sound_samples == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    game->console = PUSH_LT(
+        lt,
+        create_console(game->level, game->font),
+        destroy_console);
+    if (game->console == NULL) {
         RETURN_LT(lt, NULL);
     }
 

@@ -50,7 +50,7 @@ Console *create_console(Level *level,
             vec(2.0f, 2.0f),
             color(0.0f, 0.0f, 0.0f, 1.0f)),
         destroy_edit_field);
-    if (console->edit_field != NULL) {
+    if (console->edit_field == NULL) {
         RETURN_LT(lt, NULL);
     }
 
