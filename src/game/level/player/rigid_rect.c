@@ -274,3 +274,12 @@ void rigid_rect_damper(Rigid_rect *rigid_rect, Vec v)
         rigid_rect,
         vec(rigid_rect->velocity.x * v.x, rigid_rect->velocity.y * v.y));
 }
+
+bool rigid_rect_has_id(Rigid_rect *rigid_rect,
+                       const char *id)
+{
+    assert(rigid_rect);
+    assert(id);
+
+    return strcmp(rigid_rect->id, id) == 0;
+}

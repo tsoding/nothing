@@ -50,4 +50,6 @@ void player_die_from_lava(Player *player,
  */
 void player_apply_force(Player *player, Vec force);
 
+Rigid_rect *player_rigid_rect(Player *player, const char *id);
+
 #endif  // PLAYER_H_

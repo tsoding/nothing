@@ -53,4 +53,7 @@ void rigid_rect_teleport_to(Rigid_rect *rigid_rect,
 void rigid_rect_damper(Rigid_rect *rigid_rect,
                        Vec v);
 
+bool rigid_rect_has_id(Rigid_rect *rigid_rect,
+                       const char *id);
+
 #endif  // RIGID_RECT_H_

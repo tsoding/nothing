@@ -29,6 +29,9 @@ int level_enter_camera_event(Level *level,
 int level_reload_preserve_player(Level *level,
                                  const char *file_name);
 
+Rigid_rect *level_rigid_rect(Level *level,
+                             const char *rigid_rect_id);
+
 void level_toggle_debug_mode(Level *level);
 void level_toggle_pause_mode(Level *level);
 

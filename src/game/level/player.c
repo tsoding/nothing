@@ -290,3 +290,17 @@ void player_apply_force(Player *player, Vec force)
         rigid_rect_apply_force(player->alive_body, force);
     }
 }
+
+Rigid_rect *player_rigid_rect(Player *player, const char *id)
+{
+    assert(player);
+    assert(id);
+
+    if (player->state == PLAYER_STATE_ALIVE) {
+        if (rigid_rect_has_id(player->alive_body, id)) {
+            return player->alive_body;
+        }
+    }
+
+    return NULL;
+}

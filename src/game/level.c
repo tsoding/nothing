@@ -342,3 +342,23 @@ int level_enter_camera_event(Level *level,
     labels_enter_camera_event(level->labels, camera);
     return 0;
 }
+
+Rigid_rect *level_rigid_rect(Level *level,
+                             const char *rigid_rect_id)
+{
+    assert(level);
+    assert(rigid_rect_id);
+
+    Rigid_rect *rigid_rect = player_rigid_rect(level->player,
+                                               rigid_rect_id);
+    if (rigid_rect != NULL) {
+        return rigid_rect;
+    }
+
+    rigid_rect = boxes_rigid_rect(level->boxes, rigid_rect_id);
+    if (rigid_rect != NULL) {
+        return rigid_rect;
+    }
+
+    return NULL;
+}
