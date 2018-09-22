@@ -255,7 +255,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
             debug_tree_toggle_enabled(game->debug_tree);
             break;
 
-        case SDLK_c:
+        case SDLK_BACKQUOTE:
             game->state = GAME_STATE_CONSOLE;
             break;
         }
@@ -271,13 +271,14 @@ static int game_event_console(Game *game, const SDL_Event *event)
     switch (event->type) {
     case SDL_QUIT:
         game->state = GAME_STATE_QUIT;
-        break;
+        return 0;
 
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
         case SDLK_ESCAPE:
+        case SDLK_BACKQUOTE:
             game->state = GAME_STATE_RUNNING;
-            break;
+            return 0;
 
         default: {}
         }
