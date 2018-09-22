@@ -10,7 +10,7 @@ typedef struct Camera Camera;
 
 // TODO(#345): console does evaluate script expressions
 // TODO(#346): console doesn't have any background
-// TODO: console doesn't slide down when it's summoned
+// TODO(#347): console doesn't slide down when it's summoned
 
 Console *create_console(Level *level,
                         const Sprite_font *font);
