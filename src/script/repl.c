@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
         .expr = CONS(gc, NIL(gc), NIL(gc))
     };
 
-    set_scope_value(gc, &scope, SYMBOL(gc, "quit"), NATIVE(gc, quit));
+    set_scope_value(gc, &scope, SYMBOL(gc, "quit"), NATIVE(gc, quit, NULL));
 
     while (true) {
         printf("> ");

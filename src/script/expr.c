@@ -240,7 +240,7 @@ error:
     return NULL;
 }
 
-struct Atom *create_native_atom(Gc *gc, NativeFunction fun)
+struct Atom *create_native_atom(Gc *gc, NativeFunction fun, void *param)
 {
     struct Atom *atom = malloc(sizeof(struct Atom));
 
@@ -249,7 +249,8 @@ struct Atom *create_native_atom(Gc *gc, NativeFunction fun)
     }
 
     atom->type = ATOM_NATIVE;
-    atom->fun = fun;
+    atom->native.fun = fun;
+    atom->native.param = param;
 
     if (gc_add_expr(gc, atom_as_expr(atom)) < 0) {
         goto error;
