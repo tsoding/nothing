@@ -8,10 +8,11 @@
 
 #define REPL_BUFFER_MAX 1024
 
-static struct EvalResult quit(Gc *gc, struct Scope *scope, struct Expr args)
+static struct EvalResult quit(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     assert(scope);
     (void) args;
+    (void) param;
 
     exit(0);
 

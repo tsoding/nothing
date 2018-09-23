@@ -47,7 +47,7 @@ struct EvalResult
     struct Expr expr;
 };
 
-typedef struct EvalResult (*NativeFunction)(Gc *gc, struct Scope *scope, struct Expr args);
+typedef struct EvalResult (*NativeFunction)(void *param, Gc *gc, struct Scope *scope, struct Expr args);
 
 enum AtomType
 {
