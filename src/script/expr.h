@@ -17,6 +17,9 @@ struct Atom;
 #define CONS(G, CAR, CDR) cons_as_expr(create_cons(G, CAR, CDR))
 #define NIL(G) SYMBOL(G, "nil")
 
+#define CAR(O) ((O).cons->car)
+#define CDR(O) ((O).cons->cdr)
+
 enum ExprType
 {
     EXPR_ATOM = 0,
