@@ -20,6 +20,13 @@ struct Console
     Level *level;
 };
 
+/* TODO: Console does not show previous expression */
+/* TODO: Console does not allow to travel the history by pressing up and down */
+/* TODO: Console does not support Emacs keybindings */
+/* TODO: Console does not support autocompletion */
+/* TODO: Console does not show the state of the GC of the script */
+/* TODO: Console does not support copy, cut, paste operations */
+
 static struct EvalResult rect_apply_force(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     assert(gc);
