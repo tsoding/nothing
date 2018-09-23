@@ -12,6 +12,8 @@
 #include "system/lt.h"
 
 #define MAX_ID_SIZE 36
+#define STRINGIFY(x) STRINGIFY2(x)
+#define STRINGIFY2(x) #x
 
 struct Rigid_rect {
     Lt *lt;
@@ -96,8 +98,7 @@ Rigid_rect *create_rigid_rect_from_stream(FILE *stream)
     Rect rect;
     char id[MAX_ID_SIZE];
 
-    /* TODO(#348): MAX_ID_SIZE is not used properly in fscanf */
-    if (fscanf(stream, "%36s%f%f%f%f%6s\n",
+    if (fscanf(stream, "%" STRINGIFY(MAX_ID_SIZE) "s%f%f%f%f%6s\n",
                id,
                &rect.x, &rect.y,
                &rect.w, &rect.h,
