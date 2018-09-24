@@ -35,7 +35,9 @@ static char shift_char(char c)
         return ')';
     } else if (c == '=') {
         return '+';
-    } else {
+    } else if (c == '\'') {
+        return '"';
+    }else {
         return c;
     }
 }
@@ -238,4 +240,11 @@ static void edit_field_insert_char(Edit_field *edit_field, char c)
 
     edit_field->buffer[edit_field->cursor++] = c;
     edit_field->buffer[++edit_field->buffer_size] = 0;
+}
+
+void edit_field_clean(Edit_field *edit_field)
+{
+    edit_field->cursor = 0;
+    edit_field->buffer_size = 0;
+    edit_field->buffer[0] = 0;
 }

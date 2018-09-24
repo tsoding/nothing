@@ -8,10 +8,11 @@
 
 #define REPL_BUFFER_MAX 1024
 
-static struct EvalResult quit(Gc *gc, struct Scope *scope, struct Expr args)
+static struct EvalResult quit(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     assert(scope);
     (void) args;
+    (void) param;
 
     exit(0);
 
@@ -30,7 +31,7 @@ int main(int argc, char *argv[])
         .expr = CONS(gc, NIL(gc), NIL(gc))
     };
 
-    set_scope_value(gc, &scope, SYMBOL(gc, "quit"), NATIVE(gc, quit));
+    set_scope_value(gc, &scope, SYMBOL(gc, "quit"), NATIVE(gc, quit, NULL));
 
     while (true) {
         printf("> ");

@@ -142,6 +142,17 @@ int rigid_rect_render(const Rigid_rect *rigid_rect,
         return -1;
     }
 
+#if 0
+    if (camera_render_text(
+            camera,
+            rigid_rect->id,
+            vec(2.0f, 2.0f),
+            color(0.0f, 0.0f, 0.0f, 1.0f),
+            rigid_rect->position) < 0) {
+        return -1;
+    }
+#endif
+
     return 0;
 }
 

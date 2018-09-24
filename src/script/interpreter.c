@@ -175,7 +175,7 @@ static struct EvalResult call_callable(Gc *gc,
                                        struct Expr callable,
                                        struct Expr args) {
     if (callable.type == EXPR_ATOM && callable.atom->type == ATOM_NATIVE) {
-        return ((NativeFunction)callable.atom->fun)(gc, scope, args);
+        return ((NativeFunction)callable.atom->native.fun)(callable.atom->native.param, gc, scope, args);
     }
 
     return call_lambda(gc, scope, callable, args);
