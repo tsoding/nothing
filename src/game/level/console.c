@@ -20,7 +20,7 @@ struct Console
     Level *level;
 };
 
-/* TODO: Console does not show previous expression */
+/* TODO(#353): Console does not show previous expression */
 /* TODO: Console does not allow to travel the history by pressing up and down */
 /* TODO: Console does not support Emacs keybindings */
 /* TODO: Console does not support autocompletion */
