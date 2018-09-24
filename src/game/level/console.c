@@ -24,7 +24,7 @@ struct Console
 /* TODO(#354): Console does not allow to travel the history by pressing up and down */
 /* TODO(#355): Console does not support Emacs keybindings */
 /* TODO(#356): Console does not support autocompletion */
-/* TODO: Console does not show the state of the GC of the script */
+/* TODO(#357): Console does not show the state of the GC of the script */
 /* TODO: Console does not support copy, cut, paste operations */
 
 static struct EvalResult rect_apply_force(void *param, Gc *gc, struct Scope *scope, struct Expr args)
