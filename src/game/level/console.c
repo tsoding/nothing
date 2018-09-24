@@ -23,7 +23,7 @@ struct Console
 /* TODO(#353): Console does not show previous expression */
 /* TODO(#354): Console does not allow to travel the history by pressing up and down */
 /* TODO(#355): Console does not support Emacs keybindings */
-/* TODO: Console does not support autocompletion */
+/* TODO(#356): Console does not support autocompletion */
 /* TODO: Console does not show the state of the GC of the script */
 /* TODO: Console does not support copy, cut, paste operations */
 
