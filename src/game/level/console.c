@@ -116,7 +116,7 @@ int console_handle_event(Console *console,
             struct ParseResult parse_result = read_expr_from_string(console->gc,
                                                                     source_code);
             if (parse_result.is_error) {
-                /* TODO: Console doesn't report any parsing errors visually */
+                /* TODO(#359): Console doesn't report any parsing errors visually */
                 print_parse_error(stderr, source_code, parse_result);
                 return 0;
             }
