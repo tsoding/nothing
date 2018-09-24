@@ -127,7 +127,7 @@ int console_handle_event(Console *console,
                 parse_result.expr);
 
             if (eval_result.is_error) {
-                /* TODO: Console doesn't report any eval errors visually */
+                /* TODO(#360): Console doesn't report any eval errors visually */
                 printf("Error:\t");
                 print_expr_as_sexpr(eval_result.expr);
                 printf("\n");
