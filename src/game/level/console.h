@@ -8,7 +8,6 @@ typedef struct Level Level;
 typedef struct Sprite_font Sprite_font;
 typedef struct Camera Camera;
 
-// TODO(#345): console does evaluate script expressions
 // TODO(#347): console doesn't slide down when it's summoned
 
 Console *create_console(Level *level,
