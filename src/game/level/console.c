@@ -171,7 +171,7 @@ int console_render(const Console *console,
         return -1;
     }
 
-    /* TODO: Console does not render the full Edit field ring */
+    /* TODO(#369): Console does not render the full Edit field ring */
     if (edit_field_render(edit_field_ring_get(console->edit_field_ring, 0),
                           renderer,
                           vec(0.0f, console->y)) < 0) {
