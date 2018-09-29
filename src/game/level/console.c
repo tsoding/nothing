@@ -101,6 +101,7 @@ Console *create_console(Level *level,
     if (console->edit_field == NULL) {
         RETURN_LT(lt, NULL);
     }
+    edit_field_focus(console->edit_field);
 
     console->level = level;
     console->y = -CONSOLE_HEIGHT;
