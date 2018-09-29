@@ -14,6 +14,9 @@
 
 #define FONT_WIDTH_SCALE 3.0f
 #define FONT_HEIGHT_SCALE 3.0f
+#define SLIDE_DOWN_TIME 0.1f
+#define SLIDE_DOWN_SPEED (FONT_CHAR_HEIGHT * FONT_HEIGHT_SCALE / SLIDE_DOWN_TIME)
+#define CONSOLE_HEIGHT (FONT_HEIGHT_SCALE * FONT_CHAR_HEIGHT)
 
 struct Console
 {
@@ -22,6 +25,7 @@ struct Console
     struct Scope scope;
     Edit_field *edit_field;
     Level *level;
+    float y;
 };
 
 /* TODO(#353): Console does not show previous expression */
@@ -99,6 +103,7 @@ Console *create_console(Level *level,
     }
 
     console->level = level;
+    console->y = -CONSOLE_HEIGHT;
 
     return console;
 }
@@ -158,18 +163,41 @@ int console_render(const Console *console,
     SDL_RenderGetViewport(renderer, &view_port);
 
     if (fill_rect(renderer,
-                  rect(0.0f, 0.0f,
+                  rect(0.0f, console->y,
                        (float) view_port.w,
-                       FONT_CHAR_HEIGHT * FONT_HEIGHT_SCALE),
+                       CONSOLE_HEIGHT),
                   color(0.20f, 0.20f, 0.20f, 1.0f)) < 0) {
         return -1;
     }
 
     if (edit_field_render(console->edit_field,
                           renderer,
-                          vec(0.0f, 0.0f)) < 0) {
+                          vec(0.0f, console->y)) < 0) {
         return -1;
     }
 
     return 0;
+}
+
+int console_update(Console *console, float delta_time)
+{
+    assert(console);
+
+    /* TODO(#366): console slide down animation doesn't have any easing */
+
+    if (console->y < 0.0f) {
+        console->y += SLIDE_DOWN_SPEED * delta_time;
+
+        if (console->y > 0.0f) {
+            console->y = 0.0f;
+        }
+    }
+
+    return 0;
+}
+
+void console_slide_down(Console *console)
+{
+    assert(console);
+    console->y = -CONSOLE_HEIGHT;
 }

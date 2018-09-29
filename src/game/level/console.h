@@ -8,8 +8,6 @@ typedef struct Level Level;
 typedef struct Sprite_font Sprite_font;
 typedef struct Camera Camera;
 
-// TODO(#347): console doesn't slide down when it's summoned
-
 Console *create_console(Level *level,
                         const Sprite_font *font);
 void destroy_console(Console *console);
@@ -19,5 +17,10 @@ int console_handle_event(Console *console,
 
 int console_render(const Console *console,
                    SDL_Renderer *renderer);
+
+int console_update(Console *console,
+                   float delta_time);
+
+void console_slide_down(Console *console);
 
 #endif  // CONSOLE_H_

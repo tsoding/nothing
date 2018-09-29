@@ -168,6 +168,10 @@ int game_update(Game *game, float delta_time)
         if (level_enter_camera_event(game->level, game->camera) < 0) {
             return -1;
         }
+
+        if (console_update(game->console, delta_time) < 0) {
+            return -1;
+        }
     }
 
     return 0;
@@ -257,6 +261,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
 
         case SDLK_BACKQUOTE:
             game->state = GAME_STATE_CONSOLE;
+            console_slide_down(game->console);
             break;
         }
         break;
