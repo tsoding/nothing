@@ -45,8 +45,9 @@ EditFieldRing *create_edit_field_ring(const Sprite_font *font,
     if (edit_field_ring->edit_field == NULL) {
         RETURN_LT(lt, NULL);
     }
+    edit_field_focus(edit_field_ring->edit_field);
 
-    return NULL;
+    return edit_field_ring;
 }
 
 void destroy_edit_field_ring(EditFieldRing *edit_field_ring)
