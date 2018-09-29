@@ -104,6 +104,7 @@ int edit_field_render(const Edit_field *edit_field,
         return -1;
     }
 
+    /* TODO(#363): the size of the cursor does not correspond to font size */
     if (fill_rect(
             renderer,
             rect(position.x + (float) edit_field->cursor * (float) FONT_CHAR_WIDTH * edit_field->font_size.x,

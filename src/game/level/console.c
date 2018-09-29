@@ -10,6 +10,10 @@
 #include "script/scope.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "sdl/renderer.h"
+
+#define FONT_WIDTH_SCALE 3.0f
+#define FONT_HEIGHT_SCALE 3.0f
 
 struct Console
 {
@@ -87,8 +91,8 @@ Console *create_console(Level *level,
         lt,
         create_edit_field(
             font,
-            vec(3.0f, 3.0f),
-            color(0.0f, 0.0f, 0.0f, 1.0f)),
+            vec(FONT_WIDTH_SCALE, FONT_HEIGHT_SCALE),
+            color(0.80f, 0.80f, 0.80f, 1.0f)),
         destroy_edit_field);
     if (console->edit_field == NULL) {
         RETURN_LT(lt, NULL);
@@ -149,7 +153,23 @@ int console_handle_event(Console *console,
 int console_render(const Console *console,
                    SDL_Renderer *renderer)
 {
-    return edit_field_render(console->edit_field,
-                             renderer,
-                             vec(0.0f, 0.0f));
+    /* TODO(#364): console doesn't have any padding around the edit fields */
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(renderer, &view_port);
+
+    if (fill_rect(renderer,
+                  rect(0.0f, 0.0f,
+                       (float) view_port.w,
+                       FONT_CHAR_HEIGHT * FONT_HEIGHT_SCALE),
+                  color(0.20f, 0.20f, 0.20f, 1.0f)) < 0) {
+        return -1;
+    }
+
+    if (edit_field_render(console->edit_field,
+                          renderer,
+                          vec(0.0f, 0.0f)) < 0) {
+        return -1;
+    }
+
+    return 0;
 }
