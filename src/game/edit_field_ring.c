@@ -8,7 +8,7 @@
 #include "game/sprite_font.h"
 #include "game/edit_field.h"
 
-/* TODO: EditFieldRing is not implemented */
+/* TODO(#368): EditFieldRing is not implemented */
 struct EditFieldRing
 {
     Lt *lt;
