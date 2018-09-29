@@ -153,7 +153,7 @@ int console_handle_event(Console *console,
 int console_render(const Console *console,
                    SDL_Renderer *renderer)
 {
-    /* TODO: console doesn't have any padding around the edit fields */
+    /* TODO(#364): console doesn't have any padding around the edit fields */
     SDL_Rect view_port;
     SDL_RenderGetViewport(renderer, &view_port);
 
