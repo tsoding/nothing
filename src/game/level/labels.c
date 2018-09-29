@@ -130,6 +130,7 @@ int labels_render(const Labels *label,
 
     for (size_t i = 0; i < label->count; ++i) {
         if (label->visible[i]) {
+            /* Easing */
             const float state = label->states[i] * (2 - label->states[i]);
 
             if (camera_render_text(camera,
