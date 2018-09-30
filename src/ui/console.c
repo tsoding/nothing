@@ -1,30 +1,37 @@
 #include <assert.h>
 
-#include "console.h"
-#include "game/edit_field_ring.h"
-#include "game/edit_field.h"
 #include "game/level.h"
 #include "game/level/player/rigid_rect.h"
 #include "script/gc.h"
 #include "script/interpreter.h"
 #include "script/parser.h"
 #include "script/scope.h"
+#include "sdl/renderer.h"
 #include "system/error.h"
 #include "system/lt.h"
-#include "sdl/renderer.h"
+#include "ui/console.h"
+#include "ui/edit_field.h"
+#include "ui/log.h"
 
 #define FONT_WIDTH_SCALE 3.0f
 #define FONT_HEIGHT_SCALE 3.0f
+
+#define LOG_CAPACITY 10
+#define PROMPT_HEIGHT (FONT_HEIGHT_SCALE * FONT_CHAR_HEIGHT)
+#define LOG_HEIGHT (FONT_HEIGHT_SCALE * FONT_CHAR_HEIGHT * LOG_CAPACITY)
+
+#define CONSOLE_HEIGHT (LOG_HEIGHT + PROMPT_HEIGHT)
+
 #define SLIDE_DOWN_TIME 0.1f
-#define SLIDE_DOWN_SPEED (FONT_CHAR_HEIGHT * FONT_HEIGHT_SCALE / SLIDE_DOWN_TIME)
-#define CONSOLE_HEIGHT (FONT_HEIGHT_SCALE * FONT_CHAR_HEIGHT)
+#define SLIDE_DOWN_SPEED (CONSOLE_HEIGHT / SLIDE_DOWN_TIME)
 
 struct Console
 {
     Lt *lt;
     Gc *gc;
     struct Scope scope;
-    EditFieldRing *edit_field_ring;
+    Edit_field *edit_field;
+    Log *log;
     Level *level;
     float y;
 };
@@ -91,17 +98,25 @@ Console *create_console(Level *level,
         SYMBOL(console->gc, "rect-apply-force"),
         NATIVE(console->gc, rect_apply_force, level));
 
-    console->edit_field_ring = PUSH_LT(
+    console->edit_field = PUSH_LT(
         lt,
-        create_edit_field_ring(
+        create_edit_field(
+            font,
+            vec(FONT_WIDTH_SCALE, FONT_HEIGHT_SCALE),
+            color(0.80f, 0.80f, 0.80f, 1.0f)),
+        destroy_edit_field);
+    if (console->edit_field == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    console->log = PUSH_LT(
+        lt,
+        create_log(
             font,
             vec(FONT_WIDTH_SCALE, FONT_HEIGHT_SCALE),
             color(0.80f, 0.80f, 0.80f, 1.0f),
-            10),
-        destroy_edit_field_ring);
-    if (console->edit_field_ring == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+            LOG_CAPACITY),
+        destroy_log);
 
     console->level = level;
     console->y = -CONSOLE_HEIGHT;
@@ -122,7 +137,7 @@ int console_handle_event(Console *console,
     case SDL_KEYDOWN:
         switch(event->key.keysym.sym) {
         case SDLK_RETURN: {
-            const char *source_code = edit_field_as_text(edit_field_ring_get(console->edit_field_ring, 0));
+            const char *source_code = edit_field_as_text(console->edit_field);
             struct ParseResult parse_result = read_expr_from_string(console->gc,
                                                                     source_code);
             if (parse_result.is_error) {
@@ -145,15 +160,17 @@ int console_handle_event(Console *console,
 
             gc_collect(console->gc, console->scope.expr);
 
-            edit_field_clean(edit_field_ring_get(console->edit_field_ring, 0));
+            if (log_push_line(console->log, edit_field_as_text(console->edit_field)) < 0) {
+                return -1;
+            }
+            edit_field_clean(console->edit_field);
 
         } return 0;
         }
         break;
     }
 
-    return edit_field_handle_event(edit_field_ring_get(console->edit_field_ring, 0),
-                                   event);
+    return edit_field_handle_event(console->edit_field, event);
 }
 
 int console_render(const Console *console,
@@ -171,10 +188,15 @@ int console_render(const Console *console,
         return -1;
     }
 
-    /* TODO(#369): Console does not render the full Edit field ring */
-    if (edit_field_render(edit_field_ring_get(console->edit_field_ring, 0),
+    if (log_render(console->log,
+                   renderer,
+                   vec(0.0f, console->y)) < 0) {
+        return -1;
+    }
+
+    if (edit_field_render(console->edit_field,
                           renderer,
-                          vec(0.0f, console->y)) < 0) {
+                          vec(0.0f, console->y + LOG_HEIGHT)) < 0) {
         return -1;
     }
 

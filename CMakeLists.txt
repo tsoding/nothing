@@ -21,7 +21,7 @@ set(SOURCE_FILES
   src/game.c
   src/game/camera.c
   src/game/debug_tree.c
-  src/game/edit_field.c
+  src/ui/edit_field.c
   src/game/level.c
   src/game/level/background.c
   src/game/level/boxes.c
@@ -54,8 +54,9 @@ set(SOURCE_FILES
   src/system/lt.c
   src/system/lt/lt_adapters.c
   src/system/lt/lt_slot.c
-  src/game/level/console.c
-  src/game/edit_field_ring.c
+  src/ui/console.c
+  src/ui/log.c
+  src/str.c
 )
 
 set(HEADER_FILES
@@ -64,7 +65,7 @@ set(HEADER_FILES
   src/game/camera.h
   src/game/debug_node.h
   src/game/debug_tree.h
-  src/game/edit_field.h
+  src/ui/edit_field.h
   src/game/level.h
   src/game/level/background.h
   src/game/level/boxes.h
@@ -99,8 +100,9 @@ set(HEADER_FILES
   src/system/lt.h
   src/system/lt/lt_adapters.h
   src/system/lt/lt_slot.h
-  src/game/level/console.h
-  src/game/edit_field_ring.h
+  src/ui/console.h
+  src/ui/log.h
+  src/str.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
@@ -128,6 +130,8 @@ add_executable(repl
   src/system/error.h
   src/script/gc.h
   src/script/gc.c
+  src/str.h
+  src/str.c
   )
 add_executable(nothing_test
   src/script/builtins.c
@@ -152,6 +156,8 @@ add_executable(nothing_test
   src/system/lt/lt_adapters.h
   src/system/lt/lt_slot.c
   src/system/lt/lt_slot.h
+  src/str.h
+  src/str.c
   test/main.c
   test/test.h
   test/tokenizer_suite.h

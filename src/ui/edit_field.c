@@ -19,7 +19,6 @@ struct Edit_field
     Vec font_size;
     Color font_color;
     bool shift_key;
-    bool focused;
 };
 
 static void edit_field_left(Edit_field *edit_field);
@@ -74,7 +73,6 @@ Edit_field *create_edit_field(const Sprite_font *font,
     edit_field->font_size = font_size;
     edit_field->font_color = font_color;
     edit_field->shift_key = false;
-    edit_field->focused = false;
 
     edit_field->buffer[edit_field->buffer_size] = 0;
 
@@ -107,16 +105,14 @@ int edit_field_render(const Edit_field *edit_field,
     }
 
     /* TODO(#363): the size of the cursor does not correspond to font size */
-    if (edit_field->focused) {
-        if (fill_rect(
-                renderer,
-                rect(position.x + (float) edit_field->cursor * (float) FONT_CHAR_WIDTH * edit_field->font_size.x,
-                     position.y - cursor_y_overflow,
-                     cursor_width,
-                     FONT_CHAR_HEIGHT * edit_field->font_size.y + cursor_y_overflow * 2.0f),
-                edit_field->font_color) < 0) {
-            return -1;
-        }
+    if (fill_rect(
+            renderer,
+            rect(position.x + (float) edit_field->cursor * (float) FONT_CHAR_WIDTH * edit_field->font_size.x,
+                 position.y - cursor_y_overflow,
+                 cursor_width,
+                 FONT_CHAR_HEIGHT * edit_field->font_size.y + cursor_y_overflow * 2.0f),
+            edit_field->font_color) < 0) {
+        return -1;
     }
 
     return 0;
@@ -252,14 +248,4 @@ void edit_field_clean(Edit_field *edit_field)
     edit_field->cursor = 0;
     edit_field->buffer_size = 0;
     edit_field->buffer[0] = 0;
-}
-
-void edit_field_focus(Edit_field *edit_field)
-{
-    edit_field->focused = true;
-}
-
-void edit_field_unfocus(Edit_field *edit_field)
-{
-    edit_field->focused = false;
 }

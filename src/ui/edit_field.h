@@ -27,7 +27,4 @@ const char *edit_field_as_text(const Edit_field *edit_field);
 
 void edit_field_clean(Edit_field *edit_field);
 
-void edit_field_focus(Edit_field *edit_field);
-void edit_field_unfocus(Edit_field *edit_field);
-
 #endif  // EDIT_FIELD_H_
