@@ -99,6 +99,7 @@ set(HEADER_FILES
   src/system/lt/lt_adapters.h
   src/system/lt/lt_slot.h
   src/ui/console.h
+  src/ui/log.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
@@ -126,6 +127,7 @@ add_executable(repl
   src/system/error.h
   src/script/gc.h
   src/script/gc.c
+  src/ui/log.c
   )
 add_executable(nothing_test
   src/script/builtins.c
