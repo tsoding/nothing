@@ -24,9 +24,10 @@
 
 #define SLIDE_DOWN_TIME 0.4f
 
-#define CONSOLE_BACKGROUND (color(0.20f, 0.20f, 0.20f, 1.0f))
-#define CONSOLE_FOREGROUND (color(0.80f, 0.80f, 0.80f, 1.0f))
-#define CONSOLE_ERROR (color(0.80f, 0.50f, 0.50f, 1.0f))
+#define CONSOLE_ALPHA (0.80f)
+#define CONSOLE_BACKGROUND (color(0.20f, 0.20f, 0.20f, CONSOLE_ALPHA))
+#define CONSOLE_FOREGROUND (color(0.80f, 0.80f, 0.80f, CONSOLE_ALPHA))
+#define CONSOLE_ERROR (color(0.80f, 0.50f, 0.50f, CONSOLE_ALPHA))
 
 struct Console
 {
