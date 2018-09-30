@@ -5,9 +5,9 @@
 
 #include "game.h"
 #include "game/debug_tree.h"
-#include "game/edit_field.h"
+#include "ui/edit_field.h"
 #include "game/level.h"
-#include "game/level/console.h"
+#include "ui/console.h"
 #include "game/sound_samples.h"
 #include "system/error.h"
 #include "system/lt.h"

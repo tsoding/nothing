@@ -21,7 +21,7 @@ set(SOURCE_FILES
   src/game.c
   src/game/camera.c
   src/game/debug_tree.c
-  src/game/edit_field.c
+  src/ui/edit_field.c
   src/game/level.c
   src/game/level/background.c
   src/game/level/boxes.c
@@ -54,7 +54,7 @@ set(SOURCE_FILES
   src/system/lt.c
   src/system/lt/lt_adapters.c
   src/system/lt/lt_slot.c
-  src/game/level/console.c
+  src/ui/console.c
 )
 
 set(HEADER_FILES
@@ -63,7 +63,7 @@ set(HEADER_FILES
   src/game/camera.h
   src/game/debug_node.h
   src/game/debug_tree.h
-  src/game/edit_field.h
+  src/ui/edit_field.h
   src/game/level.h
   src/game/level/background.h
   src/game/level/boxes.h
@@ -98,7 +98,7 @@ set(HEADER_FILES
   src/system/lt.h
   src/system/lt/lt_adapters.h
   src/system/lt/lt_slot.h
-  src/game/level/console.h
+  src/ui/console.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})

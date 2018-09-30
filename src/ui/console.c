@@ -1,7 +1,7 @@
 #include <assert.h>
 
 #include "console.h"
-#include "game/edit_field.h"
+#include "ui/edit_field.h"
 #include "game/level.h"
 #include "game/level/player/rigid_rect.h"
 #include "script/gc.h"
