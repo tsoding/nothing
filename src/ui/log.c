@@ -91,9 +91,19 @@ int log_push_line(Log *log, const char *line)
     assert(log);
     assert(line);
 
-    if (log->buffer[log->cursor] == NULL) {
-        log->buffer[log->cursor] = string_duplicate(line, NULL);
+    const size_t next_cursor = (log->cursor + 1) % log->capacity;
+
+    if (log->buffer[log->cursor] != NULL) {
+        free(log->buffer[log->cursor]);
     }
+
+    log->buffer[log->cursor] = string_duplicate(line, NULL);
+
+    if (log->buffer[log->cursor] == NULL) {
+        return -1;
+    }
+
+    log->cursor = next_cursor;
 
     return 0;
 }
