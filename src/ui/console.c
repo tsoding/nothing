@@ -1,22 +1,29 @@
 #include <assert.h>
 
-#include "console.h"
-#include "ui/edit_field.h"
 #include "game/level.h"
 #include "game/level/player/rigid_rect.h"
 #include "script/gc.h"
 #include "script/interpreter.h"
 #include "script/parser.h"
 #include "script/scope.h"
+#include "sdl/renderer.h"
 #include "system/error.h"
 #include "system/lt.h"
-#include "sdl/renderer.h"
+#include "ui/console.h"
+#include "ui/edit_field.h"
+#include "ui/log.h"
 
 #define FONT_WIDTH_SCALE 3.0f
 #define FONT_HEIGHT_SCALE 3.0f
+
+#define LOG_CAPACITY 10
+#define PROMPT_HEIGHT (FONT_HEIGHT_SCALE * FONT_CHAR_HEIGHT)
+#define LOG_HEIGHT (FONT_HEIGHT_SCALE * FONT_CHAR_HEIGHT * LOG_CAPACITY)
+
+#define CONSOLE_HEIGHT (LOG_HEIGHT + PROMPT_HEIGHT)
+
 #define SLIDE_DOWN_TIME 0.1f
-#define SLIDE_DOWN_SPEED (FONT_CHAR_HEIGHT * FONT_HEIGHT_SCALE / SLIDE_DOWN_TIME)
-#define CONSOLE_HEIGHT (FONT_HEIGHT_SCALE * FONT_CHAR_HEIGHT)
+#define SLIDE_DOWN_SPEED (CONSOLE_HEIGHT / SLIDE_DOWN_TIME)
 
 struct Console
 {
@@ -24,6 +31,7 @@ struct Console
     Gc *gc;
     struct Scope scope;
     Edit_field *edit_field;
+    Log *log;
     Level *level;
     float y;
 };
@@ -101,6 +109,15 @@ Console *create_console(Level *level,
         RETURN_LT(lt, NULL);
     }
 
+    console->log = PUSH_LT(
+        lt,
+        create_log(
+            font,
+            vec(FONT_WIDTH_SCALE, FONT_HEIGHT_SCALE),
+            color(0.80f, 0.80f, 0.80f, 1.0f),
+            LOG_CAPACITY),
+        destroy_log);
+
     console->level = level;
     console->y = -CONSOLE_HEIGHT;
 
@@ -143,6 +160,9 @@ int console_handle_event(Console *console,
 
             gc_collect(console->gc, console->scope.expr);
 
+            if (log_push_line(console->log, edit_field_as_text(console->edit_field)) < 0) {
+                return -1;
+            }
             edit_field_clean(console->edit_field);
 
         } return 0;
@@ -168,9 +188,15 @@ int console_render(const Console *console,
         return -1;
     }
 
+    if (log_render(console->log,
+                   renderer,
+                   vec(0.0f, console->y)) < 0) {
+        return -1;
+    }
+
     if (edit_field_render(console->edit_field,
                           renderer,
-                          vec(0.0f, console->y)) < 0) {
+                          vec(0.0f, console->y + LOG_HEIGHT)) < 0) {
         return -1;
     }
 

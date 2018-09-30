@@ -57,6 +57,11 @@ Log *create_log(const Sprite_font *font,
 void destroy_log(Log *log)
 {
     assert(log);
+    for (size_t i = 0; i < log->capacity; ++i) {
+        if (log->buffer[i]) {
+            free(log->buffer[i]);
+        }
+    }
     RETURN_LT0(log->lt);
 }
 
@@ -68,7 +73,7 @@ int log_render(const Log *log,
     assert(renderer);
     (void) position;
 
-    for (size_t i = 0; log->capacity; ++i) {
+    for (size_t i = 0; i < log->capacity; ++i) {
         const size_t j = (i + log->cursor) % log->capacity;
         if (log->buffer[j]) {
             if (sprite_font_render_text(log->font,
