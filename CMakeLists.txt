@@ -55,6 +55,8 @@ set(SOURCE_FILES
   src/system/lt/lt_adapters.c
   src/system/lt/lt_slot.c
   src/ui/console.c
+  src/ui/log.c
+  src/str.c
 )
 
 set(HEADER_FILES
@@ -100,6 +102,7 @@ set(HEADER_FILES
   src/system/lt/lt_slot.h
   src/ui/console.h
   src/ui/log.h
+  src/str.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
@@ -127,7 +130,8 @@ add_executable(repl
   src/system/error.h
   src/script/gc.h
   src/script/gc.c
-  src/ui/log.c
+  src/str.h
+  src/str.c
   )
 add_executable(nothing_test
   src/script/builtins.c
@@ -152,6 +156,8 @@ add_executable(nothing_test
   src/system/lt/lt_adapters.h
   src/system/lt/lt_slot.c
   src/system/lt/lt_slot.h
+  src/str.h
+  src/str.c
   test/main.c
   test/test.h
   test/tokenizer_suite.h

@@ -2,12 +2,13 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
-#include "system/lt.h"
-#include "game/sprite_font.h"
-#include "math/point.h"
 #include "color.h"
+#include "game/sprite_font.h"
 #include "log.h"
+#include "math/point.h"
+#include "str.h"
 #include "system/error.h"
+#include "system/lt.h"
 
 struct Log
 {
@@ -67,6 +68,21 @@ int log_render(const Log *log,
     assert(renderer);
     (void) position;
 
+    for (size_t i = 0; log->capacity; ++i) {
+        const size_t j = (i + log->cursor) % log->capacity;
+        if (log->buffer[j]) {
+            if (sprite_font_render_text(log->font,
+                                        renderer,
+                                        vec_sum(position,
+                                                vec(0.0f, FONT_CHAR_HEIGHT * log->font_size.y * (float) i)),
+                                        log->font_size,
+                                        log->font_color,
+                                        log->buffer[j]) < 0) {
+                return -1;
+            }
+        }
+    }
+
     return 0;
 }
 
@@ -74,6 +90,10 @@ int log_push_line(Log *log, const char *line)
 {
     assert(log);
     assert(line);
+
+    if (log->buffer[log->cursor] == NULL) {
+        log->buffer[log->cursor] = string_duplicate(line, NULL);
+    }
 
     return 0;
 }
