@@ -22,8 +22,7 @@
 
 #define CONSOLE_HEIGHT (LOG_HEIGHT + PROMPT_HEIGHT)
 
-#define SLIDE_DOWN_TIME 0.1f
-#define SLIDE_DOWN_SPEED (CONSOLE_HEIGHT / SLIDE_DOWN_TIME)
+#define SLIDE_DOWN_TIME 0.4f
 
 #define CONSOLE_BACKGROUND (color(0.20f, 0.20f, 0.20f, 1.0f))
 #define CONSOLE_FOREGROUND (color(0.80f, 0.80f, 0.80f, 1.0f))
@@ -37,7 +36,7 @@ struct Console
     Edit_field *edit_field;
     Log *log;
     Level *level;
-    float y;
+    float a;
 };
 
 /* TODO(#354): Console does not allow to travel the history by pressing up and down */
@@ -122,7 +121,7 @@ Console *create_console(Level *level,
         destroy_log);
 
     console->level = level;
-    console->y = -CONSOLE_HEIGHT;
+    console->a = 0;
 
     return console;
 }
@@ -193,8 +192,11 @@ int console_render(const Console *console,
     SDL_Rect view_port;
     SDL_RenderGetViewport(renderer, &view_port);
 
+    const float e = console->a * (2 - console->a);
+    const float y = -(1.0f - e) * CONSOLE_HEIGHT;
+
     if (fill_rect(renderer,
-                  rect(0.0f, console->y,
+                  rect(0.0f, y,
                        (float) view_port.w,
                        CONSOLE_HEIGHT),
                   CONSOLE_BACKGROUND) < 0) {
@@ -203,13 +205,13 @@ int console_render(const Console *console,
 
     if (log_render(console->log,
                    renderer,
-                   vec(0.0f, console->y)) < 0) {
+                   vec(0.0f, y)) < 0) {
         return -1;
     }
 
     if (edit_field_render(console->edit_field,
                           renderer,
-                          vec(0.0f, console->y + LOG_HEIGHT)) < 0) {
+                          vec(0.0f, y + LOG_HEIGHT)) < 0) {
         return -1;
     }
 
@@ -222,11 +224,11 @@ int console_update(Console *console, float delta_time)
 
     /* TODO(#366): console slide down animation doesn't have any easing */
 
-    if (console->y < 0.0f) {
-        console->y += SLIDE_DOWN_SPEED * delta_time;
+    if (console->a < 1.0f) {
+        console->a += 1.0f / SLIDE_DOWN_TIME * delta_time;
 
-        if (console->y > 0.0f) {
-            console->y = 0.0f;
+        if (console->a > 1.0f) {
+            console->a = 1.0f;
         }
     }
 
@@ -236,5 +238,5 @@ int console_update(Console *console, float delta_time)
 void console_slide_down(Console *console)
 {
     assert(console);
-    console->y = -CONSOLE_HEIGHT;
+    console->a = 0.0f;
 }
