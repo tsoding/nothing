@@ -25,6 +25,10 @@
 #define SLIDE_DOWN_TIME 0.1f
 #define SLIDE_DOWN_SPEED (CONSOLE_HEIGHT / SLIDE_DOWN_TIME)
 
+#define CONSOLE_BACKGROUND (color(0.20f, 0.20f, 0.20f, 1.0f))
+#define CONSOLE_FOREGROUND (color(0.80f, 0.80f, 0.80f, 1.0f))
+#define CONSOLE_ERROR (color(0.80f, 0.50f, 0.50f, 1.0f))
+
 struct Console
 {
     Lt *lt;
@@ -103,7 +107,7 @@ Console *create_console(Level *level,
         create_edit_field(
             font,
             vec(FONT_WIDTH_SCALE, FONT_HEIGHT_SCALE),
-            color(0.80f, 0.80f, 0.80f, 1.0f)),
+            CONSOLE_FOREGROUND),
         destroy_edit_field);
     if (console->edit_field == NULL) {
         RETURN_LT(lt, NULL);
@@ -114,7 +118,6 @@ Console *create_console(Level *level,
         create_log(
             font,
             vec(FONT_WIDTH_SCALE, FONT_HEIGHT_SCALE),
-            color(0.80f, 0.80f, 0.80f, 1.0f),
             LOG_CAPACITY),
         destroy_log);
 
@@ -141,8 +144,16 @@ int console_handle_event(Console *console,
             struct ParseResult parse_result = read_expr_from_string(console->gc,
                                                                     source_code);
             if (parse_result.is_error) {
-                /* TODO(#359): Console doesn't report any parsing errors visually */
-                print_parse_error(stderr, source_code, parse_result);
+                if (log_push_line(console->log, source_code, CONSOLE_ERROR) < 0) {
+                    return -1;
+                }
+
+                if (log_push_line(console->log, parse_result.error_message, CONSOLE_ERROR)) {
+                    return -1;
+                }
+
+                edit_field_clean(console->edit_field);
+
                 return 0;
             }
 
@@ -160,7 +171,9 @@ int console_handle_event(Console *console,
 
             gc_collect(console->gc, console->scope.expr);
 
-            if (log_push_line(console->log, edit_field_as_text(console->edit_field)) < 0) {
+            if (log_push_line(console->log,
+                              edit_field_as_text(console->edit_field),
+                              CONSOLE_FOREGROUND) < 0) {
                 return -1;
             }
             edit_field_clean(console->edit_field);
@@ -184,7 +197,7 @@ int console_render(const Console *console,
                   rect(0.0f, console->y,
                        (float) view_port.w,
                        CONSOLE_HEIGHT),
-                  color(0.20f, 0.20f, 0.20f, 1.0f)) < 0) {
+                  CONSOLE_BACKGROUND) < 0) {
         return -1;
     }
 

@@ -16,8 +16,8 @@ struct Log
 
     const Sprite_font *font;
     Vec font_size;
-    Color font_color;
 
+    Color *colors;
     char **buffer;
     size_t cursor;
     size_t capacity;
@@ -25,7 +25,6 @@ struct Log
 
 Log *create_log(const Sprite_font *font,
                 Vec font_size,
-                Color font_color,
                 size_t capacity)
 {
     Lt *lt = create_lt();
@@ -41,7 +40,6 @@ Log *create_log(const Sprite_font *font,
     log->lt = lt;
     log->font = font;
     log->font_size = font_size;
-    log->font_color = font_color;
     log->capacity = capacity;
 
     log->buffer = PUSH_LT(lt, calloc(capacity, sizeof(char*)), free);
@@ -49,6 +47,13 @@ Log *create_log(const Sprite_font *font,
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
+
+    log->colors = PUSH_LT(lt, calloc(capacity, sizeof(Color)), free);
+    if (log->colors == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
     log->cursor = 0;
 
     return log;
@@ -81,7 +86,7 @@ int log_render(const Log *log,
                                         vec_sum(position,
                                                 vec(0.0f, FONT_CHAR_HEIGHT * log->font_size.y * (float) i)),
                                         log->font_size,
-                                        log->font_color,
+                                        log->colors[j],
                                         log->buffer[j]) < 0) {
                 return -1;
             }
@@ -91,7 +96,7 @@ int log_render(const Log *log,
     return 0;
 }
 
-int log_push_line(Log *log, const char *line)
+int log_push_line(Log *log, const char *line, Color color)
 {
     assert(log);
     assert(line);
@@ -103,6 +108,7 @@ int log_push_line(Log *log, const char *line)
     }
 
     log->buffer[log->cursor] = string_duplicate(line, NULL);
+    log->colors[log->cursor] = color;
 
     if (log->buffer[log->cursor] == NULL) {
         return -1;
