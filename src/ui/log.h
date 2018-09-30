@@ -5,7 +5,10 @@
 
 typedef struct Log Log;
 
-Log *create_log(size_t capacity);
+Log *create_log(const Sprite_font *font,
+                Vec font_size,
+                Color font_color,
+                size_t capacity);
 void destroy_log(Log *log);
 
 int log_render(const Log *log,

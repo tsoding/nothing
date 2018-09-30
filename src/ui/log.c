@@ -3,7 +3,11 @@
 #include <SDL2/SDL.h>
 
 #include "system/lt.h"
+#include "game/sprite_font.h"
+#include "math/point.h"
+#include "color.h"
 #include "log.h"
+#include "system/error.h"
 
 struct Log
 {
@@ -14,8 +18,7 @@ struct Log
     Color font_color;
 
     char **buffer;
-    size_t begin;
-    size_t end;
+    size_t cursor;
     size_t capacity;
 };
 
@@ -40,13 +43,12 @@ Log *create_log(const Sprite_font *font,
     log->font_color = font_color;
     log->capacity = capacity;
 
-    log->buffer = PUSH_LT(lt, malloc(sizeof(char*) * capacity));
+    log->buffer = PUSH_LT(lt, calloc(capacity, sizeof(char*)), free);
     if (log->buffer == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
-    log->begin = 0;
-    log->end = 0;
+    log->cursor = 0;
 
     return log;
 }
