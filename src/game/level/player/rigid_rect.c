@@ -6,7 +6,6 @@
 #include "color.h"
 #include "game/level/boxes.h"
 #include "game/level/solid.h"
-#include "math/minmax.h"
 #include "rigid_rect.h"
 #include "system/error.h"
 #include "system/lt.h"
@@ -75,7 +74,8 @@ Rigid_rect *create_rigid_rect(Rect rect, Color color, const char *id)
         RETURN_LT(lt, NULL);
     }
 
-    const size_t len_id = min_size(MAX_ID_SIZE - 1, strlen(id));
+    const size_t _len = strlen(id);
+    const size_t len_id = (MAX_ID_SIZE-1) < _len ? (MAX_ID_SIZE-1) : _len;
     memcpy(rigid_rect->id, id, len_id);
     rigid_rect->id[len_id] = 0;
 
