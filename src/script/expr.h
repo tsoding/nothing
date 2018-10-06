@@ -42,7 +42,7 @@ struct Expr void_expr(void);
 
 void destroy_expr(struct Expr expr);
 void print_expr_as_sexpr(struct Expr expr);
-size_t expr_as_sexpr(struct Expr expr, char *output, size_t n);
+int expr_as_sexpr(struct Expr expr, char *output, size_t n);
 
 // TODO(#337): EvalResult does not belong to expr unit
 struct EvalResult

@@ -264,16 +264,29 @@ void destroy_atom(struct Atom *atom)
     free(atom);
 }
 
-static size_t atom_as_sexpr(struct Atom *atom, char *output, size_t n)
+static int atom_as_sexpr(struct Atom *atom, char *output, size_t n)
 {
     assert(atom);
     assert(output);
-    (void) n;
-    /* TODO: atom_as_sexpr is not implemented */
+
+    switch (atom->type) {
+    case ATOM_SYMBOL:
+        return snprintf(output, n, "%s", atom->sym);
+
+    case ATOM_NUMBER:
+        return snprintf(output, n, "%ld", atom->num);
+
+    case ATOM_STRING:
+        return snprintf(output, n, "\"%s\"", atom->str);
+
+    case ATOM_NATIVE:
+        return snprintf(output, n, "<native>");
+    }
+
     return 0;
 }
 
-static size_t cons_as_sexpr(struct Cons *cons, char *output, size_t n)
+static int cons_as_sexpr(struct Cons *cons, char *output, size_t n)
 {
     assert(cons);
     assert(output);
@@ -282,7 +295,7 @@ static size_t cons_as_sexpr(struct Cons *cons, char *output, size_t n)
     return 0;
 }
 
-size_t expr_as_sexpr(struct Expr expr, char *output, size_t n)
+int expr_as_sexpr(struct Expr expr, char *output, size_t n)
 {
     switch(expr.type) {
     case EXPR_ATOM:
