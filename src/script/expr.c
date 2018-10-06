@@ -263,3 +263,37 @@ void destroy_atom(struct Atom *atom)
 
     free(atom);
 }
+
+static size_t atom_as_sexpr(struct Atom *atom, char *output, size_t n)
+{
+    assert(atom);
+    assert(output);
+    (void) n;
+    /* TODO: atom_as_sexpr is not implemented */
+    return 0;
+}
+
+static size_t cons_as_sexpr(struct Cons *cons, char *output, size_t n)
+{
+    assert(cons);
+    assert(output);
+    (void) n;
+    /* TODO: cons_as_sexpr is not implemented */
+    return 0;
+}
+
+size_t expr_as_sexpr(struct Expr expr, char *output, size_t n)
+{
+    switch(expr.type) {
+    case EXPR_ATOM:
+        return atom_as_sexpr(expr.atom, output, n);
+
+    case EXPR_CONS:
+        return cons_as_sexpr(expr.cons, output, n);
+
+    case EXPR_VOID:
+        return 0;
+    }
+
+    return 0;
+}
