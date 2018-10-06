@@ -291,7 +291,7 @@ static int cons_as_sexpr(struct Cons *cons, char *output, size_t n)
     assert(cons);
     assert(output);
 
-    /* TODO: cons_as_sexpr does not handle encoding errors of snprintf */
+    /* TODO(#378): cons_as_sexpr does not handle encoding errors of snprintf */
     /* TODO: cons_as_sexpr does not support lists */
 
     int m = (int) n;
