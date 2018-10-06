@@ -74,10 +74,8 @@ Rigid_rect *create_rigid_rect(Rect rect, Color color, const char *id)
         RETURN_LT(lt, NULL);
     }
 
-    const size_t len_id = ({
-       const size_t _len = strlen(id);
-		 (MAX_ID_SIZE-1) < _len ? (MAX_ID_SIZE-1) : _len;
-    });
+    const size_t _len = strlen(id);
+    const size_t len_id = (MAX_ID_SIZE-1) < _len ? (MAX_ID_SIZE-1) : _len;
     memcpy(rigid_rect->id, id, len_id);
     rigid_rect->id[len_id] = 0;
 
