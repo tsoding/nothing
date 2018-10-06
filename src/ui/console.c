@@ -29,6 +29,8 @@
 #define CONSOLE_FOREGROUND (color(0.80f, 0.80f, 0.80f, CONSOLE_ALPHA))
 #define CONSOLE_ERROR (color(0.80f, 0.50f, 0.50f, CONSOLE_ALPHA))
 
+#define CONSOLE_EVAL_RESULT_SIZE 256
+
 struct Console
 {
     Lt *lt;
@@ -38,6 +40,7 @@ struct Console
     Log *log;
     Level *level;
     float a;
+    char *eval_result;
 };
 
 /* TODO(#354): Console does not allow to travel the history by pressing up and down */
@@ -124,6 +127,15 @@ Console *create_console(Level *level,
     console->level = level;
     console->a = 0;
 
+    console->eval_result = PUSH_LT(
+        lt,
+        malloc(sizeof(char) * CONSOLE_EVAL_RESULT_SIZE),
+        free);
+    if (console->eval_result == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    memset(console->eval_result, 0, sizeof(char) * CONSOLE_EVAL_RESULT_SIZE);
+
     return console;
 }
 
@@ -169,13 +181,27 @@ int console_handle_event(Console *console,
                 printf("\n");
             }
 
-            gc_collect(console->gc, console->scope.expr);
+            if (expr_as_sexpr(
+                    eval_result.expr,
+                    console->eval_result,
+                    CONSOLE_EVAL_RESULT_SIZE) < 0) {
+                return -1;
+            }
 
             if (log_push_line(console->log,
                               edit_field_as_text(console->edit_field),
                               CONSOLE_FOREGROUND) < 0) {
                 return -1;
             }
+
+            if (log_push_line(console->log,
+                              console->eval_result,
+                              CONSOLE_FOREGROUND) < 0) {
+                return -1;
+            }
+
+            gc_collect(console->gc, console->scope.expr);
+
             edit_field_clean(console->edit_field);
 
         } return 0;
