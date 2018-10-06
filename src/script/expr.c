@@ -290,9 +290,37 @@ static int cons_as_sexpr(struct Cons *cons, char *output, size_t n)
 {
     assert(cons);
     assert(output);
-    (void) n;
-    /* TODO: cons_as_sexpr is not implemented */
-    return 0;
+
+    /* TODO: cons_as_sexpr does not handle encoding errors of snprintf */
+    /* TODO: cons_as_sexpr does not support lists */
+
+    int m = (int) n;
+    int c = snprintf(output, n, "(");
+    if (m - c <= c) {
+        return c;
+    }
+
+    c += expr_as_sexpr(cons->car, output + c, (size_t) (m - c));
+    if (m - c <= 0) {
+        return c;
+    }
+
+    c += snprintf(output + c, (size_t) (m - c), " . ");
+    if (m - c <= 0) {
+        return c;
+    }
+
+    c += expr_as_sexpr(cons->cdr, output + c, (size_t) (m - c));
+    if (m - c <= 0) {
+        return c;
+    }
+
+    c += snprintf(output + c, (size_t) (m - c), ")");
+    if (m - c <= 0) {
+        return c;
+    }
+
+    return c;
 }
 
 int expr_as_sexpr(struct Expr expr, char *output, size_t n)
