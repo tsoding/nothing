@@ -152,8 +152,11 @@ static struct ParseResult parse_expr(Gc *gc, struct Token current_token)
     default: {}
     }
 
-    if (isdigit(*current_token.begin)) {
-        return parse_number(gc, current_token);
+    if (*current_token.begin == '-' || isdigit(*current_token.begin)) {
+        struct ParseResult result = parse_number(gc, current_token);
+        if (!result.is_error) {
+            return result;
+        }
     }
 
     return parse_symbol(gc, current_token);

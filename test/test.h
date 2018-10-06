@@ -76,8 +76,16 @@
     }
 
 #define ASSERT_TRUE(condition, message)                                 \
-    if (!condition) {                                                   \
+    if (!(condition)) {                                                 \
         fprintf(stderr, "\n%s:%d: ASSERT_TRUE: false\n",                \
+                __FILE__, __LINE__);                                    \
+        fprintf(stderr, "%s\n", message);                               \
+        return -1;                                                      \
+    }
+
+#define ASSERT_FALSE(condition, message)                                \
+    if (condition) {                                                    \
+        fprintf(stderr, "\n%s:%d: ASSERT_FALSE: false\n",               \
                 __FILE__, __LINE__);                                    \
         fprintf(stderr, "%s\n", message);                               \
         return -1;                                                      \

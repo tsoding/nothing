@@ -49,9 +49,25 @@ TEST(read_expr_from_file_test)
     return 0;
 }
 
+TEST(parse_negative_numbers_test)
+{
+    Gc *gc = create_gc();
+    struct ParseResult result = read_expr_from_string(gc, "-12345");
+
+    ASSERT_FALSE(result.is_error, "Parsing failed");
+    ASSERT_TRUE(result.expr.type == EXPR_ATOM, "Parsed expression is not an atom");
+    ASSERT_TRUE(result.expr.atom->type == ATOM_NUMBER, "Parsed expression is not a number");
+    ASSERT_LONGINTEQ(-12345L, result.expr.atom->num);
+
+    destroy_gc(gc);
+
+    return 0;
+}
+
 TEST_SUITE(parser_suite)
 {
     TEST_RUN(read_expr_from_file_test);
+    TEST_RUN(parse_negative_numbers_test);
 
     return 0;
 }
