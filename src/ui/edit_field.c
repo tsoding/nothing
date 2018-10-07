@@ -245,7 +245,16 @@ static void edit_field_insert_char(Edit_field *edit_field, char c)
 
 void edit_field_clean(Edit_field *edit_field)
 {
+    assert(edit_field);
+
     edit_field->cursor = 0;
     edit_field->buffer_size = 0;
     edit_field->buffer[0] = 0;
+}
+
+void edit_field_replace(Edit_field *edit_field, const char *text)
+{
+    assert(edit_field);
+    assert(text);
+    /* TODO: edit_field_replace is not implemented */
 }

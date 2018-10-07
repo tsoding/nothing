@@ -25,6 +25,7 @@ int edit_field_handle_event(Edit_field *edit_field,
 
 const char *edit_field_as_text(const Edit_field *edit_field);
 
+void edit_field_replace(Edit_field *edit_field, const char *text);
 void edit_field_clean(Edit_field *edit_field);
 
 #endif  // EDIT_FIELD_H_

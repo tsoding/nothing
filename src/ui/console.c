@@ -165,6 +165,7 @@ int console_handle_event(Console *console,
         case SDLK_RETURN: {
             const char *source_code = edit_field_as_text(console->edit_field);
 
+            /* TODO: console pushes empty strings to the history */
             if (history_push(console->history, source_code) < 0) {
                 return -1;
             }
@@ -208,6 +209,20 @@ int console_handle_event(Console *console,
 
             gc_collect(console->gc, console->scope.expr);
             edit_field_clean(console->edit_field);
+        } return 0;
+
+        case SDLK_UP: {
+            edit_field_replace(
+                console->edit_field,
+                history_current(console->history));
+            history_prev(console->history);
+        } return 0;
+
+        case SDLK_DOWN: {
+            edit_field_replace(
+                console->edit_field,
+                history_current(console->history));
+            history_next(console->history);
         } return 0;
         }
         break;
