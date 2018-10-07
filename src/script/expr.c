@@ -286,15 +286,17 @@ static int atom_as_sexpr(struct Atom *atom, char *output, size_t n)
     return 0;
 }
 
-static int cons_as_sexpr(struct Cons *cons, char *output, size_t n)
+static int cons_as_sexpr(struct Cons *head, char *output, size_t n)
 {
-    assert(cons);
+    assert(head);
     assert(output);
 
     /* TODO(#378): cons_as_sexpr does not handle encoding errors of snprintf */
-    /* TODO(#379): cons_as_sexpr does not support lists */
+
+    struct Cons *cons = head;
 
     int m = (int) n;
+
     int c = snprintf(output, n, "(");
     if (m - c <= c) {
         return c;
@@ -305,14 +307,32 @@ static int cons_as_sexpr(struct Cons *cons, char *output, size_t n)
         return c;
     }
 
-    c += snprintf(output + c, (size_t) (m - c), " . ");
-    if (m - c <= 0) {
-        return c;
+    while (cons->cdr.type == EXPR_CONS) {
+        cons = cons->cdr.cons;
+
+        c += snprintf(output + c, (size_t) (m - c), " ");
+        if (m - c <= 0) {
+            return c;
+        }
+
+        c += expr_as_sexpr(cons->car, output + c, (size_t) (m - c));
+        if (m - c <= 0) {
+            return c;
+        }
     }
 
-    c += expr_as_sexpr(cons->cdr, output + c, (size_t) (m - c));
-    if (m - c <= 0) {
-        return c;
+    if (cons->cdr.atom->type != ATOM_SYMBOL ||
+        strcmp("nil", cons->cdr.atom->sym) != 0) {
+
+        c += snprintf(output + c, (size_t) (m - c), " . ");
+        if (m - c <= 0) {
+            return c;
+        }
+
+        c += expr_as_sexpr(cons->cdr, output + c, (size_t) (m - c));
+        if (m - c <= 0) {
+            return c;
+        }
     }
 
     c += snprintf(output + c, (size_t) (m - c), ")");
