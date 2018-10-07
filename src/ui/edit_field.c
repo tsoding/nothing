@@ -256,5 +256,5 @@ void edit_field_replace(Edit_field *edit_field, const char *text)
 {
     assert(edit_field);
     assert(text);
-    /* TODO: edit_field_replace is not implemented */
+    /* TODO(#388): edit_field_replace is not implemented */
 }
