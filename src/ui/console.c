@@ -165,7 +165,7 @@ int console_handle_event(Console *console,
         case SDLK_RETURN: {
             const char *source_code = edit_field_as_text(console->edit_field);
 
-            /* TODO: console pushes empty strings to the history */
+            /* TODO(#387): console pushes empty strings to the history */
             if (history_push(console->history, source_code) < 0) {
                 return -1;
             }
