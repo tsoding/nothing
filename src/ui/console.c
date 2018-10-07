@@ -153,13 +153,15 @@ int console_handle_event(Console *console,
         switch(event->key.keysym.sym) {
         case SDLK_RETURN: {
             const char *source_code = edit_field_as_text(console->edit_field);
+
+            if (log_push_line(console->log, source_code, CONSOLE_FOREGROUND) < 0) {
+                return -1;
+            }
+
             struct ParseResult parse_result = read_expr_from_string(console->gc,
                                                                     source_code);
-            if (parse_result.is_error) {
-                if (log_push_line(console->log, source_code, CONSOLE_ERROR) < 0) {
-                    return -1;
-                }
 
+            if (parse_result.is_error) {
                 if (log_push_line(console->log, parse_result.error_message, CONSOLE_ERROR)) {
                     return -1;
                 }
@@ -174,13 +176,6 @@ int console_handle_event(Console *console,
                 &console->scope,
                 parse_result.expr);
 
-            if (eval_result.is_error) {
-                /* TODO(#360): Console doesn't report any eval errors visually */
-                printf("Error:\t");
-                print_expr_as_sexpr(eval_result.expr);
-                printf("\n");
-            }
-
             if (expr_as_sexpr(
                     eval_result.expr,
                     console->eval_result,
@@ -189,21 +184,15 @@ int console_handle_event(Console *console,
             }
 
             if (log_push_line(console->log,
-                              edit_field_as_text(console->edit_field),
-                              CONSOLE_FOREGROUND) < 0) {
-                return -1;
-            }
-
-            if (log_push_line(console->log,
                               console->eval_result,
-                              CONSOLE_FOREGROUND) < 0) {
+                              eval_result.is_error ?
+                              CONSOLE_ERROR :
+                              CONSOLE_FOREGROUND)) {
                 return -1;
             }
 
             gc_collect(console->gc, console->scope.expr);
-
             edit_field_clean(console->edit_field);
-
         } return 0;
         }
         break;
