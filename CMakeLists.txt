@@ -57,6 +57,7 @@ set(SOURCE_FILES
   src/ui/console.c
   src/ui/log.c
   src/str.c
+  src/ui/history.c
 )
 
 set(HEADER_FILES
@@ -103,6 +104,7 @@ set(HEADER_FILES
   src/ui/console.h
   src/ui/log.h
   src/str.h
+  src/ui/history.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
