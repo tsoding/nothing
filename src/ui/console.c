@@ -11,12 +11,14 @@
 #include "system/lt.h"
 #include "ui/console.h"
 #include "ui/edit_field.h"
+#include "ui/history.h"
 #include "ui/log.h"
 
 #define FONT_WIDTH_SCALE 3.0f
 #define FONT_HEIGHT_SCALE 3.0f
 
 #define LOG_CAPACITY 10
+#define HISTORY_CAPACITY 20
 #define PROMPT_HEIGHT (FONT_HEIGHT_SCALE * FONT_CHAR_HEIGHT)
 #define LOG_HEIGHT (FONT_HEIGHT_SCALE * FONT_CHAR_HEIGHT * LOG_CAPACITY)
 
@@ -39,6 +41,7 @@ struct Console
     Edit_field *edit_field;
     Log *log;
     Level *level;
+    History *history;
     float a;
     char *eval_result;
 };
@@ -136,6 +139,14 @@ Console *create_console(Level *level,
     }
     memset(console->eval_result, 0, sizeof(char) * CONSOLE_EVAL_RESULT_SIZE);
 
+    console->history = PUSH_LT(
+        lt,
+        create_history(HISTORY_CAPACITY),
+        destroy_history);
+    if (console->history == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     return console;
 }
 
@@ -153,6 +164,11 @@ int console_handle_event(Console *console,
         switch(event->key.keysym.sym) {
         case SDLK_RETURN: {
             const char *source_code = edit_field_as_text(console->edit_field);
+
+            /* TODO(#387): console pushes empty strings to the history */
+            if (history_push(console->history, source_code) < 0) {
+                return -1;
+            }
 
             if (log_push_line(console->log, source_code, CONSOLE_FOREGROUND) < 0) {
                 return -1;
@@ -193,6 +209,20 @@ int console_handle_event(Console *console,
 
             gc_collect(console->gc, console->scope.expr);
             edit_field_clean(console->edit_field);
+        } return 0;
+
+        case SDLK_UP: {
+            edit_field_replace(
+                console->edit_field,
+                history_current(console->history));
+            history_prev(console->history);
+        } return 0;
+
+        case SDLK_DOWN: {
+            edit_field_replace(
+                console->edit_field,
+                history_current(console->history));
+            history_next(console->history);
         } return 0;
         }
         break;
