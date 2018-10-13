@@ -224,8 +224,6 @@ void edit_field_replace(Edit_field *edit_field, const char *text)
 {
     assert(edit_field);
 
-    /* TODO(#391): what happens if you hold shift while replacing the text */
-
     edit_field_clean(edit_field);
 
     if (text == NULL) {
