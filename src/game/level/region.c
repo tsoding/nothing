@@ -55,8 +55,7 @@ Region *create_region(Rect rect, const char *script_src)
             parse_result.expr);
         if (eval_result.is_error) {
             fprintf(stderr, "Evaluation error: ");
-            /* TODO(#395): eval error is not printed on stderr */
-            print_expr_as_sexpr(eval_result.expr);
+            print_expr_as_sexpr(stderr, eval_result.expr);
             RETURN_LT(lt, NULL);
         }
 
