@@ -21,7 +21,7 @@ static struct EvalResult quit(void *param, Gc *gc, struct Scope *scope, struct E
 
 static void eval_line(Gc *gc, Scope *scope, const char *line)
 {
-    /* TODO: there is no way to disable REPL debug output */
+    /* TODO(#400): there is no way to disable REPL debug output */
     const char *read_iter = line;
     while (*read_iter != 0) {
         printf("Before parse:\t");
