@@ -22,7 +22,7 @@ static struct EvalResult quit(void *param, Gc *gc, struct Scope *scope, struct E
 static void eval_line(Gc *gc, Scope *scope, const char *line)
 {
     const char *read_iter = line;
-    while (read_iter != NULL) {
+    while (*read_iter != 0) {
         printf("Before parse:\t");
         gc_inspect(gc);
 
@@ -53,10 +53,7 @@ static void eval_line(Gc *gc, Scope *scope, const char *line)
         print_expr_as_sexpr(eval_result.expr);
         printf("\n");
 
-        if (*next_token(parse_result.end).begin == 0) {
-            return;
-        }
-        read_iter = parse_result.end;
+        read_iter = next_token(parse_result.end).begin;
     }
 }
 
