@@ -19,12 +19,53 @@ static struct EvalResult quit(void *param, Gc *gc, struct Scope *scope, struct E
     return eval_success(NIL(gc));
 }
 
-char buffer[REPL_BUFFER_MAX + 1];
+static void eval_line(Gc *gc, Scope *scope, const char *line)
+{
+    const char *read_iter = line;
+    while (read_iter != NULL) {
+        printf("Before parse:\t");
+        gc_inspect(gc);
+
+        struct ParseResult parse_result = read_expr_from_string(gc, read_iter);
+        if (parse_result.is_error) {
+            print_parse_error(stderr, line, parse_result);
+            return;
+        }
+        printf("After parse:\t");
+        gc_inspect(gc);
+
+        struct EvalResult eval_result = eval(gc, scope, parse_result.expr);
+        printf("After eval:\t");
+        gc_inspect(gc);
+
+        gc_collect(gc, CONS(gc, scope->expr, eval_result.expr));
+        printf("After collect:\t");
+        gc_inspect(gc);
+
+        printf("Scope:\t");
+        print_expr_as_sexpr(scope->expr);
+        printf("\n");
+
+        if (eval_result.is_error) {
+            printf("Error:\t");
+        }
+
+        print_expr_as_sexpr(eval_result.expr);
+        printf("\n");
+
+        if (*next_token(parse_result.end).begin == 0) {
+            return;
+        }
+        read_iter = parse_result.end;
+    }
+}
 
 int main(int argc, char *argv[])
 {
     (void) argc;
     (void) argv;
+
+    char buffer[REPL_BUFFER_MAX + 1];
 
     Gc *gc = create_gc();
     struct Scope scope = {
@@ -40,35 +81,7 @@ int main(int argc, char *argv[])
             return -1;
         }
 
-        printf("Before parse:\t");
-        gc_inspect(gc);
-
-        struct ParseResult parse_result = read_expr_from_string(gc, buffer);
-        if (parse_result.is_error) {
-            print_parse_error(stderr, buffer, parse_result);
-            continue;
-        }
-        printf("After parse:\t");
-        gc_inspect(gc);
-
-        struct EvalResult eval_result = eval(gc, &scope, parse_result.expr);
-        printf("After eval:\t");
-        gc_inspect(gc);
-
-        gc_collect(gc, CONS(gc, scope.expr, eval_result.expr));
-        printf("After collect:\t");
-        gc_inspect(gc);
-
-        printf("Scope:\t");
-        print_expr_as_sexpr(scope.expr);
-        printf("\n");
-
-        if (eval_result.is_error) {
-            printf("Error:\t");
-        }
-
-        print_expr_as_sexpr(eval_result.expr);
-        printf("\n");
+        eval_line(gc, &scope, buffer);
     }
 
     destroy_gc(gc);
