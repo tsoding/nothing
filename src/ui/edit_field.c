@@ -18,6 +18,7 @@ struct Edit_field
     const Sprite_font *font;
     Vec font_size;
     Color font_color;
+    /* TODO: shift does not work */
     bool shift_key;
 };
 
@@ -255,6 +256,17 @@ void edit_field_clean(Edit_field *edit_field)
 void edit_field_replace(Edit_field *edit_field, const char *text)
 {
     assert(edit_field);
-    assert(text);
-    /* TODO(#388): edit_field_replace is not implemented */
+
+    /* TODO: what happens if you hold shift while replacing the text */
+
+    edit_field_clean(edit_field);
+
+    if (text == NULL) {
+        return;
+    }
+
+    size_t n = strlen(text);
+    for (size_t i = 0; i < n; ++i) {
+        edit_field_insert_char(edit_field, text[i]);
+    }
 }
