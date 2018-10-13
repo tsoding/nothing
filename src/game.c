@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include "game.h"
-#include "game/debug_tree.h"
 #include "ui/edit_field.h"
 #include "game/level.h"
 #include "ui/console.h"
@@ -30,7 +29,6 @@ typedef struct Game {
     Sound_samples *sound_samples;
     Camera *camera;
     Sprite_font *font;
-    Debug_tree *debug_tree;
     Console *console;
     SDL_Renderer *renderer;
 } Game;
@@ -79,14 +77,6 @@ Game *create_game(const char *level_file_path,
         RETURN_LT(lt, NULL);
     }
 
-    game->debug_tree = PUSH_LT(
-        lt,
-        create_debug_tree(game->font),
-        destroy_debug_tree);
-    if (game->debug_tree == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
     game->camera = PUSH_LT(lt, create_camera(renderer, game->font), destroy_camera);
     if (game->camera == NULL) {
         RETURN_LT(lt, NULL);
@@ -130,10 +120,6 @@ int game_render(const Game *game)
     }
 
     if (level_render(game->level, game->camera) < 0) {
-        return -1;
-    }
-
-    if (debug_tree_render(game->debug_tree, game->renderer) < 0) {
         return -1;
     }
 
@@ -198,7 +184,6 @@ static int game_event_pause(Game *game, const SDL_Event *event)
         case SDLK_l:
             camera_toggle_debug_mode(game->camera);
             level_toggle_debug_mode(game->level);
-            debug_tree_toggle_enabled(game->debug_tree);
             break;
         }
         break;
@@ -256,7 +241,6 @@ static int game_event_running(Game *game, const SDL_Event *event)
         case SDLK_l:
             camera_toggle_debug_mode(game->camera);
             level_toggle_debug_mode(game->level);
-            debug_tree_toggle_enabled(game->debug_tree);
             break;
 
         case SDLK_BACKQUOTE:
