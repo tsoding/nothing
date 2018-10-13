@@ -93,6 +93,7 @@ struct Token next_token(const char *str)
     case '(':
     case ')':
     case '.':
+    case '\'':
         return token(str, str + 1);
 
     case '"': {
