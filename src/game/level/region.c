@@ -9,6 +9,7 @@
 #include "system/lt.h"
 #include "script/interpreter.h"
 
+/* TODO: region is not integrated with the level format */
 struct Region
 {
     Lt *lt;
@@ -75,10 +76,12 @@ void region_player_enter(Region *region, Player *player)
 {
     assert(region);
     assert(player);
+    /* TODO: region_player_enter is not implemented */
 }
 
 void region_player_leave(Region *region, Player *player)
 {
     assert(region);
     assert(player);
+    /* TODO: region_player_leave is not implemented */
 }
