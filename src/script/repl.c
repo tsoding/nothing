@@ -21,6 +21,7 @@ static struct EvalResult quit(void *param, Gc *gc, struct Scope *scope, struct E
 
 static void eval_line(Gc *gc, Scope *scope, const char *line)
 {
+    /* TODO: there is no way to disable REPL debug output */
     const char *read_iter = line;
     while (*read_iter != 0) {
         printf("Before parse:\t");
@@ -43,15 +44,18 @@ static void eval_line(Gc *gc, Scope *scope, const char *line)
         gc_inspect(gc);
 
         printf("Scope:\t");
-        print_expr_as_sexpr(scope->expr);
+        print_expr_as_sexpr(stdout, scope->expr);
         printf("\n");
 
         if (eval_result.is_error) {
-            printf("Error:\t");
+            fprintf(stderr, "Error:\t");
+            print_expr_as_sexpr(stderr, eval_result.expr);
+            fprintf(stderr, "\n");
+            continue;
         }
 
-        print_expr_as_sexpr(eval_result.expr);
-        printf("\n");
+        print_expr_as_sexpr(stderr, eval_result.expr);
+        fprintf(stdout, "\n");
 
         read_iter = next_token(parse_result.end).begin;
     }

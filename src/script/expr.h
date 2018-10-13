@@ -1,8 +1,9 @@
 #ifndef EXPR_H_
 #define EXPR_H_
 
-#include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef struct Gc Gc;
 typedef struct Scope Scope;
@@ -41,7 +42,7 @@ struct Expr cons_as_expr(struct Cons *cons);
 struct Expr void_expr(void);
 
 void destroy_expr(struct Expr expr);
-void print_expr_as_sexpr(struct Expr expr);
+void print_expr_as_sexpr(FILE *stream, struct Expr expr);
 int expr_as_sexpr(struct Expr expr, char *output, size_t n);
 
 // TODO(#337): EvalResult does not belong to expr unit
@@ -86,7 +87,7 @@ struct Atom *create_string_atom(Gc *gc, const char *str, const char *str_end);
 struct Atom *create_symbol_atom(Gc *gc, const char *sym, const char *sym_end);
 struct Atom *create_native_atom(Gc *gc, NativeFunction fun, void *param);
 void destroy_atom(struct Atom *atom);
-void print_atom_as_sexpr(struct Atom *atom);
+void print_atom_as_sexpr(FILE *stream, struct Atom *atom);
 
 struct Cons
 {
@@ -96,6 +97,6 @@ struct Cons
 
 struct Cons *create_cons(Gc *gc, struct Expr car, struct Expr cdr);
 void destroy_cons(struct Cons *cons);
-void print_cons_as_sexpr(struct Cons *cons);
+void print_cons_as_sexpr(FILE *stream, struct Cons *cons);
 
 #endif  // EXPR_H_

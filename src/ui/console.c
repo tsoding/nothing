@@ -58,13 +58,15 @@ static struct EvalResult rect_apply_force(void *param, Gc *gc, struct Scope *sco
     assert(scope);
     assert(param);
 
+    /* TODO: rect_apply_force doesn't sanitize it's input */
+
     Level *level = (Level*) param;
     const char *rect_id = CAR(args).atom->str;
     struct Expr vector_force_expr = CAR(CDR(args));
     const float force_x = (float) CAR(vector_force_expr).atom->num;
     const float force_y = (float) CDR(vector_force_expr).atom->num;
 
-    print_expr_as_sexpr(args); printf("\n");
+    print_expr_as_sexpr(stdout, args); printf("\n");
 
     Rigid_rect *rigid_rect = level_rigid_rect(level, rect_id);
     if (rigid_rect != NULL) {
