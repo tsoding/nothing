@@ -18,7 +18,6 @@ struct Edit_field
     const Sprite_font *font;
     Vec font_size;
     Color font_color;
-    /* TODO: shift does not work */
     bool shift_key;
 };
 
