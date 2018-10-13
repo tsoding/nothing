@@ -7,6 +7,7 @@
 #include <string.h>
 #include <inttypes.h>
 
+#include "script/builtins.h"
 #include "script/parser.h"
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
@@ -149,6 +150,17 @@ static struct ParseResult parse_expr(Gc *gc, struct Token current_token)
     case '(': return parse_list(gc, current_token);
     /* TODO(#292): parser does not support escaped string characters */
     case '"': return parse_string(gc, current_token);
+    case '\'': {
+        struct ParseResult result = parse_expr(gc, next_token(current_token.end));
+
+        if (result.is_error) {
+            return result;
+        }
+
+        result.expr = list(gc, 2, SYMBOL(gc, "quote"), result.expr);
+
+        return result;
+    } break;
     default: {}
     }
 
