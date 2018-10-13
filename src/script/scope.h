@@ -14,6 +14,8 @@ struct Scope
 //  ((x . 10)
 //   (name . "Alexey")))
 
+struct Scope create_scope(Gc *gc);
+
 struct Expr get_scope_value(const struct Scope *scope, struct Expr name);
 void set_scope_value(Gc *gc, struct Scope *scope, struct Expr name, struct Expr value);
 void push_scope_frame(Gc *gc, struct Scope *scope, struct Expr vars, struct Expr args);

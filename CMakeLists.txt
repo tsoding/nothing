@@ -58,6 +58,7 @@ set(SOURCE_FILES
   src/ui/log.c
   src/str.c
   src/ui/history.c
+  src/game/level/region.c
 )
 
 set(HEADER_FILES
@@ -105,6 +106,7 @@ set(HEADER_FILES
   src/ui/log.h
   src/str.h
   src/ui/history.h
+  src/game/level/region.h
 )
 
 add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
