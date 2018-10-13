@@ -58,7 +58,7 @@ static void eval_line(Gc *gc, Scope *scope, const char *line)
             fprintf(stderr, "Error:\t");
             print_expr_as_sexpr(stderr, eval_result.expr);
             fprintf(stderr, "\n");
-            continue;
+            return;
         }
 
         print_expr_as_sexpr(stderr, eval_result.expr);
