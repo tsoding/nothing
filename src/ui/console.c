@@ -228,7 +228,7 @@ int console_handle_event(Console *console,
         break;
     }
 
-    /* TODO: shift is not detected by edit_field anymore */
+    /* TODO(#390): shift is not detected by edit_field anymore */
     return edit_field_handle_event(console->edit_field, event);
 }
 
