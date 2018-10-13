@@ -35,6 +35,14 @@ static struct Expr set_scope_value_impl(Gc *gc, struct Expr scope, struct Expr n
     }
 }
 
+struct Scope create_scope(Gc *gc)
+{
+    struct Scope scope = {
+        .expr = CONS(gc, NIL(gc), NIL(gc))
+    };
+    return scope;
+}
+
 void set_scope_value(Gc *gc, struct Scope *scope, struct Expr name, struct Expr value)
 {
     scope->expr = set_scope_value_impl(gc, scope->expr, name, value);
