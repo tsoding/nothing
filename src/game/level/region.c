@@ -76,7 +76,7 @@ void region_player_enter(Region *region, Player *player)
 {
     assert(region);
     assert(player);
-    /* TODO: region_player_enter is not implemented */
+    /* TODO(#396): region_player_enter is not implemented */
 }
 
 void region_player_leave(Region *region, Player *player)
