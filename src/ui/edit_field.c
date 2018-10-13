@@ -18,7 +18,6 @@ struct Edit_field
     const Sprite_font *font;
     Vec font_size;
     Color font_color;
-    bool shift_key;
 };
 
 static void edit_field_left(Edit_field *edit_field);
@@ -26,21 +25,6 @@ static void edit_field_right(Edit_field *edit_field);
 static void edit_field_backspace(Edit_field *edit_field);
 static void edit_field_delete(Edit_field *edit_field);
 static void edit_field_insert_char(Edit_field *edit_field, char c);
-
-static char shift_char(char c)
-{
-    if (c == '9') {
-        return '(';
-    } else if (c == '0') {
-        return ')';
-    } else if (c == '=') {
-        return '+';
-    } else if (c == '\'') {
-        return '"';
-    }else {
-        return c;
-    }
-}
 
 Edit_field *create_edit_field(const Sprite_font *font,
                                 Vec font_size,
@@ -72,7 +56,6 @@ Edit_field *create_edit_field(const Sprite_font *font,
     edit_field->font = font;
     edit_field->font_size = font_size;
     edit_field->font_color = font_color;
-    edit_field->shift_key = false;
 
     edit_field->buffer[edit_field->buffer_size] = 0;
 
@@ -139,31 +122,20 @@ int edit_field_handle_event(Edit_field *edit_field,
             edit_field_backspace(edit_field);
             break;
 
-        case SDLK_RSHIFT:
-        case SDLK_LSHIFT:
-            edit_field->shift_key = true;
-            break;
-
         case SDLK_DELETE:
             edit_field_delete(edit_field);
-            break;
-
-        default: {
-            edit_field_insert_char(edit_field, (char) event->key.keysym.sym);
-        }
-        }
-        break;
-
-    case SDL_KEYUP:
-        switch (event->key.keysym.sym) {
-        case SDLK_RSHIFT:
-        case SDLK_LSHIFT:
-            edit_field->shift_key = false;
             break;
 
         default: {}
         }
         break;
+
+    case SDL_TEXTINPUT: {
+        size_t n = strlen(event->text.text);
+        for (size_t i = 0; i < n; ++i) {
+            edit_field_insert_char(edit_field, event->text.text[i]);
+        }
+    } break;
 
     default: {}
     }
@@ -227,10 +199,6 @@ static void edit_field_insert_char(Edit_field *edit_field, char c)
 {
     assert(edit_field);
 
-    if (edit_field->shift_key) {
-        c = shift_char(c);
-    }
-
     if (edit_field->buffer_size >= BUFFER_CAPACITY) {
         return;
     }
@@ -255,8 +223,6 @@ void edit_field_clean(Edit_field *edit_field)
 void edit_field_replace(Edit_field *edit_field, const char *text)
 {
     assert(edit_field);
-
-    /* TODO(#391): what happens if you hold shift while replacing the text */
 
     edit_field_clean(edit_field);
 

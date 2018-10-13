@@ -261,6 +261,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
 
         case SDLK_BACKQUOTE:
             game->state = GAME_STATE_CONSOLE;
+            /* TODO(#404): when console is enabled a backquote pressed event sneaks into edit_field a gets inserted */
             console_slide_down(game->console);
             break;
         }
