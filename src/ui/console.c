@@ -58,7 +58,7 @@ static struct EvalResult rect_apply_force(void *param, Gc *gc, struct Scope *sco
     assert(scope);
     assert(param);
 
-    /* TODO: rect_apply_force doesn't sanitize it's input */
+    /* TODO(#401): rect_apply_force doesn't sanitize it's input */
 
     Level *level = (Level*) param;
     const char *rect_id = CAR(args).atom->str;
