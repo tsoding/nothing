@@ -83,5 +83,5 @@ void region_player_leave(Region *region, Player *player)
 {
     assert(region);
     assert(player);
-    /* TODO: region_player_leave is not implemented */
+    /* TODO(#397): region_player_leave is not implemented */
 }
