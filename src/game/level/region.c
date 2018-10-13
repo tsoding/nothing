@@ -9,7 +9,7 @@
 #include "system/lt.h"
 #include "script/interpreter.h"
 
-/* TODO: region is not integrated with the level format */
+/* TODO(#394): region is not integrated with the level format */
 struct Region
 {
     Lt *lt;
