@@ -13,7 +13,7 @@ $ mkdir build
 $ cd build/
 $ cmake ..
 $ make
-$ ./nothing <level-file>
+$ ./nothing ../levels/level-01.txt
 $ ./nothing_test
 ```
 
