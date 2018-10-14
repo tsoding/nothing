@@ -44,6 +44,25 @@ All of the levels reside in the [./levels/] folder. Use
 5. Switch to the Game and reload level by pressing Q
 6. Go to 1
 
+### Objects Reference
+
+#### <rect/>
+
+| Regex of id  | Description                                                                                                       |
+|--------------|-------------------------------------------------------------------------------------------------------------------|
+| `player`     | Defines the **position** of the Player. **Size is ignored**.                                                      |
+| `rect.*`     | Defines the **size** and **position** of an impenetrable platform block                                           |
+| `box.*`      | Defines the **size** and **position** of a rigid box that obeys the physics of the game                           |
+| `region(.*)` | Defines the **size** and **position** of a region that hides the Goals. `\1` defines the id of the Goal to hide.  |
+| `goal(.*)`   | Defines the **position** of the goal. **Size is ignored**. `\1` defines the id of the region that hides the goal. |
+| `lava.*`     | Defines the **position** and **size** of a lava block.                                                            |
+| `background` | Defines the **color** of the background. **Position and size are ignored**.                                       |
+| `backrect.*` | Defines the **size** and **position** of a solid block in the background.                                         |
+
+#### <text/>
+
+- `id="label.*"`
+
 ## Build on Windows
 
 You need to install [conan][] and [Visual Studio 2017][visual-studio].
