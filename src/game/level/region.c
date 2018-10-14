@@ -62,6 +62,8 @@ Region *create_region(Rect rect, const char *script_src)
         script_src = next_token(parse_result.end).begin;
     }
 
+    /* TODO(#405): region does not check if the script provides on-enter and on-leave callbacks */
+
     return region;
 }
 
