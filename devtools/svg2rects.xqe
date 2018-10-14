@@ -1,7 +1,5 @@
 declare namespace svg ="http://www.w3.org/2000/svg";
 
-(: TODO(#255): svg2rects.xqe doesn't support labels :)
-
 let $rects := //svg:rect
 let $texts := //svg:text
 let $labels := for $text in $texts where matches($text/@id , "^label.*")
