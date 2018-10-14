@@ -17,6 +17,22 @@ $ ./nothing ../levels/level-01.txt
 $ ./nothing_test
 ```
 
+## Controls
+
+### Game
+
+| Key | Action             |
+|-----|--------------------|
+| `d` | Move to the right  |
+| `a` | Move to the left   |
+| `c` | Open debug console |
+
+### Console
+
+| Key   | Action       |
+|-------|--------------|
+| `ESC` | Exit console |
+
 ## Editing Levels
 
 Generally creating a level looks like:

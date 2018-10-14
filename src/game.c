@@ -267,8 +267,6 @@ static int game_event_console(Game *game, const SDL_Event *event)
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
         case SDLK_ESCAPE:
-        case SDLK_BACKQUOTE:
-        case SDLK_c:
             game->state = GAME_STATE_RUNNING;
             return 0;
 
