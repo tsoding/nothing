@@ -17,6 +17,33 @@ $ ./nothing <level-file>
 $ ./nothing_test
 ```
 
+## Editing Levels
+
+Generally creating a level looks like:
+
+```
+SVG File -> Custom Level File -> Game
+```
+
+To convert SVG to the level file install [xqilla] and run
+[svg2rects.xqe] script:
+
+```console
+$ xqilla ./devtools/svg2rects.xqe -i <svg-file> -o <level-file>
+```
+
+All of the levels reside in the [./levels/] folder. Use
+[./levels/Makefile] to automatically rebuild all levels.
+
+### Level Editing Workflow
+
+1. `$ inkscape ./levels/level.svg &`
+2. `$ ./build/nothing ./levels/level.txt &`
+3. `$ make watch`
+4. Edit Level in Inkscape and Save
+5. Switch to the Game and reload level by pressing Q
+6. Go to 1
+
 ## Build on Windows
 
 You need to install [conan][] and [Visual Studio 2017][visual-studio].
@@ -55,3 +82,7 @@ You can support my work via
 [conan]: https://www.conan.io/
 [conan-sdl2]: https://bintray.com/conan/conan-transit/SDL2%3Alasote/2.0.5%3Astable
 [visual-studio]: https://www.visualstudio.com/
+[xqilla]: http://xqilla.sourceforge.net/HomePage
+[svg2rects.xqe]: ./devtools/svg2rects.xqe
+[./levels/]: ./levels/
+[./levels/Makefile]: ./levels/Makefile
