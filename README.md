@@ -39,6 +39,7 @@ All of the levels reside in the [./levels/] folder. Use
 
 1. `$ inkscape ./levels/level.svg &`
 2. `$ ./build/nothing ./levels/level.txt &`
+3. `$ cd ./levels/`
 3. `$ make watch`
 4. Edit Level in Inkscape and Save
 5. Switch to the Game and reload level by pressing Q
