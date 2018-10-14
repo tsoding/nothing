@@ -17,6 +17,55 @@ $ ./nothing <level-file>
 $ ./nothing_test
 ```
 
+## Editing Levels
+
+Generally creating a level looks like:
+
+```
+SVG File -> Custom Level File -> Game
+```
+
+To convert SVG to the level file install [xqilla] and run
+[svg2rects.xqe] script:
+
+```console
+$ xqilla ./devtools/svg2rects.xqe -i <svg-file> -o <level-file>
+```
+
+All of the levels reside in the [./levels/] folder. Use
+[./levels/Makefile] to automatically rebuild all levels.
+
+### Level Editing Workflow
+
+1. `$ inkscape ./levels/level.svg &`
+2. `$ ./build/nothing ./levels/level.txt &`
+3. `$ cd ./levels/`
+4. `$ make watch`
+5. Edit Level in Inkscape and Save
+6. Switch to the Game and reload level by pressing Q
+7. Go to 5
+
+### Objects Reference
+
+#### SVG rect node
+
+| Regex of id  | Description                                                                                                       |
+|--------------|-------------------------------------------------------------------------------------------------------------------|
+| `player`     | Defines the **position** of the Player. **Size is ignored**.                                                      |
+| `rect.*`     | Defines the **size** and **position** of an impenetrable platform block                                           |
+| `box.*`      | Defines the **size** and **position** of a rigid box that obeys the physics of the game                           |
+| `region(.*)` | Defines the **size** and **position** of a region that hides the Goals. `\1` defines the id of the Goal to hide.  |
+| `goal(.*)`   | Defines the **position** of the goal. **Size is ignored**. `\1` defines the id of the region that hides the goal. |
+| `lava.*`     | Defines the **position** and **size** of a lava block.                                                            |
+| `background` | Defines the **color** of the background. **Position and size are ignored**.                                       |
+| `backrect.*` | Defines the **size** and **position** of a solid block in the background.                                         |
+
+#### SVG text node
+
+| Regex of id | Description                                                                |
+|-------------|----------------------------------------------------------------------------|
+| `label.*`   | Defines **position** and **text** of a in-game label. **Size is ignored**. |
+
 ## Build on Windows
 
 You need to install [conan][] and [Visual Studio 2017][visual-studio].
@@ -55,3 +104,7 @@ You can support my work via
 [conan]: https://www.conan.io/
 [conan-sdl2]: https://bintray.com/conan/conan-transit/SDL2%3Alasote/2.0.5%3Astable
 [visual-studio]: https://www.visualstudio.com/
+[xqilla]: http://xqilla.sourceforge.net/HomePage
+[svg2rects.xqe]: ./devtools/svg2rects.xqe
+[./levels/]: ./levels/
+[./levels/Makefile]: ./levels/Makefile
