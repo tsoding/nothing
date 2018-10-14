@@ -16,7 +16,7 @@ include_directories(src/)
 include_directories(${SDL2_INCLUDE_DIR})
 include_directories(${SDL2_MIXER_INCLUDE_DIR})
 
-set(SOURCE_FILES
+add_executable(nothing 
   src/color.c
   src/game.c
   src/game/camera.c
@@ -58,9 +58,6 @@ set(SOURCE_FILES
   src/str.c
   src/ui/history.c
   src/game/level/region.c
-)
-
-set(HEADER_FILES
   src/color.h
   src/game.h
   src/game/camera.h
@@ -106,7 +103,6 @@ set(HEADER_FILES
   src/game/level/region.h
 )
 
-add_executable(nothing ${SOURCE_FILES} ${HEADER_FILES})
 add_executable(repl
   src/script/builtins.c
   src/script/builtins.h
