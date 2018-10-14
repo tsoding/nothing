@@ -7,7 +7,8 @@ let $labels := for $text in $texts where matches($text/@id , "^label.*")
     $text/@x, " ",
     $text/@y, " ",
     replace($text/@style, ".*fill:#([0-9a-z]{6}).*", "$1"), "&#10;",
-    $text/svg:tspan/text()
+    (: TODO: svg2rects doesn't handle newlines in labels :)
+    string-join($text/svg:tspan/text(), " ")
   )
 let $player := for $rect in $rects where $rect/@id = "player"
   return concat (
