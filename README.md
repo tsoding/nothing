@@ -46,7 +46,7 @@ All of the levels reside in the [./levels/] folder. Use
 
 ### Objects Reference
 
-#### <rect/>
+#### SVG rect node
 
 | Regex of id  | Description                                                                                                       |
 |--------------|-------------------------------------------------------------------------------------------------------------------|
@@ -59,9 +59,11 @@ All of the levels reside in the [./levels/] folder. Use
 | `background` | Defines the **color** of the background. **Position and size are ignored**.                                       |
 | `backrect.*` | Defines the **size** and **position** of a solid block in the background.                                         |
 
-#### <text/>
+#### SVG text node
 
-- `id="label.*"`
+| Regex of id | Description                                                                |
+|-------------|----------------------------------------------------------------------------|
+| `label.*`   | Defines **position** and **text** of a in-game label. **Size is ignored**. |
 
 ## Build on Windows
 
