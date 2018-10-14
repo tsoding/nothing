@@ -21,17 +21,33 @@ $ ./nothing_test
 
 ### Game
 
-| Key | Action             |
-|-----|--------------------|
-| `d` | Move to the right  |
-| `a` | Move to the left   |
-| `c` | Open debug console |
+#### Keyboard
 
-### Console
+| Key     | Action                                                      |
+|---------|-------------------------------------------------------------|
+| `d`     | Move to the right                                           |
+| `a`     | Move to the left                                            |
+| `SPACE` | Jump                                                        |
+| `c`     | Open debug console                                          |
+| `r`     | Reload the current level including the Player's position    |
+| `q`     | Reload the current level preserving the Player's position   |
+| `p`     | Toggle game pause                                           |
+| `l`     | Toggle transparency on objects. Useful for debugging levels |
 
-| Key   | Action       |
-|-------|--------------|
-| `ESC` | Exit console |
+#### Gamepad
+
+| Button       | Action                 |
+|--------------|------------------------|
+| `Left Stick` | Movement of the Player |
+| `1`          | Jump                   |
+
+### Consolé
+
+| Key       | Action                   |
+|-----------|--------------------------|
+| `ESC`     | Exit console             |
+| `Enter`   | Evaluate the expression  |
+| `Up/Down` | Traverse console history |
 
 ## Editing Levels
 
