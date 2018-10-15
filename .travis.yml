@@ -8,9 +8,12 @@ addons:
       - gcc
       - libsdl2-dev
       - libsdl2-mixer-dev
+      - xqilla
 script:
   - mkdir build/
   - cd build/
   - cmake ..
-  - make
+  - make -k
   - ./nothing_test
+  - cd ../levels/
+  - make -k
