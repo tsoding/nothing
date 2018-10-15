@@ -16,4 +16,5 @@ script:
   - make -k
   - ./nothing_test
   - cd ../levels/
+  - make clean
   - make -k
