@@ -65,7 +65,11 @@ let $backplatforms := for $rect in $rects where matches($rect/@id, "^backrect.*"
     $rect/@height, " ",
     replace($rect/@style, ".*fill:#([0-9a-z]{6}).*", "$1")
   )
-return (
+return if (count($player) = 0) then (
+  error(QName('', 'ERROR'), 'Position of the Player is not defined. Create a rectangle with id "player"')
+) else if (count($background) = 0) then (
+  error(QName('', 'ERROR'), 'Color of the Background is not defined. Create a rectangle with id "background"')
+) else (
   $background,
   $player,
   count($platforms),
