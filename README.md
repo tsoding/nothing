@@ -5,10 +5,37 @@
 ![](https://i.imgur.com/7mECYKU.gif)
 ![](https://i.imgur.com/ABcJqB5.gif)
 
+## Dependencies
+
+- [gcc]
+- [cmake]
+- [libsdl2-dev]
+- [libsdl2-mixer-dev]
+- [xqilla]
+- [inotify-tools]
+
+### Ubuntu
+
+```console
+$ sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev xqilla inotify-tools
+```
+### NixOS
+
+For [NixOS] we have a development environment defined in [default.nix]
+with all of the required dependencies. You can enter the environment
+`nix-shell` command:
+
+```console
+$ nix-shell
+```
+
+### Windows
+
+See [Build on Windows][build-on-windows] section.
+
 ## Quick Start
 
 ```console
-$ nix-shell              # Only on NixOS
 $ mkdir build
 $ cd build/
 $ cmake ..
@@ -136,7 +163,15 @@ You can support my work via
 [conan]: https://www.conan.io/
 [conan-sdl2]: https://bintray.com/conan/conan-transit/SDL2%3Alasote/2.0.5%3Astable
 [visual-studio]: https://www.visualstudio.com/
-[xqilla]: http://xqilla.sourceforge.net/HomePage
 [svg2rects.xqe]: ./devtools/svg2rects.xqe
 [./levels/]: ./levels/
 [./levels/Makefile]: ./levels/Makefile
+[gcc]: https://gcc.gnu.org/
+[cmake]: https://cmake.org/
+[libsdl2-dev]: https://www.libsdl.org/
+[libsdl2-mixer-dev]: https://www.libsdl.org/projects/SDL_mixer/
+[xqilla]: http://xqilla.sourceforge.net/HomePage
+[NixOS]: https://nixos.org/
+[default.nix]: ./default.nix
+[build-on-windows]: #build-on-windows
+[inotify-tools]: https://github.com/rvoicilas/inotify-tools
