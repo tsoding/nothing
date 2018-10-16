@@ -270,7 +270,6 @@ int console_update(Console *console, float delta_time)
     assert(console);
 
     /* TODO(#366): console slide down animation doesn't have any easing */
-
     if (console->a < 1.0f) {
         console->a += 1.0f / SLIDE_DOWN_TIME * delta_time;
 
