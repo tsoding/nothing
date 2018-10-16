@@ -3,6 +3,7 @@
 #include "game/level/background.h"
 #include "math/rand.h"
 #include "math/rect.h"
+#include "system/error.h"
 #include "system/lt.h"
 
 #define BACKGROUND_CHUNK_COUNT 5
@@ -45,6 +46,18 @@ Background *create_background(Color base_color)
     return background;
 }
 
+Background *create_background_from_stream(FILE *stream)
+{
+    char color[7];
+    if (fscanf(stream, "%6s", color) == EOF) {
+        throw_error(ERROR_TYPE_LIBC);
+        return NULL;
+    }
+
+    return create_background(
+        color_from_hexstr(color));
+}
+
 void destroy_background(Background *background)
 {
     assert(background);
@@ -57,6 +70,12 @@ int background_render(const Background *background,
 {
     assert(background);
     assert(camera);
+
+    if (camera_clear_background(
+            camera,
+            background->base_color) < 0) {
+        return -1;
+    }
 
     const Rect view_port = camera_view_port(camera);
     const Vec position = vec(view_port.x, view_port.y);

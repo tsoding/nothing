@@ -25,7 +25,6 @@ struct Level
     Platforms *platforms;
     Goals *goals;
     Lava *lava;
-    Color background_color;
     Platforms *back_platforms;
     Background *background;
     Boxes *boxes;
@@ -52,13 +51,13 @@ Level *create_level_from_file(const char *file_name)
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
-
-    char color[7];
-    if (fscanf(level_file, "%6s", color) == EOF) {
-        throw_error(ERROR_TYPE_LIBC);
+    level->background = PUSH_LT(
+        lt,
+        create_background_from_stream(level_file),
+        destroy_background);
+    if (level->background == NULL) {
         RETURN_LT(lt, NULL);
     }
-    level->background_color = color_from_hexstr(color);
 
     level->player = PUSH_LT(lt, create_player_from_stream(level_file), destroy_player);
     if (level->player == NULL) {
@@ -95,11 +94,6 @@ Level *create_level_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
 
-    level->background = PUSH_LT(lt, create_background(level->background_color), destroy_background);
-    if (level->background == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
     level->physical_world = PUSH_LT(lt, create_physical_world(), destroy_physical_world);
     if (level->physical_world == NULL) {
         RETURN_LT(lt, NULL);
@@ -129,10 +123,6 @@ int level_render(const Level *level, Camera *camera)
     assert(level);
 
     player_focus_camera(level->player, camera);
-
-    if (camera_clear_background(camera, level->background_color) < 0) {
-        return -1;
-    }
 
     if (background_render(level->background, camera) < 0) {
         return -1;
@@ -248,20 +238,17 @@ int level_reload_preserve_player(Level *level, const char *file_name)
 
     /* TODO(#104): duplicate code in create_level_from_file and level_reload_preserve_player */
 
-
-
     FILE * const level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose_lt);
     if (level_file == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, -1);
     }
 
-    char color[7];
-    if (fscanf(level_file, "%6s", color) == EOF) {
-        throw_error(ERROR_TYPE_LIBC);
+    Background * const background = create_background_from_stream(level_file);
+    if (background == NULL) {
         RETURN_LT(lt, -1);
     }
-    level->background_color = color_from_hexstr(color);
+    level->background = RESET_LT(level->lt, level->background, background);
 
     Player * const skipped_player = create_player_from_stream(level_file);
     if (skipped_player == NULL) {

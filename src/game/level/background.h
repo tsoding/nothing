@@ -9,6 +9,7 @@
 typedef struct Background Background;
 
 Background *create_background(Color base_color);
+Background *create_background_from_stream(FILE *stream);
 void destroy_background(Background *background);
 
 int background_render(const Background *background,
