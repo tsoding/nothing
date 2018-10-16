@@ -9,7 +9,6 @@
 #include "math/mat3x3.h"
 #include "math/rect.h"
 
-// TODO(#215): replace Rigid_rect with Rigid_bodies
 
 typedef struct Rigid_rect Rigid_rect;
 typedef struct Boxes Boxes;
