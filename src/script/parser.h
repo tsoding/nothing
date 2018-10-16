@@ -21,7 +21,6 @@ struct ParseResult parse_success(struct Expr expr,
 struct ParseResult parse_failure(const char *error,
                                  const char *end);
 
-// TODO(#361): parser does not parse negative numbers
 struct ParseResult read_expr_from_string(Gc *gc, const char *str);
 struct ParseResult read_expr_from_file(Gc *gc, const char *filename);
 
