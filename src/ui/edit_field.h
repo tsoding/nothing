@@ -6,7 +6,6 @@
 #include "color.h"
 #include "math/point.h"
 
-// TODO(#344): it's impossible to type parens in the Edit_field
 
 typedef struct Edit_field Edit_field;
 typedef struct Sprite_font Sprite_font;
