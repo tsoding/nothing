@@ -163,7 +163,6 @@ int rigid_rect_update(Rigid_rect * rigid_rect,
 
     rigid_rect->touches_ground = 0;
 
-    /* TODO(#207): rigid_rect floating in lava is broken */
     rigid_rect->velocity = vec_sum(
         rigid_rect->velocity,
         vec_scala_mult(
