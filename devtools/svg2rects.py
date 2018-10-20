@@ -25,7 +25,7 @@ def save_background(svg_root, output_file):
                     for rect in svg_rects(svg_root)
                     if rect.attrib['id'] == 'background']
     color = color_from_style(background.attrib['style'])
-    output_file.write(f"{color}\n")
+    output_file.write("%s\n" % (color))
 
 def save_player(svg_root, output_file):
     [player] = [rect
@@ -34,7 +34,7 @@ def save_player(svg_root, output_file):
     color = color_from_style(player.attrib['style'])
     x = player.attrib['x']
     y = player.attrib['y']
-    output_file.write(f"{x} {y} {color}\n")
+    output_file.write("%s %s %s\n" % (x, y, color))
 
 
 def save_platforms(svg_root, output_file):
@@ -42,14 +42,14 @@ def save_platforms(svg_root, output_file):
                  for rect in svg_rects(svg_root)
                  if rect.attrib['id'].startswith("rect")]
 
-    output_file.write(f"{len(platforms)}\n")
+    output_file.write("%d\n" % (len(platforms)))
     for platform in platforms:
         x = platform.attrib['x']
         y = platform.attrib['y']
         w = platform.attrib['width']
         h = platform.attrib['height']
         color = color_from_style(platform.attrib['style'])
-        output_file.write(f"{x} {y} {w} {h} {color}\n")
+        output_file.write("%s %s %s %s %s\n" % (x, y, w, h, color))
 
 
 def save_goals(svg_root, output_file):
@@ -57,7 +57,7 @@ def save_goals(svg_root, output_file):
              for rect in svg_rects(svg_root)
              if rect.attrib['id'].startswith("goal")]
 
-    output_file.write(f"{len(goals)}\n")
+    output_file.write("%d\n" % (len(goals)))
 
     for goal in goals:
         goal_id = goal.attrib['id'][len('goal'):]
@@ -71,7 +71,7 @@ def save_goals(svg_root, output_file):
         region_w = region.attrib['width']
         region_h = region.attrib['height']
         color = color_from_style(goal.attrib['style'])
-        output_file.write(f"{x} {y} {region_x} {region_y} {region_w} {region_h} {color}\n")
+        output_file.write("%s %s %s %s %s %s %s\n" % (x, y, region_x, region_y, region_w, region_h, color))
 
 
 def save_lavas(svg_root, output_file):
@@ -79,7 +79,7 @@ def save_lavas(svg_root, output_file):
              for rect in svg_rects(svg_root)
              if rect.attrib['id'].startswith('lava')]
 
-    output_file.write(f"{len(lavas)}\n")
+    output_file.write("%d\n" % (len(lavas)))
 
     for lava in lavas:
         x = lava.attrib['x']
@@ -87,7 +87,7 @@ def save_lavas(svg_root, output_file):
         w = lava.attrib['width']
         h = lava.attrib['height']
         color = color_from_style(lava.attrib['style'])
-        output_file.write(f"{x} {y} {w} {h} {color}\n")
+        output_file.write("%s %s %s %s %s\n" % (x, y, w, h, color))
 
 
 def save_backplatforms(svg_root, output_file):
@@ -95,14 +95,14 @@ def save_backplatforms(svg_root, output_file):
                  for rect in svg_rects(svg_root)
                  if rect.attrib['id'].startswith("backrect")]
 
-    output_file.write(f"{len(platforms)}\n")
+    output_file.write("%d\n" % (len(platforms)))
     for platform in platforms:
         x = platform.attrib['x']
         y = platform.attrib['y']
         w = platform.attrib['width']
         h = platform.attrib['height']
         color = color_from_style(platform.attrib['style'])
-        output_file.write(f"{x} {y} {w} {h} {color}\n")
+        output_file.write("%s %s %s %s %s\n" % (x, y, w, h, color))
 
 
 def save_boxes(svg_root, output_file):
@@ -110,7 +110,7 @@ def save_boxes(svg_root, output_file):
              for rect in svg_rects(svg_root)
              if rect.attrib['id'].startswith("box")]
 
-    output_file.write(f"{len(boxes)}\n")
+    output_file.write("%d\n" % (len(boxes)))
     for box in boxes:
         box_id = box.attrib['id']
         x = box.attrib['x']
@@ -118,22 +118,23 @@ def save_boxes(svg_root, output_file):
         w = box.attrib['width']
         h = box.attrib['height']
         color = color_from_style(box.attrib['style'])
-        output_file.write(f"{box_id} {x} {y} {w} {h} {color}\n")
+        output_file.write("%s %s %s %s %s %s\n" % (box_id, x, y, w, h, color))
+
 
 def save_labels(svg_root, output_file):
     labels = [text
-             for text in svg_texts(svg_root)
-             if text.attrib['id'].startswith('label')]
+              for text in svg_texts(svg_root)
+              if text.attrib['id'].startswith('label')]
 
-    output_file.write(f"{len(labels)}\n")
+    output_file.write("%d\n" % (len(labels)))
     for label in labels:
         x = label.attrib['x']
         y = label.attrib['y']
         color = color_from_style(label.attrib['style'])
         # TODO(#432): svg2rects doesn't handle newlines in labels
         text = ' '.join([tspan.text for tspan in label])
-        output_file.write(f"{x} {y} {color}\n")
-        output_file.write(f"{text}\n")
+        output_file.write("%s %s %s\n" % (x, y, color))
+        output_file.write("%s\n" % (text))
 
 
 def svg2rects(svg_file_name, output_file_name):
