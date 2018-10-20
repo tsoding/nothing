@@ -8,10 +8,10 @@ with import <nixpkgs> {}; {
                         mesa
                         pkgconfig
                         cmake
-                        xqilla
                         valgrind
                         racket
                         inotifyTools
+                        python3
                       ];
         LD_LIBRARY_PATH="${mesa}/lib";
     };

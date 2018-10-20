@@ -4,7 +4,7 @@ TXTS=$(SVGS:.svg=.txt)
 all: $(TXTS)
 
 %.txt: %.svg
-	xqilla ../devtools/svg2rects.xqe -i $< -o $@
+	python3 ../devtools/svg2rects.py $< $@
 
 .PHONY: clean watch
 

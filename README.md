@@ -7,6 +7,8 @@
 
 ## Dependencies
 
+<!-- TODO: README deps are outdated -->
+
 - [gcc]
 - [cmake]
 - [libsdl2-dev]
