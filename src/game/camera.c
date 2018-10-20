@@ -196,6 +196,29 @@ int camera_render_text(Camera *camera,
     return 0;
 }
 
+int camera_render_debug_text(Camera *camera,
+                             const char *text,
+                             Vec position)
+{
+    assert(camera);
+    assert(text);
+
+    if (!camera->debug_mode) {
+        return 0;
+    }
+
+    if (camera_render_text(
+            camera,
+            text,
+            vec(2.0f, 2.0f),
+            color(0.0f, 0.0f, 0.0f, 1.0f),
+            position) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
 int camera_clear_background(Camera *camera,
                             Color color)
 {
