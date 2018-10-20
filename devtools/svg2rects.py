@@ -4,13 +4,15 @@ import xml.etree.ElementTree as ET
 import sys
 import re
 
-RECT_TAG_NAME='{http://www.w3.org/2000/svg}rect'
-TEXT_TAG_NAME='{http://www.w3.org/2000/svg}text'
+
+RECT_TAG_NAME = '{http://www.w3.org/2000/svg}rect'
+TEXT_TAG_NAME = '{http://www.w3.org/2000/svg}text'
 
 
 def color_from_style(style):
     m = re.match(".*fill:#([0-9a-z]{6}).*", style)
-    return m[1]
+    return m.group(1)
+
 
 def svg_rects(svg_root):
     return [rect for rect in svg_root.iter(RECT_TAG_NAME)]
@@ -26,6 +28,7 @@ def save_background(svg_root, output_file):
                     if rect.attrib['id'] == 'background']
     color = color_from_style(background.attrib['style'])
     output_file.write("%s\n" % (color))
+
 
 def save_player(svg_root, output_file):
     [player] = [rect
@@ -64,14 +67,11 @@ def save_goals(svg_root, output_file):
         [region] = [rect
                     for rect in svg_rects(svg_root)
                     if rect.attrib['id'] == 'region' + goal_id]
-        x = goal.attrib['x']
-        y = goal.attrib['y']
-        region_x = region.attrib['x']
-        region_y = region.attrib['y']
-        region_w = region.attrib['width']
-        region_h = region.attrib['height']
-        color = color_from_style(goal.attrib['style'])
-        output_file.write("%s %s %s %s %s %s %s\n" % (x, y, region_x, region_y, region_w, region_h, color))
+        record = (goal.attrib['x'], goal.attrib['y'],
+                  region.attrib['x'], region.attrib['y'],
+                  region.attrib['width'], region.attrib['height'],
+                  color_from_style(goal.attrib['style']))
+        output_file.write("%s %s %s %s %s %s %s\n" % record)
 
 
 def save_lavas(svg_root, output_file):
