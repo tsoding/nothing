@@ -38,6 +38,10 @@ int camera_render_text(Camera *camera,
                        Color color,
                        Vec position);
 
+int camera_render_debug_text(Camera *camera,
+                             const char *text,
+                             Vec position);
+
 void camera_center_at(Camera *camera, Point position);
 
 void camera_toggle_debug_mode(Camera *camera);
