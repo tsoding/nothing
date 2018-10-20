@@ -1,6 +1,8 @@
 dist: trusty
 language: c
 addons:
+  sources:
+    - deadsnakes
   apt:
     packages:
       - cmake
