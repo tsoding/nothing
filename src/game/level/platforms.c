@@ -133,7 +133,7 @@ Solid_ref platforms_as_solid(Platforms *platforms)
     return ref;
 }
 
-/* TODO: platforms do not render their ids in debug mode */
+/* TODO(#450): platforms do not render their ids in debug mode */
 int platforms_render(const Platforms *platforms,
                      Camera *camera)
 {
