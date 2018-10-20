@@ -11,16 +11,17 @@
 
 - [gcc]
 - [cmake]
+- [python3]
 - [libsdl2-dev]
 - [libsdl2-mixer-dev]
-- [xqilla]
 - [inotify-tools]
 
 ### Ubuntu
 
 ```console
-$ sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev xqilla inotify-tools
+$ sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev python3 inotify-tools
 ```
+
 ### NixOS
 
 For [NixOS] we have a development environment defined in [default.nix]
@@ -86,11 +87,10 @@ Generally creating a level looks like:
 SVG File -> Custom Level File -> Game
 ```
 
-To convert SVG to the level file install [xqilla] and run
-[svg2rects.xqe] script:
+To convert SVG to the level file and run [svg2rects.py] script:
 
 ```console
-$ xqilla ./devtools/svg2rects.xqe -i <svg-file> -o <level-file>
+$ python3 ./devtools/svg2rects.py -i <svg-file> -o <level-file>
 ```
 
 All of the levels reside in the [./levels/] folder. Use
@@ -165,14 +165,14 @@ You can support my work via
 [conan]: https://www.conan.io/
 [conan-sdl2]: https://bintray.com/conan/conan-transit/SDL2%3Alasote/2.0.5%3Astable
 [visual-studio]: https://www.visualstudio.com/
-[svg2rects.xqe]: ./devtools/svg2rects.xqe
+[svg2rects.py]: ./devtools/svg2rects.py
 [./levels/]: ./levels/
 [./levels/Makefile]: ./levels/Makefile
 [gcc]: https://gcc.gnu.org/
 [cmake]: https://cmake.org/
 [libsdl2-dev]: https://www.libsdl.org/
 [libsdl2-mixer-dev]: https://www.libsdl.org/projects/SDL_mixer/
-[xqilla]: http://xqilla.sourceforge.net/HomePage
+[python3]: https://www.python.org/
 [NixOS]: https://nixos.org/
 [default.nix]: ./default.nix
 [build-on-windows]: #build-on-windows
