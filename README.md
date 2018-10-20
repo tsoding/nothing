@@ -7,8 +7,6 @@
 
 ## Dependencies
 
-<!-- TODO: README deps are outdated -->
-
 - [gcc]
 - [cmake]
 - [python3]
