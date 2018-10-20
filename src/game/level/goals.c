@@ -125,7 +125,7 @@ static int goals_render_core(const Goals *goals,
         goals->colors[goal_index]);
 }
 
-/* TODO: goals do not render their ids in debug mode */
+/* TODO(#448): goals do not render their ids in debug mode */
 int goals_render(const Goals *goals,
                  Camera *camera)
 {
