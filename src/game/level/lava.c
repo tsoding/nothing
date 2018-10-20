@@ -62,6 +62,7 @@ void destroy_lava(Lava *lava)
     RETURN_LT0(lava->lt);
 }
 
+/* TODO: lava does not render its id in debug mode */
 int lava_render(const Lava *lava,
                 Camera *camera)
 {
