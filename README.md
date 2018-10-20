@@ -26,7 +26,7 @@ $ sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev python3 inotify-t
 
 For [NixOS] we have a development environment defined in [default.nix]
 with all of the required dependencies. You can enter the environment
-`nix-shell` command:
+with `nix-shell` command:
 
 ```console
 $ nix-shell
