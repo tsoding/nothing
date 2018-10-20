@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <assert.h>
 #include <math.h>
+#include <stdbool.h>
 
 #include "camera.h"
 #include "sdl/renderer.h"
@@ -10,8 +11,8 @@
 #define RATIO_Y 9.0f
 
 struct Camera {
-    int debug_mode;
-    int blackwhite_mode;
+    bool debug_mode;
+    bool blackwhite_mode;
     Point position;
     SDL_Renderer *renderer;
     Sprite_font *font;
@@ -20,11 +21,11 @@ struct Camera {
 static Vec effective_ratio(const SDL_Rect *view_port);
 static Vec effective_scale(const SDL_Rect *view_port);
 static Vec camera_point(const Camera *camera,
-                          const SDL_Rect *view_port,
-                          const Vec p);
+                        const SDL_Rect *view_port,
+                        const Vec p);
 static Rect camera_rect(const Camera *camera,
-                          const SDL_Rect *view_port,
-                          const Rect rect);
+                        const SDL_Rect *view_port,
+                        const Rect rect);
 static Triangle camera_triangle(const Camera *camera,
                                   const SDL_Rect *view_port,
                                   const Triangle t);
@@ -54,7 +55,6 @@ void destroy_camera(Camera *camera)
 
     free(camera);
 }
-
 
 int camera_fill_rect(Camera *camera,
                      Rect rect,
