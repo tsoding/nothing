@@ -5,10 +5,12 @@
 #include "goals.h"
 #include "math/pi.h"
 #include "math/triangle.h"
+#include "str.h"
 #include "system/error.h"
 #include "system/lt.h"
 
 #define GOAL_RADIUS 10.0f
+#define MAX_ID_SIZE 36
 
 static int goals_is_goal_hidden(const Goals *goals, size_t i);
 
@@ -20,11 +22,12 @@ typedef enum Cue_state {
 
 struct Goals {
     Lt *lt;
+    char **ids;
     Point *points;
     Rect *regions;
     Color *colors;
     Cue_state *cue_states;
-    size_t goals_count;
+    size_t count;
     Rect player_hitbox;
     float angle;
 };
@@ -44,39 +47,56 @@ Goals *create_goals_from_stream(FILE *stream)
         RETURN_LT(lt, NULL);
     }
 
-    goals->goals_count = 0;
-    if (fscanf(stream, "%lu", &goals->goals_count) == EOF) {
+    goals->count = 0;
+    if (fscanf(stream, "%lu", &goals->count) == EOF) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
-    goals->points = PUSH_LT(lt, malloc(sizeof(Point) * goals->goals_count), free);
+    goals->ids = PUSH_LT(
+        lt,
+        malloc(sizeof(char*) * goals->count),
+        free);
+    if (goals->ids == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+    for (size_t i = 0; i < goals->count; ++i) {
+        goals->ids[i] = PUSH_LT(lt, malloc(sizeof(char) * MAX_ID_SIZE), free);
+        if (goals->ids[i] == NULL) {
+            throw_error(ERROR_TYPE_LIBC);
+            RETURN_LT(lt, NULL);
+        }
+    }
+
+    goals->points = PUSH_LT(lt, malloc(sizeof(Point) * goals->count), free);
     if (goals->points == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
-    goals->regions = PUSH_LT(lt, malloc(sizeof(Rect) * goals->goals_count), free);
+    goals->regions = PUSH_LT(lt, malloc(sizeof(Rect) * goals->count), free);
     if (goals->regions == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
-    goals->colors = PUSH_LT(lt, malloc(sizeof(Color) * goals->goals_count), free);
+    goals->colors = PUSH_LT(lt, malloc(sizeof(Color) * goals->count), free);
     if (goals->colors == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
-    goals->cue_states = PUSH_LT(lt, malloc(sizeof(int) * goals->goals_count), free);
+    goals->cue_states = PUSH_LT(lt, malloc(sizeof(int) * goals->count), free);
     if (goals->cue_states == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
     char color[7];
-    for (size_t i = 0; i < goals->goals_count; ++i) {
-        if (fscanf(stream, "%f%f%f%f%f%f%6s",
+    for (size_t i = 0; i < goals->count; ++i) {
+        if (fscanf(stream, "%" STRINGIFY(MAX_ID_SIZE) "s%f%f%f%f%f%f%6s",
+                   goals->ids[i],
                    &goals->points[i].x,
                    &goals->points[i].y,
                    &goals->regions[i].x,
@@ -114,15 +134,26 @@ static int goals_render_core(const Goals *goals,
         goals->points[goal_index],
         vec(0.0f, sinf(goals->angle) * 10.0f));
 
-    return camera_fill_triangle(
-        camera,
-        triangle_mat3x3_product(
-            equilateral_triangle(),
-            mat3x3_product2(
-                trans_mat(position.x, position.y),
-                rot_mat(PI * -0.5f + goals->angle),
-                scale_mat(GOAL_RADIUS))),
-        goals->colors[goal_index]);
+    if (camera_fill_triangle(
+            camera,
+            triangle_mat3x3_product(
+                equilateral_triangle(),
+                mat3x3_product2(
+                    trans_mat(position.x, position.y),
+                    rot_mat(PI * -0.5f + goals->angle),
+                    scale_mat(GOAL_RADIUS))),
+            goals->colors[goal_index]) < 0) {
+        return -1;
+    }
+
+    if (camera_render_debug_text(
+            camera,
+            goals->ids[goal_index],
+            position) < 0) {
+        return -1;
+    }
+
+    return 0;
 }
 
 /* TODO(#448): goals do not render their ids in debug mode */
@@ -132,7 +163,7 @@ int goals_render(const Goals *goals,
     assert(goals);
     assert(camera);
 
-    for (size_t i = 0; i < goals->goals_count; ++i) {
+    for (size_t i = 0; i < goals->count; ++i) {
         if (!goals_is_goal_hidden(goals, i)) {
             if (goals_render_core(goals, i, camera) < 0) {
                 return -1;
@@ -161,7 +192,7 @@ void goals_hide(Goals *goals,
 int goals_sound(Goals *goals,
                 Sound_samples *sound_samples)
 {
-    for (size_t i = 0; i < goals->goals_count; ++i) {
+    for (size_t i = 0; i < goals->count; ++i) {
         switch (goals->cue_states[i]) {
         case CUE_STATE_HIT_NOTHING:
             sound_samples_play_sound(sound_samples, 0, 0);
@@ -178,7 +209,7 @@ int goals_sound(Goals *goals,
 void goals_cue(Goals *goals,
                const Camera *camera)
 {
-    for (size_t i = 0; i < goals->goals_count; ++i) {
+    for (size_t i = 0; i < goals->count; ++i) {
         switch (goals->cue_states[i]) {
         case CUE_STATE_VIRGIN:
             if (goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, goals->points[i])) {
@@ -204,7 +235,7 @@ void goals_checkpoint(const Goals *goals,
     assert(goals);
     assert(player);
 
-    for (size_t i = 0; i < goals->goals_count; ++i) {
+    for (size_t i = 0; i < goals->count; ++i) {
         if (goals->cue_states[i] == CUE_STATE_HIT_NOTHING) {
             player_checkpoint(player, goals->points[i]);
         }

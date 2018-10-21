@@ -67,11 +67,11 @@ def save_goals(svg_root, output_file):
         [region] = [rect
                     for rect in svg_rects(svg_root)
                     if rect.attrib['id'] == 'region' + goal_id]
-        record = (goal.attrib['x'], goal.attrib['y'],
+        record = (goal.attrib['id'], goal.attrib['x'], goal.attrib['y'],
                   region.attrib['x'], region.attrib['y'],
                   region.attrib['width'], region.attrib['height'],
                   color_from_style(goal.attrib['style']))
-        output_file.write("%s %s %s %s %s %s %s\n" % record)
+        output_file.write("%s %s %s %s %s %s %s %s\n" % record)
 
 
 def save_lavas(svg_root, output_file):
