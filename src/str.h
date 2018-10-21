@@ -10,4 +10,6 @@ char *string_append(char *prefix,
                     const char *suffix);
 char *trim_endline(char *s);
 
+char *read_lines(FILE *file, size_t n);
+
 #endif  // STR_H_

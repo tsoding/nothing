@@ -1,4 +1,6 @@
+#include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <assert.h>
 
@@ -48,4 +50,14 @@ char *string_append(char *prefix, const char *suffix)
 
     prefix = realloc(prefix, strlen(prefix) + strlen(suffix) + 1);
     return strcat(prefix, suffix);
+}
+
+char *read_lines(FILE *file, size_t n)
+{
+    assert(file);
+    (void) n;
+
+    /* TODO: read_lines is not implemented */
+
+    return NULL;
 }

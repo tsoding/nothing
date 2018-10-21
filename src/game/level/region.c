@@ -3,11 +3,12 @@
 #include "player.h"
 #include "region.h"
 #include "script/gc.h"
+#include "script/interpreter.h"
 #include "script/parser.h"
 #include "script/scope.h"
+#include "str.h"
 #include "system/error.h"
 #include "system/lt.h"
-#include "script/interpreter.h"
 
 /* TODO(#394): region is not integrated with the level format */
 struct Region
@@ -63,6 +64,40 @@ Region *create_region(Rect rect, const char *script_src)
     }
 
     /* TODO(#405): region does not check if the script provides on-enter and on-leave callbacks */
+
+    return region;
+}
+
+Region *create_region_from_stream(FILE *stream)
+{
+    assert(stream);
+
+    Rect rect;
+
+    if (fscanf(stream, "%f%f%f%f\n",
+               &rect.x, &rect.y,
+               &rect.w, &rect.h) < 0) {
+        throw_error(ERROR_TYPE_LIBC);
+        return NULL;
+    }
+
+    size_t n;
+    if (fscanf(stream, "%lu\n", &n) < 0) {
+        throw_error(ERROR_TYPE_LIBC);
+        return NULL;
+    }
+
+    char *script = read_lines(stream, n);
+    if (script == NULL) {
+        return NULL;
+    }
+
+    Region *region = create_region(rect, script);
+    if (region == NULL) {
+        return NULL;
+    }
+
+    free(script);
 
     return region;
 }
