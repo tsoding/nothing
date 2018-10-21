@@ -7,12 +7,11 @@
 #include "game/level/boxes.h"
 #include "game/level/solid.h"
 #include "rigid_rect.h"
+#include "str.h"
 #include "system/error.h"
 #include "system/lt.h"
 
 #define MAX_ID_SIZE 36
-#define STRINGIFY(x) STRINGIFY2(x)
-#define STRINGIFY2(x) #x
 
 struct Rigid_rect {
     Lt *lt;
