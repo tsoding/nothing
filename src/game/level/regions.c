@@ -2,106 +2,94 @@
 
 #include "player.h"
 #include "regions.h"
+#include "script.h"
 #include "script/gc.h"
 #include "script/interpreter.h"
 #include "script/parser.h"
 #include "script/scope.h"
 #include "str.h"
 #include "system/error.h"
-#include "system/lt.h"
 #include "system/line_stream.h"
+#include "system/lt.h"
 
 /* TODO(#394): regions is not integrated with the level format */
 struct Regions
 {
     Lt *lt;
-    Rect rect;
-    Gc *gc;
-    struct Scope scope;
+    size_t count;
+    Rect *rects;
+    Script **scripts;
 };
 
-Regions *create_regions(Rect rect, const char *script_src)
+Regions *create_regions_from_line_stream(LineStream *line_stream)
 {
-    assert(script_src);
+    assert(line_stream);
 
     Lt *lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
 
-    Regions *regions = PUSH_LT(lt, malloc(sizeof(Regions)), free);
-    if (regions != NULL) {
+    Regions *regions = PUSH_LT(
+        lt,
+        malloc(sizeof(Regions)),
+        free);
+    if (regions == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     regions->lt = lt;
-    regions->rect = rect;
 
-    regions->gc = PUSH_LT(lt, create_gc(), destroy_gc);
-    if (regions->gc == NULL) {
+    if(sscanf(
+           line_stream_next(line_stream),
+           "%lu",
+           &regions->count) < 0) {
+        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
-    regions->scope = create_scope(regions->gc);
+    regions->rects = PUSH_LT(
+        lt,
+        malloc(sizeof(Rect) * regions->count),
+        free);
+    if (regions->rects == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
 
-    while (*script_src != 0) {
-        struct ParseResult parse_result = read_expr_from_string(regions->gc, script_src);
-        if (parse_result.is_error) {
-            fprintf(stderr, "Parsing error: %s\n", parse_result.error_message);
+    regions->scripts = PUSH_LT(
+        lt,
+        malloc(sizeof(Script*) * regions->count),
+        free);
+    if (regions->scripts == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
+    printf("Amount of regions: %lu\n", regions->count);
+
+    for (size_t i = 0; i < regions->count; ++i) {
+        if (sscanf(
+                line_stream_next(line_stream),
+                "%f%f%f%f",
+                &regions->rects[i].x,
+                &regions->rects[i].y,
+                &regions->rects[i].w,
+                &regions->rects[i].h) < 0) {
+            throw_error(ERROR_TYPE_LIBC);
             RETURN_LT(lt, NULL);
         }
 
-        struct EvalResult eval_result = eval(
-            regions->gc,
-            &regions->scope,
-            parse_result.expr);
-        if (eval_result.is_error) {
-            fprintf(stderr, "Evaluation error: ");
-            print_expr_as_sexpr(stderr, eval_result.expr);
+        regions->scripts[i] = PUSH_LT(
+            lt,
+            create_script_from_line_stream(line_stream),
+            destroy_script);
+        if (regions->scripts[i] == NULL) {
             RETURN_LT(lt, NULL);
         }
-
-        script_src = next_token(parse_result.end).begin;
     }
 
-    /* TODO(#405): regions does not check if the script provides on-enter and on-leave callbacks */
-
-    return regions;
-}
-
-Regions *create_regions_from_stream(LineStream *line_stream)
-{
-    assert(line_stream);
-
-    Rect rect;
-
-    if (sscanf(
-            line_stream_next(line_stream),
-            "%f%f%f%f",
-            &rect.x, &rect.y,
-            &rect.w, &rect.h) < 0) {
-        throw_error(ERROR_TYPE_LIBC);
-        return NULL;
-    }
-
-    size_t n;
-    if (sscanf(
-            line_stream_next(line_stream),
-            "%lu\n",
-            &n) < 0) {
-        throw_error(ERROR_TYPE_LIBC);
-        return NULL;
-    }
-
-    /* TODO: script is not read */
-    char *script = NULL;
-
-    Regions *regions = create_regions(rect, script);
-    if (regions == NULL) {
-        return NULL;
-    }
-
-    free(script);
+    /* TODO: create_regions_from_line_stream doesn't check if the scripts contain proper callbacks */
 
     return regions;
 }

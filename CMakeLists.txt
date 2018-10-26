@@ -103,6 +103,8 @@ add_executable(nothing
   src/game/level/regions.h
   src/system/line_stream.h
   src/system/line_stream.c
+  src/game/level/script.h
+  src/game/level/script.c
 )
 
 add_executable(repl
