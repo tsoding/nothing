@@ -12,7 +12,6 @@
 #include "system/line_stream.h"
 #include "system/lt.h"
 
-/* TODO(#394): regions is not integrated with the level format */
 struct Regions
 {
     Lt *lt;
