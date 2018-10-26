@@ -4,6 +4,7 @@
 #include "game/level/labels.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "str.h"
 
 #define LABEL_TEXT_MAX_LENGTH 64
 
@@ -17,21 +18,6 @@ struct Labels
     float *states;
     int *visible;
 };
-
-static char *trim_endline(char *s)
-{
-    const size_t n = strlen(s);
-
-    if (n == 0) {
-        return s;
-    }
-
-    if (s[n - 1] == '\n') {
-        s[n - 1] = '\0';
-    }
-
-    return s;
-}
 
 Labels *create_labels_from_stream(FILE *stream)
 {

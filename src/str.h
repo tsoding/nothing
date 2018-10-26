@@ -6,5 +6,6 @@
 
 char *string_duplicate(const char *str,
                        const char *str_end);
+char *trim_endline(char *s);
 
 #endif  // STR_H_

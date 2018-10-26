@@ -21,3 +21,18 @@ char *string_duplicate(const char *str,
 
     return dup_str;
 }
+
+char *trim_endline(char *s)
+{
+    const size_t n = strlen(s);
+
+    if (n == 0) {
+        return s;
+    }
+
+    if (s[n - 1] == '\n') {
+        s[n - 1] = '\0';
+    }
+
+    return s;
+}
