@@ -9,6 +9,7 @@
 #include "math/rect.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/line_stream.h"
 
 #define LAVA_BOINGNESS 2500.0f
 
@@ -18,9 +19,9 @@ struct Lava {
     Wavy_rect **rects;
 };
 
-Lava *create_lava_from_stream(FILE *stream)
+Lava *create_lava_from_line_stream(LineStream *line_stream)
 {
-    assert(stream);
+    assert(line_stream);
 
     Lt *lt = create_lt();
     if (lt == NULL) {
@@ -33,7 +34,10 @@ Lava *create_lava_from_stream(FILE *stream)
         RETURN_LT(lt, NULL);
     }
 
-    if (fscanf(stream, "%lu", &lava->rects_count) < 0) {
+    if (sscanf(
+            line_stream_next(line_stream),
+            "%lu",
+            &lava->rects_count) < 0) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
@@ -45,7 +49,7 @@ Lava *create_lava_from_stream(FILE *stream)
     }
 
     for (size_t i = 0; i < lava->rects_count; ++i) {
-        lava->rects[i] = PUSH_LT(lt, create_wavy_rect_from_stream(stream), destroy_wavy_rect);
+        lava->rects[i] = PUSH_LT(lt, create_wavy_rect_from_line_stream(line_stream), destroy_wavy_rect);
         if (lava->rects[i] == NULL) {
             RETURN_LT(lt, NULL);
         }

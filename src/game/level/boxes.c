@@ -6,6 +6,7 @@
 #include "game/level/player/rigid_rect.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/line_stream.h"
 
 struct Boxes
 {
@@ -14,9 +15,9 @@ struct Boxes
     Rigid_rect **bodies;
 };
 
-Boxes *create_boxes_from_stream(FILE *stream)
+Boxes *create_boxes_from_line_stream(LineStream *line_stream)
 {
-    assert(stream);
+    assert(line_stream);
 
     Lt *lt = create_lt();
 
@@ -30,7 +31,10 @@ Boxes *create_boxes_from_stream(FILE *stream)
         RETURN_LT(lt, NULL);
     }
 
-    if (fscanf(stream, "%lu", &boxes->count) == EOF) {
+    if (sscanf(
+            line_stream_next(line_stream),
+            "%lu",
+            &boxes->count) == EOF) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
@@ -44,7 +48,7 @@ Boxes *create_boxes_from_stream(FILE *stream)
     for (size_t i = 0; i < boxes->count; ++i) {
         boxes->bodies[i] = PUSH_LT(
             lt,
-            create_rigid_rect_from_stream(stream),
+            create_rigid_rect_from_line_stream(line_stream),
             destroy_rigid_rect);
         if (boxes->bodies[i] == NULL) {
             RETURN_LT(lt, NULL);

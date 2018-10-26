@@ -13,8 +13,11 @@
 #include "game/level/platforms.h"
 #include "game/level/player.h"
 #include "system/error.h"
+#include "system/line_stream.h"
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
+
+#define LEVEL_LINE_MAX_LENGTH 512
 
 struct Level
 {
@@ -46,50 +49,77 @@ Level *create_level_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
 
-    FILE *level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose_lt);
-    if (level_file == NULL) {
+    LineStream *level_stream = PUSH_LT(
+        lt,
+        create_line_stream(
+            file_name,
+            "r",
+            LEVEL_LINE_MAX_LENGTH),
+        destroy_line_stream);
+    if (level_stream == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     level->background = PUSH_LT(
         lt,
-        create_background_from_stream(level_file),
+        create_background_from_line_stream(level_stream),
         destroy_background);
     if (level->background == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    level->player = PUSH_LT(lt, create_player_from_stream(level_file), destroy_player);
+    level->player = PUSH_LT(
+        lt,
+        create_player_from_line_stream(level_stream),
+        destroy_player);
     if (level->player == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    level->platforms = PUSH_LT(lt, create_platforms_from_stream(level_file), destroy_platforms);
+    level->platforms = PUSH_LT(
+        lt,
+        create_platforms_from_line_stream(level_stream),
+        destroy_platforms);
     if (level->platforms == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    level->goals = PUSH_LT(lt, create_goals_from_stream(level_file), destroy_goals);
+    level->goals = PUSH_LT(
+        lt,
+        create_goals_from_line_stream(level_stream),
+        destroy_goals);
     if (level->goals == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    level->lava = PUSH_LT(lt, create_lava_from_stream(level_file), destroy_lava);
+    level->lava = PUSH_LT(
+        lt,
+        create_lava_from_line_stream(level_stream),
+        destroy_lava);
     if (level->lava == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    level->back_platforms = PUSH_LT(lt, create_platforms_from_stream(level_file), destroy_platforms);
+    level->back_platforms = PUSH_LT(
+        lt,
+        create_platforms_from_line_stream(level_stream),
+        destroy_platforms);
     if (level->back_platforms == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    level->boxes = PUSH_LT(lt, create_boxes_from_stream(level_file), destroy_boxes);
+    level->boxes = PUSH_LT(
+        lt,
+        create_boxes_from_line_stream(level_stream),
+        destroy_boxes);
     if (level->boxes == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    level->labels = PUSH_LT(lt, create_labels_from_stream(level_file), destroy_labels);
+    level->labels = PUSH_LT(
+        lt,
+        create_labels_from_line_stream(level_stream),
+        destroy_labels);
     if (level->labels == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -107,7 +137,7 @@ Level *create_level_from_file(const char *file_name)
 
     level->lt = lt;
 
-    fclose(RELEASE_LT(lt, level_file));
+    destroy_line_stream(RELEASE_LT(lt, level_stream));
 
     return level;
 }
@@ -238,55 +268,61 @@ int level_reload_preserve_player(Level *level, const char *file_name)
 
     /* TODO(#104): duplicate code in create_level_from_file and level_reload_preserve_player */
 
-    FILE * const level_file = PUSH_LT(lt, fopen(file_name, "r"), fclose_lt);
-    if (level_file == NULL) {
+    LineStream * const level_stream = PUSH_LT(
+        lt,
+        create_line_stream(
+            file_name,
+            "r",
+            LEVEL_LINE_MAX_LENGTH),
+        destroy_line_stream);
+    if (level_stream == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, -1);
     }
 
-    Background * const background = create_background_from_stream(level_file);
+    Background * const background = create_background_from_line_stream(level_stream);
     if (background == NULL) {
         RETURN_LT(lt, -1);
     }
     level->background = RESET_LT(level->lt, level->background, background);
 
-    Player * const skipped_player = create_player_from_stream(level_file);
+    Player * const skipped_player = create_player_from_line_stream(level_stream);
     if (skipped_player == NULL) {
         RETURN_LT(lt, -1);
     }
     destroy_player(skipped_player);
 
-    Platforms * const platforms = create_platforms_from_stream(level_file);
+    Platforms * const platforms = create_platforms_from_line_stream(level_stream);
     if (platforms == NULL) {
         RETURN_LT(lt, -1);
     }
     level->platforms = RESET_LT(level->lt, level->platforms, platforms);
 
-    Goals * const goals = create_goals_from_stream(level_file);
+    Goals * const goals = create_goals_from_line_stream(level_stream);
     if (goals == NULL) {
         RETURN_LT(lt, -1);
     }
     level->goals = RESET_LT(level->lt, level->goals, goals);
 
-    Lava * const lava = create_lava_from_stream(level_file);
+    Lava * const lava = create_lava_from_line_stream(level_stream);
     if (lava == NULL) {
         RETURN_LT(lt, -1);
     }
     level->lava = RESET_LT(level->lt, level->lava, lava);
 
-    Platforms * const back_platforms = create_platforms_from_stream(level_file);
+    Platforms * const back_platforms = create_platforms_from_line_stream(level_stream);
     if (back_platforms == NULL) {
         RETURN_LT(lt, -1);
     }
     level->back_platforms = RESET_LT(level->lt, level->back_platforms, back_platforms);
 
-    Boxes * const boxes = create_boxes_from_stream(level_file);
+    Boxes * const boxes = create_boxes_from_line_stream(level_stream);
     if (boxes == NULL) {
         RETURN_LT(lt, -1);
     }
     level->boxes = RESET_LT(level->lt, level->boxes, boxes);
 
-    Labels * const labels = create_labels_from_stream(level_file);
+    Labels * const labels = create_labels_from_line_stream(level_stream);
     if (labels == NULL) {
         RETURN_LT(lt, -1);
     }

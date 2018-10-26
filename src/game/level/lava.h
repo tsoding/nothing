@@ -8,8 +8,9 @@
 
 typedef struct Lava Lava;
 typedef struct Rigid_rect Rigid_rect;
+typedef struct LineStream LineStream;
 
-Lava *create_lava_from_stream(FILE *stream);
+Lava *create_lava_from_line_stream(LineStream *line_stream);
 void destroy_lava(Lava *lava);
 
 int lava_render(const Lava *lava,

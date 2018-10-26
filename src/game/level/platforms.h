@@ -8,9 +8,9 @@
 #include "solid.h"
 
 typedef struct Platforms Platforms;
+typedef struct LineStream LineStream;
 
-Platforms *create_platforms_from_stream(FILE *stream);
-Platforms *create_platforms_from_file(const char *filename);
+Platforms *create_platforms_from_line_stream(LineStream *line_stream);
 void destroy_platforms(Platforms *platforms);
 
 Solid_ref platforms_as_solid(Platforms *platforms);

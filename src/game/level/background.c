@@ -5,6 +5,7 @@
 #include "math/rect.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/line_stream.h"
 
 #define BACKGROUND_CHUNK_COUNT 5
 #define BACKGROUND_CHUNK_WIDTH 250.0f
@@ -46,16 +47,15 @@ Background *create_background(Color base_color)
     return background;
 }
 
-Background *create_background_from_stream(FILE *stream)
+Background *create_background_from_line_stream(LineStream *line_stream)
 {
     char color[7];
-    if (fscanf(stream, "%6s", color) == EOF) {
+    if (sscanf(line_stream_next(line_stream), "%6s", color) == EOF) {
         throw_error(ERROR_TYPE_LIBC);
         return NULL;
     }
 
-    return create_background(
-        color_from_hexstr(color));
+    return create_background(color_from_hexstr(color));
 }
 
 void destroy_background(Background *background)
