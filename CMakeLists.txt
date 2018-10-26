@@ -57,7 +57,7 @@ add_executable(nothing
   src/ui/log.c
   src/str.c
   src/ui/history.c
-  src/game/level/region.c
+  src/game/level/regions.c
   src/color.h
   src/game.h
   src/game/camera.h
@@ -100,7 +100,7 @@ add_executable(nothing
   src/ui/log.h
   src/str.h
   src/ui/history.h
-  src/game/level/region.h
+  src/game/level/regions.h
   src/system/line_stream.h
   src/system/line_stream.c
 )

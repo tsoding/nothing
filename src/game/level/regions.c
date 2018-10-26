@@ -1,7 +1,7 @@
 #include <assert.h>
 
 #include "player.h"
-#include "region.h"
+#include "regions.h"
 #include "script/gc.h"
 #include "script/interpreter.h"
 #include "script/parser.h"
@@ -11,8 +11,8 @@
 #include "system/lt.h"
 #include "system/line_stream.h"
 
-/* TODO(#394): region is not integrated with the level format */
-struct Region
+/* TODO(#394): regions is not integrated with the level format */
+struct Regions
 {
     Lt *lt;
     Rect rect;
@@ -20,7 +20,7 @@ struct Region
     struct Scope scope;
 };
 
-Region *create_region(Rect rect, const char *script_src)
+Regions *create_regions(Rect rect, const char *script_src)
 {
     assert(script_src);
 
@@ -29,31 +29,31 @@ Region *create_region(Rect rect, const char *script_src)
         return NULL;
     }
 
-    Region *region = PUSH_LT(lt, malloc(sizeof(Region)), free);
-    if (region != NULL) {
+    Regions *regions = PUSH_LT(lt, malloc(sizeof(Regions)), free);
+    if (regions != NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
-    region->lt = lt;
-    region->rect = rect;
+    regions->lt = lt;
+    regions->rect = rect;
 
-    region->gc = PUSH_LT(lt, create_gc(), destroy_gc);
-    if (region->gc == NULL) {
+    regions->gc = PUSH_LT(lt, create_gc(), destroy_gc);
+    if (regions->gc == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    region->scope = create_scope(region->gc);
+    regions->scope = create_scope(regions->gc);
 
     while (*script_src != 0) {
-        struct ParseResult parse_result = read_expr_from_string(region->gc, script_src);
+        struct ParseResult parse_result = read_expr_from_string(regions->gc, script_src);
         if (parse_result.is_error) {
             fprintf(stderr, "Parsing error: %s\n", parse_result.error_message);
             RETURN_LT(lt, NULL);
         }
 
         struct EvalResult eval_result = eval(
-            region->gc,
-            &region->scope,
+            regions->gc,
+            &regions->scope,
             parse_result.expr);
         if (eval_result.is_error) {
             fprintf(stderr, "Evaluation error: ");
@@ -64,12 +64,12 @@ Region *create_region(Rect rect, const char *script_src)
         script_src = next_token(parse_result.end).begin;
     }
 
-    /* TODO(#405): region does not check if the script provides on-enter and on-leave callbacks */
+    /* TODO(#405): regions does not check if the script provides on-enter and on-leave callbacks */
 
-    return region;
+    return regions;
 }
 
-Region *create_region_from_stream(LineStream *line_stream)
+Regions *create_regions_from_stream(LineStream *line_stream)
 {
     assert(line_stream);
 
@@ -96,32 +96,32 @@ Region *create_region_from_stream(LineStream *line_stream)
     /* TODO: script is not read */
     char *script = NULL;
 
-    Region *region = create_region(rect, script);
-    if (region == NULL) {
+    Regions *regions = create_regions(rect, script);
+    if (regions == NULL) {
         return NULL;
     }
 
     free(script);
 
-    return region;
+    return regions;
 }
 
-void destroy_region(Region *region)
+void destroy_regions(Regions *regions)
 {
-    assert(region);
-    RETURN_LT0(region->lt);
+    assert(regions);
+    RETURN_LT0(regions->lt);
 }
 
-void region_player_enter(Region *region, Player *player)
+void regions_player_enter(Regions *regions, Player *player)
 {
-    assert(region);
+    assert(regions);
     assert(player);
-    /* TODO(#396): region_player_enter is not implemented */
+    /* TODO(#396): regions_player_enter is not implemented */
 }
 
-void region_player_leave(Region *region, Player *player)
+void regions_player_leave(Regions *regions, Player *player)
 {
-    assert(region);
+    assert(regions);
     assert(player);
-    /* TODO(#397): region_player_leave is not implemented */
+    /* TODO(#397): regions_player_leave is not implemented */
 }
