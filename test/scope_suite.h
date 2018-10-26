@@ -2,8 +2,8 @@
 #define SCOPE_SUITE_H_
 
 #include "test.h"
-#include "script/scope.h"
-#include "script/expr.h"
+#include "ebisp/scope.h"
+#include "ebisp/expr.h"
 
 TEST(set_scope_value_test)
 {

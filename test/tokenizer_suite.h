@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "test.h"
-#include "script/tokenizer.h"
+#include "ebisp/tokenizer.h"
 
 TEST(tokenizer_number_list_test)
 {

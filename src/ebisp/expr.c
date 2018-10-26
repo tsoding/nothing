@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "script/expr.h"
-#include "script/gc.h"
+#include "ebisp/expr.h"
+#include "ebisp/gc.h"
 #include "str.h"
 
 struct Expr atom_as_expr(struct Atom *atom)
