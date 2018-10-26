@@ -9,6 +9,7 @@
 #include "str.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/line_stream.h"
 
 /* TODO(#394): region is not integrated with the level format */
 struct Region
@@ -68,29 +69,32 @@ Region *create_region(Rect rect, const char *script_src)
     return region;
 }
 
-Region *create_region_from_stream(FILE *stream)
+Region *create_region_from_stream(LineStream *line_stream)
 {
-    assert(stream);
+    assert(line_stream);
 
     Rect rect;
 
-    if (fscanf(stream, "%f%f%f%f\n",
-               &rect.x, &rect.y,
-               &rect.w, &rect.h) < 0) {
+    if (sscanf(
+            line_stream_next(line_stream),
+            "%f%f%f%f",
+            &rect.x, &rect.y,
+            &rect.w, &rect.h) < 0) {
         throw_error(ERROR_TYPE_LIBC);
         return NULL;
     }
 
     size_t n;
-    if (fscanf(stream, "%lu\n", &n) < 0) {
+    if (sscanf(
+            line_stream_next(line_stream),
+            "%lu\n",
+            &n) < 0) {
         throw_error(ERROR_TYPE_LIBC);
         return NULL;
     }
 
-    char *script = read_lines(stream, n);
-    if (script == NULL) {
-        return NULL;
-    }
+    /* TODO: script is not read */
+    char *script = NULL;
 
     Region *region = create_region(rect, script);
     if (region == NULL) {
