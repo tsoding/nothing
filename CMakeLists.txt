@@ -101,6 +101,8 @@ add_executable(nothing
   src/str.h
   src/ui/history.h
   src/game/level/region.h
+  src/system/line_stream.h
+  src/system/line_stream.c
 )
 
 add_executable(repl
