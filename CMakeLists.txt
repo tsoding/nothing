@@ -42,12 +42,12 @@ add_executable(nothing
   src/math/rand.c
   src/math/rect.c
   src/math/triangle.c
-  src/script/expr.c
-  src/script/interpreter.c
-  src/script/parser.c
-  src/script/tokenizer.c
-  src/script/gc.c
-  src/script/scope.c
+  src/ebisp/expr.c
+  src/ebisp/interpreter.c
+  src/ebisp/parser.c
+  src/ebisp/tokenizer.c
+  src/ebisp/gc.c
+  src/ebisp/scope.c
   src/sdl/renderer.c
   src/system/error.c
   src/system/lt.c
@@ -83,14 +83,14 @@ add_executable(nothing
   src/math/rand.h
   src/math/rect.h
   src/math/triangle.h
-  src/script/builtins.c
-  src/script/builtins.h
-  src/script/expr.h
-  src/script/gc.h
-  src/script/scope.h
-  src/script/interpreter.h
-  src/script/parser.h
-  src/script/tokenizer.h
+  src/ebisp/builtins.c
+  src/ebisp/builtins.h
+  src/ebisp/expr.h
+  src/ebisp/gc.h
+  src/ebisp/scope.h
+  src/ebisp/interpreter.h
+  src/ebisp/parser.h
+  src/ebisp/tokenizer.h
   src/sdl/renderer.h
   src/system/error.h
   src/system/lt.h
@@ -108,19 +108,19 @@ add_executable(nothing
 )
 
 add_executable(repl
-  src/script/builtins.c
-  src/script/builtins.h
-  src/script/expr.c
-  src/script/expr.h
-  src/script/interpreter.c
-  src/script/interpreter.h
-  src/script/parser.c
-  src/script/parser.h
-  src/script/scope.c
-  src/script/scope.h
-  src/script/tokenizer.c
-  src/script/tokenizer.h
-  src/script/repl.c
+  src/ebisp/builtins.c
+  src/ebisp/builtins.h
+  src/ebisp/expr.c
+  src/ebisp/expr.h
+  src/ebisp/interpreter.c
+  src/ebisp/interpreter.h
+  src/ebisp/parser.c
+  src/ebisp/parser.h
+  src/ebisp/scope.c
+  src/ebisp/scope.h
+  src/ebisp/tokenizer.c
+  src/ebisp/tokenizer.h
+  src/ebisp/repl.c
   src/system/lt.c
   src/system/lt.h
   src/system/lt/lt_adapters.c
@@ -129,26 +129,26 @@ add_executable(repl
   src/system/lt/lt_slot.h
   src/system/error.c
   src/system/error.h
-  src/script/gc.h
-  src/script/gc.c
+  src/ebisp/gc.h
+  src/ebisp/gc.c
   src/str.h
   src/str.c
   )
 add_executable(nothing_test
-  src/script/builtins.c
-  src/script/builtins.h
-  src/script/expr.c
-  src/script/expr.h
-  src/script/interpreter.c
-  src/script/interpreter.h
-  src/script/parser.c
-  src/script/parser.h
-  src/script/scope.c
-  src/script/scope.h
-  src/script/tokenizer.c
-  src/script/tokenizer.h
-  src/script/gc.h
-  src/script/gc.c
+  src/ebisp/builtins.c
+  src/ebisp/builtins.h
+  src/ebisp/expr.c
+  src/ebisp/expr.h
+  src/ebisp/interpreter.c
+  src/ebisp/interpreter.h
+  src/ebisp/parser.c
+  src/ebisp/parser.h
+  src/ebisp/scope.c
+  src/ebisp/scope.h
+  src/ebisp/tokenizer.c
+  src/ebisp/tokenizer.h
+  src/ebisp/gc.h
+  src/ebisp/gc.c
   src/system/error.c
   src/system/error.h
   src/system/lt.c

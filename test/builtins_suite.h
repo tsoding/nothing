@@ -2,7 +2,7 @@
 #define BUILTINS_SUITE_H_
 
 #include "test.h"
-#include "script/gc.h"
+#include "ebisp/gc.h"
 
 TEST(lambda_p_test)
 {

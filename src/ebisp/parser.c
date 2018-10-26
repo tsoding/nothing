@@ -7,8 +7,8 @@
 #include <string.h>
 #include <inttypes.h>
 
-#include "script/builtins.h"
-#include "script/parser.h"
+#include "ebisp/builtins.h"
+#include "ebisp/parser.h"
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
 

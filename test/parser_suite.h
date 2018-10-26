@@ -2,8 +2,8 @@
 #define PARSER_SUITE_H_
 
 #include "test.h"
-#include "script/parser.h"
-#include "script/gc.h"
+#include "ebisp/parser.h"
+#include "ebisp/gc.h"
 
 TEST(read_expr_from_file_test)
 {
