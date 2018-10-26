@@ -137,6 +137,25 @@ def save_labels(svg_root, output_file):
         output_file.write("%s\n" % (text))
 
 
+def save_scripts(svg_root, output_file):
+    scripts = [rect
+               for rect in svg_rects(svg_root)
+               if rect.attrib['id'].startswith('script')]
+
+    output_file.write("%d\n" % (len(scripts)))
+    for script in scripts:
+        x = script.attrib['x']
+        y = script.attrib['y']
+        w = script.attrib['width']
+        h = script.attrib['height']
+        output_file.write("%s %s %s %s\n" % (x, y, w, h))
+        [title] = [child for child in script]
+        with open(title.text, 'r') as script_file:
+            script_lines = script_file.read().splitlines()
+            output_file.write("%d\n" % (len(script_lines)))
+            for script_line in script_lines:
+                output_file.write("%s\n" % script_line)
+
 def svg2rects(svg_file_name, output_file_name):
     svg_tree = ET.parse(svg_file_name)
     svg_root = svg_tree.getroot()
@@ -150,6 +169,7 @@ def svg2rects(svg_file_name, output_file_name):
         save_backplatforms(svg_root, output_file)
         save_boxes(svg_root, output_file)
         save_labels(svg_root, output_file)
+        save_scripts(svg_root, output_file)
 
 def usage():
     print("Usage: svg2rects.py <svg-file-name> <output-file-name>")

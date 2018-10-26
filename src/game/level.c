@@ -12,6 +12,7 @@
 #include "game/level/physical_world.h"
 #include "game/level/platforms.h"
 #include "game/level/player.h"
+#include "game/level/regions.h"
 #include "system/error.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
@@ -32,6 +33,7 @@ struct Level
     Background *background;
     Boxes *boxes;
     Labels *labels;
+    Regions *regions;
 };
 
 Level *create_level_from_file(const char *file_name)
@@ -121,6 +123,14 @@ Level *create_level_from_file(const char *file_name)
         create_labels_from_line_stream(level_stream),
         destroy_labels);
     if (level->labels == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level->regions = PUSH_LT(
+        lt,
+        create_regions_from_line_stream(level_stream),
+        destroy_regions);
+    if (level->regions == NULL) {
         RETURN_LT(lt, NULL);
     }
 

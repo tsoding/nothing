@@ -1,6 +1,8 @@
 #ifndef LINE_STREAM_H_
 #define LINE_STREAM_H_
 
+#include <stdlib.h>
+
 typedef struct LineStream LineStream;
 
 LineStream *create_line_stream(const char *filename,

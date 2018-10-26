@@ -39,3 +39,4 @@ WASD to move
 SPACE to Jump
 950.9303 -279.0629 fffda5
 Double Jump
+0
