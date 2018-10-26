@@ -30,6 +30,12 @@ with `nix-shell` command:
 $ nix-shell
 ```
 
+### Arch Linux
+
+```console
+$ sudo pacman -S gcc cmake sdl2 sdl2_mixer python inotify-tools
+```
+
 ### Windows
 
 See [Build on Windows][build-on-windows] section.
