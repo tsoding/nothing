@@ -242,9 +242,13 @@ static int game_event_running(Game *game, const SDL_Event *event)
             camera_toggle_debug_mode(game->camera);
             level_toggle_debug_mode(game->level);
             break;
-
+        }
+        break;
+    case SDL_KEYUP:
+        switch (event->key.keysym.sym) {
         case SDLK_BACKQUOTE:
         case SDLK_c:
+            SDL_StartTextInput();
             game->state = GAME_STATE_CONSOLE;
             /* TODO(#404): when console is enabled a backquote pressed event sneaks into edit_field a gets inserted */
             console_slide_down(game->console);
@@ -267,6 +271,7 @@ static int game_event_console(Game *game, const SDL_Event *event)
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
         case SDLK_ESCAPE:
+            SDL_StopTextInput();
             game->state = GAME_STATE_RUNNING;
             return 0;
 

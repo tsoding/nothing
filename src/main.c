@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
 
     const Uint8 *const keyboard_state = SDL_GetKeyboardState(NULL);
 
-    SDL_StartTextInput();
+    SDL_StopTextInput();
     SDL_Event e;
     const int64_t delta_time = (int64_t) roundf(1000.0f / 60.0f);
     int64_t render_timer = (int64_t) roundf(1000.0f / (float) fps);
