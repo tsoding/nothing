@@ -6,6 +6,7 @@
 
 #include "math/pi.h"
 #include "system/error.h"
+#include "system/line_stream.h"
 #include "system/lt.h"
 #include "wavy_rect.h"
 
@@ -41,16 +42,18 @@ Wavy_rect *create_wavy_rect(Rect rect, Color color)
     return wavy_rect;
 }
 
-Wavy_rect *create_wavy_rect_from_stream(FILE *stream)
+Wavy_rect *create_wavy_rect_from_line_stream(LineStream *line_stream)
 {
-    assert(stream);
+    assert(line_stream);
     char color_name[7];
     Rect rect;
 
-    if (fscanf(stream, "%f%f%f%f%6s\n",
-               &rect.x, &rect.y,
-               &rect.w, &rect.h,
-               color_name) < 0) {
+    if (sscanf(
+            line_stream_next(line_stream),
+            "%f%f%f%f%6s\n",
+            &rect.x, &rect.y,
+            &rect.w, &rect.h,
+            color_name) < 0) {
         throw_error(ERROR_TYPE_LIBC);
         return NULL;
     }

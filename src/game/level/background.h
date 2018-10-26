@@ -7,9 +7,10 @@
 #include "game/camera.h"
 
 typedef struct Background Background;
+typedef struct LineStream LineStream;
 
 Background *create_background(Color base_color);
-Background *create_background_from_stream(FILE *stream);
+Background *create_background_from_line_stream(LineStream *line_stream);
 void destroy_background(Background *background);
 
 int background_render(const Background *background,

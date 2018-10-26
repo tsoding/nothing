@@ -4,8 +4,8 @@
 #include "game/level/labels.h"
 #include "system/error.h"
 #include "system/lt.h"
-
-#define LABEL_TEXT_MAX_LENGTH 64
+#include "str.h"
+#include "system/line_stream.h"
 
 struct Labels
 {
@@ -18,24 +18,9 @@ struct Labels
     int *visible;
 };
 
-static char *trim_endline(char *s)
+Labels *create_labels_from_line_stream(LineStream *line_stream)
 {
-    const size_t n = strlen(s);
-
-    if (n == 0) {
-        return s;
-    }
-
-    if (s[n - 1] == '\n') {
-        s[n - 1] = '\0';
-    }
-
-    return s;
-}
-
-Labels *create_labels_from_stream(FILE *stream)
-{
-    assert(stream);
+    assert(line_stream);
 
     Lt *const lt = create_lt();
     if (lt == NULL) {
@@ -49,7 +34,10 @@ Labels *create_labels_from_stream(FILE *stream)
     }
     labels->lt = lt;
 
-    if (fscanf(stream, "%lu", &labels->count) == EOF) {
+    if (sscanf(
+            line_stream_next(line_stream),
+            "%lu",
+            &labels->count) == EOF) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
@@ -88,24 +76,31 @@ Labels *create_labels_from_stream(FILE *stream)
     for (size_t i = 0; i < labels->count; ++i) {
         labels->states[i] = 1.0f;
         labels->visible[i] = 0;
+        labels->texts[i] = NULL;
 
-        labels->texts[i] = PUSH_LT(lt, malloc(sizeof(char) * (LABEL_TEXT_MAX_LENGTH + 1)), free);
-        if (labels->texts[i] == NULL) {
-            throw_error(ERROR_TYPE_LIBC);
-            RETURN_LT(lt, NULL);
-        }
-
-        if (fscanf(stream, "%f%f%6s\n",
-                   &labels->positions[i].x,
-                   &labels->positions[i].y,
-                   color) == EOF) {
+        if (sscanf(
+                line_stream_next(line_stream),
+                "%f%f%6s\n",
+                &labels->positions[i].x,
+                &labels->positions[i].y,
+                color) == EOF) {
             throw_error(ERROR_TYPE_LIBC);
             RETURN_LT(lt, NULL);
         }
 
         labels->colors[i] = color_from_hexstr(color);
 
-        if (fgets(labels->texts[i], LABEL_TEXT_MAX_LENGTH, stream) == NULL) {
+        const char *label_text = line_stream_next(line_stream);
+        if (label_text == NULL) {
+            throw_error(ERROR_TYPE_LIBC);
+            RETURN_LT(lt, NULL);
+        }
+
+        labels->texts[i] = PUSH_LT(
+            lt,
+            string_duplicate(label_text, NULL),
+            free);
+        if (labels->texts[i] == NULL) {
             throw_error(ERROR_TYPE_LIBC);
             RETURN_LT(lt, NULL);
         }

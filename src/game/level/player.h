@@ -12,9 +12,10 @@
 typedef struct Player Player;
 typedef struct Goals Goals;
 typedef struct Rigid_rect Rigid_rect;
+typedef struct LineStream LineStream;
 
 Player *create_player(float x, float y, Color color);
-Player *create_player_from_stream(FILE *stream);
+Player *create_player_from_line_stream(LineStream *line_stream);
 void destroy_player(Player * player);
 
 Solid_ref player_as_solid(Player *player);

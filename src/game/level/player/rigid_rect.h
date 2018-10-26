@@ -9,12 +9,12 @@
 #include "math/mat3x3.h"
 #include "math/rect.h"
 
-
 typedef struct Rigid_rect Rigid_rect;
 typedef struct Boxes Boxes;
+typedef struct LineStream LineStream;
 
 Rigid_rect *create_rigid_rect(Rect rect, Color color, const char *id);
-Rigid_rect *create_rigid_rect_from_stream(FILE *stream);
+Rigid_rect *create_rigid_rect_from_line_stream(LineStream *line_stream);
 void destroy_rigid_rect(Rigid_rect *rigid_rect);
 
 Solid_ref rigid_rect_as_solid(Rigid_rect *rigid_rect);

@@ -10,8 +10,9 @@
 #include "str.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/line_stream.h"
 
-#define MAX_ID_SIZE 36
+#define RIGID_RECT_MAX_ID_SIZE 36
 
 struct Rigid_rect {
     Lt *lt;
@@ -67,14 +68,14 @@ Rigid_rect *create_rigid_rect(Rect rect, Color color, const char *id)
     }
     rigid_rect->lt = lt;
 
-    rigid_rect->id = malloc(sizeof(char) * MAX_ID_SIZE);
+    rigid_rect->id = malloc(sizeof(char) * RIGID_RECT_MAX_ID_SIZE);
     if (rigid_rect->id == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
     const size_t _len = strlen(id);
-    const size_t len_id = (MAX_ID_SIZE-1) < _len ? (MAX_ID_SIZE-1) : _len;
+    const size_t len_id = (RIGID_RECT_MAX_ID_SIZE-1) < _len ? (RIGID_RECT_MAX_ID_SIZE-1) : _len;
     memcpy(rigid_rect->id, id, len_id);
     rigid_rect->id[len_id] = 0;
 
@@ -89,15 +90,16 @@ Rigid_rect *create_rigid_rect(Rect rect, Color color, const char *id)
     return rigid_rect;
 }
 
-Rigid_rect *create_rigid_rect_from_stream(FILE *stream)
+Rigid_rect *create_rigid_rect_from_line_stream(LineStream *line_stream)
 {
-    assert(stream);
+    assert(line_stream);
 
     char color[7];
     Rect rect;
-    char id[MAX_ID_SIZE];
+    char id[RIGID_RECT_MAX_ID_SIZE];
 
-    if (fscanf(stream, "%" STRINGIFY(MAX_ID_SIZE) "s%f%f%f%f%6s\n",
+    if (sscanf(line_stream_next(line_stream),
+               "%" STRINGIFY(RIGID_RECT_MAX_ID_SIZE) "s%f%f%f%f%6s\n",
                id,
                &rect.x, &rect.y,
                &rect.w, &rect.h,

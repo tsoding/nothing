@@ -6,8 +6,9 @@
 
 typedef struct Labels Labels;
 typedef struct Camera Camera;
+typedef struct LineStream LineStream;
 
-Labels *create_labels_from_stream(FILE *stream);
+Labels *create_labels_from_line_stream(LineStream *line_stream);
 void destroy_labels(Labels *label);
 
 int labels_render(const Labels *label,

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "str.h"
 
@@ -20,4 +21,31 @@ char *string_duplicate(const char *str,
     dup_str[n] = '\0';
 
     return dup_str;
+}
+
+char *trim_endline(char *s)
+{
+    const size_t n = strlen(s);
+
+    if (n == 0) {
+        return s;
+    }
+
+    if (s[n - 1] == '\n') {
+        s[n - 1] = '\0';
+    }
+
+    return s;
+}
+
+char *string_append(char *prefix, const char *suffix)
+{
+    assert(suffix);
+
+    if (prefix == NULL) {
+        return string_duplicate(suffix, NULL);
+    }
+
+    prefix = realloc(prefix, strlen(prefix) + strlen(suffix) + 1);
+    return strcat(prefix, suffix);
 }

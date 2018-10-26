@@ -8,6 +8,7 @@
 #include "system/error.h"
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
+#include "system/line_stream.h"
 
 struct Platforms {
     Lt *lt;
@@ -17,9 +18,9 @@ struct Platforms {
     size_t rects_size;
 };
 
-Platforms *create_platforms_from_stream(FILE *stream)
+Platforms *create_platforms_from_line_stream(LineStream *line_stream)
 {
-    assert(stream);
+    assert(line_stream);
 
     Lt *const lt = create_lt();
     if (lt == NULL) {
@@ -33,7 +34,10 @@ Platforms *create_platforms_from_stream(FILE *stream)
     }
 
     platforms->rects_size = 0;
-    if (fscanf(stream, "%lu", &platforms->rects_size) == EOF) {
+    if (sscanf(
+            line_stream_next(line_stream),
+            "%lu",
+            &platforms->rects_size) == EOF) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
@@ -52,7 +56,8 @@ Platforms *create_platforms_from_stream(FILE *stream)
 
     char color[7];
     for (size_t i = 0; i < platforms->rects_size; ++i) {
-        if (fscanf(stream, "%f%f%f%f%6s\n",
+        if (sscanf(line_stream_next(line_stream),
+                   "%f%f%f%f%6s\n",
                    &platforms->rects[i].x, &platforms->rects[i].y,
                    &platforms->rects[i].w, &platforms->rects[i].h,
                    color) < 0) {
@@ -64,26 +69,6 @@ Platforms *create_platforms_from_stream(FILE *stream)
 
     platforms->lt = lt;
 
-    return platforms;
-}
-
-Platforms *create_platforms_from_file(const char *filename)
-{
-    assert(filename);
-
-    FILE *platforms_file = fopen(filename, "r");
-    if (platforms_file == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
-        return NULL;
-    }
-
-    Platforms *platforms = create_platforms_from_stream(platforms_file);
-    if (platforms != NULL) {
-        fclose(platforms_file);
-        return NULL;
-    }
-
-    fclose(platforms_file);
     return platforms;
 }
 

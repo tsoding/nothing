@@ -8,9 +8,10 @@
 #include "str.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/line_stream.h"
 
 #define GOAL_RADIUS 10.0f
-#define MAX_ID_SIZE 36
+#define GOAL_MAX_ID_SIZE 36
 
 static int goals_is_goal_hidden(const Goals *goals, size_t i);
 
@@ -32,9 +33,9 @@ struct Goals {
     float angle;
 };
 
-Goals *create_goals_from_stream(FILE *stream)
+Goals *create_goals_from_line_stream(LineStream *line_stream)
 {
-    assert(stream);
+    assert(line_stream);
 
     Lt *const lt = create_lt();
     if (lt == NULL) {
@@ -48,7 +49,10 @@ Goals *create_goals_from_stream(FILE *stream)
     }
 
     goals->count = 0;
-    if (fscanf(stream, "%lu", &goals->count) == EOF) {
+    if (sscanf(
+            line_stream_next(line_stream),
+            "%lu",
+            &goals->count) == EOF) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
@@ -62,7 +66,7 @@ Goals *create_goals_from_stream(FILE *stream)
         RETURN_LT(lt, NULL);
     }
     for (size_t i = 0; i < goals->count; ++i) {
-        goals->ids[i] = PUSH_LT(lt, malloc(sizeof(char) * MAX_ID_SIZE), free);
+        goals->ids[i] = PUSH_LT(lt, malloc(sizeof(char) * GOAL_MAX_ID_SIZE), free);
         if (goals->ids[i] == NULL) {
             throw_error(ERROR_TYPE_LIBC);
             RETURN_LT(lt, NULL);
@@ -95,15 +99,17 @@ Goals *create_goals_from_stream(FILE *stream)
 
     char color[7];
     for (size_t i = 0; i < goals->count; ++i) {
-        if (fscanf(stream, "%" STRINGIFY(MAX_ID_SIZE) "s%f%f%f%f%f%f%6s",
-                   goals->ids[i],
-                   &goals->points[i].x,
-                   &goals->points[i].y,
-                   &goals->regions[i].x,
-                   &goals->regions[i].y,
-                   &goals->regions[i].w,
-                   &goals->regions[i].h,
-                   color) < 0) {
+        if (sscanf(
+                line_stream_next(line_stream),
+                "%" STRINGIFY(GOAL_MAX_ID_SIZE) "s%f%f%f%f%f%f%6s",
+                goals->ids[i],
+                &goals->points[i].x,
+                &goals->points[i].y,
+                &goals->regions[i].x,
+                &goals->regions[i].y,
+                &goals->regions[i].w,
+                &goals->regions[i].h,
+                color) < 0) {
             throw_error(ERROR_TYPE_LIBC);
             RETURN_LT(lt, NULL);
         }

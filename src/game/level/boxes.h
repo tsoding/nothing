@@ -8,8 +8,9 @@
 typedef struct Boxes Boxes;
 typedef struct Player Player;
 typedef struct Physical_world Physical_world;
+typedef struct LineStream LineStream;
 
-Boxes *create_boxes_from_stream(FILE *stream);
+Boxes *create_boxes_from_line_stream(LineStream *line_stream);
 void destroy_boxes(Boxes *boxes);
 
 int boxes_render(Boxes *boxes, Camera *camera);

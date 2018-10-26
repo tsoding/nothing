@@ -8,8 +8,9 @@
 #include "game/sound_samples.h"
 
 typedef struct Goals Goals;
+typedef struct LineStream LineStream;
 
-Goals *create_goals_from_stream(FILE *stream);
+Goals *create_goals_from_line_stream(LineStream *line_stream);
 void destroy_goals(Goals *goals);
 
 Rect goals_hitbox(const Goals *goals);

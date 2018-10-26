@@ -6,5 +6,8 @@
 
 char *string_duplicate(const char *str,
                        const char *str_end);
+char *string_append(char *prefix,
+                    const char *suffix);
+char *trim_endline(char *s);
 
 #endif  // STR_H_

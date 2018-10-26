@@ -11,6 +11,7 @@
 #include "player.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/line_stream.h"
 
 #define PLAYER_WIDTH 25.0f
 #define PLAYER_HEIGHT 25.0f
@@ -85,12 +86,15 @@ Player *create_player(float x, float y, Color color)
     return player;
 }
 
-Player *create_player_from_stream(FILE *stream)
+Player *create_player_from_line_stream(LineStream *line_stream)
 {
     float x = 0.0f, y = 0.0f;
-
     char color[7];
-    if (fscanf(stream, "%f%f%6s", &x, &y, color) == EOF) {
+
+    if (sscanf(
+            line_stream_next(line_stream),
+            "%f%f%6s",
+            &x, &y, color) == EOF) {
         throw_error(ERROR_TYPE_LIBC);
         return NULL;
     }
