@@ -227,6 +227,11 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
         } else if (strcmp(cons->car.atom->sym, "quote") == 0) {
             /* TODO(#334): quote does not check the amout of it's arguments */
             return eval_success(cons->cdr.cons->car);
+        } else if (strcmp(cons->car.atom->sym, "begin") == 0) {
+            /* TODO: begin special form is not implemented */
+            return eval_failure(CONS(gc,
+                                     SYMBOL(gc, "not-implemented"),
+                                     SYMBOL(gc, "begin")));
         } else if (strcmp(cons->car.atom->sym, "lambda") == 0) {
             /* TODO(#335): lambda special form doesn't check if it forms a callable object */
             return eval_success(cons_as_expr(cons));
