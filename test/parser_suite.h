@@ -180,7 +180,7 @@ TEST_SUITE(parser_suite)
     TEST_RUN(read_all_exprs_from_string_empty_test);
     TEST_RUN(read_all_exprs_from_string_one_test);
     TEST_RUN(read_all_exprs_from_string_two_test);
-    // TODO: read_all_exprs_from_string_bad_test is failing
+    // TODO(#467): read_all_exprs_from_string_bad_test is failing
     TEST_IGNORE(read_all_exprs_from_string_bad_test);
     TEST_RUN(read_all_exprs_from_string_trailing_spaces_test);
 
