@@ -44,6 +44,7 @@ static struct EvalResult get_scope(void *param, Gc *gc, struct Scope *scope, str
 
 static void eval_line(Gc *gc, Scope *scope, const char *line)
 {
+    /* TODO(#465): eval_line could be implemented with read_all_exprs_from_string */
     while (*line != 0) {
         gc_collect(gc, scope->expr);
 

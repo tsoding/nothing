@@ -24,20 +24,20 @@ TEST(set_scope_value_test)
     set_scope_value(gc, &scope, z, STRING(gc, "foo"));
 
     ASSERT_TRUE(equal(CONS(gc, x, STRING(gc, "hello")), get_scope_value(&scope, x)),
-                "Unexpected value of `x`");
+                { fprintf(stderr, "Unexpected value of `x`\n"); });
     ASSERT_TRUE(equal(CONS(gc, y, STRING(gc, "world")), get_scope_value(&scope, y)),
-                "Unexpected value of `y`");
+                { fprintf(stderr, "Unexpected value of `y`\n"); });
     ASSERT_TRUE(equal(CONS(gc, z, STRING(gc, "foo")), get_scope_value(&scope, z)),
-                "Unexpected value of `z`");
+                { fprintf(stderr, "Unexpected value of `z`\n"); });
 
     pop_scope_frame(gc, &scope);
 
     ASSERT_TRUE(equal(NIL(gc), get_scope_value(&scope, x)),
-                "Unexpected value of `x`");
+                { fprintf(stderr, "Unexpected value of `x`\n"); });
     ASSERT_TRUE(equal(NIL(gc), get_scope_value(&scope, y)),
-                "Unexpected value of `y`");
+                { fprintf(stderr, "Unexpected value of `y`\n"); });
     ASSERT_TRUE(equal(CONS(gc, z, STRING(gc, "foo")), get_scope_value(&scope, z)),
-                "Unexpected value of `z`");
+                { fprintf(stderr, "Unexpected value of `z`\n"); });
 
 
     destroy_gc(gc);

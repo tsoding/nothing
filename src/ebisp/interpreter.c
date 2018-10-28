@@ -227,6 +227,21 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
         } else if (strcmp(cons->car.atom->sym, "quote") == 0) {
             /* TODO(#334): quote does not check the amout of it's arguments */
             return eval_success(cons->cdr.cons->car);
+        } else if (strcmp(cons->car.atom->sym, "begin") == 0) {
+            struct Expr head = CDR(cons_as_expr(cons));
+
+            struct EvalResult eval_result = eval_success(NIL(gc));
+
+            while (cons_p(head)) {
+                eval_result = eval(gc, scope, CAR(head));
+                if (eval_result.is_error) {
+                    return eval_result;
+                }
+
+                head = CDR(head);
+            }
+
+            return eval_result;
         } else if (strcmp(cons->car.atom->sym, "lambda") == 0) {
             /* TODO(#335): lambda special form doesn't check if it forms a callable object */
             return eval_success(cons_as_expr(cons));

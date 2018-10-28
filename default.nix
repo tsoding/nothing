@@ -5,7 +5,6 @@ with import <nixpkgs> {}; {
                         gcc
                         SDL2
                         SDL2_mixer
-                        mesa
                         pkgconfig
                         cmake
                         valgrind
@@ -13,6 +12,5 @@ with import <nixpkgs> {}; {
                         inotifyTools
                         python3
                       ];
-        LD_LIBRARY_PATH="${mesa}/lib";
     };
 }

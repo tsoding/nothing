@@ -8,6 +8,9 @@
         return -1;                              \
     }
 
+#define TEST_IGNORE(name)                       \
+    (void)(name)                                \
+
 #define TEST(name)                              \
     static int name##_body(void);               \
     static int name(void) {                     \
@@ -75,19 +78,31 @@
         return -1;                                                      \
     }
 
-#define ASSERT_TRUE(condition, message)                                 \
+#define ASSERT_EQ(type, expected, actual, handler)                      \
+    {                                                                   \
+        type _expected = (expected);                                    \
+        type _actual = (actual);                                        \
+        if (_expected != _actual) {                                     \
+            fprintf(stderr, "\n%s:%d: ASSERT_EQ: \n",                   \
+                    __FILE__, __LINE__);                                \
+            handler                                                     \
+            return -1;                                                  \
+        }                                                               \
+    }
+
+#define ASSERT_TRUE(condition, handler)                                 \
     if (!(condition)) {                                                 \
         fprintf(stderr, "\n%s:%d: ASSERT_TRUE: false\n",                \
                 __FILE__, __LINE__);                                    \
-        fprintf(stderr, "%s\n", message);                               \
+        handler                                                         \
         return -1;                                                      \
     }
 
-#define ASSERT_FALSE(condition, message)                                \
+#define ASSERT_FALSE(condition, handler)                                \
     if (condition) {                                                    \
         fprintf(stderr, "\n%s:%d: ASSERT_FALSE: false\n",               \
                 __FILE__, __LINE__);                                    \
-        fprintf(stderr, "%s\n", message);                               \
+        handler                                                         \
         return -1;                                                      \
     }
 

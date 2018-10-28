@@ -176,8 +176,40 @@ static struct ParseResult parse_expr(Gc *gc, struct Token current_token)
 
 struct ParseResult read_expr_from_string(Gc *gc, const char *str)
 {
+    assert(gc);
     assert(str);
     return parse_expr(gc, next_token(str));
+}
+
+struct ParseResult read_all_exprs_from_string(Gc *gc, const char *str)
+{
+    assert(gc);
+    assert(str);
+
+    struct Token current_token = next_token(str);
+    struct ParseResult parse_result = parse_expr(gc, current_token);
+    if (parse_result.is_error) {
+        return parse_result;
+    }
+
+    struct Cons *head = create_cons(gc, parse_result.expr, void_expr());
+    struct Cons *cons = head;
+
+    current_token = next_token(parse_result.end);
+    while (*current_token.end != 0) {
+        parse_result = parse_expr(gc, current_token);
+        if (parse_result.is_error) {
+            return parse_result;
+        }
+
+        cons->cdr = CONS(gc, parse_result.expr, void_expr());
+        cons = cons->cdr.cons;
+        current_token = next_token(parse_result.end);
+    }
+
+    cons->cdr = NIL(gc);
+
+    return parse_success(cons_as_expr(head), parse_result.end);
 }
 
 struct ParseResult read_expr_from_file(Gc *gc, const char *filename)

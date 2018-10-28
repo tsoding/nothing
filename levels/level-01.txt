@@ -39,4 +39,8 @@ WASD to move
 SPACE to Jump
 950.9303 -279.0629 fffda5
 Double Jump
-0
+1
+912.28333 -892.56665 656.16669 429.68332
+2
+(set on-enter (lambda ()))
+(set on-leave (lambda ()))
