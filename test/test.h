@@ -90,11 +90,11 @@
         }                                                               \
     }
 
-#define ASSERT_TRUE(condition, message)                                 \
+#define ASSERT_TRUE(condition, handler)                                 \
     if (!(condition)) {                                                 \
         fprintf(stderr, "\n%s:%d: ASSERT_TRUE: false\n",                \
                 __FILE__, __LINE__);                                    \
-        fprintf(stderr, "%s\n", message);                               \
+        handler                                                         \
         return -1;                                                      \
     }
 

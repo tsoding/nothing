@@ -3,6 +3,7 @@
 
 #include "test.h"
 #include "ebisp/builtins.h"
+#include "ebisp/expr.h"
 
 TEST(equal_test)
 {
@@ -10,7 +11,15 @@ TEST(equal_test)
 
     struct Expr nil1 = NIL(gc);
     struct Expr nil2 = NIL(gc);
-    ASSERT_TRUE(equal(nil1, nil2), "nils are not equal");
+    ASSERT_TRUE(equal(nil1, nil2), {
+            fprintf(stderr, "Expected: ");
+            print_expr_as_sexpr(stderr, nil1);
+            fprintf(stderr, "\n");
+
+            fprintf(stderr, "Actual: ");
+            print_expr_as_sexpr(stderr, nil2);
+            fprintf(stderr, "\n");
+    });
 
     struct Expr list1 =
         CONS(gc, SYMBOL(gc, "a"),
@@ -22,7 +31,15 @@ TEST(equal_test)
              CONS(gc, SYMBOL(gc, "b"),
                   CONS(gc, SYMBOL(gc, "c"),
                        NIL(gc))));
-    ASSERT_TRUE(equal(list1, list2), "lists are not equal");
+    ASSERT_TRUE(equal(list1, list2), {
+            fprintf(stderr, "Expected: ");
+            print_expr_as_sexpr(stderr, list1);
+            fprintf(stderr, "\n");
+
+            fprintf(stderr, "Actual: ");
+            print_expr_as_sexpr(stderr, list2);
+            fprintf(stderr, "\n");
+    });
 
     destroy_gc(gc);
 
@@ -48,7 +65,17 @@ TEST(assoc_test)
              CONS(gc, b_pair,
                   CONS(gc, c_pair, nil)));
 
-    ASSERT_TRUE(equal(a_pair, assoc(a, alist)), "unexpected pair retrieved");
+    struct Expr assoc_result = assoc(a, alist);
+
+    ASSERT_TRUE(equal(a_pair, assoc_result), {
+            fprintf(stderr, "Expected: ");
+            print_expr_as_sexpr(stderr, a_pair);
+            fprintf(stderr, "\n");
+
+            fprintf(stderr, "Actual: ");
+            print_expr_as_sexpr(stderr, assoc_result);
+            fprintf(stderr, "\n");
+    });
 
     destroy_gc(gc);
 

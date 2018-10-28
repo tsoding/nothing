@@ -186,7 +186,8 @@ struct ParseResult read_all_exprs_from_string(Gc *gc, const char *str)
     assert(gc);
     assert(str);
 
-    struct ParseResult parse_result = parse_expr(gc, next_token(str));
+    struct Token current_token = next_token(str);
+    struct ParseResult parse_result = parse_expr(gc, current_token);
     if (parse_result.is_error) {
         return parse_result;
     }
@@ -194,14 +195,16 @@ struct ParseResult read_all_exprs_from_string(Gc *gc, const char *str)
     struct Cons *head = create_cons(gc, parse_result.expr, void_expr());
     struct Cons *cons = head;
 
-    while (*parse_result.end != 0) {
-        parse_result = parse_expr(gc, next_token(parse_result.end));
+    current_token = next_token(parse_result.end);
+    while (*current_token.end != 0) {
+        parse_result = parse_expr(gc, current_token);
         if (parse_result.is_error) {
             return parse_result;
         }
 
         cons->cdr = CONS(gc, parse_result.expr, void_expr());
         cons = cons->cdr.cons;
+        current_token = next_token(parse_result.end);
     }
 
     cons->cdr = NIL(gc);

@@ -37,6 +37,16 @@ struct Expr
     };
 };
 
+inline const char *expr_type_as_string(enum ExprType expr_type) {
+    switch (expr_type) {
+    case EXPR_ATOM: return "EXPR_ATOM";
+    case EXPR_CONS: return "EXPR_CONS";
+    case EXPR_VOID: return "EXPR_VOID";
+    }
+
+    return "";
+}
+
 struct Expr atom_as_expr(struct Atom *atom);
 struct Expr cons_as_expr(struct Cons *cons);
 struct Expr void_expr(void);
@@ -68,6 +78,18 @@ enum AtomType
     ATOM_STRING,
     ATOM_NATIVE
 };
+
+inline const char *atom_type_as_string(enum AtomType atom_type)
+{
+    switch (atom_type) {
+    case ATOM_SYMBOL: return "ATOM_SYMBOL";
+    case ATOM_NUMBER: return "ATOM_NUMBER";
+    case ATOM_STRING: return "ATOM_STRING";
+    case ATOM_NATIVE: return "ATOM_NATIVE";
+    }
+
+    return "";
+}
 
 struct Atom
 {

@@ -59,7 +59,7 @@ Script *create_script_from_line_stream(LineStream *line_stream)
             script->gc,
             source_code);
     if (parse_result.is_error) {
-        fprintf(stderr, "%s\n", parse_result.error_message);
+        fprintf(stderr, "Parsing error: %s\n", parse_result.error_message);
         RETURN_LT(lt, NULL);
     }
 
@@ -76,6 +76,8 @@ Script *create_script_from_line_stream(LineStream *line_stream)
     }
 
     free(RELEASE_LT(lt, source_code));
+
+    print_expr_as_sexpr(stdout, script->scope.expr);
 
     return script;
 }
