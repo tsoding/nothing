@@ -37,7 +37,10 @@ struct Expr
     };
 };
 
-inline const char *expr_type_as_string(enum ExprType expr_type) {
+// Prototype to prevent https://gcc.gnu.org/bugzilla/show_bug.cgi?id=54113
+inline const char *expr_type_as_string(enum ExprType expr_type);
+inline const char *expr_type_as_string(enum ExprType expr_type)
+{
     switch (expr_type) {
     case EXPR_ATOM: return "EXPR_ATOM";
     case EXPR_CONS: return "EXPR_CONS";
@@ -79,6 +82,8 @@ enum AtomType
     ATOM_NATIVE
 };
 
+// Prototype to prevent https://gcc.gnu.org/bugzilla/show_bug.cgi?id=54113
+inline const char *atom_type_as_string(enum AtomType atom_type);
 inline const char *atom_type_as_string(enum AtomType atom_type)
 {
     switch (atom_type) {
