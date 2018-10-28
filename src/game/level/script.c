@@ -52,8 +52,6 @@ Script *create_script_from_line_stream(LineStream *line_stream)
     }
     PUSH_LT(lt, source_code, free);
 
-    printf("Source code: %s", source_code);
-
     struct ParseResult parse_result =
         read_all_exprs_from_string(
             script->gc,
@@ -75,9 +73,9 @@ Script *create_script_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    free(RELEASE_LT(lt, source_code));
+    gc_collect(script->gc, script->scope.expr);
 
-    print_expr_as_sexpr(stdout, script->scope.expr);
+    free(RELEASE_LT(lt, source_code));
 
     return script;
 }
