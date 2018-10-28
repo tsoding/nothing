@@ -45,7 +45,7 @@ Script *create_script_from_line_stream(LineStream *line_stream)
 
     char *source_code = NULL;
     for (size_t i = 0; i < n; ++i) {
-        /* TODO: maybe source_code should be constantly replaced in the Lt */
+        /* TODO(#466): maybe source_code should be constantly replaced in the Lt */
         source_code = string_append(
             source_code,
             line_stream_next(line_stream));
