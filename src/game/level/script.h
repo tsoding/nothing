@@ -3,8 +3,10 @@
 
 typedef struct Script Script;
 typedef struct LineStream LineStream;
+typedef struct Level Level;
 
-Script *create_script_from_line_stream(LineStream *line_stream);
+Script *create_script_from_line_stream(LineStream *line_stream,
+                                       Level *level);
 void destroy_script(Script *script);
 
 // TODO: script_eval accepting string instead of expr is very error prone

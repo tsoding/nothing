@@ -9,6 +9,7 @@
 #include "system/error.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
+#include "ui/console.h"
 
 struct Script
 {
@@ -17,7 +18,7 @@ struct Script
     struct Scope scope;
 };
 
-Script *create_script_from_line_stream(LineStream *line_stream)
+Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
 {
     assert(line_stream);
 
@@ -51,6 +52,12 @@ Script *create_script_from_line_stream(LineStream *line_stream)
             line_stream_next(line_stream));
     }
     PUSH_LT(lt, source_code, free);
+
+    set_scope_value(
+        script->gc,
+        &script->scope,
+        SYMBOL(script->gc, "rect-apply-force"),
+        NATIVE(script->gc, rect_apply_force, level));
 
     struct ParseResult parse_result =
         read_all_exprs_from_string(
@@ -90,6 +97,27 @@ int script_eval(Script *script, const char *source_code)
 {
     assert(script);
     assert(source_code);
-    /* TODO: script_eval is not implemented */
+
+    struct ParseResult parse_result = read_all_exprs_from_string(
+        script->gc,
+        source_code);
+    if (parse_result.is_error) {
+        fprintf(stderr, "Parsing error: %s\n", parse_result.error_message);
+        return -1;
+    }
+
+    struct EvalResult eval_result = eval(
+        script->gc,
+        &script->scope,
+        parse_result.expr);
+    if (eval_result.is_error) {
+        fprintf(stderr, "Evaluation error: ");
+        print_expr_as_sexpr(stderr, eval_result.expr);
+        fprintf(stderr, "\n");
+        return -1;
+    }
+
+    gc_collect(script->gc, script->scope.expr);
+
     return 0;
 }
