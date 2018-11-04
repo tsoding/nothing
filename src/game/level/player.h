@@ -47,6 +47,9 @@ void player_hide_goals(const Player *player,
 void player_die_from_lava(Player *player,
                           const Lava *lava);
 
+bool player_overlaps_rect(const Player *player,
+                          Rect rect);
+
 /** \brief Implements solid_apply_force
  */
 void player_apply_force(Player *player, Vec force);
