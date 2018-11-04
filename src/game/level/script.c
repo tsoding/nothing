@@ -98,7 +98,7 @@ int script_eval(Script *script, const char *source_code)
     assert(script);
     assert(source_code);
 
-    struct ParseResult parse_result = read_all_exprs_from_string(
+    struct ParseResult parse_result = read_expr_from_string(
         script->gc,
         source_code);
     if (parse_result.is_error) {
