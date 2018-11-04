@@ -2,6 +2,7 @@
 #define CONSOLE_H_
 
 #include <SDL2/SDL.h>
+#include "ebisp/interpreter.h"
 
 typedef struct Console Console;
 typedef struct Level Level;
@@ -22,5 +23,7 @@ int console_update(Console *console,
                    float delta_time);
 
 void console_slide_down(Console *console);
+
+struct EvalResult rect_apply_force(void *param, Gc *gc, struct Scope *scope, struct Expr args);
 
 #endif  // CONSOLE_H_

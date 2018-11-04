@@ -308,3 +308,14 @@ Rigid_rect *player_rigid_rect(Player *player, const char *id)
 
     return NULL;
 }
+
+bool player_overlaps_rect(const Player *player,
+                          Rect rect)
+{
+    assert(player);
+
+    return player->state == PLAYER_STATE_ALIVE
+        && rects_overlap(
+            rect, rigid_rect_hitbox(
+                player->alive_body));
+}

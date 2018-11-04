@@ -12,15 +12,21 @@
 #include "system/line_stream.h"
 #include "system/lt.h"
 
+enum RegionState {
+    RS_PLAYER_INSIDE = 0,
+    RS_PLAYER_OUTSIDE
+};
+
 struct Regions
 {
     Lt *lt;
     size_t count;
     Rect *rects;
     Script **scripts;
+    enum RegionState *states;
 };
 
-Regions *create_regions_from_line_stream(LineStream *line_stream)
+Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
 {
     assert(line_stream);
 
@@ -65,6 +71,15 @@ Regions *create_regions_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
+    regions->states = PUSH_LT(
+        lt,
+        malloc(sizeof(bool) * regions->count),
+        free);
+    if (regions->states == NULL) {
+        throw_error(ERROR_TYPE_LIBC);
+        RETURN_LT(lt, NULL);
+    }
+
     printf("Amount of regions: %lu\n", regions->count);
 
     for (size_t i = 0; i < regions->count; ++i) {
@@ -81,11 +96,13 @@ Regions *create_regions_from_line_stream(LineStream *line_stream)
 
         regions->scripts[i] = PUSH_LT(
             lt,
-            create_script_from_line_stream(line_stream),
+            create_script_from_line_stream(line_stream, level),
             destroy_script);
         if (regions->scripts[i] == NULL) {
             RETURN_LT(lt, NULL);
         }
+
+        regions->states[i] = RS_PLAYER_OUTSIDE;
     }
 
     /* TODO(#456): create_regions_from_line_stream doesn't check if the scripts contain proper callbacks */
@@ -103,12 +120,26 @@ void regions_player_enter(Regions *regions, Player *player)
 {
     assert(regions);
     assert(player);
-    /* TODO(#396): regions_player_enter is not implemented */
+
+    for (size_t i = 0; i < regions->count; ++i) {
+        if (regions->states[i] == RS_PLAYER_OUTSIDE &&
+            player_overlaps_rect(player, regions->rects[i])) {
+            regions->states[i] = RS_PLAYER_INSIDE;
+            script_eval(regions->scripts[i], "(on-enter)");
+        }
+    }
 }
 
 void regions_player_leave(Regions *regions, Player *player)
 {
     assert(regions);
     assert(player);
-    /* TODO(#397): regions_player_leave is not implemented */
+
+    for (size_t i = 0; i < regions->count; ++i) {
+        if (regions->states[i] == RS_PLAYER_INSIDE &&
+            !player_overlaps_rect(player, regions->rects[i])) {
+            regions->states[i] = RS_PLAYER_OUTSIDE;
+            script_eval(regions->scripts[i], "(on-leave)");
+        }
+    }
 }

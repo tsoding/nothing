@@ -6,8 +6,9 @@
 typedef struct Regions Regions;
 typedef struct Player Player;
 typedef struct LineStream LineStream;
+typedef struct Level Level;
 
-Regions *create_regions_from_line_stream(LineStream *line_stream);
+Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level);
 void destroy_regions(Regions *regions);
 
 void regions_player_enter(Regions *regions, Player *player);

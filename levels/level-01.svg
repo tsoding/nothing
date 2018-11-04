@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.125"
-     inkscape:cx="4979.9075"
-     inkscape:cy="3083.2188"
+     inkscape:zoom="0.25"
+     inkscape:cx="6708.9238"
+     inkscape:cy="3185.3802"
      inkscape:document-units="mm"
      inkscape:current-layer="svg4541"
      showgrid="false"
@@ -156,6 +156,17 @@
      height="647.5036"
      x="2409.0159"
      y="-321.88171" />
+  <rect
+     style="fill:#ccff00;fill-opacity:1;stroke:none;stroke-width:0.12863588"
+     id="script44"
+     width="74.083344"
+     height="899.58337"
+     x="2185.4583"
+     y="-1044.4375"
+     inkscape:label="#rect44">
+    <title
+       id="title45-6">script44.lisp</title>
+  </rect>
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.26458332"
      id="rect5109-3-5-3-6"
@@ -314,12 +325,12 @@
        y="-279.0629"
        style="fill:#fffda5;fill-opacity:1;stroke-width:0.62949532px">Double Jump</tspan></text>
   <rect
-     style="fill:#ccff00;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+     style="fill:#ccff00;fill-opacity:1;stroke:none;stroke-width:0.11723439"
      id="script43"
-     width="656.16669"
-     height="429.68332"
-     x="912.28333"
-     y="-892.56665"
+     width="74.083344"
+     height="747.18329"
+     x="1673.0083"
+     y="-1055.1857"
      inkscape:label="#rect43">
     <title
        id="title45">script43.lisp</title>
