@@ -121,3 +121,11 @@ int script_eval(Script *script, const char *source_code)
 
     return 0;
 }
+
+bool script_has_scope_value(const Script *script, const char *name)
+{
+    return !nil_p(
+        get_scope_value(
+            &script->scope,
+            SYMBOL(script->gc, name)));
+}

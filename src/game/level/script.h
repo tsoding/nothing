@@ -12,4 +12,6 @@ void destroy_script(Script *script);
 // TODO(#470): script_eval accepting string instead of expr is very error prone
 int script_eval(Script *script, const char *source_code);
 
+bool script_has_scope_value(const Script *script, const char *name);
+
 #endif  // SCRIPT_H_
