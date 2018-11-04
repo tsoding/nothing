@@ -85,3 +85,11 @@ void destroy_script(Script *script)
     assert(script);
     RETURN_LT0(script->lt);
 }
+
+int script_eval(Script *script, const char *source_code)
+{
+    assert(script);
+    assert(source_code);
+    /* TODO: script_eval is not implemented */
+    return 0;
+}
