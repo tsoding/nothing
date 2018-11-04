@@ -128,7 +128,7 @@ Level *create_level_from_file(const char *file_name)
 
     level->regions = PUSH_LT(
         lt,
-        create_regions_from_line_stream(level_stream),
+        create_regions_from_line_stream(level_stream, level),
         destroy_regions);
     if (level->regions == NULL) {
         RETURN_LT(lt, NULL);
@@ -214,6 +214,8 @@ int level_update(Level *level, float delta_time)
 
     player_hide_goals(level->player, level->goals);
     player_die_from_lava(level->player, level->lava);
+    regions_player_enter(level->regions, level->player);
+    regions_player_leave(level->regions, level->player);
 
     goals_update(level->goals, delta_time);
     lava_update(level->lava, delta_time);

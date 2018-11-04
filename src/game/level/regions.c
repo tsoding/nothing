@@ -26,7 +26,7 @@ struct Regions
     enum RegionState *states;
 };
 
-Regions *create_regions_from_line_stream(LineStream *line_stream)
+Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
 {
     assert(line_stream);
 
@@ -96,7 +96,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream)
 
         regions->scripts[i] = PUSH_LT(
             lt,
-            create_script_from_line_stream(line_stream),
+            create_script_from_line_stream(line_stream, level),
             destroy_script);
         if (regions->scripts[i] == NULL) {
             RETURN_LT(lt, NULL);
@@ -124,6 +124,7 @@ void regions_player_enter(Regions *regions, Player *player)
     for (size_t i = 0; i < regions->count; ++i) {
         if (regions->states[i] == RS_PLAYER_OUTSIDE &&
             player_overlaps_rect(player, regions->rects[i])) {
+            regions->states[i] = RS_PLAYER_INSIDE;
             script_eval(regions->scripts[i], "(on-enter)");
         }
     }
@@ -133,5 +134,12 @@ void regions_player_leave(Regions *regions, Player *player)
 {
     assert(regions);
     assert(player);
-    /* TODO(#397): regions_player_leave is not implemented */
+
+    for (size_t i = 0; i < regions->count; ++i) {
+        if (regions->states[i] == RS_PLAYER_INSIDE &&
+            !player_overlaps_rect(player, regions->rects[i])) {
+            regions->states[i] = RS_PLAYER_OUTSIDE;
+            script_eval(regions->scripts[i], "(on-leave)");
+        }
+    }
 }
