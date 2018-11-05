@@ -2,7 +2,7 @@
 #include "nth_alloc.h"
 #include "log.h"
 
-/* TODO: all instances of malloc should be replaced with nth_alloc (except ebisp) */
+/* TODO(#477): all instances of malloc should be replaced with nth_alloc (except ebisp) */
 void *nth_alloc(size_t size)
 {
     void *mem = malloc(size);
