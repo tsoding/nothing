@@ -54,7 +54,7 @@ add_executable(nothing
   src/system/lt/lt_adapters.c
   src/system/lt/lt_slot.c
   src/ui/console.c
-  src/ui/log.c
+  src/ui/console_log.c
   src/str.c
   src/ui/history.c
   src/game/level/regions.c
@@ -97,7 +97,7 @@ add_executable(nothing
   src/system/lt/lt_adapters.h
   src/system/lt/lt_slot.h
   src/ui/console.h
-  src/ui/log.h
+  src/ui/console_log.h
   src/str.h
   src/ui/history.h
   src/game/level/regions.h

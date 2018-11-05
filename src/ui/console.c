@@ -13,17 +13,17 @@
 #include "ui/console.h"
 #include "ui/edit_field.h"
 #include "ui/history.h"
-#include "ui/log.h"
+#include "ui/console_log.h"
 
 #define FONT_WIDTH_SCALE 3.0f
 #define FONT_HEIGHT_SCALE 3.0f
 
-#define LOG_CAPACITY 10
+#define CONSOLE_LOG_CAPACITY 10
 #define HISTORY_CAPACITY 20
 #define PROMPT_HEIGHT (FONT_HEIGHT_SCALE * FONT_CHAR_HEIGHT)
-#define LOG_HEIGHT (FONT_HEIGHT_SCALE * FONT_CHAR_HEIGHT * LOG_CAPACITY)
+#define CONSOLE_LOG_HEIGHT (FONT_HEIGHT_SCALE * FONT_CHAR_HEIGHT * CONSOLE_LOG_CAPACITY)
 
-#define CONSOLE_HEIGHT (LOG_HEIGHT + PROMPT_HEIGHT)
+#define CONSOLE_HEIGHT (CONSOLE_LOG_HEIGHT + PROMPT_HEIGHT)
 
 #define SLIDE_DOWN_TIME 0.4f
 
@@ -40,7 +40,7 @@ struct Console
     Gc *gc;
     struct Scope scope;
     Edit_field *edit_field;
-    Log *log;
+    Console_Log *console_log;
     Level *level;
     History *history;
     float a;
@@ -121,13 +121,13 @@ Console *create_console(Level *level,
         RETURN_LT(lt, NULL);
     }
 
-    console->log = PUSH_LT(
+    console->console_log = PUSH_LT(
         lt,
-        create_log(
+        create_console_log(
             font,
             vec(FONT_WIDTH_SCALE, FONT_HEIGHT_SCALE),
-            LOG_CAPACITY),
-        destroy_log);
+            CONSOLE_LOG_CAPACITY),
+        destroy_console_log);
 
     console->level = level;
     console->a = 0;
@@ -167,7 +167,7 @@ static int console_eval_input(Console *console)
         return -1;
     }
 
-    if (log_push_line(console->log, source_code, CONSOLE_FOREGROUND) < 0) {
+    if (console_log_push_line(console->console_log, source_code, CONSOLE_FOREGROUND) < 0) {
         return -1;
     }
 
@@ -176,7 +176,7 @@ static int console_eval_input(Console *console)
                                                                 source_code);
 
         if (parse_result.is_error) {
-            if (log_push_line(console->log, parse_result.error_message, CONSOLE_ERROR)) {
+            if (console_log_push_line(console->console_log, parse_result.error_message, CONSOLE_ERROR)) {
                 return -1;
             }
 
@@ -197,7 +197,7 @@ static int console_eval_input(Console *console)
             return -1;
         }
 
-        if (log_push_line(console->log,
+        if (console_log_push_line(console->console_log,
                           console->eval_result,
                           eval_result.is_error ?
                           CONSOLE_ERROR :
@@ -261,7 +261,7 @@ int console_render(const Console *console,
         return -1;
     }
 
-    if (log_render(console->log,
+    if (console_log_render(console->console_log,
                    renderer,
                    vec(0.0f, y)) < 0) {
         return -1;
@@ -269,7 +269,7 @@ int console_render(const Console *console,
 
     if (edit_field_render(console->edit_field,
                           renderer,
-                          vec(0.0f, y + LOG_HEIGHT)) < 0) {
+                          vec(0.0f, y + CONSOLE_LOG_HEIGHT)) < 0) {
         return -1;
     }
 
