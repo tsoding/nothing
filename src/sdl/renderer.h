@@ -7,6 +7,7 @@
 #include "math/point.h"
 #include "math/triangle.h"
 
+// TODO(#474): there are no logging SDL wrappers (similar to system/nth_alloc)
 int draw_triangle(SDL_Renderer *render,
                   Triangle t);
 
