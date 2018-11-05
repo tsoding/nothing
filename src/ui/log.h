@@ -3,7 +3,7 @@
 
 #include "math/point.h"
 
-// TODO: ui/log unit may collide with system/log unit
+// TODO(#481): ui/log unit may collide with system/log unit
 
 typedef struct Log Log;
 
