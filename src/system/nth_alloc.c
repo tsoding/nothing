@@ -14,7 +14,7 @@ void *nth_alloc(size_t size)
     return mem;
 }
 
-/* TODO: all instances of calloc should be replaced with nth_calloc (except ebisp) */
+/* TODO(#478): all instances of calloc should be replaced with nth_calloc (except ebisp) */
 void *nth_calloc(size_t num, size_t size)
 {
     void *mem = calloc(num, size);
