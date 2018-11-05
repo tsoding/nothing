@@ -1,6 +1,8 @@
 #ifndef ERROR_H_
 #define ERROR_H_
 
+// TODO: system/error is useless and should be replaced with logging wrappers (similar to system/nth_alloc)
+
 typedef enum Error_type {
     ERROR_TYPE_OK = 0,
     ERROR_TYPE_LIBC,

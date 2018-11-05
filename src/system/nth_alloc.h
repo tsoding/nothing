@@ -1,0 +1,7 @@
+#ifndef NTH_ALLOC_H_
+#define NTH_ALLOC_H_
+
+void *nth_alloc(size_t size);
+void *nth_calloc(size_t num, size_t size);
+
+#endif  // NTH_ALLOC_H_

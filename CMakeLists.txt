@@ -105,6 +105,10 @@ add_executable(nothing
   src/system/line_stream.c
   src/game/level/script.h
   src/game/level/script.c
+  src/system/log.h
+  src/system/log.c
+  src/system/nth_alloc.h
+  src/system/nth_alloc.c
 )
 
 add_executable(repl
