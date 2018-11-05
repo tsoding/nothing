@@ -5,6 +5,7 @@
 #include <assert.h>
 
 #include "str.h"
+#include "system/nth_alloc.h"
 
 char *string_duplicate(const char *str,
                        const char *str_end)
@@ -14,7 +15,7 @@ char *string_duplicate(const char *str,
     }
 
     const size_t n = str_end == NULL ? strlen(str) : (size_t) (str_end - str);
-    char *dup_str = malloc(sizeof(char) * (n + 1));
+    char *dup_str = nth_alloc(sizeof(char) * (n + 1));
     if (dup_str == NULL) {
         return NULL;
     }
@@ -48,6 +49,7 @@ char *string_append(char *prefix, const char *suffix)
         return string_duplicate(suffix, NULL);
     }
 
+    /* TODO(#480): there is not nth_realloc */
     prefix = realloc(prefix, strlen(prefix) + strlen(suffix) + 1);
     return strcat(prefix, suffix);
 }

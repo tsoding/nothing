@@ -5,8 +5,9 @@
 #include "game/level/player.h"
 #include "game/level/player/rigid_rect.h"
 #include "system/error.h"
-#include "system/lt.h"
 #include "system/line_stream.h"
+#include "system/lt.h"
+#include "system/nth_alloc.h"
 
 struct Boxes
 {
@@ -25,7 +26,7 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream)
         return NULL;
     }
 
-    Boxes *boxes = PUSH_LT(lt, malloc(sizeof(Boxes)), free);
+    Boxes *boxes = PUSH_LT(lt, nth_alloc(sizeof(Boxes)), free);
     if (boxes == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -39,7 +40,7 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    boxes->bodies = PUSH_LT(lt, malloc(sizeof(Rigid_rect*) * boxes->count), free);
+    boxes->bodies = PUSH_LT(lt, nth_alloc(sizeof(Rigid_rect*) * boxes->count), free);
     if (boxes->bodies == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);

@@ -5,6 +5,7 @@
 #include "lt.h"
 #include "lt/lt_slot.h"
 #include "system/error.h"
+#include "system/nth_alloc.h"
 
 #define INITIAL_FRAME_BUFFER_SIZE 16
 
@@ -17,16 +18,16 @@ struct Lt
 
 Lt *create_lt()
 {
-    Lt *lt = malloc(sizeof(Lt));
+    Lt *lt = nth_alloc(sizeof(Lt));
     if(lt == NULL) {
         throw_error(ERROR_TYPE_LIBC);
-        goto malloc_lt_fail;
+        goto nth_alloc_lt_fail;
     }
 
-    lt->frames = malloc(sizeof(Lt_slot*) * INITIAL_FRAME_BUFFER_SIZE);
+    lt->frames = nth_alloc(sizeof(Lt_slot*) * INITIAL_FRAME_BUFFER_SIZE);
     if (lt->frames == NULL) {
         throw_error(ERROR_TYPE_LIBC);
-        goto malloc_lt_slots_fail;
+        goto nth_alloc_lt_slots_fail;
     }
 
     lt->capacity = INITIAL_FRAME_BUFFER_SIZE;
@@ -34,9 +35,9 @@ Lt *create_lt()
 
     return lt;
 
-malloc_lt_slots_fail:
+nth_alloc_lt_slots_fail:
     free(lt);
-malloc_lt_fail:
+nth_alloc_lt_fail:
     return NULL;
 }
 

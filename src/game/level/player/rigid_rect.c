@@ -9,8 +9,9 @@
 #include "rigid_rect.h"
 #include "str.h"
 #include "system/error.h"
-#include "system/lt.h"
 #include "system/line_stream.h"
+#include "system/lt.h"
+#include "system/nth_alloc.h"
 
 #define RIGID_RECT_MAX_ID_SIZE 36
 
@@ -61,14 +62,14 @@ Rigid_rect *create_rigid_rect(Rect rect, Color color, const char *id)
         return NULL;
     }
 
-    Rigid_rect *rigid_rect = PUSH_LT(lt, malloc(sizeof(Rigid_rect)), free);
+    Rigid_rect *rigid_rect = PUSH_LT(lt, nth_alloc(sizeof(Rigid_rect)), free);
     if (rigid_rect == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     rigid_rect->lt = lt;
 
-    rigid_rect->id = malloc(sizeof(char) * RIGID_RECT_MAX_ID_SIZE);
+    rigid_rect->id = nth_alloc(sizeof(char) * RIGID_RECT_MAX_ID_SIZE);
     if (rigid_rect->id == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);

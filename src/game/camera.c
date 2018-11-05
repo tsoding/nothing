@@ -6,6 +6,7 @@
 #include "camera.h"
 #include "sdl/renderer.h"
 #include "system/error.h"
+#include "system/nth_alloc.h"
 
 #define RATIO_X 16.0f
 #define RATIO_Y 9.0f
@@ -33,7 +34,7 @@ static Triangle camera_triangle(const Camera *camera,
 Camera *create_camera(SDL_Renderer *renderer,
                         Sprite_font *font)
 {
-    Camera *camera = malloc(sizeof(Camera));
+    Camera *camera = nth_alloc(sizeof(Camera));
 
     if (camera == NULL) {
         throw_error(ERROR_TYPE_LIBC);

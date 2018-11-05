@@ -9,6 +9,7 @@
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
 #include "system/line_stream.h"
+#include "system/nth_alloc.h"
 
 struct Platforms {
     Lt *lt;
@@ -27,7 +28,7 @@ Platforms *create_platforms_from_line_stream(LineStream *line_stream)
         return NULL;
     }
 
-    Platforms *platforms = PUSH_LT(lt, malloc(sizeof(Platforms)), free);
+    Platforms *platforms = PUSH_LT(lt, nth_alloc(sizeof(Platforms)), free);
     if (platforms == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -42,13 +43,13 @@ Platforms *create_platforms_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    platforms->rects = PUSH_LT(lt, malloc(sizeof(Rect) * platforms->rects_size), free);
+    platforms->rects = PUSH_LT(lt, nth_alloc(sizeof(Rect) * platforms->rects_size), free);
     if (platforms->rects == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
-    platforms->colors = PUSH_LT(lt, malloc(sizeof(Color) * platforms->rects_size), free);
+    platforms->colors = PUSH_LT(lt, nth_alloc(sizeof(Color) * platforms->rects_size), free);
     if (platforms->colors == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);

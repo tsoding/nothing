@@ -3,6 +3,8 @@
 
 #include "math/point.h"
 
+// TODO(#481): ui/log unit may collide with system/log unit
+
 typedef struct Log Log;
 
 Log *create_log(const Sprite_font *font,

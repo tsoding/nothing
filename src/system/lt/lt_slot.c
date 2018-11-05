@@ -4,6 +4,7 @@
 
 #include "lt_slot.h"
 #include "system/error.h"
+#include "system/nth_alloc.h"
 
 struct Lt_slot
 {
@@ -16,7 +17,7 @@ Lt_slot *create_lt_slot(void *resource, Lt_destroy resource_destroy)
     assert(resource);
     assert(resource_destroy);
 
-    Lt_slot *lt_slot = malloc(sizeof(Lt_slot));
+    Lt_slot *lt_slot = nth_alloc(sizeof(Lt_slot));
     if (lt_slot == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         return NULL;

@@ -6,6 +6,7 @@
 #include "line_stream.h"
 #include "lt.h"
 #include "lt/lt_adapters.h"
+#include "system/nth_alloc.h"
 
 struct LineStream
 {
@@ -29,7 +30,7 @@ LineStream *create_line_stream(const char *filename,
 
     LineStream *line_stream = PUSH_LT(
         lt,
-        malloc(sizeof(LineStream)),
+        nth_alloc(sizeof(LineStream)),
         free);
     if (line_stream == NULL) {
         throw_error(ERROR_TYPE_LIBC);
@@ -48,7 +49,7 @@ LineStream *create_line_stream(const char *filename,
 
     line_stream->buffer = PUSH_LT(
         lt,
-        malloc(sizeof(char) * capacity),
+        nth_alloc(sizeof(char) * capacity),
         free);
     if (line_stream->buffer == NULL) {
         throw_error(ERROR_TYPE_LIBC);

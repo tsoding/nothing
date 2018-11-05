@@ -8,6 +8,7 @@
 #include "sprite_font.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/nth_alloc.h"
 
 #define FONT_ROW_SIZE 18
 
@@ -28,7 +29,7 @@ Sprite_font *create_sprite_font_from_file(const char *bmp_file_path,
         return NULL;
     }
 
-    Sprite_font * const sprite_font = PUSH_LT(lt, malloc(sizeof(Sprite_font)), free);
+    Sprite_font * const sprite_font = PUSH_LT(lt, nth_alloc(sizeof(Sprite_font)), free);
     if (sprite_font == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);

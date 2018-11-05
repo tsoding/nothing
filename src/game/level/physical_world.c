@@ -5,6 +5,7 @@
 #include "physical_world.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/nth_alloc.h"
 
 #define PHYSICAL_WORLD_CAPACITY 256
 #define PHYSICAL_WORLD_GRAVITY 1500.0f
@@ -25,7 +26,7 @@ Physical_world *create_physical_world(void)
     }
 
     Physical_world * const physical_world =
-        PUSH_LT(lt, malloc(sizeof(Physical_world)), free);
+        PUSH_LT(lt, nth_alloc(sizeof(Physical_world)), free);
     if (physical_world == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -34,7 +35,7 @@ Physical_world *create_physical_world(void)
     physical_world->solids =
         PUSH_LT(
             lt,
-            malloc(sizeof(Solid_ref) * PHYSICAL_WORLD_CAPACITY),
+            nth_alloc(sizeof(Solid_ref) * PHYSICAL_WORLD_CAPACITY),
             free);
     if (physical_world->solids == NULL) {
         throw_error(ERROR_TYPE_LIBC);
