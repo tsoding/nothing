@@ -49,7 +49,7 @@ char *string_append(char *prefix, const char *suffix)
         return string_duplicate(suffix, NULL);
     }
 
-    /* TODO: there is not nth_realloc */
+    /* TODO(#480): there is not nth_realloc */
     prefix = realloc(prefix, strlen(prefix) + strlen(suffix) + 1);
     return strcat(prefix, suffix);
 }
