@@ -95,7 +95,7 @@ int physical_world_add_solid(Physical_world *physical_world,
 
     if (physical_world->size >= physical_world->capacity) {
         const size_t new_capacity = physical_world->capacity * 2;
-        Solid_ref * const new_solids = realloc(
+        Solid_ref * const new_solids = nth_realloc(
             physical_world->solids,
             sizeof(Solid_ref) * new_capacity);
 
