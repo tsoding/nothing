@@ -67,7 +67,7 @@ void *lt_push(Lt *lt, void *resource, Lt_destroy resource_destroy)
 
     if (lt->size >= lt->capacity) {
         lt->capacity *= 2;
-        if ((lt->frames = realloc(lt->frames, sizeof(Lt_slot*) * lt->capacity)) == NULL) {
+        if ((lt->frames = nth_realloc(lt->frames, sizeof(Lt_slot*) * lt->capacity)) == NULL) {
             throw_error(ERROR_TYPE_LIBC);
             return NULL;
         }
