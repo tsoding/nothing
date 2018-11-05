@@ -4,7 +4,7 @@
 
 #include "./log.h"
 
-/* TODO: all instances of fprintf(stderr, ...) should be replaced with log_error (except ebisp) */
+/* TODO(#476): all instances of fprintf(stderr, ...) should be replaced with log_error (except ebisp) */
 
 int log_error(const char *format, ...)
 {
