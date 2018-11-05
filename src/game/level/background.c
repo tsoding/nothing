@@ -4,8 +4,9 @@
 #include "math/rand.h"
 #include "math/rect.h"
 #include "system/error.h"
-#include "system/lt.h"
 #include "system/line_stream.h"
+#include "system/lt.h"
+#include "system/nth_alloc.h"
 
 #define BACKGROUND_CHUNK_COUNT 5
 #define BACKGROUND_CHUNK_WIDTH 250.0f
@@ -34,7 +35,7 @@ Background *create_background(Color base_color)
         return NULL;
     }
 
-    Background *background = PUSH_LT(lt, malloc(sizeof(Background)), free);
+    Background *background = PUSH_LT(lt, nth_alloc(sizeof(Background)), free);
     if (background == NULL) {
         RETURN_LT(lt, NULL);
     }

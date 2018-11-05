@@ -3,9 +3,10 @@
 #include <assert.h>
 
 #include "history.h"
-#include "system/lt.h"
-#include "system/error.h"
 #include "str.h"
+#include "system/error.h"
+#include "system/lt.h"
+#include "system/nth_alloc.h"
 
 struct History
 {
@@ -26,7 +27,7 @@ History *create_history(size_t capacity)
 
     History *history = PUSH_LT(
         lt,
-        malloc(sizeof(History)),
+        nth_alloc(sizeof(History)),
         free);
     if (history == NULL) {
         throw_error(ERROR_TYPE_LIBC);

@@ -1,16 +1,17 @@
 #include <assert.h>
 
-#include "player.h"
-#include "regions.h"
-#include "script.h"
 #include "ebisp/gc.h"
 #include "ebisp/interpreter.h"
 #include "ebisp/parser.h"
 #include "ebisp/scope.h"
+#include "player.h"
+#include "regions.h"
+#include "script.h"
 #include "str.h"
 #include "system/error.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
+#include "system/nth_alloc.h"
 
 enum RegionState {
     RS_PLAYER_INSIDE = 0,
@@ -37,7 +38,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
 
     Regions *regions = PUSH_LT(
         lt,
-        malloc(sizeof(Regions)),
+        nth_alloc(sizeof(Regions)),
         free);
     if (regions == NULL) {
         throw_error(ERROR_TYPE_LIBC);
@@ -55,7 +56,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
 
     regions->rects = PUSH_LT(
         lt,
-        malloc(sizeof(Rect) * regions->count),
+        nth_alloc(sizeof(Rect) * regions->count),
         free);
     if (regions->rects == NULL) {
         throw_error(ERROR_TYPE_LIBC);
@@ -64,7 +65,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
 
     regions->scripts = PUSH_LT(
         lt,
-        malloc(sizeof(Script*) * regions->count),
+        nth_alloc(sizeof(Script*) * regions->count),
         free);
     if (regions->scripts == NULL) {
         throw_error(ERROR_TYPE_LIBC);
@@ -73,7 +74,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
 
     regions->states = PUSH_LT(
         lt,
-        malloc(sizeof(bool) * regions->count),
+        nth_alloc(sizeof(bool) * regions->count),
         free);
     if (regions->states == NULL) {
         throw_error(ERROR_TYPE_LIBC);

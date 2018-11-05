@@ -9,6 +9,7 @@
 #include "str.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/nth_alloc.h"
 
 struct Log
 {
@@ -32,7 +33,7 @@ Log *create_log(const Sprite_font *font,
         return NULL;
     }
 
-    Log *log = PUSH_LT(lt, malloc(sizeof(Log)), free);
+    Log *log = PUSH_LT(lt, nth_alloc(sizeof(Log)), free);
     if (log == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);

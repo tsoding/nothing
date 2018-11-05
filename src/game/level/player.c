@@ -10,8 +10,9 @@
 #include "platforms.h"
 #include "player.h"
 #include "system/error.h"
-#include "system/lt.h"
 #include "system/line_stream.h"
+#include "system/lt.h"
+#include "system/nth_alloc.h"
 
 #define PLAYER_WIDTH 25.0f
 #define PLAYER_HEIGHT 25.0f
@@ -48,7 +49,7 @@ Player *create_player(float x, float y, Color color)
         return NULL;
     }
 
-    Player *player = PUSH_LT(lt, malloc(sizeof(Player)), free);
+    Player *player = PUSH_LT(lt, nth_alloc(sizeof(Player)), free);
     if (player == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);

@@ -10,6 +10,7 @@
 #include "system/error.h"
 #include "system/lt.h"
 #include "system/line_stream.h"
+#include "system/nth_alloc.h"
 
 #define LAVA_BOINGNESS 2500.0f
 
@@ -28,7 +29,7 @@ Lava *create_lava_from_line_stream(LineStream *line_stream)
         return NULL;
     }
 
-    Lava *lava = PUSH_LT(lt, malloc(sizeof(Lava)), free);
+    Lava *lava = PUSH_LT(lt, nth_alloc(sizeof(Lava)), free);
     if (lava == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -42,7 +43,7 @@ Lava *create_lava_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    lava->rects = PUSH_LT(lt, malloc(sizeof(Wavy_rect*) * lava->rects_count), free);
+    lava->rects = PUSH_LT(lt, nth_alloc(sizeof(Wavy_rect*) * lava->rects_count), free);
     if (lava->rects == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);

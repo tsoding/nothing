@@ -137,6 +137,10 @@ add_executable(repl
   src/ebisp/gc.c
   src/str.h
   src/str.c
+  src/system/log.h
+  src/system/log.c
+  src/system/nth_alloc.h
+  src/system/nth_alloc.c
   )
 add_executable(nothing_test
   src/ebisp/builtins.c
@@ -166,6 +170,10 @@ add_executable(nothing_test
   test/main.c
   test/test.h
   test/tokenizer_suite.h
+  src/system/log.h
+  src/system/log.c
+  src/system/nth_alloc.h
+  src/system/nth_alloc.c
   )
 target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
 target_link_libraries(nothing_test ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})

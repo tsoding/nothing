@@ -4,12 +4,13 @@
 #include <stdio.h>
 
 #include "game.h"
-#include "ui/edit_field.h"
 #include "game/level.h"
-#include "ui/console.h"
 #include "game/sound_samples.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/nth_alloc.h"
+#include "ui/console.h"
+#include "ui/edit_field.h"
 
 typedef enum Game_state {
     GAME_STATE_RUNNING = 0,
@@ -45,7 +46,7 @@ Game *create_game(const char *level_file_path,
         return NULL;
     }
 
-    Game *game = PUSH_LT(lt, malloc(sizeof(Game)), free);
+    Game *game = PUSH_LT(lt, nth_alloc(sizeof(Game)), free);
     if (game == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -62,7 +63,7 @@ Game *create_game(const char *level_file_path,
         RETURN_LT(lt, NULL);
     }
 
-    game->level_file_path = PUSH_LT(lt, malloc(sizeof(char) * (strlen(level_file_path) + 1)), free);
+    game->level_file_path = PUSH_LT(lt, nth_alloc(sizeof(char) * (strlen(level_file_path) + 1)), free);
     if (game->level_file_path == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);

@@ -1,14 +1,15 @@
 #include <assert.h>
 
-#include "game/level.h"
-#include "game/level/player/rigid_rect.h"
 #include "ebisp/gc.h"
 #include "ebisp/interpreter.h"
 #include "ebisp/parser.h"
 #include "ebisp/scope.h"
+#include "game/level.h"
+#include "game/level/player/rigid_rect.h"
 #include "sdl/renderer.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/nth_alloc.h"
 #include "ui/console.h"
 #include "ui/edit_field.h"
 #include "ui/history.h"
@@ -88,7 +89,7 @@ Console *create_console(Level *level,
         return NULL;
     }
 
-    Console *console = PUSH_LT(lt, malloc(sizeof(Console)), free);
+    Console *console = PUSH_LT(lt, nth_alloc(sizeof(Console)), free);
     if (console == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -133,7 +134,7 @@ Console *create_console(Level *level,
 
     console->eval_result = PUSH_LT(
         lt,
-        malloc(sizeof(char) * CONSOLE_EVAL_RESULT_SIZE),
+        nth_alloc(sizeof(char) * CONSOLE_EVAL_RESULT_SIZE),
         free);
     if (console->eval_result == NULL) {
         RETURN_LT(lt, NULL);

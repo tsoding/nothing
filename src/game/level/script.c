@@ -9,6 +9,7 @@
 #include "system/error.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
+#include "system/nth_alloc.h"
 #include "ui/console.h"
 
 struct Script
@@ -27,7 +28,7 @@ Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
         return NULL;
     }
 
-    Script *script = PUSH_LT(lt, malloc(sizeof(Script)), free);
+    Script *script = PUSH_LT(lt, nth_alloc(sizeof(Script)), free);
     if (script == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);

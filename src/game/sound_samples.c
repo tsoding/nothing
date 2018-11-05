@@ -8,6 +8,7 @@
 #include "sound_samples.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/nth_alloc.h"
 
 struct Sound_samples
 {
@@ -39,7 +40,7 @@ Sound_samples *create_sound_samples(const char *sample_files[],
         return NULL;
     }
 
-    Sound_samples *sound_samples = PUSH_LT(lt, malloc(sizeof(Sound_samples)), free);
+    Sound_samples *sound_samples = PUSH_LT(lt, nth_alloc(sizeof(Sound_samples)), free);
     if (sound_samples == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -47,7 +48,7 @@ Sound_samples *create_sound_samples(const char *sample_files[],
 
     sound_samples->samples = PUSH_LT(
         lt,
-        malloc(sizeof(Mix_Chunk*) * sample_files_count),
+        nth_alloc(sizeof(Mix_Chunk*) * sample_files_count),
         free);
     if (sound_samples->samples == NULL) {
         throw_error(ERROR_TYPE_LIBC);

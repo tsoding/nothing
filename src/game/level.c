@@ -17,6 +17,7 @@
 #include "system/line_stream.h"
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
+#include "system/nth_alloc.h"
 
 #define LEVEL_LINE_MAX_LENGTH 512
 
@@ -45,7 +46,7 @@ Level *create_level_from_file(const char *file_name)
         return NULL;
     }
 
-    Level *const level = PUSH_LT(lt, malloc(sizeof(Level)), free);
+    Level *const level = PUSH_LT(lt, nth_alloc(sizeof(Level)), free);
     if (level == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);

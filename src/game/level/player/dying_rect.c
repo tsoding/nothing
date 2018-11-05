@@ -5,6 +5,7 @@
 #include "math/rand.h"
 #include "system/error.h"
 #include "system/lt.h"
+#include "system/nth_alloc.h"
 
 #define DYING_RECT_PIECE_COUNT 20
 #define DYING_RECT_PIECE_SIZE 20.0f
@@ -36,7 +37,7 @@ Dying_rect *create_dying_rect(Color color,
         return NULL;
     }
 
-    Dying_rect *dying_rect = PUSH_LT(lt, malloc(sizeof(Dying_rect)), free);
+    Dying_rect *dying_rect = PUSH_LT(lt, nth_alloc(sizeof(Dying_rect)), free);
     if (dying_rect == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -48,7 +49,7 @@ Dying_rect *create_dying_rect(Color color,
     dying_rect->duration = duration;
     dying_rect->time_passed = duration;
 
-    dying_rect->pieces = PUSH_LT(lt, malloc(sizeof(Piece) * DYING_RECT_PIECE_COUNT), free);
+    dying_rect->pieces = PUSH_LT(lt, nth_alloc(sizeof(Piece) * DYING_RECT_PIECE_COUNT), free);
     if (dying_rect->pieces == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);

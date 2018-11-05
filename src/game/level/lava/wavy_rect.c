@@ -8,6 +8,7 @@
 #include "system/error.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
+#include "system/nth_alloc.h"
 #include "wavy_rect.h"
 
 #define WAVE_PILLAR_WIDTH 10.0f
@@ -28,7 +29,7 @@ Wavy_rect *create_wavy_rect(Rect rect, Color color)
         return NULL;
     }
 
-    Wavy_rect *wavy_rect = PUSH_LT(lt, malloc(sizeof(Wavy_rect)), free);
+    Wavy_rect *wavy_rect = PUSH_LT(lt, nth_alloc(sizeof(Wavy_rect)), free);
     if (wavy_rect == NULL) {
         throw_error(ERROR_TYPE_SDL2);
         RETURN_LT(lt, NULL);

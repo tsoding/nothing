@@ -2,10 +2,11 @@
 
 #include "game/camera.h"
 #include "game/level/labels.h"
-#include "system/error.h"
-#include "system/lt.h"
 #include "str.h"
+#include "system/error.h"
 #include "system/line_stream.h"
+#include "system/lt.h"
+#include "system/nth_alloc.h"
 
 struct Labels
 {
@@ -27,7 +28,7 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
         return NULL;
     }
 
-    Labels * const labels = PUSH_LT(lt, malloc(sizeof(Labels)), free);
+    Labels * const labels = PUSH_LT(lt, nth_alloc(sizeof(Labels)), free);
     if (labels == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
@@ -42,31 +43,31 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    labels->positions = PUSH_LT(lt, malloc(sizeof(Vec) * labels->count), free);
+    labels->positions = PUSH_LT(lt, nth_alloc(sizeof(Vec) * labels->count), free);
     if (labels->positions == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
-    labels->colors = PUSH_LT(lt, malloc(sizeof(Color) * labels->count), free);
+    labels->colors = PUSH_LT(lt, nth_alloc(sizeof(Color) * labels->count), free);
     if (labels->colors == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
-    labels->texts = PUSH_LT(lt, malloc(sizeof(char*) * labels->count), free);
+    labels->texts = PUSH_LT(lt, nth_alloc(sizeof(char*) * labels->count), free);
     if (labels->texts == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
-    labels->states = PUSH_LT(lt, malloc(sizeof(float) * labels->count), free);
+    labels->states = PUSH_LT(lt, nth_alloc(sizeof(float) * labels->count), free);
     if (labels->states == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
-    labels->visible = PUSH_LT(lt, malloc(sizeof(int) * labels->count), free);
+    labels->visible = PUSH_LT(lt, nth_alloc(sizeof(int) * labels->count), free);
     if (labels->visible == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
