@@ -39,7 +39,7 @@ History *create_history(size_t capacity)
     history->begin = 0;
     history->cursor = 0;
 
-    history->buffer = PUSH_LT(lt, calloc(capacity, sizeof(char*)), free);
+    history->buffer = PUSH_LT(lt, nth_calloc(capacity, sizeof(char*)), free);
     if (history->buffer == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);

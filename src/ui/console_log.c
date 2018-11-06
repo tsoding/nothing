@@ -43,13 +43,13 @@ Console_Log *create_console_log(const Sprite_font *font,
     console_log->font_size = font_size;
     console_log->capacity = capacity;
 
-    console_log->buffer = PUSH_LT(lt, calloc(capacity, sizeof(char*)), free);
+    console_log->buffer = PUSH_LT(lt, nth_calloc(capacity, sizeof(char*)), free);
     if (console_log->buffer == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
-    console_log->colors = PUSH_LT(lt, calloc(capacity, sizeof(Color)), free);
+    console_log->colors = PUSH_LT(lt, nth_calloc(capacity, sizeof(Color)), free);
     if (console_log->colors == NULL) {
         throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
