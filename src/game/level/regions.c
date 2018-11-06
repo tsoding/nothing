@@ -82,7 +82,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
         RETURN_LT(lt, NULL);
     }
 
-    printf("Amount of regions: %lu\n", regions->count);
+    log_info("Amount of regions: %lu\n", regions->count);
 
     for (size_t i = 0; i < regions->count; ++i) {
         if (sscanf(

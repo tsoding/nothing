@@ -106,11 +106,11 @@ int main(int argc, char *argv[])
             RETURN_LT(lt, -1);
         }
 
-        printf("Opened Joystick 0\n");
-        printf("Name: %s\n", SDL_JoystickNameForIndex(0));
-        printf("Number of Axes: %d\n", SDL_JoystickNumAxes(the_stick_of_joy));
-        printf("Number of Buttons: %d\n", SDL_JoystickNumButtons(the_stick_of_joy));
-        printf("Number of Balls: %d\n", SDL_JoystickNumBalls(the_stick_of_joy));
+        log_info("Opened Joystick 0\n");
+        log_info("Name: %s\n", SDL_JoystickNameForIndex(0));
+        log_info("Number of Axes: %d\n", SDL_JoystickNumAxes(the_stick_of_joy));
+        log_info("Number of Buttons: %d\n", SDL_JoystickNumButtons(the_stick_of_joy));
+        log_info("Number of Balls: %d\n", SDL_JoystickNumBalls(the_stick_of_joy));
 
         SDL_JoystickEventState(SDL_ENABLE);
     } else {

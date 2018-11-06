@@ -7,6 +7,7 @@
 #include "math/pi.h"
 #include "sound_samples.h"
 #include "system/error.h"
+#include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 
@@ -89,7 +90,7 @@ int sound_samples_play_sound(Sound_samples *sound_samples,
     if (sound_index < sound_samples->samples_count) {
         const int free_channel = mix_get_free_channel();
 
-        printf("Found free channel: %d\n", free_channel);
+        log_info("Found free channel: %d\n", free_channel);
 
         if (free_channel >= 0) {
             return Mix_PlayChannel(free_channel, sound_samples->samples[sound_index], loops);

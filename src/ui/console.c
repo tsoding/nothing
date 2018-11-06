@@ -71,8 +71,8 @@ struct EvalResult rect_apply_force(void *param, Gc *gc, struct Scope *scope, str
 
     Rigid_rect *rigid_rect = level_rigid_rect(level, rect_id);
     if (rigid_rect != NULL) {
-        printf("Found rect `%s`\n", rect_id);
-        printf("Applying force (%f, %f)\n", force_x, force_y);
+        log_info("Found rect `%s`\n", rect_id);
+        log_info("Applying force (%f, %f)\n", force_x, force_y);
         rigid_rect_apply_force(rigid_rect, vec(force_x, force_y));
     } else {
         log_fail("Couldn't find rigid_rect `%s`\n", rect_id);
