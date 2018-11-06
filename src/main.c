@@ -14,6 +14,7 @@
 #include "math/point.h"
 #include "sdl/renderer.h"
 #include "system/error.h"
+#include "system/log.h"
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
 
@@ -38,13 +39,13 @@ int main(int argc, char *argv[])
         if (strcmp(argv[i], "--fps") == 0) {
             if (i + 1 < argc) {
                 if (sscanf(argv[i + 1], "%d", &fps) == 0) {
-                    fprintf(stderr, "Cannot parse FPS: %s is not a number\n", argv[i + 1]);
+                    log_fail("Cannot parse FPS: %s is not a number\n", argv[i + 1]);
                     print_usage(stderr);
                     RETURN_LT(lt, -1);
                 }
                 i += 2;
             } else {
-                fprintf(stderr, "Value of FPS is not provided\n");
+                log_fail("Value of FPS is not provided\n");
                 print_usage(stderr);
                 RETURN_LT(lt, -1);
             }
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
     }
 
     if (level_filename == NULL) {
-        fprintf(stderr, "Path to level file is not provided\n");
+        log_fail("Path to level file is not provided\n");
         print_usage(stderr);
         RETURN_LT(lt, -1);
     }
@@ -113,7 +114,7 @@ int main(int argc, char *argv[])
 
         SDL_JoystickEventState(SDL_ENABLE);
     } else {
-        fprintf(stderr, "[WARNING] Could not find any Sticks of the Joy\n");
+        log_warn("Could not find any Sticks of the Joy\n");
     }
 
     if (Mix_OpenAudio(

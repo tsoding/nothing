@@ -10,6 +10,7 @@
 #include "str.h"
 #include "system/error.h"
 #include "system/line_stream.h"
+#include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 
@@ -105,12 +106,12 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
 
         /* TODO(#472): Script doesn't provide its id on missing callback error */
         if (!script_has_scope_value(regions->scripts[i], "on-enter")) {
-            fprintf(stderr, "Script does not provide on-enter callback\n");
+            log_fail("Script does not provide on-enter callback\n");
             RETURN_LT(lt, NULL);
         }
 
         if (!script_has_scope_value(regions->scripts[i], "on-leave")) {
-            fprintf(stderr, "Script does not provide on-leave callback\n");
+            log_fail("Script does not provide on-leave callback\n");
             RETURN_LT(lt, NULL);
         }
 

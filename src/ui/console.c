@@ -8,12 +8,13 @@
 #include "game/level/player/rigid_rect.h"
 #include "sdl/renderer.h"
 #include "system/error.h"
+#include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "ui/console.h"
+#include "ui/console_log.h"
 #include "ui/edit_field.h"
 #include "ui/history.h"
-#include "ui/console_log.h"
 
 #define FONT_WIDTH_SCALE 3.0f
 #define FONT_HEIGHT_SCALE 3.0f
@@ -74,7 +75,7 @@ struct EvalResult rect_apply_force(void *param, Gc *gc, struct Scope *scope, str
         printf("Applying force (%f, %f)\n", force_x, force_y);
         rigid_rect_apply_force(rigid_rect, vec(force_x, force_y));
     } else {
-        fprintf(stderr, "Couldn't find rigid_rect `%s`", rect_id);
+        log_fail("Couldn't find rigid_rect `%s`\n", rect_id);
     }
 
     return eval_success(NIL(gc));
