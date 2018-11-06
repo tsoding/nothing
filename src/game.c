@@ -7,6 +7,7 @@
 #include "game/level.h"
 #include "game/sound_samples.h"
 #include "system/error.h"
+#include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "ui/console.h"
@@ -206,7 +207,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
         case SDLK_r:
-            printf("Reloading the level from '%s'...\n", game->level_file_path);
+            log_info("Reloading the level from '%s'...\n", game->level_file_path);
 
             game->level = RESET_LT(
                 game->lt,
@@ -225,7 +226,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
             break;
 
         case SDLK_q:
-            printf("Reloading the level's platforms from '%s'...\n", game->level_file_path);
+            log_info("Reloading the level's platforms from '%s'...\n", game->level_file_path);
             if (level_reload_preserve_player(game->level, game->level_file_path) < 0) {
                 print_current_error_msg("Could not reload the level");
                 game->state = GAME_STATE_QUIT;

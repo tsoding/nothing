@@ -8,6 +8,7 @@
 #include "str.h"
 #include "system/error.h"
 #include "system/line_stream.h"
+#include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "ui/console.h"
@@ -65,7 +66,7 @@ Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
             script->gc,
             source_code);
     if (parse_result.is_error) {
-        fprintf(stderr, "Parsing error: %s\n", parse_result.error_message);
+        log_fail("Parsing error: %s\n", parse_result.error_message);
         RETURN_LT(lt, NULL);
     }
 
@@ -77,7 +78,7 @@ Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
              parse_result.expr));
     if (eval_result.is_error) {
         print_expr_as_sexpr(stderr, eval_result.expr);
-        fprintf(stderr, "\n");
+        log_fail("\n");
         RETURN_LT(lt, NULL);
     }
 
@@ -103,7 +104,7 @@ int script_eval(Script *script, const char *source_code)
         script->gc,
         source_code);
     if (parse_result.is_error) {
-        fprintf(stderr, "Parsing error: %s\n", parse_result.error_message);
+        log_fail("Parsing error: %s\n", parse_result.error_message);
         return -1;
     }
 
@@ -112,9 +113,10 @@ int script_eval(Script *script, const char *source_code)
         &script->scope,
         parse_result.expr);
     if (eval_result.is_error) {
-        fprintf(stderr, "Evaluation error: ");
+        log_fail("Evaluation error: ");
+        /* TODO: print_expr_as_sexpr could not be easily integrated with log_fail */
         print_expr_as_sexpr(stderr, eval_result.expr);
-        fprintf(stderr, "\n");
+        log_fail("\n");
         return -1;
     }
 

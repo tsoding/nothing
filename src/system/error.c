@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #include "error.h"
+#include "log.h"
 
 static Error_type current_error_type = ERROR_TYPE_OK;
 
@@ -39,15 +40,15 @@ void print_error_msg(Error_type error_type, const char *user_prefix)
         break;
 
     case ERROR_TYPE_LIBC:
-        fprintf(stderr, "libc error: %s: %s\n", user_prefix, strerror(errno));
+        log_fail("libc error: %s: %s\n", user_prefix, strerror(errno));
         break;
 
     case ERROR_TYPE_SDL2:
-        fprintf(stderr, "SDL2 error: %s: %s\n", user_prefix, SDL_GetError());
+        log_fail("SDL2 error: %s: %s\n", user_prefix, SDL_GetError());
         break;
 
     case ERROR_TYPE_SDL2_MIXER:
-        fprintf(stderr, "SDL2_mixer error: %s: %s\n", user_prefix, Mix_GetError());
+        log_fail("SDL2_mixer error: %s: %s\n", user_prefix, Mix_GetError());
         break;
     }
 }
