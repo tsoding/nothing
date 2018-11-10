@@ -269,7 +269,7 @@ void goals_show(Goals *goals, const char *id)
 {
     assert(goals);
     assert(id);
-    /* TODO: goals_show is not implemented */
+    /* TODO(#496): goals_show is not implemented */
 }
 
 /* Private Functions */
