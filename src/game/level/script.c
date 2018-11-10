@@ -41,7 +41,7 @@ show_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     assert(scope);
     (void) args;
 
-    /* TODO: show_goal is not implemented */
+    /* TODO(#498): show_goal is not implemented */
 
     return eval_success(NIL(gc));
 }
