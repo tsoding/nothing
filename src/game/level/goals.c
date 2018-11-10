@@ -26,8 +26,10 @@ struct Goals {
     Lt *lt;
     char **ids;
     Point *points;
+    /* TODO: replace Goals.regions with the Regions entity */
     Rect *regions;
     Color *colors;
+    /* TODO: it is not clear how to maintain Cue_state from the scripting language */
     Cue_state *cue_states;
     size_t count;
     Rect player_hitbox;
@@ -254,6 +256,20 @@ void goals_checkpoint(const Goals *goals,
             player_checkpoint(player, goals->points[i]);
         }
     }
+}
+
+void goals_hide(Goals *goals, const char *id)
+{
+    assert(goals);
+    assert(id);
+    /* TODO: goals_hide is not implemented */
+}
+
+void goals_show(Goals *goals, const char *id)
+{
+    assert(goals);
+    assert(id);
+    /* TODO: goals_show is not implemented */
 }
 
 /* Private Functions */

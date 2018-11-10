@@ -28,4 +28,7 @@ void goals_checkpoint(const Goals *goals,
 void goals_cue(Goals *goals,
                const Camera *camera);
 
+void goals_hide(Goals *goals, const char *id);
+void goals_show(Goals *goals, const char *id);
+
 #endif  // GOALS_H_
