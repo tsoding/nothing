@@ -29,7 +29,7 @@ struct Goals {
     /* TODO(#493): replace Goals.regions with the Regions entity */
     Rect *regions;
     Color *colors;
-    /* TODO: it is not clear how to maintain Cue_state from the scripting language */
+    /* TODO(#494): it is not clear how to maintain Cue_state from the scripting language */
     Cue_state *cue_states;
     size_t count;
     Rect player_hitbox;
