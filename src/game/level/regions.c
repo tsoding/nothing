@@ -24,6 +24,7 @@ struct Regions
     Lt *lt;
     size_t count;
     Rect *rects;
+    Color *colors;
     Script **scripts;
     enum RegionState *states;
 };
@@ -64,6 +65,14 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
         RETURN_LT(lt, NULL);
     }
 
+    regions->colors = PUSH_LT(
+        lt,
+        nth_alloc(sizeof(Color) * regions->count),
+        free);
+    if (regions->colors == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     regions->scripts = PUSH_LT(
         lt,
         nth_alloc(sizeof(Script*) * regions->count),
@@ -84,17 +93,22 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
 
     log_info("Amount of regions: %lu\n", regions->count);
 
+    char color[7];
+
     for (size_t i = 0; i < regions->count; ++i) {
         if (sscanf(
                 line_stream_next(line_stream),
-                "%f%f%f%f",
+                "%f%f%f%f%6s",
                 &regions->rects[i].x,
                 &regions->rects[i].y,
                 &regions->rects[i].w,
-                &regions->rects[i].h) < 0) {
+                &regions->rects[i].h,
+                color) < 0) {
             throw_error(ERROR_TYPE_LIBC);
             RETURN_LT(lt, NULL);
         }
+
+        regions->colors[i] = color_from_hexstr(color);
 
         regions->scripts[i] = PUSH_LT(
             lt,
@@ -155,4 +169,21 @@ void regions_player_leave(Regions *regions, Player *player)
             script_eval(regions->scripts[i], "(on-leave)");
         }
     }
+}
+
+int regions_render(Regions *regions, Camera *camera)
+{
+    assert(regions);
+    assert(camera);
+
+    for (size_t i = 0; i < regions->count; ++i) {
+        if (camera_render_debug_rect(
+                camera,
+                regions->rects[i],
+                regions->colors[i]) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
 }

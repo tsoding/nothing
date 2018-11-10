@@ -148,7 +148,8 @@ def save_scripts(svg_root, output_file):
         y = script.attrib['y']
         w = script.attrib['width']
         h = script.attrib['height']
-        output_file.write("%s %s %s %s\n" % (x, y, w, h))
+        color = color_from_style(script.attrib['style'])
+        output_file.write("%s %s %s %s %s\n" % (x, y, w, h, color))
         [title] = [child for child in script]
         with open(title.text, 'r') as script_file:
             script_lines = script_file.read().splitlines()

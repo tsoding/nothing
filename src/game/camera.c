@@ -365,3 +365,20 @@ static Rect camera_rect(const Camera *camera,
             effective_scale(view_port),
             vec(rect.w, rect.h)));
 }
+
+int camera_render_debug_rect(Camera *camera,
+                             Rect rect,
+                             Color c)
+{
+    assert(camera);
+
+    if (!camera->debug_mode) {
+        return 0;
+    }
+
+    if (camera_fill_rect(camera, rect, c) < 0) {
+        return -1;
+    }
+
+    return 0;
+}

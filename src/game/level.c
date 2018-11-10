@@ -197,6 +197,10 @@ int level_render(const Level *level, Camera *camera)
         return -1;
     }
 
+    if (regions_render(level->regions, camera) < 0) {
+        return -1;
+    }
+
     return 0;
 }
 
@@ -340,6 +344,12 @@ int level_reload_preserve_player(Level *level, const char *file_name)
         RETURN_LT(lt, -1);
     }
     level->labels = RESET_LT(level->lt, level->labels, labels);
+
+    Regions * const regions = create_regions_from_line_stream(level_stream, level);
+    if (regions == NULL) {
+        RETURN_LT(lt, -1);
+    }
+    level->regions = RESET_LT(level->lt, level->regions, regions);
 
     physical_world_clean(level->physical_world);
     if (physical_world_add_solid(

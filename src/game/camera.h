@@ -10,7 +10,7 @@
 typedef struct Camera Camera;
 
 Camera *create_camera(SDL_Renderer *renderer,
-                        Sprite_font *font);
+                      Sprite_font *font);
 void destroy_camera(Camera *camera);
 
 int camera_clear_background(Camera *camera,
@@ -41,6 +41,10 @@ int camera_render_text(Camera *camera,
 int camera_render_debug_text(Camera *camera,
                              const char *text,
                              Vec position);
+
+int camera_render_debug_rect(Camera *camera,
+                             Rect rect,
+                             Color color);
 
 void camera_center_at(Camera *camera, Point position);
 
