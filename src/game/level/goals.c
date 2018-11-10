@@ -176,6 +176,13 @@ int goals_render(const Goals *goals,
                 return -1;
             }
         }
+
+        if (camera_render_debug_rect(
+                camera,
+                goals->regions[i],
+                goals->colors[i]) < 0) {
+            return -1;
+        }
     }
 
     return 0;
