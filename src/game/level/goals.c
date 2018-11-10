@@ -262,7 +262,7 @@ void goals_hide(Goals *goals, const char *id)
 {
     assert(goals);
     assert(id);
-    /* TODO: goals_hide is not implemented */
+    /* TODO(#495): goals_hide is not implemented */
 }
 
 void goals_show(Goals *goals, const char *id)
