@@ -28,7 +28,7 @@ hide_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     assert(scope);
     (void) args;
 
-    /* TODO: hide_goal is not implemented */
+    /* TODO(#497): hide_goal is not implemented */
 
     return eval_success(NIL(gc));
 }
