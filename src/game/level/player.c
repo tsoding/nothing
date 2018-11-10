@@ -250,7 +250,7 @@ void player_hide_goals(const Player *player,
 {
     assert(player);
     assert(goals);
-    goals_hide(goals, rigid_rect_hitbox(player->alive_body));
+    goals_hide_from_player(goals, rigid_rect_hitbox(player->alive_body));
 }
 
 void player_die_from_lava(Player *player,

@@ -196,8 +196,8 @@ void goals_update(Goals *goals,
     goals->angle = fmodf(goals->angle + 2.0f * delta_time, 2.0f * PI);
 }
 
-void goals_hide(Goals *goals,
-                Rect player_hitbox)
+void goals_hide_from_player(Goals *goals,
+                            Rect player_hitbox)
 {
     goals->player_hitbox = player_hitbox;
 

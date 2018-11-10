@@ -21,8 +21,8 @@ int goals_sound(Goals *goals,
                 Sound_samples *sound_samples);
 void goals_update(Goals *goals,
                   float delta_time);
-void goals_hide(Goals *goals,
-                Rect player_hitbox);
+void goals_hide_from_player(Goals *goals,
+                            Rect player_hitbox);
 void goals_checkpoint(const Goals *goals,
                       Player *player);
 void goals_cue(Goals *goals,
