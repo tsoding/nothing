@@ -12,6 +12,9 @@ struct Gc;
 
 struct EvalResult eval_success(struct Expr expr);
 struct EvalResult eval_failure(struct Expr expr);
+struct EvalResult
+wrong_argument_type(Gc *gc, const char *type, struct Expr obj);
+
 
 struct EvalResult eval(Gc *gc, struct Scope *scope, struct Expr expr);
 

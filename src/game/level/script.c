@@ -21,17 +21,6 @@ struct Script
     struct Scope scope;
 };
 
-/* TODO: wrong_argument_type should used in case of a wrong argument type eval error? */
-static struct EvalResult
-wrong_argument_type(Gc *gc, const char *type, struct Expr obj)
-{
-    return eval_failure(
-        list(gc, 3,
-             SYMBOL(gc, "wrong-argument-type"),
-             SYMBOL(gc, type),
-             obj));
-}
-
 static struct EvalResult
 hide_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
