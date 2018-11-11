@@ -4,6 +4,7 @@
 #include "ebisp/interpreter.h"
 #include "ebisp/parser.h"
 #include "ebisp/scope.h"
+#include "game/level.h"
 #include "script.h"
 #include "str.h"
 #include "system/error.h"
@@ -20,15 +21,43 @@ struct Script
     struct Scope scope;
 };
 
+/* TODO: wrong_argument_type should used in case of a wrong argument type eval error? */
+static struct EvalResult
+wrong_argument_type(Gc *gc, const char *type, struct Expr obj)
+{
+    return eval_failure(
+        list(gc, 3,
+             SYMBOL(gc, "wrong-argument-type"),
+             SYMBOL(gc, type),
+             obj));
+}
+
 static struct EvalResult
 hide_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     assert(param);
     assert(gc);
     assert(scope);
-    (void) args;
 
-    /* TODO(#497): hide_goal is not implemented */
+    if (!list_p(args)) {
+        return wrong_argument_type(gc, "listp", args);
+    }
+
+    if (length_of_list(args) != 1) {
+        return eval_failure(
+            CONS(gc,
+                 SYMBOL(gc, "wrong-number-of-arguments"),
+                 NUMBER(gc, length_of_list(args))));
+    }
+
+    if (!string_p(CAR(args))) {
+        return wrong_argument_type(gc, "stringp", args);
+    }
+
+    const char * const goal_id = CAR(args).atom->str;
+    Level * const level = (Level*)param;
+
+    level_hide_goal(level, goal_id);
 
     return eval_success(NIL(gc));
 }
