@@ -68,9 +68,26 @@ show_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     assert(param);
     assert(gc);
     assert(scope);
-    (void) args;
 
-    /* TODO(#498): show_goal is not implemented */
+    if (!list_p(args)) {
+        return wrong_argument_type(gc, "listp", args);
+    }
+
+    if (length_of_list(args) != 1) {
+        return eval_failure(
+            CONS(gc,
+                 SYMBOL(gc, "wrong-number-of-arguments"),
+                 NUMBER(gc, length_of_list(args))));
+    }
+
+    if (!string_p(CAR(args))) {
+        return wrong_argument_type(gc, "stringp", args);
+    }
+
+    const char * const goal_id = CAR(args).atom->str;
+    Level * const level = (Level*)param;
+
+    level_show_goal(level, goal_id);
 
     return eval_success(NIL(gc));
 }
