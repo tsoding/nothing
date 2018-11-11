@@ -31,6 +31,7 @@ struct Goals {
     Color *colors;
     /* TODO(#494): it is not clear how to maintain Cue_state from the scripting language */
     Cue_state *cue_states;
+    bool *visible;
     size_t count;
     Rect player_hitbox;
     float angle;
@@ -100,6 +101,11 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
+    goals->visible = PUSH_LT(lt, nth_alloc(sizeof(bool) * goals->count), free);
+    if (goals->visible == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     char color[7];
     for (size_t i = 0; i < goals->count; ++i) {
         if (sscanf(
@@ -118,6 +124,7 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
         }
         goals->colors[i] = color_from_hexstr(color);
         goals->cue_states[i] = CUE_STATE_VIRGIN;
+        goals->visible[i] = true;
     }
 
     goals->lt = lt;
@@ -262,19 +269,31 @@ void goals_hide(Goals *goals, const char *id)
 {
     assert(goals);
     assert(id);
-    /* TODO(#495): goals_hide is not implemented */
+
+    for (size_t i = 0; i < goals->count; ++i) {
+        if (strcmp(id, goals->ids[i]) == 0) {
+            goals->visible[i] = false;
+            return;
+        }
+    }
 }
 
 void goals_show(Goals *goals, const char *id)
 {
     assert(goals);
     assert(id);
-    /* TODO(#496): goals_show is not implemented */
+
+    for (size_t i = 0; i < goals->count; ++i) {
+        if (strcmp(id, goals->ids[i]) == 0) {
+            goals->visible[i] = true;
+            return;
+        }
+    }
 }
 
 /* Private Functions */
 
 static int goals_is_goal_hidden(const Goals *goals, size_t i)
 {
-    return rects_overlap(goals->regions[i], goals->player_hitbox);
+    return !goals->visible[i];
 }

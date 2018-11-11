@@ -66,10 +66,17 @@ bool nil_p(struct Expr obj)
         && strcmp(obj.atom->sym, "nil") == 0;
 }
 
+
 bool symbol_p(struct Expr obj)
 {
     return obj.type == EXPR_ATOM
         && obj.atom->type == ATOM_SYMBOL;
+}
+
+bool string_p(struct Expr obj)
+{
+    return obj.type == EXPR_ATOM
+        && obj.atom->type == ATOM_STRING;
 }
 
 bool cons_p(struct Expr obj)

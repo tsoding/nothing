@@ -27,13 +27,20 @@ struct EvalResult eval_failure(struct Expr error)
     return result;
 }
 
+struct EvalResult
+wrong_argument_type(Gc *gc, const char *type, struct Expr obj)
+{
+    return eval_failure(
+        list(gc, 3,
+             SYMBOL(gc, "wrong-argument-type"),
+             SYMBOL(gc, type),
+             obj));
+}
+
 static struct EvalResult length(Gc *gc, struct Expr obj)
 {
     if (!list_p(obj)) {
-        return eval_failure(list(gc, 3,
-                                 SYMBOL(gc, "wrong-argument-type"),
-                                 SYMBOL(gc, "listp"),
-                                 obj));
+        return wrong_argument_type(gc, "listp", obj);
     }
 
     return eval_success(NUMBER(gc, length_of_list(obj)));
