@@ -75,9 +75,8 @@ bool symbol_p(struct Expr obj)
 
 bool string_p(struct Expr obj)
 {
-    (void) obj;
-    /* TODO: string_p is not implemented */
-    return false;
+    return obj.type == EXPR_ATOM
+        && obj.atom->type == ATOM_STRING;
 }
 
 bool cons_p(struct Expr obj)

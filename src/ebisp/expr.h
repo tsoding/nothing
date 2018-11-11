@@ -33,6 +33,7 @@ struct Expr
     enum ExprType type;
     union {
         struct Cons *cons;
+        // TODO: Atom type is redundant
         struct Atom *atom;
     };
 };
