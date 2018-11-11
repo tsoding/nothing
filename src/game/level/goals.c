@@ -295,6 +295,5 @@ void goals_show(Goals *goals, const char *id)
 
 static int goals_is_goal_hidden(const Goals *goals, size_t i)
 {
-    /* TODO: goals_is_goal_hidden ignores goals->visible */
-    return rects_overlap(goals->regions[i], goals->player_hitbox);
+    return !goals->visible[i];
 }
