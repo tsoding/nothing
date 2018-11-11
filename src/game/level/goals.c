@@ -282,7 +282,13 @@ void goals_show(Goals *goals, const char *id)
 {
     assert(goals);
     assert(id);
-    /* TODO(#496): goals_show is not implemented */
+
+    for (size_t i = 0; i < goals->count; ++i) {
+        if (strcmp(id, goals->ids[i]) == 0) {
+            goals->visible[i] = true;
+            return;
+        }
+    }
 }
 
 /* Private Functions */
