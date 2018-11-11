@@ -27,7 +27,6 @@ struct Goals {
     char **ids;
     Point *points;
     /* TODO(#493): replace Goals.regions with the Regions entity */
-    Rect *regions;
     Color *colors;
     /* TODO(#494): it is not clear how to maintain Cue_state from the scripting language */
     Cue_state *cue_states;
@@ -83,12 +82,6 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    goals->regions = PUSH_LT(lt, nth_alloc(sizeof(Rect) * goals->count), free);
-    if (goals->regions == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
-        RETURN_LT(lt, NULL);
-    }
-
     goals->colors = PUSH_LT(lt, nth_alloc(sizeof(Color) * goals->count), free);
     if (goals->colors == NULL) {
         throw_error(ERROR_TYPE_LIBC);
@@ -110,14 +103,10 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
     for (size_t i = 0; i < goals->count; ++i) {
         if (sscanf(
                 line_stream_next(line_stream),
-                "%" STRINGIFY(GOAL_MAX_ID_SIZE) "s%f%f%f%f%f%f%6s",
+                "%" STRINGIFY(GOAL_MAX_ID_SIZE) "s%f%f%6s",
                 goals->ids[i],
                 &goals->points[i].x,
                 &goals->points[i].y,
-                &goals->regions[i].x,
-                &goals->regions[i].y,
-                &goals->regions[i].w,
-                &goals->regions[i].h,
                 color) < 0) {
             throw_error(ERROR_TYPE_LIBC);
             RETURN_LT(lt, NULL);
@@ -184,13 +173,6 @@ int goals_render(const Goals *goals,
             if (goals_render_core(goals, i, camera) < 0) {
                 return -1;
             }
-        }
-
-        if (camera_render_debug_rect(
-                camera,
-                goals->regions[i],
-                goals->colors[i]) < 0) {
-            return -1;
         }
     }
 
