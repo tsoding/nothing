@@ -20,6 +20,32 @@ struct Script
     struct Scope scope;
 };
 
+static struct EvalResult
+hide_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    assert(param);
+    assert(gc);
+    assert(scope);
+    (void) args;
+
+    /* TODO(#497): hide_goal is not implemented */
+
+    return eval_success(NIL(gc));
+}
+
+static struct EvalResult
+show_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    assert(param);
+    assert(gc);
+    assert(scope);
+    (void) args;
+
+    /* TODO(#498): show_goal is not implemented */
+
+    return eval_success(NIL(gc));
+}
+
 Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
 {
     assert(line_stream);
@@ -60,6 +86,16 @@ Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
         &script->scope,
         SYMBOL(script->gc, "rect-apply-force"),
         NATIVE(script->gc, rect_apply_force, level));
+    set_scope_value(
+        script->gc,
+        &script->scope,
+        SYMBOL(script->gc, "hide-goal"),
+        NATIVE(script->gc, hide_goal, level));
+    set_scope_value(
+        script->gc,
+        &script->scope,
+        SYMBOL(script->gc, "show-goal"),
+        NATIVE(script->gc, show_goal, level));
 
     struct ParseResult parse_result =
         read_all_exprs_from_string(

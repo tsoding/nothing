@@ -26,8 +26,10 @@ struct Goals {
     Lt *lt;
     char **ids;
     Point *points;
+    /* TODO(#493): replace Goals.regions with the Regions entity */
     Rect *regions;
     Color *colors;
+    /* TODO(#494): it is not clear how to maintain Cue_state from the scripting language */
     Cue_state *cue_states;
     size_t count;
     Rect player_hitbox;
@@ -196,8 +198,8 @@ void goals_update(Goals *goals,
     goals->angle = fmodf(goals->angle + 2.0f * delta_time, 2.0f * PI);
 }
 
-void goals_hide(Goals *goals,
-                Rect player_hitbox)
+void goals_hide_from_player(Goals *goals,
+                            Rect player_hitbox)
 {
     goals->player_hitbox = player_hitbox;
 
@@ -254,6 +256,20 @@ void goals_checkpoint(const Goals *goals,
             player_checkpoint(player, goals->points[i]);
         }
     }
+}
+
+void goals_hide(Goals *goals, const char *id)
+{
+    assert(goals);
+    assert(id);
+    /* TODO(#495): goals_hide is not implemented */
+}
+
+void goals_show(Goals *goals, const char *id)
+{
+    assert(goals);
+    assert(id);
+    /* TODO(#496): goals_show is not implemented */
 }
 
 /* Private Functions */
