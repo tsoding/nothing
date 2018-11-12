@@ -52,6 +52,7 @@ struct Console
 /* TODO(#356): Console does not support autocompletion */
 /* TODO(#357): Console does not show the state of the GC of the script */
 /* TODO(#358): Console does not support copy, cut, paste operations */
+/* TODO(#503): hide-goal and show-goal are not accessible in Console */
 
 struct EvalResult rect_apply_force(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {

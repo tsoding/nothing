@@ -26,15 +26,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.25"
-     inkscape:cx="7058.9238"
-     inkscape:cy="3297.3802"
+     inkscape:cx="4804.9238"
+     inkscape:cy="2721.3802"
      inkscape:document-units="mm"
      inkscape:current-layer="svg4541"
      showgrid="false"
-     inkscape:window-width="956"
-     inkscape:window-height="1023"
+     inkscape:window-width="1916"
+     inkscape:window-height="1041"
      inkscape:window-x="0"
-     inkscape:window-y="36"
+     inkscape:window-y="18"
      inkscape:window-maximized="0"
      inkscape:snap-bbox="true"
      inkscape:bbox-paths="true"
@@ -116,18 +116,23 @@
      y="14.061144" />
   <rect
      style="fill:#deaa87;fill-opacity:0.54726371;stroke:none;stroke-width:0.2580255"
-     id="region4529"
+     id="script_goal_1"
      width="904.875"
      height="333.04886"
      x="659.88593"
-     y="-301.85339" />
+     y="-301.85339"
+     inkscape:label="#region4529">
+    <title
+       id="title47">script-goal-1.lisp</title>
+  </rect>
   <rect
      style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-     id="goal4529"
+     id="goal1"
      width="33.141422"
      height="27.79603"
      x="976.55853"
-     y="-27.401052" />
+     y="-27.401052"
+     inkscape:label="#goal4529" />
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.25424471"
      id="rect5109-3-5"
@@ -183,18 +188,23 @@
      y="917.25397" />
   <rect
      style="fill:#deaa87;fill-opacity:0.54726371;stroke:none;stroke-width:0.39077589"
-     id="region4530"
+     id="script_goal_2"
      width="920.82434"
      height="276.87665"
      x="2017.5438"
-     y="-854.8988" />
+     y="-854.8988"
+     inkscape:label="#region4530">
+    <title
+       id="title49">script-goal-2.lisp</title>
+  </rect>
   <rect
      style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-     id="goal4530"
+     id="goal2"
      width="33.141422"
      height="27.79603"
      x="2379.0662"
-     y="-605.81818" />
+     y="-605.81818"
+     inkscape:label="#goal4530" />
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.08275159"
      id="rect5109-3-5-3-67"
