@@ -26,7 +26,6 @@ struct Goals {
     Lt *lt;
     char **ids;
     Point *points;
-    /* TODO(#493): replace Goals.regions with the Regions entity */
     Color *colors;
     /* TODO(#494): it is not clear how to maintain Cue_state from the scripting language */
     Cue_state *cue_states;
