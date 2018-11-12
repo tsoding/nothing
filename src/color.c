@@ -15,15 +15,6 @@ Color rgba(float r, float g, float b, float a)
     return result;
 }
 
-Color color256(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
-{
-    return rgba(
-        (float) r / 255.0f,
-        (float) g / 255.0f,
-        (float) b / 255.0f,
-        (float) a / 255.0f);
-}
-
 static Uint8 hex2dec_digit(char c)
 {
     if (c >= '0' && c <= '9') {
@@ -52,11 +43,11 @@ Color color_from_hexstr(const char *hexstr)
         return rgba(0.0f, 0.0f, 0.0f, 1.0f);
     }
 
-    return color256(
-        parse_color_component(hexstr),
-        parse_color_component(hexstr + 2),
-        parse_color_component(hexstr + 4),
-        255);
+    return rgba(
+        parse_color_component(hexstr) / 255.0f,
+        parse_color_component(hexstr + 2) / 255.0f,
+        parse_color_component(hexstr + 4) / 255.0f,
+        1.0f);
 }
 
 SDL_Color color_for_sdl(Color color)
