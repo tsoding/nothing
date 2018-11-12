@@ -7,10 +7,10 @@
 #include "game/level/player/rigid_rect.h"
 #include "lava.h"
 #include "math/rect.h"
-#include "system/error.h"
 #include "system/lt.h"
 #include "system/line_stream.h"
 #include "system/nth_alloc.h"
+#include "system/log.h"
 
 #define LAVA_BOINGNESS 2500.0f
 
@@ -31,7 +31,6 @@ Lava *create_lava_from_line_stream(LineStream *line_stream)
 
     Lava *lava = PUSH_LT(lt, nth_alloc(sizeof(Lava)), free);
     if (lava == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
@@ -39,13 +38,12 @@ Lava *create_lava_from_line_stream(LineStream *line_stream)
             line_stream_next(line_stream),
             "%lu",
             &lava->rects_count) < 0) {
-        throw_error(ERROR_TYPE_LIBC);
+        log_fail("Could not read amount of lavas\n");
         RETURN_LT(lt, NULL);
     }
 
     lava->rects = PUSH_LT(lt, nth_alloc(sizeof(Wavy_rect*) * lava->rects_count), free);
     if (lava->rects == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 

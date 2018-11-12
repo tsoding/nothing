@@ -3,10 +3,10 @@
 #include "game/camera.h"
 #include "game/level/labels.h"
 #include "str.h"
-#include "system/error.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "system/log.h"
 
 struct Labels
 {
@@ -30,7 +30,6 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
 
     Labels * const labels = PUSH_LT(lt, nth_alloc(sizeof(Labels)), free);
     if (labels == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     labels->lt = lt;
@@ -39,37 +38,32 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
             line_stream_next(line_stream),
             "%lu",
             &labels->count) == EOF) {
-        throw_error(ERROR_TYPE_LIBC);
+        log_fail("Could not read amount of labels\n");
         RETURN_LT(lt, NULL);
     }
 
     labels->positions = PUSH_LT(lt, nth_alloc(sizeof(Vec) * labels->count), free);
     if (labels->positions == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
     labels->colors = PUSH_LT(lt, nth_alloc(sizeof(Color) * labels->count), free);
     if (labels->colors == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
     labels->texts = PUSH_LT(lt, nth_alloc(sizeof(char*) * labels->count), free);
     if (labels->texts == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
     labels->states = PUSH_LT(lt, nth_alloc(sizeof(float) * labels->count), free);
     if (labels->states == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
     labels->visible = PUSH_LT(lt, nth_alloc(sizeof(int) * labels->count), free);
     if (labels->visible == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
@@ -85,7 +79,7 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
                 &labels->positions[i].x,
                 &labels->positions[i].y,
                 color) == EOF) {
-            throw_error(ERROR_TYPE_LIBC);
+            log_fail("Could not read position and color of %dth label\n", i);
             RETURN_LT(lt, NULL);
         }
 
@@ -93,7 +87,7 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
 
         const char *label_text = line_stream_next(line_stream);
         if (label_text == NULL) {
-            throw_error(ERROR_TYPE_LIBC);
+            log_fail("Could not read text of %dth label\n", i);
             RETURN_LT(lt, NULL);
         }
 
@@ -102,7 +96,6 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
             string_duplicate(label_text, NULL),
             free);
         if (labels->texts[i] == NULL) {
-            throw_error(ERROR_TYPE_LIBC);
             RETURN_LT(lt, NULL);
         }
 

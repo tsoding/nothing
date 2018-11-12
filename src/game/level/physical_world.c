@@ -3,7 +3,6 @@
 
 #include "game/level/platforms.h"
 #include "physical_world.h"
-#include "system/error.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 
@@ -28,7 +27,6 @@ Physical_world *create_physical_world(void)
     Physical_world * const physical_world =
         PUSH_LT(lt, nth_alloc(sizeof(Physical_world)), free);
     if (physical_world == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
@@ -38,7 +36,6 @@ Physical_world *create_physical_world(void)
             nth_alloc(sizeof(Solid_ref) * PHYSICAL_WORLD_CAPACITY),
             free);
     if (physical_world->solids == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 

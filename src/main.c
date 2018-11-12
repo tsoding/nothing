@@ -13,7 +13,6 @@
 #include "game/sprite_font.h"
 #include "math/point.h"
 #include "sdl/renderer.h"
-#include "system/error.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
@@ -62,7 +61,7 @@ int main(int argc, char *argv[])
     }
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-        print_error_msg(ERROR_TYPE_SDL2, "Could not initialize SDL");
+        log_fail("Could not initialize SDL: %s\n", SDL_GetError());
         RETURN_LT(lt, -1);
     }
     PUSH_LT(lt, 42, SDL_Quit_lt);
@@ -79,7 +78,7 @@ int main(int argc, char *argv[])
         SDL_DestroyWindow);
 
     if (window == NULL) {
-        print_error_msg(ERROR_TYPE_SDL2, "Could not create SDL window");
+        log_fail("Could not create SDL window: %s\n", SDL_GetError());
         RETURN_LT(lt, -1);
     }
 
@@ -88,11 +87,11 @@ int main(int argc, char *argv[])
         SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC),
         SDL_DestroyRenderer);
     if (renderer == NULL) {
-        print_error_msg(ERROR_TYPE_SDL2, "Could not create SDL renderer");
+        log_fail("Could not create SDL renderer: %s\n", SDL_GetError());
         RETURN_LT(lt, -1);
     }
     if (SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND) < 0) {
-        print_error_msg(ERROR_TYPE_SDL2, "Could not set up blending mode for the renderer");
+        log_fail("Could not set up blending mode for the renderer: %s\n", SDL_GetError());
         RETURN_LT(lt, -1);
     }
 
@@ -102,7 +101,7 @@ int main(int argc, char *argv[])
         the_stick_of_joy = PUSH_LT(lt, SDL_JoystickOpen(0), SDL_JoystickClose);
 
         if (the_stick_of_joy == NULL) {
-            print_error_msg(ERROR_TYPE_SDL2, "Could not open 0th Stick of the Joy: %s\n");
+            log_fail("Could not open 0th Stick of the Joy: %s\n", SDL_GetError());
             RETURN_LT(lt, -1);
         }
 
@@ -122,7 +121,7 @@ int main(int argc, char *argv[])
             MIX_DEFAULT_FORMAT,
             2,
             1024) < 0) {
-        print_error_msg(ERROR_TYPE_SDL2_MIXER, "Could not initialize the audio\n");
+        log_fail("Could not initialize the audio: %s\n", Mix_GetError());
         RETURN_LT(lt, -1);
     }
     PUSH_LT(lt, 42, Mix_CloseAudio_lt);
@@ -144,7 +143,6 @@ int main(int argc, char *argv[])
             renderer),
         destroy_game);
     if (game == NULL) {
-        print_current_error_msg("Could not create the game object");
         RETURN_LT(lt, -1);
     }
 
@@ -159,30 +157,25 @@ int main(int argc, char *argv[])
 
         while (!game_over_check(game) && SDL_PollEvent(&e)) {
             if (game_event(game, &e) < 0) {
-                print_current_error_msg("Failed handling event");
                 RETURN_LT(lt, -1);
             }
         }
 
         if (game_input(game, keyboard_state, the_stick_of_joy) < 0) {
-            print_current_error_msg("Failed handling input");
             RETURN_LT(lt, -1);
         }
 
         if (game_update(game, (float) delta_time * 0.001f) < 0) {
-            print_current_error_msg("Failed handling updating");
             RETURN_LT(lt, -1);
         }
 
         if (game_sound(game) < 0) {
-            print_current_error_msg("Failed handling the sound");
             RETURN_LT(lt, -1);
         }
 
         render_timer -= delta_time;
         if (render_timer <= 0) {
             if (game_render(game) < 0) {
-                print_current_error_msg("Failed rendering the game");
                 RETURN_LT(lt, -1);
             }
             SDL_RenderPresent(renderer);

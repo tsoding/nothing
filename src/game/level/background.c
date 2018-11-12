@@ -3,10 +3,10 @@
 #include "game/level/background.h"
 #include "math/rand.h"
 #include "math/rect.h"
-#include "system/error.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "system/log.h"
 
 #define BACKGROUND_CHUNK_COUNT 5
 #define BACKGROUND_CHUNK_WIDTH 250.0f
@@ -52,7 +52,7 @@ Background *create_background_from_line_stream(LineStream *line_stream)
 {
     char color[7];
     if (sscanf(line_stream_next(line_stream), "%6s", color) == EOF) {
-        throw_error(ERROR_TYPE_LIBC);
+        log_fail("Could not read background's color\n");
         return NULL;
     }
 

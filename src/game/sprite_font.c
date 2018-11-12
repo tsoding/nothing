@@ -6,9 +6,9 @@
 #include "math/rect.h"
 #include "sdl/renderer.h"
 #include "sprite_font.h"
-#include "system/error.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "system/log.h"
 
 #define FONT_ROW_SIZE 18
 
@@ -31,13 +31,12 @@ Sprite_font *create_sprite_font_from_file(const char *bmp_file_path,
 
     Sprite_font * const sprite_font = PUSH_LT(lt, nth_alloc(sizeof(Sprite_font)), free);
     if (sprite_font == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
     SDL_Surface * const surface = PUSH_LT(lt, SDL_LoadBMP(bmp_file_path), SDL_FreeSurface);
     if (surface == NULL) {
-        throw_error(ERROR_TYPE_SDL2);
+        log_fail("Could not load %s: %s\n", bmp_file_path, SDL_GetError());
         RETURN_LT(lt, NULL);
     }
 
@@ -45,7 +44,7 @@ Sprite_font *create_sprite_font_from_file(const char *bmp_file_path,
                         SDL_TRUE,
                         SDL_MapRGB(surface->format,
                                    0, 0, 0)) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
+        log_fail("SDL_SetColorKey: %s\n", SDL_GetError());
         RETURN_LT(lt, NULL);
     }
 
@@ -54,7 +53,7 @@ Sprite_font *create_sprite_font_from_file(const char *bmp_file_path,
         SDL_CreateTextureFromSurface(renderer, surface),
         SDL_DestroyTexture);
     if (sprite_font->texture == NULL) {
-        throw_error(ERROR_TYPE_SDL2);
+        log_fail("SDL_CreateTextureFromSurface: %s\n", SDL_GetError());
         RETURN_LT(lt, NULL);
     }
 
@@ -102,12 +101,12 @@ int sprite_font_render_text(const Sprite_font *sprite_font,
     const SDL_Color sdl_color = color_for_sdl(color);
 
     if (SDL_SetTextureColorMod(sprite_font->texture, sdl_color.r, sdl_color.g, sdl_color.b) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
+        log_fail("SDL_SetTextureColorMod: %s\n", SDL_GetError());
         return -1;
     }
 
     if (SDL_SetTextureAlphaMod(sprite_font->texture, sdl_color.a) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
+        log_fail("SDL_SetTextureAlphaMod: %s\n", SDL_GetError());
         return -1;
     }
 

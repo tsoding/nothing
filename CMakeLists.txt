@@ -49,7 +49,6 @@ add_executable(nothing
   src/ebisp/gc.c
   src/ebisp/scope.c
   src/sdl/renderer.c
-  src/system/error.c
   src/system/lt.c
   src/system/lt/lt_adapters.c
   src/system/lt/lt_slot.c
@@ -92,7 +91,6 @@ add_executable(nothing
   src/ebisp/parser.h
   src/ebisp/tokenizer.h
   src/sdl/renderer.h
-  src/system/error.h
   src/system/lt.h
   src/system/lt/lt_adapters.h
   src/system/lt/lt_slot.h
@@ -131,8 +129,6 @@ add_executable(repl
   src/system/lt/lt_adapters.h
   src/system/lt/lt_slot.c
   src/system/lt/lt_slot.h
-  src/system/error.c
-  src/system/error.h
   src/ebisp/gc.h
   src/ebisp/gc.c
   src/str.h
@@ -157,8 +153,6 @@ add_executable(nothing_test
   src/ebisp/tokenizer.h
   src/ebisp/gc.h
   src/ebisp/gc.c
-  src/system/error.c
-  src/system/error.h
   src/system/lt.c
   src/system/lt.h
   src/system/lt/lt_adapters.c

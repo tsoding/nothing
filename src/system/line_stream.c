@@ -1,12 +1,15 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <string.h>
 
 #include "error.h"
 #include "line_stream.h"
 #include "lt.h"
 #include "lt/lt_adapters.h"
 #include "system/nth_alloc.h"
+#include "system/log.h"
 
 struct LineStream
 {
@@ -33,7 +36,6 @@ LineStream *create_line_stream(const char *filename,
         nth_alloc(sizeof(LineStream)),
         free);
     if (line_stream == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     line_stream->lt = lt;
@@ -43,7 +45,7 @@ LineStream *create_line_stream(const char *filename,
         fopen(filename, mode),
         fclose_lt);
     if (line_stream->stream == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
+        log_fail("Could not open file '%s': %s\n", filename, strerror(errno));
         RETURN_LT(lt, NULL);
     }
 
@@ -52,7 +54,6 @@ LineStream *create_line_stream(const char *filename,
         nth_alloc(sizeof(char) * capacity),
         free);
     if (line_stream->buffer == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 

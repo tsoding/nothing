@@ -8,7 +8,6 @@
 #include "regions.h"
 #include "script.h"
 #include "str.h"
-#include "system/error.h"
 #include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
@@ -43,7 +42,6 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
         nth_alloc(sizeof(Regions)),
         free);
     if (regions == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     regions->lt = lt;
@@ -52,7 +50,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
            line_stream_next(line_stream),
            "%lu",
            &regions->count) < 0) {
-        throw_error(ERROR_TYPE_LIBC);
+        log_fail("Could not read amount of script regions\n");
         RETURN_LT(lt, NULL);
     }
 
@@ -61,7 +59,6 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
         nth_alloc(sizeof(Rect) * regions->count),
         free);
     if (regions->rects == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
@@ -78,7 +75,6 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
         nth_alloc(sizeof(Script*) * regions->count),
         free);
     if (regions->scripts == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
@@ -87,7 +83,6 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
         nth_alloc(sizeof(bool) * regions->count),
         free);
     if (regions->states == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
@@ -104,7 +99,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
                 &regions->rects[i].w,
                 &regions->rects[i].h,
                 color) < 0) {
-            throw_error(ERROR_TYPE_LIBC);
+            log_fail("Could not read size and color of %dth region\n");
             RETURN_LT(lt, NULL);
         }
 
