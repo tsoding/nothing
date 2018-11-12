@@ -99,7 +99,7 @@ Player *create_player_from_line_stream(LineStream *line_stream)
         return NULL;
     }
 
-    return create_player(x, y, color_from_hexstr(color));
+    return create_player(x, y, hexstr(color));
 }
 
 void destroy_player(Player * player)

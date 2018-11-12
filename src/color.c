@@ -37,7 +37,7 @@ static Uint8 parse_color_component(const char *component)
     return (Uint8) (hex2dec_digit(component[0]) * 16 + hex2dec_digit(component[1]));
 }
 
-Color color_from_hexstr(const char *hexstr)
+Color hexstr(const char *hexstr)
 {
     if (strlen(hexstr) != 6) {
         return rgba(0.0f, 0.0f, 0.0f, 1.0f);

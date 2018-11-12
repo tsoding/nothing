@@ -63,7 +63,7 @@ Platforms *create_platforms_from_line_stream(LineStream *line_stream)
             log_fail("Could not read %dth platform\n", i);
             RETURN_LT(lt, NULL);
         }
-        platforms->colors[i] = color_from_hexstr(color);
+        platforms->colors[i] = hexstr(color);
     }
 
     platforms->lt = lt;

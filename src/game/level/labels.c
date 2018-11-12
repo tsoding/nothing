@@ -83,7 +83,7 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
             RETURN_LT(lt, NULL);
         }
 
-        labels->colors[i] = color_from_hexstr(color);
+        labels->colors[i] = hexstr(color);
 
         const char *label_text = line_stream_next(line_stream);
         if (label_text == NULL) {

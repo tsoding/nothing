@@ -8,8 +8,7 @@ typedef struct Color {
 } Color;
 
 Color rgba(float r, float g, float b, float a);
-// TODO: color_from_hexstr -> hexstr
-Color color_from_hexstr(const char *hexstr);
+Color hexstr(const char *hexstr);
 SDL_Color color_for_sdl(Color color);
 
 Color color_darker(Color color, float d);

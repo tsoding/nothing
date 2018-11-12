@@ -107,7 +107,7 @@ Rigid_rect *create_rigid_rect_from_line_stream(LineStream *line_stream)
         return NULL;
     }
 
-    return create_rigid_rect(rect, color_from_hexstr(color), id);
+    return create_rigid_rect(rect, hexstr(color), id);
 }
 
 void destroy_rigid_rect(Rigid_rect *rigid_rect)

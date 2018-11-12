@@ -58,7 +58,7 @@ Wavy_rect *create_wavy_rect_from_line_stream(LineStream *line_stream)
         return NULL;
     }
 
-    Color color = color_from_hexstr(color_name);
+    Color color = hexstr(color_name);
 
     return create_wavy_rect(rect, color);
 }
