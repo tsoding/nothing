@@ -6,7 +6,6 @@
 #include "game.h"
 #include "game/level.h"
 #include "game/sound_samples.h"
-#include "system/error.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
@@ -49,7 +48,6 @@ Game *create_game(const char *level_file_path,
 
     Game *game = PUSH_LT(lt, nth_alloc(sizeof(Game)), free);
     if (game == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     game->lt = lt;
@@ -66,7 +64,6 @@ Game *create_game(const char *level_file_path,
 
     game->level_file_path = PUSH_LT(lt, nth_alloc(sizeof(char) * (strlen(level_file_path) + 1)), free);
     if (game->level_file_path == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     strcpy(game->level_file_path, level_file_path);
@@ -216,7 +213,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
                     game->level_file_path));
 
             if (game->level == NULL) {
-                print_current_error_msg("Could not reload the level");
+                log_fail("Could not reload level %s\n", game->level_file_path);
                 game->state = GAME_STATE_QUIT;
                 return -1;
             }
@@ -228,7 +225,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
         case SDLK_q:
             log_info("Reloading the level's platforms from '%s'...\n", game->level_file_path);
             if (level_reload_preserve_player(game->level, game->level_file_path) < 0) {
-                print_current_error_msg("Could not reload the level");
+                log_fail("Could not reload level %s\n", game->level_file_path);
                 game->state = GAME_STATE_QUIT;
                 return -1;
             }

@@ -7,7 +7,6 @@
 #include "game/level.h"
 #include "script.h"
 #include "str.h"
-#include "system/error.h"
 #include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
@@ -92,7 +91,6 @@ Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
 
     Script *script = PUSH_LT(lt, nth_alloc(sizeof(Script)), free);
     if (script == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     script->lt = lt;

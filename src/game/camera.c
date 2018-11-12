@@ -5,8 +5,8 @@
 
 #include "camera.h"
 #include "sdl/renderer.h"
-#include "system/error.h"
 #include "system/nth_alloc.h"
+#include "system/log.h"
 
 #define RATIO_X 16.0f
 #define RATIO_Y 9.0f
@@ -32,12 +32,11 @@ static Triangle camera_triangle(const Camera *camera,
                                   const Triangle t);
 
 Camera *create_camera(SDL_Renderer *renderer,
-                        Sprite_font *font)
+                      Sprite_font *font)
 {
     Camera *camera = nth_alloc(sizeof(Camera));
 
     if (camera == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         return NULL;
     }
 
@@ -73,18 +72,18 @@ int camera_fill_rect(Camera *camera,
 
     if (camera->debug_mode) {
         if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a / 2) < 0) {
-            throw_error(ERROR_TYPE_SDL2);
+            log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());
             return -1;
         }
     } else {
         if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
-            throw_error(ERROR_TYPE_SDL2);
+            log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());
             return -1;
         }
     }
 
     if (SDL_RenderFillRect(camera->renderer, &sdl_rect) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
+        log_fail("SDL_RenderFillRect: %s\n", SDL_GetError());
         return -1;
     }
 
@@ -106,12 +105,12 @@ int camera_draw_rect(Camera * camera,
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
     if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
+        log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());
         return -1;
     }
 
     if (SDL_RenderDrawRect(camera->renderer, &sdl_rect) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
+        log_fail("SDL_RenderDrawRect: %s\n", SDL_GetError());
         return -1;
     }
 
@@ -130,7 +129,7 @@ int camera_draw_triangle(Camera *camera,
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
     if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
+        log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());
         return -1;
     }
 
@@ -155,12 +154,12 @@ int camera_fill_triangle(Camera *camera,
 
     if (camera->debug_mode) {
         if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a / 2) < 0) {
-            throw_error(ERROR_TYPE_SDL2);
+            log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());
             return -1;
         }
     } else {
         if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
-            throw_error(ERROR_TYPE_SDL2);
+            log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());
             return -1;
         }
     }
@@ -226,12 +225,12 @@ int camera_clear_background(Camera *camera,
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
     if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
+        log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());
         return -1;
     }
 
     if (SDL_RenderClear(camera->renderer) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
+        log_fail("SDL_RenderClear: %s\n", SDL_GetError());
         return -1;
     }
 

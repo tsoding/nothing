@@ -3,13 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include "platforms.h"
-#include "system/error.h"
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
 #include "system/line_stream.h"
 #include "system/nth_alloc.h"
+#include "system/log.h"
 
 struct Platforms {
     Lt *lt;
@@ -30,7 +31,6 @@ Platforms *create_platforms_from_line_stream(LineStream *line_stream)
 
     Platforms *platforms = PUSH_LT(lt, nth_alloc(sizeof(Platforms)), free);
     if (platforms == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
@@ -39,19 +39,17 @@ Platforms *create_platforms_from_line_stream(LineStream *line_stream)
             line_stream_next(line_stream),
             "%lu",
             &platforms->rects_size) == EOF) {
-        throw_error(ERROR_TYPE_LIBC);
+        log_fail("Could not read amount of platforms\n");
         RETURN_LT(lt, NULL);
     }
 
     platforms->rects = PUSH_LT(lt, nth_alloc(sizeof(Rect) * platforms->rects_size), free);
     if (platforms->rects == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
     platforms->colors = PUSH_LT(lt, nth_alloc(sizeof(Color) * platforms->rects_size), free);
     if (platforms->colors == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
@@ -62,7 +60,7 @@ Platforms *create_platforms_from_line_stream(LineStream *line_stream)
                    &platforms->rects[i].x, &platforms->rects[i].y,
                    &platforms->rects[i].w, &platforms->rects[i].h,
                    color) < 0) {
-            throw_error(ERROR_TYPE_LIBC);
+            log_fail("Could not read %dth platform\n", i);
             RETURN_LT(lt, NULL);
         }
         platforms->colors[i] = color_from_hexstr(color);
@@ -93,7 +91,7 @@ int platforms_save_to_file(const Platforms *platforms,
     FILE *platforms_file = PUSH_LT(lt, fopen(filename, "w"), fclose_lt);
 
     if (platforms_file == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
+        log_fail("Could not open file '%s': %s\n", filename, strerror(errno));
         RETURN_LT(lt, -1);
     }
 
@@ -101,7 +99,7 @@ int platforms_save_to_file(const Platforms *platforms,
         if (fprintf(platforms_file, "%f %f %f %f\n",
                     platforms->rects[i].x, platforms->rects[i].y,
                     platforms->rects[i].w, platforms->rects[i].h) < 0) {
-            throw_error(ERROR_TYPE_LIBC);
+            log_fail("Could not read %dth platform\n", i);
             RETURN_LT(lt, -1);
         }
     }
@@ -128,7 +126,6 @@ int platforms_render(const Platforms *platforms,
                 camera,
                 platforms->rects[i],
                 platforms->colors[i]) < 0) {
-            throw_error(ERROR_TYPE_SDL2);
             return -1;
         }
     }

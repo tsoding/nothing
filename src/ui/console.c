@@ -7,7 +7,6 @@
 #include "game/level.h"
 #include "game/level/player/rigid_rect.h"
 #include "sdl/renderer.h"
-#include "system/error.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
@@ -93,7 +92,6 @@ Console *create_console(Level *level,
 
     Console *console = PUSH_LT(lt, nth_alloc(sizeof(Console)), free);
     if (console == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     console->lt = lt;

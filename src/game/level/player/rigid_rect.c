@@ -8,10 +8,10 @@
 #include "game/level/solid.h"
 #include "rigid_rect.h"
 #include "str.h"
-#include "system/error.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "system/log.h"
 
 #define RIGID_RECT_MAX_ID_SIZE 36
 
@@ -64,14 +64,12 @@ Rigid_rect *create_rigid_rect(Rect rect, Color color, const char *id)
 
     Rigid_rect *rigid_rect = PUSH_LT(lt, nth_alloc(sizeof(Rigid_rect)), free);
     if (rigid_rect == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     rigid_rect->lt = lt;
 
     rigid_rect->id = nth_alloc(sizeof(char) * RIGID_RECT_MAX_ID_SIZE);
     if (rigid_rect->id == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
@@ -105,7 +103,7 @@ Rigid_rect *create_rigid_rect_from_line_stream(LineStream *line_stream)
                &rect.x, &rect.y,
                &rect.w, &rect.h,
                color) < 0) {
-        throw_error(ERROR_TYPE_LIBC);
+        log_fail("Could not read rigid rect\n");
         return NULL;
     }
 

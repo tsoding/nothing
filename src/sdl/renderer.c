@@ -2,8 +2,8 @@
 #include <assert.h>
 
 #include "renderer.h"
-#include "system/error.h"
 #include "system/lt.h"
+#include "system/log.h"
 
 int draw_triangle(SDL_Renderer *render,
                   Triangle t)
@@ -15,7 +15,7 @@ int draw_triangle(SDL_Renderer *render,
                            (int) roundf(t.p1.y),
                            (int) roundf(t.p2.x),
                            (int) roundf(t.p2.y)) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
+        log_fail("SDL_RenderDrawLine: %s\n", SDL_GetError());
         return -1;
     }
 
@@ -24,7 +24,7 @@ int draw_triangle(SDL_Renderer *render,
                            (int) roundf(t.p2.y),
                            (int) roundf(t.p3.x),
                            (int) roundf(t.p3.y)) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
+        log_fail("SDL_RenderDrawLine: %s\n", SDL_GetError());
         return -1;
     }
 
@@ -33,7 +33,7 @@ int draw_triangle(SDL_Renderer *render,
                            (int) roundf(t.p3.y),
                            (int) roundf(t.p1.x),
                            (int) roundf(t.p1.y)) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
+        log_fail("SDL_RenderDrawLine: %s\n", SDL_GetError());
         return -1;
     }
 
@@ -144,12 +144,12 @@ int fill_rect(SDL_Renderer *render, Rect r, Color c)
             render,
             sdl_color.r, sdl_color.g,
             sdl_color.b, sdl_color.a) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
+        log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());
         return -1;
     }
 
     if (SDL_RenderFillRect(render, &sdl_rect) < 0) {
-        throw_error(ERROR_TYPE_SDL2);
+        log_fail("SDL_RenderFillRect: %s\n");
         return -1;
     }
 

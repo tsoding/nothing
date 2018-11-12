@@ -3,7 +3,6 @@
 
 #include "dying_rect.h"
 #include "math/rand.h"
-#include "system/error.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 
@@ -39,7 +38,6 @@ Dying_rect *create_dying_rect(Color color,
 
     Dying_rect *dying_rect = PUSH_LT(lt, nth_alloc(sizeof(Dying_rect)), free);
     if (dying_rect == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
@@ -51,7 +49,6 @@ Dying_rect *create_dying_rect(Color color,
 
     dying_rect->pieces = PUSH_LT(lt, nth_alloc(sizeof(Piece) * DYING_RECT_PIECE_COUNT), free);
     if (dying_rect->pieces == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 

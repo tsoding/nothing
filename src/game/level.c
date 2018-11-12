@@ -13,7 +13,6 @@
 #include "game/level/platforms.h"
 #include "game/level/player.h"
 #include "game/level/regions.h"
-#include "system/error.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
@@ -48,7 +47,6 @@ Level *create_level_from_file(const char *file_name)
 
     Level *const level = PUSH_LT(lt, nth_alloc(sizeof(Level)), free);
     if (level == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
@@ -60,7 +58,6 @@ Level *create_level_from_file(const char *file_name)
             LEVEL_LINE_MAX_LENGTH),
         destroy_line_stream);
     if (level_stream == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     level->background = PUSH_LT(
@@ -293,7 +290,6 @@ int level_reload_preserve_player(Level *level, const char *file_name)
             LEVEL_LINE_MAX_LENGTH),
         destroy_line_stream);
     if (level_stream == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, -1);
     }
 

@@ -6,10 +6,10 @@
 #include "math/pi.h"
 #include "math/triangle.h"
 #include "str.h"
-#include "system/error.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "system/log.h"
 
 #define GOAL_RADIUS 10.0f
 #define GOAL_MAX_ID_SIZE 36
@@ -46,7 +46,6 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
 
     Goals *const goals = PUSH_LT(lt, nth_alloc(sizeof(Goals)), free);
     if (goals == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
@@ -55,7 +54,7 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
             line_stream_next(line_stream),
             "%lu",
             &goals->count) == EOF) {
-        throw_error(ERROR_TYPE_LIBC);
+        log_fail("Could not read amount of goals\n");
         RETURN_LT(lt, NULL);
     }
 
@@ -64,32 +63,27 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
         nth_alloc(sizeof(char*) * goals->count),
         free);
     if (goals->ids == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     for (size_t i = 0; i < goals->count; ++i) {
         goals->ids[i] = PUSH_LT(lt, nth_alloc(sizeof(char) * GOAL_MAX_ID_SIZE), free);
         if (goals->ids[i] == NULL) {
-            throw_error(ERROR_TYPE_LIBC);
             RETURN_LT(lt, NULL);
         }
     }
 
     goals->points = PUSH_LT(lt, nth_alloc(sizeof(Point) * goals->count), free);
     if (goals->points == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
     goals->colors = PUSH_LT(lt, nth_alloc(sizeof(Color) * goals->count), free);
     if (goals->colors == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
     goals->cue_states = PUSH_LT(lt, nth_alloc(sizeof(int) * goals->count), free);
     if (goals->cue_states == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
@@ -107,7 +101,7 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
                 &goals->points[i].x,
                 &goals->points[i].y,
                 color) < 0) {
-            throw_error(ERROR_TYPE_LIBC);
+            log_fail("Could not read %dth goal\n", i);
             RETURN_LT(lt, NULL);
         }
         goals->colors[i] = color_from_hexstr(color);

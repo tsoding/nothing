@@ -7,7 +7,6 @@
 #include "console_log.h"
 #include "math/point.h"
 #include "str.h"
-#include "system/error.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 
@@ -35,7 +34,6 @@ Console_Log *create_console_log(const Sprite_font *font,
 
     Console_Log *console_log = PUSH_LT(lt, nth_alloc(sizeof(Console_Log)), free);
     if (console_log == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     console_log->lt = lt;
@@ -45,13 +43,11 @@ Console_Log *create_console_log(const Sprite_font *font,
 
     console_log->buffer = PUSH_LT(lt, nth_calloc(capacity, sizeof(char*)), free);
     if (console_log->buffer == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
     console_log->colors = PUSH_LT(lt, nth_calloc(capacity, sizeof(Color)), free);
     if (console_log->colors == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 

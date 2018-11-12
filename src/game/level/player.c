@@ -9,10 +9,10 @@
 #include "math/point.h"
 #include "platforms.h"
 #include "player.h"
-#include "system/error.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "system/log.h"
 
 #define PLAYER_WIDTH 25.0f
 #define PLAYER_HEIGHT 25.0f
@@ -51,7 +51,6 @@ Player *create_player(float x, float y, Color color)
 
     Player *player = PUSH_LT(lt, nth_alloc(sizeof(Player)), free);
     if (player == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
@@ -96,7 +95,7 @@ Player *create_player_from_line_stream(LineStream *line_stream)
             line_stream_next(line_stream),
             "%f%f%6s",
             &x, &y, color) == EOF) {
-        throw_error(ERROR_TYPE_LIBC);
+        log_fail("Could not read player\n");
         return NULL;
     }
 

@@ -4,7 +4,6 @@
 
 #include "history.h"
 #include "str.h"
-#include "system/error.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 
@@ -30,7 +29,6 @@ History *create_history(size_t capacity)
         nth_alloc(sizeof(History)),
         free);
     if (history == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     history->lt = lt;
@@ -41,7 +39,6 @@ History *create_history(size_t capacity)
 
     history->buffer = PUSH_LT(lt, nth_calloc(capacity, sizeof(char*)), free);
     if (history->buffer == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 

@@ -6,7 +6,6 @@
 #include "builtins.h"
 #include "expr.h"
 #include "gc.h"
-#include "system/error.h"
 #include "system/lt.h"
 
 #define GC_INITIAL_CAPACITY 256
@@ -58,20 +57,17 @@ Gc *create_gc(void)
 
     Gc *gc = PUSH_LT(lt, malloc(sizeof(Gc)), free);
     if (gc == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     gc->lt = lt;
 
     gc->exprs = PUSH_LT(lt, malloc(sizeof(struct Expr) * GC_INITIAL_CAPACITY), free);
     if (gc->exprs == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
     gc->visited = PUSH_LT(lt, malloc(sizeof(int) * GC_INITIAL_CAPACITY), free);
     if (gc->visited == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 

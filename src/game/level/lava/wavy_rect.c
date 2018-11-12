@@ -5,8 +5,8 @@
 #include <time.h>
 
 #include "math/pi.h"
-#include "system/error.h"
 #include "system/line_stream.h"
+#include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "wavy_rect.h"
@@ -31,7 +31,6 @@ Wavy_rect *create_wavy_rect(Rect rect, Color color)
 
     Wavy_rect *wavy_rect = PUSH_LT(lt, nth_alloc(sizeof(Wavy_rect)), free);
     if (wavy_rect == NULL) {
-        throw_error(ERROR_TYPE_SDL2);
         RETURN_LT(lt, NULL);
     }
 
@@ -55,7 +54,7 @@ Wavy_rect *create_wavy_rect_from_line_stream(LineStream *line_stream)
             &rect.x, &rect.y,
             &rect.w, &rect.h,
             color_name) < 0) {
-        throw_error(ERROR_TYPE_LIBC);
+        log_fail("Could not read a wavy rect\n");
         return NULL;
     }
 

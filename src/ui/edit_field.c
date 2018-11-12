@@ -4,7 +4,6 @@
 #include "edit_field.h"
 #include "game/sprite_font.h"
 #include "sdl/renderer.h"
-#include "system/error.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 
@@ -41,14 +40,12 @@ Edit_field *create_edit_field(const Sprite_font *font,
 
     Edit_field *const edit_field = PUSH_LT(lt, nth_alloc(sizeof(Edit_field)), free);
     if (edit_field == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
     edit_field->lt = lt;
 
     edit_field->buffer = PUSH_LT(lt, nth_alloc(sizeof(char) * (BUFFER_CAPACITY + 10)), free);
     if (edit_field->buffer == NULL) {
-        throw_error(ERROR_TYPE_LIBC);
         RETURN_LT(lt, NULL);
     }
 
