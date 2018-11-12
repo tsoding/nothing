@@ -104,7 +104,7 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
             log_fail("Could not read %dth goal\n", i);
             RETURN_LT(lt, NULL);
         }
-        goals->colors[i] = color_from_hexstr(color);
+        goals->colors[i] = hexstr(color);
         goals->cue_states[i] = CUE_STATE_VIRGIN;
         goals->visible[i] = true;
     }

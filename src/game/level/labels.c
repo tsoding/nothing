@@ -83,7 +83,7 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
             RETURN_LT(lt, NULL);
         }
 
-        labels->colors[i] = color_from_hexstr(color);
+        labels->colors[i] = hexstr(color);
 
         const char *label_text = line_stream_next(line_stream);
         if (label_text == NULL) {
@@ -125,10 +125,10 @@ int labels_render(const Labels *label,
             if (camera_render_text(camera,
                                    label->texts[i],
                                    vec(2.0f, 2.0f),
-                                   color(label->colors[i].r,
-                                         label->colors[i].g,
-                                         label->colors[i].b,
-                                         state),
+                                   rgba(label->colors[i].r,
+                                        label->colors[i].g,
+                                        label->colors[i].b,
+                                        state),
                                    vec_sum(label->positions[i],
                                            vec(0.0f, -8.0f * state))) < 0) {
                 return -1;

@@ -211,7 +211,7 @@ int camera_render_debug_text(Camera *camera,
             camera,
             text,
             vec(2.0f, 2.0f),
-            color(0.0f, 0.0f, 0.0f, 1.0f),
+            rgba(0.0f, 0.0f, 0.0f, 1.0f),
             position) < 0) {
         return -1;
     }

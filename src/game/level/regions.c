@@ -103,7 +103,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
             RETURN_LT(lt, NULL);
         }
 
-        regions->colors[i] = color_from_hexstr(color);
+        regions->colors[i] = hexstr(color);
 
         regions->scripts[i] = PUSH_LT(
             lt,

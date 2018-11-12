@@ -7,9 +7,8 @@ typedef struct Color {
     float r, g, b, a;
 } Color;
 
-Color color(float r, float g, float b, float a);
-Color color256(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-Color color_from_hexstr(const char *hexstr);
+Color rgba(float r, float g, float b, float a);
+Color hexstr(const char *hexstr);
 SDL_Color color_for_sdl(Color color);
 
 Color color_darker(Color color, float d);

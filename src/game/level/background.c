@@ -56,7 +56,7 @@ Background *create_background_from_line_stream(LineStream *line_stream)
         return NULL;
     }
 
-    return create_background(color_from_hexstr(color));
+    return create_background(hexstr(color));
 }
 
 void destroy_background(Background *background)
