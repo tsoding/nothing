@@ -127,7 +127,6 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
         regions->states[i] = RS_PLAYER_OUTSIDE;
     }
 
-    /* TODO(#456): create_regions_from_line_stream doesn't check if the scripts contain proper callbacks */
 
     return regions;
 }
