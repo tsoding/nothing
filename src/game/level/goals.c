@@ -154,7 +154,6 @@ static int goals_render_core(const Goals *goals,
     return 0;
 }
 
-/* TODO(#448): goals do not render their ids in debug mode */
 int goals_render(const Goals *goals,
                  Camera *camera)
 {
