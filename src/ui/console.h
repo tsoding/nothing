@@ -24,6 +24,4 @@ int console_update(Console *console,
 
 void console_slide_down(Console *console);
 
-struct EvalResult rect_apply_force(void *param, Gc *gc, struct Scope *scope, struct Expr args);
-
 #endif  // CONSOLE_H_
