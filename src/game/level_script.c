@@ -15,7 +15,7 @@ hide_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     assert(gc);
     assert(scope);
 
-    /* TODO: Manually parsing args of native functions is tedious. */
+    /* TODO(#507): Manually parsing args of native functions is tedious. */
     if (!list_p(args)) {
         return wrong_argument_type(gc, "listp", args);
     }
