@@ -149,7 +149,7 @@ def save_scripts(svg_root, output_file):
         h = script.attrib['height']
         color = color_from_style(script.attrib['style'])
         output_file.write("%s %s %s %s %s\n" % (x, y, w, h, color))
-        # TODO: script may have more than one child
+        # TODO(#509): script may have more than one child
         [title] = [child for child in script]
         command_line = title.text.split()
         with open(command_line[0], 'r') as script_file:
