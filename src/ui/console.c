@@ -78,6 +78,7 @@ Console *create_console(Level *level,
                                NIL(console->gc),
                                NIL(console->gc));
 
+    load_std_library(console->gc, &console->scope);
     load_level_library(console->gc, &console->scope, level);
 
     console->edit_field = PUSH_LT(

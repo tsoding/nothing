@@ -9,6 +9,10 @@ RECT_TAG_NAME = '{http://www.w3.org/2000/svg}rect'
 TEXT_TAG_NAME = '{http://www.w3.org/2000/svg}text'
 
 
+def list_as_sexpr(xs):
+    return "'(" + ' '.join(map(lambda x: '"' + x + '"', xs)) + ')'
+
+
 def color_from_style(style):
     m = re.match(".*fill:#([0-9a-z]{6}).*", style)
     return m.group(1)
@@ -145,10 +149,13 @@ def save_scripts(svg_root, output_file):
         h = script.attrib['height']
         color = color_from_style(script.attrib['style'])
         output_file.write("%s %s %s %s %s\n" % (x, y, w, h, color))
+        # TODO: script may have more than one child
         [title] = [child for child in script]
-        with open(title.text, 'r') as script_file:
+        command_line = title.text.split()
+        with open(command_line[0], 'r') as script_file:
             script_lines = script_file.read().splitlines()
-            output_file.write("%d\n" % (len(script_lines)))
+            output_file.write("%d\n" % (len(script_lines) + 1))
+            output_file.write("(set args %s)\n" % list_as_sexpr(command_line[1:]))
             for script_line in script_lines:
                 output_file.write("%s\n" % script_line)
 

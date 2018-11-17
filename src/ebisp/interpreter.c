@@ -37,6 +37,15 @@ wrong_argument_type(Gc *gc, const char *type, struct Expr obj)
              obj));
 }
 
+struct EvalResult
+wrong_number_of_arguments(Gc *gc, long int count)
+{
+    return eval_failure(
+        CONS(gc,
+             SYMBOL(gc, "wrong-number-of-arguments"),
+             NUMBER(gc, count)));
+}
+
 static struct EvalResult length(Gc *gc, struct Expr obj)
 {
     if (!list_p(obj)) {
@@ -279,4 +288,37 @@ struct EvalResult eval(Gc *gc, struct Scope *scope, struct Expr expr)
     return eval_failure(CONS(gc,
                              SYMBOL(gc, "unexpected-expression"),
                              expr));
+}
+
+struct EvalResult
+car(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    (void) param;
+    assert(gc);
+    assert(scope);
+
+    if (!list_p(args)) {
+        return wrong_argument_type(gc, "listp", args);
+    }
+
+    if (length_of_list(args) != 1) {
+        return wrong_number_of_arguments(gc, length_of_list(args));
+    }
+
+    struct Expr xs = args.cons->car;
+
+    if (nil_p(xs)) {
+        return eval_success(xs);
+    }
+
+    return eval_success(xs.cons->car);
+}
+
+void load_std_library(Gc *gc, struct Scope *scope)
+{
+    set_scope_value(
+        gc,
+        scope,
+        SYMBOL(gc, "car"),
+        NATIVE(gc, car, NULL));
 }
