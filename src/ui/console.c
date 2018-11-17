@@ -6,6 +6,7 @@
 #include "ebisp/scope.h"
 #include "game/level.h"
 #include "game/level/player/rigid_rect.h"
+#include "game/level_script.h"
 #include "sdl/renderer.h"
 #include "system/log.h"
 #include "system/lt.h"
@@ -53,34 +54,6 @@ struct Console
 /* TODO(#358): Console does not support copy, cut, paste operations */
 /* TODO(#503): hide-goal and show-goal are not accessible in Console */
 
-struct EvalResult rect_apply_force(void *param, Gc *gc, struct Scope *scope, struct Expr args)
-{
-    assert(gc);
-    assert(scope);
-    assert(param);
-
-    /* TODO(#401): rect_apply_force doesn't sanitize it's input */
-
-    Level *level = (Level*) param;
-    const char *rect_id = CAR(args).atom->str;
-    struct Expr vector_force_expr = CAR(CDR(args));
-    const float force_x = (float) CAR(vector_force_expr).atom->num;
-    const float force_y = (float) CDR(vector_force_expr).atom->num;
-
-    print_expr_as_sexpr(stdout, args); printf("\n");
-
-    Rigid_rect *rigid_rect = level_rigid_rect(level, rect_id);
-    if (rigid_rect != NULL) {
-        log_info("Found rect `%s`\n", rect_id);
-        log_info("Applying force (%f, %f)\n", force_x, force_y);
-        rigid_rect_apply_force(rigid_rect, vec(force_x, force_y));
-    } else {
-        log_fail("Couldn't find rigid_rect `%s`\n", rect_id);
-    }
-
-    return eval_success(NIL(gc));
-}
-
 Console *create_console(Level *level,
                         const Sprite_font *font)
 {
@@ -104,11 +77,8 @@ Console *create_console(Level *level,
     console->scope.expr = CONS(console->gc,
                                NIL(console->gc),
                                NIL(console->gc));
-    set_scope_value(
-        console->gc,
-        &console->scope,
-        SYMBOL(console->gc, "rect-apply-force"),
-        NATIVE(console->gc, rect_apply_force, level));
+
+    load_level_library(console->gc, &console->scope, level);
 
     console->edit_field = PUSH_LT(
         lt,

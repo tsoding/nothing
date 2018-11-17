@@ -107,6 +107,8 @@ add_executable(nothing
   src/system/log.c
   src/system/nth_alloc.h
   src/system/nth_alloc.c
+  src/game/level_script.c
+  src/game/level_script.h
 )
 
 add_executable(repl

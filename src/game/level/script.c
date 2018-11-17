@@ -5,6 +5,7 @@
 #include "ebisp/parser.h"
 #include "ebisp/scope.h"
 #include "game/level.h"
+#include "game/level_script.h"
 #include "script.h"
 #include "str.h"
 #include "system/line_stream.h"
@@ -19,66 +20,6 @@ struct Script
     Gc *gc;
     struct Scope scope;
 };
-
-static struct EvalResult
-hide_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
-{
-    assert(param);
-    assert(gc);
-    assert(scope);
-
-    if (!list_p(args)) {
-        return wrong_argument_type(gc, "listp", args);
-    }
-
-    if (length_of_list(args) != 1) {
-        return eval_failure(
-            CONS(gc,
-                 SYMBOL(gc, "wrong-number-of-arguments"),
-                 NUMBER(gc, length_of_list(args))));
-    }
-
-    if (!string_p(CAR(args))) {
-        return wrong_argument_type(gc, "stringp", args);
-    }
-
-    const char * const goal_id = CAR(args).atom->str;
-    Level * const level = (Level*)param;
-
-    level_hide_goal(level, goal_id);
-
-    return eval_success(NIL(gc));
-}
-
-static struct EvalResult
-show_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
-{
-    assert(param);
-    assert(gc);
-    assert(scope);
-
-    if (!list_p(args)) {
-        return wrong_argument_type(gc, "listp", args);
-    }
-
-    if (length_of_list(args) != 1) {
-        return eval_failure(
-            CONS(gc,
-                 SYMBOL(gc, "wrong-number-of-arguments"),
-                 NUMBER(gc, length_of_list(args))));
-    }
-
-    if (!string_p(CAR(args))) {
-        return wrong_argument_type(gc, "stringp", args);
-    }
-
-    const char * const goal_id = CAR(args).atom->str;
-    Level * const level = (Level*)param;
-
-    level_show_goal(level, goal_id);
-
-    return eval_success(NIL(gc));
-}
 
 Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
 {
@@ -114,21 +55,7 @@ Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
     }
     PUSH_LT(lt, source_code, free);
 
-    set_scope_value(
-        script->gc,
-        &script->scope,
-        SYMBOL(script->gc, "rect-apply-force"),
-        NATIVE(script->gc, rect_apply_force, level));
-    set_scope_value(
-        script->gc,
-        &script->scope,
-        SYMBOL(script->gc, "hide-goal"),
-        NATIVE(script->gc, hide_goal, level));
-    set_scope_value(
-        script->gc,
-        &script->scope,
-        SYMBOL(script->gc, "show-goal"),
-        NATIVE(script->gc, show_goal, level));
+    load_level_library(script->gc, &script->scope, level);
 
     struct ParseResult parse_result =
         read_all_exprs_from_string(
