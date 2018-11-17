@@ -51,10 +51,7 @@ show_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     }
 
     if (length_of_list(args) != 1) {
-        return eval_failure(
-            CONS(gc,
-                 SYMBOL(gc, "wrong-number-of-arguments"),
-                 NUMBER(gc, length_of_list(args))));
+        return wrong_number_of_arguments(gc, length_of_list(args));
     }
 
     if (!string_p(CAR(args))) {

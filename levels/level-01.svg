@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.25"
-     inkscape:cx="4804.9238"
-     inkscape:cy="2721.3802"
+     inkscape:cx="4446.9238"
+     inkscape:cy="2665.3802"
      inkscape:document-units="mm"
      inkscape:current-layer="svg4541"
      showgrid="false"
@@ -123,7 +123,7 @@
      y="-301.85339"
      inkscape:label="#region4529">
     <title
-       id="title47">script-goal-1.lisp</title>
+       id="title47">goal.lisp goal1</title>
   </rect>
   <rect
      style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -195,7 +195,7 @@
      y="-854.8988"
      inkscape:label="#region4530">
     <title
-       id="title49">script-goal-2.lisp</title>
+       id="title49">goal.lisp goal2</title>
   </rect>
   <rect
      style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"

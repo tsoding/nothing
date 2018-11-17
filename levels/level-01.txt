@@ -41,29 +41,33 @@ SPACE to Jump
 Double Jump
 4
 659.88593 -301.85339 904.875 333.04886 deaa87
-6
+7
+(set args '("goal1"))
 (set on-enter
      (lambda ()
-       (hide-goal "goal1")))
+       (hide-goal (car args))))
 (set on-leave
      (lambda ()
-       (show-goal "goal1")))
+       (show-goal (car args))))
 2185.4583 -1044.4375 74.083344 899.58337 ccff00
-4
+5
+(set args '())
 (set on-enter
      (lambda ()
        (rect-apply-force "box-1-3" '(-20000 . -50000))))
 (set on-leave (lambda ()))
 2017.5438 -854.8988 920.82434 276.87665 deaa87
-6
+7
+(set args '("goal2"))
 (set on-enter
      (lambda ()
-       (hide-goal "goal2")))
+       (hide-goal (car args))))
 (set on-leave
      (lambda ()
-       (show-goal "goal2")))
+       (show-goal (car args))))
 1673.0083 -1055.1857 74.083344 747.18329 0000ff
-4
+5
+(set args '())
 (set on-enter
      (lambda ()
        (rect-apply-force "box-1-3" '(20000 . -50000))))
