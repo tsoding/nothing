@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <math.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include "./builtins.h"
 #include "./expr.h"
@@ -321,4 +322,70 @@ void load_std_library(Gc *gc, struct Scope *scope)
         scope,
         SYMBOL(gc, "car"),
         NATIVE(gc, car, NULL));
+}
+
+struct EvalResult
+unpack_args(struct Gc *gc, const char *format, struct Expr args, ...)
+{
+    va_list args_list;
+    va_start(args_list, args);
+
+    if (!list_p(args)) {
+        va_end(args_list);
+        return wrong_argument_type(gc, "listp", args);
+    }
+
+    long int i = 0;
+    for (i = 0; *format != 0 && !nil_p(args); ++i) {
+        struct Expr arg = CAR(args);
+        args = CDR(args);
+
+        switch (*format) {
+        case 'd': {
+            if (!number_p(arg)) {
+                va_end(args_list);
+                return wrong_argument_type(gc, "numberp", arg);
+            }
+
+            long int *p = va_arg(args_list, long int *);
+            *p = arg.atom->num;
+        } break;
+
+        case 's': {
+            if (!string_p(arg)) {
+                va_end(args_list);
+                return wrong_argument_type(gc, "stringp", arg);
+            }
+
+            const char **p = va_arg(args_list, const char**);
+            *p = arg.atom->str;
+        } break;
+
+        case 'q': {
+            if (!symbol_p(arg)) {
+                va_end(args_list);
+                return wrong_argument_type(gc, "symbolp", arg);
+            }
+
+            const char **p = va_arg(args_list, const char**);
+            *p = arg.atom->sym;
+        } break;
+
+        case 'e': {
+            struct Expr *p = va_arg(args_list, struct Expr*);
+            *p = arg;
+        } break;
+        }
+
+        format++;
+    }
+
+    if (!nil_p(args)) {
+        return eval_failure(
+            CONS(gc,
+                 SYMBOL(gc, "wrong-number-of-arguments"),
+                 NUMBER(gc, i)));
+    }
+
+    return eval_success(NIL(gc));
 }

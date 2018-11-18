@@ -24,4 +24,7 @@ struct EvalResult eval(Gc *gc, struct Scope *scope, struct Expr expr);
 
 void load_std_library(Gc *gc, struct Scope *scope);
 
+struct EvalResult
+unpack_args(struct Gc *gc, const char *format, struct Expr args, ...);
+
 #endif  // INTERPRETER_H_
