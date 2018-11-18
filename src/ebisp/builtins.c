@@ -73,6 +73,12 @@ bool symbol_p(struct Expr obj)
         && obj.atom->type == ATOM_SYMBOL;
 }
 
+bool number_p(struct Expr obj)
+{
+    return obj.type == EXPR_ATOM
+        && obj.atom->type == ATOM_NUMBER;
+}
+
 bool string_p(struct Expr obj)
 {
     return obj.type == EXPR_ATOM
