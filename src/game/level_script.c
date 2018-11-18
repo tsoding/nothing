@@ -84,24 +84,13 @@ hide_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     assert(gc);
     assert(scope);
 
-    /* TODO(#507): Manually parsing args of native functions is tedious. */
-    if (!list_p(args)) {
-        return wrong_argument_type(gc, "listp", args);
-    }
-
-    if (length_of_list(args) != 1) {
-        return eval_failure(
-            CONS(gc,
-                 SYMBOL(gc, "wrong-number-of-arguments"),
-                 NUMBER(gc, length_of_list(args))));
-    }
-
-    if (!string_p(CAR(args))) {
-        return wrong_argument_type(gc, "stringp", args);
-    }
-
-    const char * const goal_id = CAR(args).atom->str;
     Level * const level = (Level*)param;
+    const char * const goal_id = NULL;
+
+    struct EvalResult result = unpack_args(gc, "s", args, &goal_id);
+    if (result.is_error) {
+        return result;
+    }
 
     level_hide_goal(level, goal_id);
 
