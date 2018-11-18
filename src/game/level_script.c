@@ -35,20 +35,13 @@ show_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     assert(gc);
     assert(scope);
 
-    if (!list_p(args)) {
-        return wrong_argument_type(gc, "listp", args);
-    }
-
-    if (length_of_list(args) != 1) {
-        return wrong_number_of_arguments(gc, length_of_list(args));
-    }
-
-    if (!string_p(CAR(args))) {
-        return wrong_argument_type(gc, "stringp", args);
-    }
-
-    const char * const goal_id = CAR(args).atom->str;
     Level * const level = (Level*)param;
+    const char *goal_id = NULL;
+
+    struct EvalResult result = unpack_args(gc, "s", args, &goal_id);
+    if (result.is_error) {
+        return result;
+    }
 
     level_show_goal(level, goal_id);
 
