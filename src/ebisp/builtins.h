@@ -8,6 +8,7 @@ bool equal(struct Expr obj1, struct Expr obj2);
 bool nil_p(struct Expr obj);
 bool symbol_p(struct Expr obj);
 bool string_p(struct Expr obj);
+bool number_p(struct Expr obj);
 bool cons_p(struct Expr obj);
 bool list_p(struct Expr obj);
 bool list_of_symbols_p(struct Expr obj);
