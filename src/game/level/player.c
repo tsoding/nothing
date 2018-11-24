@@ -5,14 +5,15 @@
 
 #include "game/level/player/dying_rect.h"
 #include "game/level/player/rigid_rect.h"
+#include "game/level/script.h"
 #include "goals.h"
 #include "math/point.h"
 #include "platforms.h"
 #include "player.h"
 #include "system/line_stream.h"
+#include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
-#include "system/log.h"
 
 #define PLAYER_WIDTH 25.0f
 #define PLAYER_HEIGHT 25.0f
@@ -39,10 +40,27 @@ struct Player {
     Vec checkpoint;
 
     int play_die_cue;
+
+    Script *script;
 };
 
-Player *create_player_from_line_stream(LineStream *line_stream)
+Player *create_player_from_line_stream(LineStream *line_stream, Level *level)
 {
+    assert(line_stream);
+    assert(level);
+
+    Lt *lt = create_lt();
+
+    if (lt == NULL) {
+        return NULL;
+    }
+
+    Player *player = PUSH_LT(lt, nth_alloc(sizeof(Player)), free);
+    if (player == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    player->lt = lt;
+
     float x = 0.0f, y = 0.0f;
     char colorstr[7];
 
@@ -55,19 +73,6 @@ Player *create_player_from_line_stream(LineStream *line_stream)
     }
 
     const Color color = hexstr(colorstr);
-
-    Lt *lt = create_lt();
-
-    if (lt == NULL) {
-        return NULL;
-    }
-
-    Player *player = PUSH_LT(lt, nth_alloc(sizeof(Player)), free);
-    if (player == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    player->state = PLAYER_STATE_ALIVE;
 
     player->alive_body = PUSH_LT(
         lt,
@@ -90,11 +95,17 @@ Player *create_player_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    player->lt = lt;
+    /* TODO: player doesn't check if the script contains required callbacks */
+    player->script = create_script_from_line_stream(line_stream, level);
+    if (player->script == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     player->jump_count = 0;
     player->color = color;
     player->checkpoint = vec(x, y);
     player->play_die_cue = 0;
+    player->state = PLAYER_STATE_ALIVE;
 
     return player;
 }

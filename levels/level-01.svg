@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.25"
-     inkscape:cx="6164.9238"
-     inkscape:cy="3509.3802"
+     inkscape:cx="5472.9238"
+     inkscape:cy="2249.3802"
      inkscape:document-units="mm"
      inkscape:current-layer="svg4541"
      showgrid="false"
@@ -85,7 +85,10 @@
      width="20"
      height="20"
      x="28.578053"
-     y="-456.51523" />
+     y="-456.51523">
+    <title
+       id="title67">player.lisp</title>
+  </rect>
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.26267335"
      id="rect5109"
@@ -350,7 +353,7 @@
      id="script_show_goal_2"
      width="323.92441"
      height="544.63507"
-     x="1254.4229"
+     x="1249.8324"
      y="-862.22498"
      inkscape:label="#region4530">
     <title

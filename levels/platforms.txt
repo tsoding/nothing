@@ -1,5 +1,16 @@
 073642
 117.10616 417.59192 b58900
+10
+(set args '())
+;;; TODO: on-jump is not called when player jumps
+(set on-jump
+     (lambda ()))
+;;; TODO: on-double-jump is not called when player double jumps
+(set on-double-jump
+     (lambda ()))
+;;; TODO: on-death is not called when player deaths
+(set on-death
+     (lambda ()))
 22
 0 658.81897 1617.7523 1014.819 657b83
 -1609.375 0 1659.375 1673.6379 657b83

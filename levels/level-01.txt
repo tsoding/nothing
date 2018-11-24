@@ -1,5 +1,16 @@
 fffda5
 28.578053 -456.51523 ff8080
+10
+(set args '())
+;;; TODO: on-jump is not called when player jumps
+(set on-jump
+     (lambda ()))
+;;; TODO: on-double-jump is not called when player double jumps
+(set on-double-jump
+     (lambda ()))
+;;; TODO: on-death is not called when player deaths
+(set on-death
+     (lambda ()))
 21
 -656.11383 191.77144 2545.4624 1595.238 483737
 -711.37622 -1262.1708 548.61353 1633.9749 483737
@@ -71,7 +82,7 @@ Double Jump
      (lambda ()
        (rect-apply-force "box-1-3" '(20000 . -50000))))
 (set on-leave (lambda ()))
-1254.4229 -862.22498 323.92441 544.63507 deaa87
+1249.8324 -862.22498 323.92441 544.63507 deaa87
 6
 (set args '("goal2"))
 (set on-enter

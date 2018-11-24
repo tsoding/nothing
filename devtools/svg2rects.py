@@ -42,6 +42,7 @@ def save_player(svg_root, output_file):
     x = player.attrib['x']
     y = player.attrib['y']
     output_file.write("%s %s %s\n" % (x, y, color))
+    save_script(player, output_file);
 
 
 def save_platforms(svg_root, output_file):
@@ -136,7 +137,18 @@ def save_labels(svg_root, output_file):
         output_file.write("%s\n" % (text))
 
 
-def save_scripts(svg_root, output_file):
+def save_script(script, output_file):
+    for title in script:
+        command_line = title.text.split()
+        with open(command_line[0], 'r') as script_file:
+            script_lines = script_file.read().splitlines()
+            output_file.write("%d\n" % (len(script_lines) + 1))
+            output_file.write("(set args %s)\n" % list_as_sexpr(command_line[1:]))
+            for script_line in script_lines:
+                output_file.write("%s\n" % script_line)
+
+
+def save_script_regions(svg_root, output_file):
     scripts = [rect
                for rect in svg_rects(svg_root)
                if rect.attrib['id'].startswith('script')]
@@ -149,15 +161,8 @@ def save_scripts(svg_root, output_file):
         h = script.attrib['height']
         color = color_from_style(script.attrib['style'])
         output_file.write("%s %s %s %s %s\n" % (x, y, w, h, color))
+        save_script(script, output_file)
 
-        for title in script:
-            command_line = title.text.split()
-            with open(command_line[0], 'r') as script_file:
-                script_lines = script_file.read().splitlines()
-                output_file.write("%d\n" % (len(script_lines) + 1))
-                output_file.write("(set args %s)\n" % list_as_sexpr(command_line[1:]))
-                for script_line in script_lines:
-                    output_file.write("%s\n" % script_line)
 
 def svg2rects(svg_file_name, output_file_name):
     svg_tree = ET.parse(svg_file_name)
@@ -172,7 +177,7 @@ def svg2rects(svg_file_name, output_file_name):
         save_backplatforms(svg_root, output_file)
         save_boxes(svg_root, output_file)
         save_labels(svg_root, output_file)
-        save_scripts(svg_root, output_file)
+        save_script_regions(svg_root, output_file)
 
 def usage():
     print("Usage: svg2rects.py <svg-file-name> <output-file-name>")
