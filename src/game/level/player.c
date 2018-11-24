@@ -41,8 +41,21 @@ struct Player {
     int play_die_cue;
 };
 
-Player *create_player(float x, float y, Color color)
+Player *create_player_from_line_stream(LineStream *line_stream)
 {
+    float x = 0.0f, y = 0.0f;
+    char colorstr[7];
+
+    if (sscanf(
+            line_stream_next(line_stream),
+            "%f%f%6s",
+            &x, &y, colorstr) == EOF) {
+        log_fail("Could not read player\n");
+        return NULL;
+    }
+
+    const Color color = hexstr(colorstr);
+
     Lt *lt = create_lt();
 
     if (lt == NULL) {
@@ -84,22 +97,6 @@ Player *create_player(float x, float y, Color color)
     player->play_die_cue = 0;
 
     return player;
-}
-
-Player *create_player_from_line_stream(LineStream *line_stream)
-{
-    float x = 0.0f, y = 0.0f;
-    char color[7];
-
-    if (sscanf(
-            line_stream_next(line_stream),
-            "%f%f%6s",
-            &x, &y, color) == EOF) {
-        log_fail("Could not read player\n");
-        return NULL;
-    }
-
-    return create_player(x, y, hexstr(color));
 }
 
 void destroy_player(Player * player)
