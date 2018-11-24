@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.25"
-     inkscape:cx="4446.9238"
-     inkscape:cy="2665.3802"
+     inkscape:cx="6164.9238"
+     inkscape:cy="3509.3802"
      inkscape:document-units="mm"
      inkscape:current-layer="svg4541"
      showgrid="false"
@@ -41,7 +41,7 @@
      inkscape:bbox-nodes="true"
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:snap-bbox-midpoints="false"
-     inkscape:snap-global="false"
+     inkscape:snap-global="true"
      showguides="true"
      inkscape:guide-bbox="true" />
   <metadata
@@ -188,14 +188,14 @@
      y="917.25397" />
   <rect
      style="fill:#deaa87;fill-opacity:0.54726371;stroke:none;stroke-width:0.39077589"
-     id="script_goal_2"
+     id="script_hide_goal_2"
      width="920.82434"
      height="276.87665"
      x="2017.5438"
      y="-854.8988"
      inkscape:label="#region4530">
     <title
-       id="title49">goal.lisp goal2</title>
+       id="title49">goal-hide.lisp goal2</title>
   </rect>
   <rect
      style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -344,5 +344,16 @@
      inkscape:label="#rect43">
     <title
        id="title45">script43.lisp</title>
+  </rect>
+  <rect
+     style="fill:#deaa87;fill-opacity:0.54726371;stroke:none;stroke-width:0.32506543"
+     id="script_show_goal_2"
+     width="323.92441"
+     height="544.63507"
+     x="1254.4229"
+     y="-862.22498"
+     inkscape:label="#region4530">
+    <title
+       id="title49-6">goal-show.lisp goal2</title>
   </rect>
 </svg>

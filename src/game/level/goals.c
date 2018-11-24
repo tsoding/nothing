@@ -27,7 +27,6 @@ struct Goals {
     char **ids;
     Point *points;
     Color *colors;
-    /* TODO(#494): it is not clear how to maintain Cue_state from the scripting language */
     Cue_state *cue_states;
     bool *visible;
     size_t count;
