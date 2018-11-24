@@ -4,6 +4,7 @@
 #include "test.h"
 #include "ebisp/builtins.h"
 #include "ebisp/expr.h"
+#include "ebisp/interpreter.h"
 
 TEST(equal_test)
 {
@@ -82,10 +83,56 @@ TEST(assoc_test)
     return 0;
 }
 
+TEST(unpack_args_test)
+{
+    Gc *gc = create_gc();
+
+    struct Expr input = list(
+        gc, 4,
+        NUMBER(gc, 42),
+        STRING(gc, "hello"),
+        SYMBOL(gc, "world"),
+        CONS(gc, NUMBER(gc, 1), NUMBER(gc, 2)));
+
+    long int d = 0;
+    const char *s = NULL;
+    const char *q = NULL;
+    struct Expr e = NIL(gc);
+
+    struct EvalResult result = unpack_args(gc, "dsqe", input, &d, &s, &q, &e);
+    ASSERT_FALSE(result.is_error, {
+            fprintf(stderr, "Unpack failed: ");
+            print_expr_as_sexpr(stderr, result.expr);
+            fprintf(stderr, "\n");
+    });
+
+    ASSERT_TRUE(d == 42, {
+        fprintf(stderr, "Expected: 42, Actual: %ld\n", d);
+    });
+    ASSERT_TRUE(strcmp(s, "hello") == 0, {
+        fprintf(stderr, "Expected: hello, Actual: %s\n", s);
+    });
+    ASSERT_TRUE(strcmp(q, "world") == 0, {
+        fprintf(stderr, "Expected: world, Actual: %s\n", q);
+    });
+    ASSERT_TRUE(equal(e, CONS(gc, NUMBER(gc, 1), NUMBER(gc, 2))), {
+            fprintf(stderr, "Expected: ");
+            print_expr_as_sexpr(stderr, CONS(gc, NUMBER(gc, 1), NUMBER(gc, 2)));
+            fprintf(stderr, ", Actual: ");
+            print_expr_as_sexpr(stderr, e);
+            fprintf(stderr, "\n");
+    });
+
+    destroy_gc(gc);
+
+    return 0;
+}
+
 TEST_SUITE(interpreter_suite)
 {
     TEST_RUN(equal_test);
     TEST_RUN(assoc_test);
+    TEST_RUN(unpack_args_test);
 
     return 0;
 }
