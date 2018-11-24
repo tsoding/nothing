@@ -39,7 +39,7 @@ WASD to move
 SPACE to Jump
 950.9303 -279.0629 fffda5
 Double Jump
-4
+5
 659.88593 -301.85339 904.875 333.04886 deaa87
 7
 (set args '("goal1"))
@@ -57,14 +57,13 @@ Double Jump
        (rect-apply-force "box-1-3" '(-20000 . -50000))))
 (set on-leave (lambda ()))
 2017.5438 -854.8988 920.82434 276.87665 deaa87
-7
+6
 (set args '("goal2"))
 (set on-enter
      (lambda ()
        (hide-goal (car args))))
 (set on-leave
-     (lambda ()
-       (show-goal (car args))))
+     (lambda ()))
 1673.0083 -1055.1857 74.083344 747.18329 0000ff
 5
 (set args '())
@@ -72,3 +71,11 @@ Double Jump
      (lambda ()
        (rect-apply-force "box-1-3" '(20000 . -50000))))
 (set on-leave (lambda ()))
+1254.4229 -862.22498 323.92441 544.63507 deaa87
+6
+(set args '("goal2"))
+(set on-enter
+     (lambda ()
+       (show-goal (car args))))
+(set on-leave
+     (lambda ()))
