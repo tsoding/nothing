@@ -16,6 +16,8 @@ struct EvalResult
 wrong_argument_type(Gc *gc, const char *type, struct Expr obj);
 struct EvalResult
 wrong_number_of_arguments(Gc *gc, long int count);
+struct EvalResult
+not_implemented(Gc *gc);
 
 struct EvalResult
 car(void *param, Gc *gc, struct Scope *scope, struct Expr args);
