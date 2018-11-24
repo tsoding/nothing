@@ -128,11 +128,28 @@ TEST(unpack_args_test)
     return 0;
 }
 
+TEST(unpack_args_empty_list_test)
+{
+    Gc *gc = create_gc();
+
+    long int d = 0;
+    struct EvalResult result = unpack_args(gc, "d", NIL(gc), &d);
+
+    ASSERT_TRUE(result.is_error, {
+            fprintf(stderr, "Unpack did not fail\n");
+    });
+
+    destroy_gc(gc);
+
+    return 0;
+}
+
 TEST_SUITE(interpreter_suite)
 {
     TEST_RUN(equal_test);
     TEST_RUN(assoc_test);
     TEST_RUN(unpack_args_test);
+    TEST_RUN(unpack_args_empty_list_test);
 
     return 0;
 }

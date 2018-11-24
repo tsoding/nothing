@@ -380,7 +380,7 @@ unpack_args(struct Gc *gc, const char *format, struct Expr args, ...)
         format++;
     }
 
-    if (!nil_p(args)) {
+    if (*format != 0 || !nil_p(args)) {
         return eval_failure(
             CONS(gc,
                  SYMBOL(gc, "wrong-number-of-arguments"),
