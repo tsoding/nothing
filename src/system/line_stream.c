@@ -4,7 +4,6 @@
 #include <errno.h>
 #include <string.h>
 
-#include "error.h"
 #include "line_stream.h"
 #include "lt.h"
 #include "lt/lt_adapters.h"
