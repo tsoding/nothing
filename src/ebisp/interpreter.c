@@ -204,6 +204,30 @@ static struct EvalResult call_callable(Gc *gc,
     return call_lambda(gc, scope, callable, args);
 }
 
+static struct EvalResult eval_block(Gc *gc, struct Scope *scope, struct Expr block)
+{
+    assert(gc);
+    assert(scope);
+
+    if (!list_p(block)) {
+        return wrong_argument_type(gc, "listp", block);
+    }
+
+    struct Expr head = block;
+    struct EvalResult eval_result = eval_success(NIL(gc));
+
+    while (cons_p(head)) {
+        eval_result = eval(gc, scope, CAR(head));
+        if (eval_result.is_error) {
+            return eval_result;
+        }
+
+        head = CDR(head);
+    }
+
+    return eval_result;
+}
+
 static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *cons)
 {
     assert(cons);
@@ -251,23 +275,30 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
             /* TODO(#334): quote does not check the amout of it's arguments */
             return eval_success(cons->cdr.cons->car);
         } else if (strcmp(cons->car.atom->sym, "begin") == 0) {
-            struct Expr head = CDR(cons_as_expr(cons));
-
-            struct EvalResult eval_result = eval_success(NIL(gc));
-
-            while (cons_p(head)) {
-                eval_result = eval(gc, scope, CAR(head));
-                if (eval_result.is_error) {
-                    return eval_result;
-                }
-
-                head = CDR(head);
-            }
-
-            return eval_result;
+            return eval_block(gc, scope, CDR(cons_as_expr(cons)));
         } else if (strcmp(cons->car.atom->sym, "lambda") == 0) {
             /* TODO(#335): lambda special form doesn't check if it forms a callable object */
             return eval_success(cons_as_expr(cons));
+        } else if (strcmp(cons->car.atom->sym, "when") == 0) {
+            struct Expr condition = NIL(gc);
+            struct Expr body = NIL(gc);
+
+            struct EvalResult result = unpack_args(
+                gc, "e*", cons->cdr, &condition, &body);
+            if (result.is_error) {
+                return result;
+            }
+
+            result = eval(gc, scope, condition);
+            if (result.is_error) {
+                return result;
+            }
+
+            if (!nil_p(result.expr)) {
+                /* TODO: when does not evaluate the body */
+            }
+
+            return eval_success(NIL(gc));
         }
     }
 
@@ -330,6 +361,7 @@ void load_std_library(Gc *gc, struct Scope *scope)
         NATIVE(gc, car, NULL));
 }
 
+/* TODO: unpack_args doesn't support * format parameter */
 struct EvalResult
 unpack_args(struct Gc *gc, const char *format, struct Expr args, ...)
 {
