@@ -8,7 +8,7 @@
 #include "level_script.h"
 #include "system/log.h"
 
-struct EvalResult
+static struct EvalResult
 hide_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     assert(param);
@@ -28,7 +28,7 @@ hide_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return eval_success(NIL(gc));
 }
 
-struct EvalResult
+static struct EvalResult
 show_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     assert(param);
@@ -48,7 +48,8 @@ show_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return eval_success(NIL(gc));
 }
 
-struct EvalResult rect_apply_force(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+static struct EvalResult
+rect_apply_force(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     assert(gc);
     assert(scope);
@@ -76,7 +77,7 @@ struct EvalResult rect_apply_force(void *param, Gc *gc, struct Scope *scope, str
     return eval_success(NIL(gc));
 }
 
-struct EvalResult
+static struct EvalResult
 hide_label(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     assert(param);
@@ -89,7 +90,7 @@ hide_label(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return not_implemented(gc);
 }
 
-struct EvalResult
+static struct EvalResult
 show_label(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     assert(param);
@@ -102,7 +103,7 @@ show_label(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return not_implemented(gc);
 }
 
-struct EvalResult
+static struct EvalResult
 get_player_jump_count(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     assert(param);
