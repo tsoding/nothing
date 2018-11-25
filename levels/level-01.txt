@@ -39,7 +39,7 @@ WASD to move
 SPACE to Jump
 950.9303 -279.0629 fffda5
 Double Jump
-5
+6
 659.88593 -301.85339 904.875 333.04886 deaa87
 7
 (set args '("goal1"))
@@ -77,5 +77,14 @@ Double Jump
 (set on-enter
      (lambda ()
        (show-goal (car args))))
+(set on-leave
+     (lambda ()))
+1073.7938 35.243542 491.06668 191.37646 deaa87
+7
+(set args '())
+(set on-enter
+     (lambda ()
+       (when (> (get-player-jump-count) 1)
+         (hide-goal "label_space_to_jump"))))
 (set on-leave
      (lambda ()))

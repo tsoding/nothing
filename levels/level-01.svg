@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.25"
-     inkscape:cx="5472.9238"
-     inkscape:cy="2249.3802"
+     inkscape:cx="4778.9238"
+     inkscape:cy="1153.3802"
      inkscape:document-units="mm"
      inkscape:current-layer="svg4541"
      showgrid="false"
@@ -289,7 +289,7 @@
      style="font-style:normal;font-weight:normal;font-size:25.17981339px;line-height:15.73738289px;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#fffda5;fill-opacity:1;stroke:none;stroke-width:0.62949532px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
      x="1733.6071"
      y="146.905"
-     id="label-01-3"
+     id="label_space_to_jump"
      inkscape:label="#text38"><tspan
        sodipodi:role="line"
        id="tspan36-6"
@@ -358,5 +358,16 @@
      inkscape:label="#region4530">
     <title
        id="title49-6">goal-show.lisp goal2</title>
+  </rect>
+  <rect
+     style="fill:#deaa87;fill-opacity:0.54726371;stroke:none;stroke-width:0.14408834"
+     id="script_jump_label"
+     width="491.06668"
+     height="191.37646"
+     x="1073.7938"
+     y="35.243542"
+     inkscape:label="#region4529">
+    <title
+       id="title47-6">hide_jump_label.lisp</title>
   </rect>
 </svg>
