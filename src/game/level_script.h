@@ -7,7 +7,7 @@ typedef struct Gc Gc;
 struct Scope;
 typedef struct Level Level;
 
-// TODO: Native lisp functions should probably have some kind of prefix
+// TODO(#525): Native lisp functions should probably have some kind of prefix
 
 struct EvalResult
 rect_apply_force(void *param, Gc *gc, struct Scope *scope, struct Expr args);
