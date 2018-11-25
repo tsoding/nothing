@@ -171,9 +171,9 @@ add_executable(nothing_test
   src/system/nth_alloc.h
   src/system/nth_alloc.c
   )
-target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
-target_link_libraries(nothing_test ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
-target_link_libraries(repl ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY})
+target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} m)
+target_link_libraries(nothing_test ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} m)
+target_link_libraries(repl ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} m)
 
 if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "CLANG"))
   set(CMAKE_C_FLAGS
