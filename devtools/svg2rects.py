@@ -42,7 +42,6 @@ def save_player(svg_root, output_file):
     x = player.attrib['x']
     y = player.attrib['y']
     output_file.write("%s %s %s\n" % (x, y, color))
-    save_script(player, output_file);
 
 
 def save_platforms(svg_root, output_file):

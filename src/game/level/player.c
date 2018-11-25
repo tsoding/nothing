@@ -40,14 +40,11 @@ struct Player {
     Vec checkpoint;
 
     int play_die_cue;
-
-    Script *script;
 };
 
-Player *create_player_from_line_stream(LineStream *line_stream, Level *level)
+Player *create_player_from_line_stream(LineStream *line_stream)
 {
     assert(line_stream);
-    assert(level);
 
     Lt *lt = create_lt();
 
@@ -92,12 +89,6 @@ Player *create_player_from_line_stream(LineStream *line_stream, Level *level)
             PLAYER_DEATH_DURATION),
         destroy_dying_rect);
     if (player->dying_body == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    /* TODO: player doesn't check if the script contains required callbacks */
-    player->script = create_script_from_line_stream(line_stream, level);
-    if (player->script == NULL) {
         RETURN_LT(lt, NULL);
     }
 

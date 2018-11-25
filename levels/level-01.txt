@@ -1,16 +1,5 @@
 fffda5
 28.578053 -456.51523 ff8080
-10
-(set args '())
-;;; TODO: on-jump is not called when player jumps
-(set on-jump
-     (lambda ()))
-;;; TODO: on-double-jump is not called when player double jumps
-(set on-double-jump
-     (lambda ()))
-;;; TODO: on-death is not called when player deaths
-(set on-death
-     (lambda ()))
 21
 -656.11383 191.77144 2545.4624 1595.238 483737
 -711.37622 -1262.1708 548.61353 1633.9749 483737
