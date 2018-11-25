@@ -1,3 +1,5 @@
+;;; TODO: there is no way to send information from one script to another one
+
 ;;; TODO: on-jump is not called when player jumps
 (set on-jump
      (lambda ()))
