@@ -102,6 +102,19 @@ show_label(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return not_implemented(gc);
 }
 
+struct EvalResult
+get_player_jump_count(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    assert(param);
+    assert(gc);
+    assert(scope);
+    (void) args;
+
+    /* TODO: get-player-jump-count is not implemented */
+
+    return not_implemented(gc);
+}
+
 void load_level_library(Gc *gc, struct Scope *scope, Level *level)
 {
     set_scope_value(
@@ -129,4 +142,9 @@ void load_level_library(Gc *gc, struct Scope *scope, Level *level)
         scope,
         SYMBOL(gc, "hide-label"),
         NATIVE(gc, hide_label, level));
+    set_scope_value(
+        gc,
+        scope,
+        SYMBOL(gc, "get-player-jump-count"),
+        NATIVE(gc, get_player_jump_count, level));
 }
