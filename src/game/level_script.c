@@ -84,7 +84,7 @@ hide_label(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     assert(scope);
     (void) args;
 
-    /* TODO: hide-label is not implemented */
+    /* TODO(#522): hide-label is not implemented */
 
     return not_implemented(gc);
 }
