@@ -295,7 +295,7 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
             }
 
             if (!nil_p(result.expr)) {
-                /* TODO: when does not evaluate the body */
+                return eval_block(gc, scope, body);
             }
 
             return eval_success(NIL(gc));
