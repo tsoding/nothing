@@ -5,10 +5,12 @@ addons:
     packages:
       - cmake
       - cmake-data
-      - gcc
       - libsdl2-dev
       - libsdl2-mixer-dev
       - python3
+compiler:
+  - clang
+  - gcc
 script:
   - mkdir build/
   - cd build/
