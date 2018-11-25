@@ -5,14 +5,15 @@
 
 #include "game/level/player/dying_rect.h"
 #include "game/level/player/rigid_rect.h"
+#include "game/level/script.h"
 #include "goals.h"
 #include "math/point.h"
 #include "platforms.h"
 #include "player.h"
 #include "system/line_stream.h"
+#include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
-#include "system/log.h"
 
 #define PLAYER_WIDTH 25.0f
 #define PLAYER_HEIGHT 25.0f
@@ -41,8 +42,10 @@ struct Player {
     int play_die_cue;
 };
 
-Player *create_player(float x, float y, Color color)
+Player *create_player_from_line_stream(LineStream *line_stream)
 {
+    assert(line_stream);
+
     Lt *lt = create_lt();
 
     if (lt == NULL) {
@@ -53,8 +56,20 @@ Player *create_player(float x, float y, Color color)
     if (player == NULL) {
         RETURN_LT(lt, NULL);
     }
+    player->lt = lt;
 
-    player->state = PLAYER_STATE_ALIVE;
+    float x = 0.0f, y = 0.0f;
+    char colorstr[7];
+
+    if (sscanf(
+            line_stream_next(line_stream),
+            "%f%f%6s",
+            &x, &y, colorstr) == EOF) {
+        log_fail("Could not read player\n");
+        return NULL;
+    }
+
+    const Color color = hexstr(colorstr);
 
     player->alive_body = PUSH_LT(
         lt,
@@ -77,29 +92,13 @@ Player *create_player(float x, float y, Color color)
         RETURN_LT(lt, NULL);
     }
 
-    player->lt = lt;
     player->jump_count = 0;
     player->color = color;
     player->checkpoint = vec(x, y);
     player->play_die_cue = 0;
+    player->state = PLAYER_STATE_ALIVE;
 
     return player;
-}
-
-Player *create_player_from_line_stream(LineStream *line_stream)
-{
-    float x = 0.0f, y = 0.0f;
-    char color[7];
-
-    if (sscanf(
-            line_stream_next(line_stream),
-            "%f%f%6s",
-            &x, &y, color) == EOF) {
-        log_fail("Could not read player\n");
-        return NULL;
-    }
-
-    return create_player(x, y, hexstr(color));
 }
 
 void destroy_player(Player * player)

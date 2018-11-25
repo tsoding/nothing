@@ -47,6 +47,12 @@ wrong_number_of_arguments(Gc *gc, long int count)
              NUMBER(gc, count)));
 }
 
+struct EvalResult
+not_implemented(Gc *gc)
+{
+    return eval_failure(SYMBOL(gc, "not-implemented"));
+}
+
 static struct EvalResult length(Gc *gc, struct Expr obj)
 {
     if (!list_p(obj)) {
