@@ -97,7 +97,7 @@ show_label(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     assert(scope);
     (void) args;
 
-    /* TODO: show-label is not implemented */
+    /* TODO(#523): show-label is not implemented */
 
     return not_implemented(gc);
 }
