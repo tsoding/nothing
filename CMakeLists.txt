@@ -139,6 +139,8 @@ add_executable(repl
   src/system/log.c
   src/system/nth_alloc.h
   src/system/nth_alloc.c
+  src/ebisp/repl_runtime.h
+  src/ebisp/repl_runtime.c
   )
 add_executable(nothing_test
   src/ebisp/builtins.c
