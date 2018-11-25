@@ -111,6 +111,7 @@ int script_eval(Script *script, const char *source_code)
         parse_result.expr);
     if (eval_result.is_error) {
         log_fail("Evaluation error: ");
+        /* TODO: Evalation error is prepended with `[FAIL]` at the end of the message */
         /* TODO(#486): print_expr_as_sexpr could not be easily integrated with log_fail */
         print_expr_as_sexpr(stderr, eval_result.expr);
         log_fail("\n");
