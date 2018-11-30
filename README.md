@@ -20,6 +20,12 @@
 $ sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev python3 inotify-tools
 ```
 
+### MacOS
+
+```console
+$ brew install gcc cmake sdl2 sdl2_mixer python3
+```
+
 ### NixOS
 
 For [NixOS] we have a development environment defined in [default.nix]
