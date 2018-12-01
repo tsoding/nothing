@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
         .expr = CONS(gc, NIL(gc), NIL(gc))
     };
 
+    load_std_library(gc, &scope);
     load_repl_runtime(gc, &scope);
 
     while (true) {
