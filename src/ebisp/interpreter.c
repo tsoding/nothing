@@ -368,7 +368,7 @@ greaterThan(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     }
 
     if (x > y) {
-        /* TODO: in ebisp t is not a special symbol that evaluates to itself */
+        /* TODO(#537): in ebisp t is not a special symbol that evaluates to itself */
         return eval_success(SYMBOL(gc, "t"));
     } else {
         return eval_success(NIL(gc));
