@@ -361,7 +361,6 @@ void load_std_library(Gc *gc, struct Scope *scope)
         NATIVE(gc, car, NULL));
 }
 
-/* TODO(#530): unpack_args doesn't support * format parameter */
 struct EvalResult
 unpack_args(struct Gc *gc, const char *format, struct Expr args, ...)
 {
