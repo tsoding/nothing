@@ -20,7 +20,7 @@
 #define PLAYER_SPEED 500.0f
 #define PLAYER_JUMP 32000.0f
 #define PLAYER_DEATH_DURATION 0.75f
-#define PLAYER_MAX_JUMP_COUNT 2
+#define PLAYER_MAX_JUMP_THRESHOLD 2
 
 typedef enum Player_state {
     PLAYER_STATE_ALIVE = 0,
@@ -34,6 +34,7 @@ struct Player {
     Rigid_rect *alive_body;
     Dying_rect *dying_body;
 
+    int jump_threshold;
     int jump_count;
     Color color;
 
@@ -92,6 +93,7 @@ Player *create_player_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
+    player->jump_threshold = 0;
     player->jump_count = 0;
     player->color = color;
     player->checkpoint = vec(x, y);
@@ -175,7 +177,7 @@ void player_collide_with_solid(Player *player, Solid_ref solid)
         rigid_rect_collide_with_solid(player->alive_body, solid);
 
         if (rigid_rect_touches_ground(player->alive_body)) {
-            player->jump_count = 0;
+            player->jump_threshold = 0;
         }
     }
 }
@@ -203,13 +205,14 @@ void player_stop(Player *player)
 void player_jump(Player *player)
 {
     assert(player);
-    if (player->jump_count < PLAYER_MAX_JUMP_COUNT) {
+    if (player->jump_threshold < PLAYER_MAX_JUMP_THRESHOLD) {
         rigid_rect_transform_velocity(player->alive_body,
                                       make_mat3x3(1.0f, 0.0f, 0.0f,
                                                   0.0f, 0.0f, 0.0f,
                                                   0.0f, 0.0f, 1.0f));
         rigid_rect_apply_force(player->alive_body,
                                vec(0.0f, -PLAYER_JUMP));
+        player->jump_threshold++;
         player->jump_count++;
     }
 }
@@ -317,4 +320,10 @@ bool player_overlaps_rect(const Player *player,
         && rects_overlap(
             rect, rigid_rect_hitbox(
                 player->alive_body));
+}
+
+long int player_jump_count(const Player *player)
+{
+    assert(player);
+    return player->jump_count;
 }
