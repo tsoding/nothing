@@ -352,6 +352,29 @@ car(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return eval_success(xs.cons->car);
 }
 
+/* TODO: greaterThan does not support arbitrary amount of arguments */
+static struct EvalResult
+greaterThan(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    assert(gc);
+    assert(scope);
+    (void) param;
+
+    long int x = 0, y = 0;
+
+    struct EvalResult result = unpack_args(gc, "dd", args, &x, &y);
+    if (result.is_error) {
+        return result;
+    }
+
+    if (x > y) {
+        /* TODO: in ebisp t is not a special symbol that evaluates to itself */
+        return eval_success(SYMBOL(gc, "t"));
+    } else {
+        return eval_success(NIL(gc));
+    }
+}
+
 void load_std_library(Gc *gc, struct Scope *scope)
 {
     set_scope_value(
@@ -359,6 +382,12 @@ void load_std_library(Gc *gc, struct Scope *scope)
         scope,
         SYMBOL(gc, "car"),
         NATIVE(gc, car, NULL));
+
+    set_scope_value(
+        gc,
+        scope,
+        SYMBOL(gc, ">"),
+        NATIVE(gc, greaterThan, NULL));
 }
 
 struct EvalResult
