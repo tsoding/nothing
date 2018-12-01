@@ -111,9 +111,9 @@ get_player_jump_count(void *param, Gc *gc, struct Scope *scope, struct Expr args
     assert(scope);
     (void) args;
 
-    /* TODO(#524): get-player-jump-count is not implemented */
-
-    return not_implemented(gc);
+    Level *level = (Level*)param;
+    return eval_success(
+        NUMBER(gc, level_player_jump_count(level)));
 }
 
 void load_level_library(Gc *gc, struct Scope *scope, Level *level)

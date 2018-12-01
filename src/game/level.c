@@ -414,3 +414,11 @@ void level_show_goal(Level *level, const char *goal_id)
 {
     goals_show(level->goals, goal_id);
 }
+
+long int level_player_jump_count(Level *level)
+{
+    assert(level);
+    /* TODO: level_player_jump_count is not implement */
+
+    return 0;
+}
