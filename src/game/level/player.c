@@ -318,3 +318,10 @@ bool player_overlaps_rect(const Player *player,
             rect, rigid_rect_hitbox(
                 player->alive_body));
 }
+
+long int player_jump_count(const Player *player)
+{
+    assert(player);
+    /* TODO: player_jump_count is not implement */
+    return 0;
+}
