@@ -352,7 +352,7 @@ car(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return eval_success(xs.cons->car);
 }
 
-/* TODO: greaterThan does not support arbitrary amount of arguments */
+/* TODO(#536): greaterThan does not support arbitrary amount of arguments */
 static struct EvalResult
 greaterThan(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
