@@ -376,7 +376,6 @@ unpack_args(struct Gc *gc, const char *format, struct Expr args, ...)
     long int i = 0;
     for (i = 0; *format != 0 && !nil_p(args); ++i) {
         struct Expr arg = CAR(args);
-        args = CDR(args);
 
         switch (*format) {
         case 'd': {
@@ -413,9 +412,18 @@ unpack_args(struct Gc *gc, const char *format, struct Expr args, ...)
             struct Expr *p = va_arg(args_list, struct Expr*);
             *p = arg;
         } break;
+
+        case '*': {
+            struct Expr *p = va_arg(args_list, struct Expr*);
+            *p = args;
+            args = NIL(gc);
+        } break;
         }
 
         format++;
+        if (!nil_p(args)) {
+            args = CDR(args);
+        }
     }
 
     if (*format != 0 || !nil_p(args)) {
