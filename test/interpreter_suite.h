@@ -144,12 +144,49 @@ TEST(unpack_args_empty_list_test)
     return 0;
 }
 
+TEST(unpack_args_head_tail_test)
+{
+    Gc *gc = create_gc();
+
+    struct Expr input = list(
+        gc, 4,
+        NUMBER(gc, 1),
+        NUMBER(gc, 2),
+        NUMBER(gc, 3),
+        NUMBER(gc, 4));
+
+    long int x = 0;
+    struct Expr xs = NIL(gc);
+
+    struct EvalResult result = unpack_args(gc, "d*", input, &x, &xs);
+    ASSERT_TRUE(!result.is_error, {
+            fprintf(stderr, "Could not unpack input: ");
+            print_expr_as_sexpr(stderr, result.expr);
+            fprintf(stderr, "\n");
+    });
+
+    ASSERT_TRUE(x == 1, {
+            fprintf(stderr, "Expected: 1, Actual: %ld\n", x);
+    });
+
+    ASSERT_TRUE(equal(xs, list(gc, 3, NUMBER(gc, 2), NUMBER(gc, 3), NUMBER(gc, 4))), {
+            fprintf(stderr, "Expected: (2 3 4), Actual: ");
+            print_expr_as_sexpr(stderr, xs);
+            fprintf(stderr, "\n");
+    })
+
+    destroy_gc(gc);
+
+    return 0;
+}
+
 TEST_SUITE(interpreter_suite)
 {
     TEST_RUN(equal_test);
     TEST_RUN(assoc_test);
     TEST_RUN(unpack_args_test);
     TEST_RUN(unpack_args_empty_list_test);
+    TEST_RUN(unpack_args_head_tail_test);
 
     return 0;
 }
