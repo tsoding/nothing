@@ -47,7 +47,7 @@ static struct EvalResult print(void *param, Gc *gc, struct Scope *scope, struct 
     (void) param;
 
     const char *s = NULL;
-    struct EvalResult result = unpack_args(gc, "s", args, &s);
+    struct EvalResult result = match_list(gc, "s", args, &s);
     if (result.is_error) {
         return result;
     }

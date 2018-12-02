@@ -283,7 +283,7 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
             struct Expr condition = NIL(gc);
             struct Expr body = NIL(gc);
 
-            struct EvalResult result = unpack_args(
+            struct EvalResult result = match_list(
                 gc, "e*", cons->cdr, &condition, &body);
             if (result.is_error) {
                 return result;
@@ -362,7 +362,7 @@ greaterThan(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 
     long int x = 0, y = 0;
 
-    struct EvalResult result = unpack_args(gc, "dd", args, &x, &y);
+    struct EvalResult result = match_list(gc, "dd", args, &x, &y);
     if (result.is_error) {
         return result;
     }
@@ -391,70 +391,70 @@ void load_std_library(Gc *gc, struct Scope *scope)
 }
 
 struct EvalResult
-unpack_args(struct Gc *gc, const char *format, struct Expr args, ...)
+match_list(struct Gc *gc, const char *format, struct Expr xs, ...)
 {
     va_list args_list;
-    va_start(args_list, args);
+    va_start(args_list, xs);
 
-    if (!list_p(args)) {
+    if (!list_p(xs)) {
         va_end(args_list);
-        return wrong_argument_type(gc, "listp", args);
+        return wrong_argument_type(gc, "listp", xs);
     }
 
     long int i = 0;
-    for (i = 0; *format != 0 && !nil_p(args); ++i) {
-        struct Expr arg = CAR(args);
+    for (i = 0; *format != 0 && !nil_p(xs); ++i) {
+        struct Expr x = CAR(xs);
 
         switch (*format) {
         case 'd': {
-            if (!number_p(arg)) {
+            if (!number_p(x)) {
                 va_end(args_list);
-                return wrong_argument_type(gc, "numberp", arg);
+                return wrong_argument_type(gc, "numberp", x);
             }
 
             long int *p = va_arg(args_list, long int *);
-            *p = arg.atom->num;
+            *p = x.atom->num;
         } break;
 
         case 's': {
-            if (!string_p(arg)) {
+            if (!string_p(x)) {
                 va_end(args_list);
-                return wrong_argument_type(gc, "stringp", arg);
+                return wrong_argument_type(gc, "stringp", x);
             }
 
             const char **p = va_arg(args_list, const char**);
-            *p = arg.atom->str;
+            *p = x.atom->str;
         } break;
 
         case 'q': {
-            if (!symbol_p(arg)) {
+            if (!symbol_p(x)) {
                 va_end(args_list);
-                return wrong_argument_type(gc, "symbolp", arg);
+                return wrong_argument_type(gc, "symbolp", x);
             }
 
             const char **p = va_arg(args_list, const char**);
-            *p = arg.atom->sym;
+            *p = x.atom->sym;
         } break;
 
         case 'e': {
             struct Expr *p = va_arg(args_list, struct Expr*);
-            *p = arg;
+            *p = x;
         } break;
 
         case '*': {
             struct Expr *p = va_arg(args_list, struct Expr*);
-            *p = args;
-            args = NIL(gc);
+            *p = xs;
+            xs = NIL(gc);
         } break;
         }
 
         format++;
-        if (!nil_p(args)) {
-            args = CDR(args);
+        if (!nil_p(xs)) {
+            xs = CDR(xs);
         }
     }
 
-    if (*format != 0 || !nil_p(args)) {
+    if (*format != 0 || !nil_p(xs)) {
         return eval_failure(
             CONS(gc,
                  SYMBOL(gc, "wrong-number-of-arguments"),

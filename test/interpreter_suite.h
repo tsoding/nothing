@@ -83,7 +83,7 @@ TEST(assoc_test)
     return 0;
 }
 
-TEST(unpack_args_test)
+TEST(match_list_test)
 {
     Gc *gc = create_gc();
 
@@ -99,7 +99,7 @@ TEST(unpack_args_test)
     const char *q = NULL;
     struct Expr e = NIL(gc);
 
-    struct EvalResult result = unpack_args(gc, "dsqe", input, &d, &s, &q, &e);
+    struct EvalResult result = match_list(gc, "dsqe", input, &d, &s, &q, &e);
     ASSERT_FALSE(result.is_error, {
             fprintf(stderr, "Unpack failed: ");
             print_expr_as_sexpr(stderr, result.expr);
@@ -128,12 +128,12 @@ TEST(unpack_args_test)
     return 0;
 }
 
-TEST(unpack_args_empty_list_test)
+TEST(match_list_empty_list_test)
 {
     Gc *gc = create_gc();
 
     long int d = 0;
-    struct EvalResult result = unpack_args(gc, "d", NIL(gc), &d);
+    struct EvalResult result = match_list(gc, "d", NIL(gc), &d);
 
     ASSERT_TRUE(result.is_error, {
             fprintf(stderr, "Unpack did not fail\n");
@@ -144,7 +144,7 @@ TEST(unpack_args_empty_list_test)
     return 0;
 }
 
-TEST(unpack_args_head_tail_test)
+TEST(match_list_head_tail_test)
 {
     Gc *gc = create_gc();
 
@@ -158,7 +158,7 @@ TEST(unpack_args_head_tail_test)
     long int x = 0;
     struct Expr xs = NIL(gc);
 
-    struct EvalResult result = unpack_args(gc, "d*", input, &x, &xs);
+    struct EvalResult result = match_list(gc, "d*", input, &x, &xs);
     ASSERT_TRUE(!result.is_error, {
             fprintf(stderr, "Could not unpack input: ");
             print_expr_as_sexpr(stderr, result.expr);
@@ -184,9 +184,9 @@ TEST_SUITE(interpreter_suite)
 {
     TEST_RUN(equal_test);
     TEST_RUN(assoc_test);
-    TEST_RUN(unpack_args_test);
-    TEST_RUN(unpack_args_empty_list_test);
-    TEST_RUN(unpack_args_head_tail_test);
+    TEST_RUN(match_list_test);
+    TEST_RUN(match_list_empty_list_test);
+    TEST_RUN(match_list_head_tail_test);
 
     return 0;
 }
