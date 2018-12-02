@@ -83,11 +83,18 @@ hide_label(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     assert(param);
     assert(gc);
     assert(scope);
-    (void) args;
 
-    /* TODO(#522): hide-label is not implemented */
+    Level *level = (Level*) param;
+    const char *label_id = NULL;
 
-    return not_implemented(gc);
+    struct EvalResult result = match_list(gc, "s", args, &label_id);
+    if (result.is_error) {
+        return result;
+    }
+
+    level_hide_label(level, label_id);
+
+    return eval_success(NIL(gc));
 }
 
 static struct EvalResult
