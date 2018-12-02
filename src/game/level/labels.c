@@ -170,3 +170,12 @@ void labels_enter_camera_event(Labels *labels,
         labels->visible[i] = became_visible;
     }
 }
+
+void labels_hide(Labels *labels,
+                 const char *label_id)
+{
+    assert(labels);
+    assert(label_id);
+
+    /* TODO: labels_hide is not implemented */
+}

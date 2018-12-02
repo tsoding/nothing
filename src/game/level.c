@@ -426,5 +426,5 @@ void level_hide_label(Level *level, const char *label_id)
     assert(level);
     assert(label_id);
 
-    /* TODO: level_hide_label is not implemented */
+    labels_hide(level->labels, label_id);
 }
