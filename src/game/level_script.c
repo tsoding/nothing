@@ -18,7 +18,7 @@ hide_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     Level * const level = (Level*)param;
     const char * const goal_id = NULL;
 
-    struct EvalResult result = unpack_args(gc, "s", args, &goal_id);
+    struct EvalResult result = match_list(gc, "s", args, &goal_id);
     if (result.is_error) {
         return result;
     }
@@ -38,7 +38,7 @@ show_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     Level * const level = (Level*)param;
     const char *goal_id = NULL;
 
-    struct EvalResult result = unpack_args(gc, "s", args, &goal_id);
+    struct EvalResult result = match_list(gc, "s", args, &goal_id);
     if (result.is_error) {
         return result;
     }
