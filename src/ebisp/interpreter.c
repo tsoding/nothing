@@ -468,3 +468,5 @@ match_list(struct Gc *gc, const char *format, struct Expr xs, ...)
 
     return eval_success(NIL(gc));
 }
+
+/* TODO: format_list(). Similar to match_list() but for constructing list */
