@@ -335,21 +335,25 @@ car(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     assert(gc);
     assert(scope);
 
-    if (!list_p(args)) {
-        return wrong_argument_type(gc, "listp", args);
-    }
+    struct Expr xs = NIL(gc);
+    struct Expr x = NIL(gc);
 
-    if (length_of_list(args) != 1) {
-        return wrong_number_of_arguments(gc, length_of_list(args));
+    struct EvalResult result = match_list(gc, "e", args, &xs);
+    if (result.is_error) {
+        return result;
     }
-
-    struct Expr xs = args.cons->car;
 
     if (nil_p(xs)) {
         return eval_success(xs);
     }
 
-    return eval_success(xs.cons->car);
+    /* TODO: use NULL output argument instead of &xs to skip the tail */
+    result = match_list(gc, "e*", xs, &x, &xs);
+    if (result.is_error) {
+        return result;
+    }
+
+    return eval_success(x);
 }
 
 /* TODO(#536): greaterThan does not support arbitrary amount of arguments */
@@ -390,6 +394,7 @@ void load_std_library(Gc *gc, struct Scope *scope)
         NATIVE(gc, greaterThan, NULL));
 }
 
+/* TODO: match_list does not support NULL output arguments */
 struct EvalResult
 match_list(struct Gc *gc, const char *format, struct Expr xs, ...)
 {
