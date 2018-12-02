@@ -331,7 +331,6 @@ car(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     assert(scope);
 
     struct Expr xs = NIL(gc);
-    struct Expr x = NIL(gc);
 
     struct EvalResult result = match_list(gc, "e", args, &xs);
     if (result.is_error) {
@@ -342,12 +341,11 @@ car(void *param, Gc *gc, struct Scope *scope, struct Expr args)
         return eval_success(xs);
     }
 
-    result = match_list(gc, "e*", xs, &x, NULL);
-    if (result.is_error) {
-        return result;
+    if (!cons_p(xs)) {
+        return wrong_argument_type(gc, "consp", xs);
     }
 
-    return eval_success(x);
+    return eval_success(CAR(xs));
 }
 
 /* TODO(#536): greaterThan does not support arbitrary amount of arguments */
