@@ -127,29 +127,29 @@ static struct EvalResult eval_all_args(Gc *gc, struct Scope *scope, struct Expr 
 }
 
 /* TODO(#540): plus_op should be part of std library */
-static struct EvalResult plus_op(Gc *gc, struct Expr args)
+static struct EvalResult
+plus_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
-    long int result = 0.0f;
+    (void) param;
+    assert(gc);
+    assert(scope);
+
+    long int result = 0L;
 
     while (!nil_p(args)) {
-        if (args.type != EXPR_CONS) {
-            return eval_failure(CONS(gc,
-                                     SYMBOL(gc, "expected-cons"),
-                                     args));
+        if (!cons_p(args)) {
+            return wrong_argument_type(gc, "consp", args);
         }
 
-        if (args.cons->car.type != EXPR_ATOM ||
-            args.cons->car.atom->type != ATOM_NUMBER) {
-            return eval_failure(CONS(gc,
-                                     SYMBOL(gc, "expected-number"),
-                                     args.cons->car));
+        if (!number_p(CAR(args))) {
+            return wrong_argument_type(gc, "numberp", CAR(args));
         }
 
-        result += args.cons->car.atom->num;
-        args = args.cons->cdr;
+        result += CAR(args).atom->num;
+        args = CDR(args);
     }
 
-    return eval_success(atom_as_expr(create_number_atom(gc, result)));
+    return eval_success(NUMBER(gc, result));
 }
 
 static struct EvalResult call_lambda(Gc *gc,
@@ -235,14 +235,7 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
     (void) scope;
 
     if (symbol_p(cons->car)) {
-        /* TODO(#541): special forms should be just regular native functions but with no arguments evaluation */
-        if (strcmp(cons->car.atom->sym, "+") == 0) {
-            struct EvalResult args = eval_all_args(gc, scope, cons->cdr);
-            if (args.is_error) {
-                return args;
-            }
-            return plus_op(gc, args.expr);
-        } else if (strcmp(cons->car.atom->sym, "set") == 0) {
+        if (strcmp(cons->car.atom->sym, "set") == 0) {
             struct Expr args = cons->cdr;
             struct EvalResult n = length(gc, args);
 
@@ -387,12 +380,16 @@ void load_std_library(Gc *gc, struct Scope *scope)
         scope,
         SYMBOL(gc, "car"),
         NATIVE(gc, car, NULL));
-
     set_scope_value(
         gc,
         scope,
         SYMBOL(gc, ">"),
         NATIVE(gc, greaterThan, NULL));
+    set_scope_value(
+        gc,
+        scope,
+        SYMBOL(gc, "+"),
+        NATIVE(gc, plus_op, NULL));
 }
 
 struct EvalResult
@@ -401,6 +398,7 @@ match_list(struct Gc *gc, const char *format, struct Expr xs, ...)
     va_list args_list;
     va_start(args_list, xs);
 
+    /* TODO: match_list is O(N) even in best case (format == "*") */
     if (!list_p(xs)) {
         va_end(args_list);
         return wrong_argument_type(gc, "listp", xs);
@@ -468,10 +466,7 @@ match_list(struct Gc *gc, const char *format, struct Expr xs, ...)
     }
 
     if (*format != 0 || !nil_p(xs)) {
-        return eval_failure(
-            CONS(gc,
-                 SYMBOL(gc, "wrong-number-of-arguments"),
-                 NUMBER(gc, i)));
+        return wrong_number_of_arguments(gc, i);
     }
 
     return eval_success(NIL(gc));
