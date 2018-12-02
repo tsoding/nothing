@@ -347,8 +347,7 @@ car(void *param, Gc *gc, struct Scope *scope, struct Expr args)
         return eval_success(xs);
     }
 
-    /* TODO: use NULL output argument instead of &xs to skip the tail */
-    result = match_list(gc, "e*", xs, &x, &xs);
+    result = match_list(gc, "e*", xs, &x, NULL);
     if (result.is_error) {
         return result;
     }
