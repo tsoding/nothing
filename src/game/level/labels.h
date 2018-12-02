@@ -18,4 +18,7 @@ void labels_update(Labels *label,
 void labels_enter_camera_event(Labels *label,
                                const Camera *camera);
 
+void labels_hide(Labels *labels,
+                 const char *label_id);
+
 #endif  // LABELS_H_

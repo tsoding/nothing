@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdbool.h>
 
 #include "game/camera.h"
 #include "game/level/labels.h"
@@ -8,15 +9,19 @@
 #include "system/nth_alloc.h"
 #include "system/log.h"
 
+#define LABEL_MAX_ID_SIZE 36
+
 struct Labels
 {
     Lt *lt;
     size_t count;
+    char **ids;
     Vec *positions;
     Color *colors;
     char **texts;
     float *states;
     int *visible;
+    bool *enabled;
 };
 
 Labels *create_labels_from_line_stream(LineStream *line_stream)
@@ -39,6 +44,12 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
             "%lu",
             &labels->count) == EOF) {
         log_fail("Could not read amount of labels\n");
+        RETURN_LT(lt, NULL);
+    }
+
+    /* TODO: Label ids are not parsed */
+    labels->ids = PUSH_LT(lt, nth_alloc(sizeof(char*) * labels->count), free);
+    if (labels->ids == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -67,15 +78,27 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
+    labels->enabled = PUSH_LT(lt, nth_alloc(sizeof(bool) * labels->count), free);
+    if (labels->enabled == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     char color[7];
     for (size_t i = 0; i < labels->count; ++i) {
         labels->states[i] = 1.0f;
         labels->visible[i] = 0;
+        labels->enabled[i] = true;
         labels->texts[i] = NULL;
+
+        labels->ids[i] = PUSH_LT(lt, nth_alloc(sizeof(char) * LABEL_MAX_ID_SIZE), free);
+        if (labels->ids[i] == NULL) {
+            RETURN_LT(lt, NULL);
+        }
 
         if (sscanf(
                 line_stream_next(line_stream),
-                "%f%f%6s\n",
+                "%" STRINGIFY(LABEL_MAX_ID_SIZE) "s%f%f%6s\n",
+                labels->ids[i],
                 &labels->positions[i].x,
                 &labels->positions[i].y,
                 color) == EOF) {
@@ -118,7 +141,7 @@ int labels_render(const Labels *label,
     assert(camera);
 
     for (size_t i = 0; i < label->count; ++i) {
-        if (label->visible[i]) {
+        if (label->visible[i] && label->enabled[i]) {
             /* Easing */
             const float state = label->states[i] * (2 - label->states[i]);
 
@@ -168,5 +191,19 @@ void labels_enter_camera_event(Labels *labels,
         }
 
         labels->visible[i] = became_visible;
+    }
+}
+
+void labels_hide(Labels *labels,
+                 const char *label_id)
+{
+    assert(labels);
+    assert(label_id);
+
+    for (size_t i = 0; i < labels->count; ++i) {
+        if (strcmp(labels->ids[i], label_id) == 0) {
+            labels->enabled[i] = false;
+            return;
+        }
     }
 }

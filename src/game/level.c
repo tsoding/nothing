@@ -420,3 +420,11 @@ long int level_player_jump_count(Level *level)
     assert(level);
     return player_jump_count(level->player);
 }
+
+void level_hide_label(Level *level, const char *label_id)
+{
+    assert(level);
+    assert(label_id);
+
+    labels_hide(level->labels, label_id);
+}
