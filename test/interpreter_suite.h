@@ -207,6 +207,33 @@ TEST(match_list_wildcard_test)
     return 0;
 }
 
+TEST(match_list_singleton_tail_test)
+{
+    Gc *gc = create_gc();
+
+    struct Expr input = list(gc, 4, NUMBER(gc, 1));
+    long int x;
+    struct Expr xs = NIL(gc);
+    struct EvalResult res = match_list(gc, "d*", input, &x, &xs);
+
+    ASSERT_TRUE(!res.is_error, {
+            fprintf(stderr, "Matching failed: ");
+            print_expr_as_sexpr(stderr, res.expr);
+            fprintf(stderr, "\n");
+    });
+
+    ASSERT_LONGINTEQ(1L, x);
+    ASSERT_TRUE(nil_p(xs), {
+            fprintf(stderr, "Tail doesn't appear to be NIL: ");
+            print_expr_as_sexpr(stderr, xs);
+            fprintf(stderr, "\n");
+    });
+
+    destroy_gc(gc);
+
+    return 0;
+}
+
 TEST_SUITE(interpreter_suite)
 {
     TEST_RUN(equal_test);
@@ -215,6 +242,8 @@ TEST_SUITE(interpreter_suite)
     TEST_RUN(match_list_empty_list_test);
     TEST_RUN(match_list_head_tail_test);
     TEST_RUN(match_list_wildcard_test);
+    // TODO(#545): should we support matching the NIL at the end of the list? (match_list_singleton_tail_test)
+    TEST_IGNORE(match_list_singleton_tail_test);
 
     return 0;
 }
