@@ -33,11 +33,11 @@ goal2 2379.0662 -605.81818 000000
 box-1 2960.1287 -383.48123 64.009789 61.599514 a02c2c
 box-1-3 1761.9082 -529.19391 64.009789 61.599514 a02c2c
 3
--41.109612 217.17818 fffda5
+label-01 -41.109612 217.17818 fffda5
 WASD to move
-1733.6071 146.905 fffda5
+label_space_to_jump 1733.6071 146.905 fffda5
 SPACE to Jump
-950.9303 -279.0629 fffda5
+label-01-3-7 950.9303 -279.0629 fffda5
 Double Jump
 6
 659.88593 -301.85339 904.875 333.04886 deaa87
@@ -85,6 +85,6 @@ Double Jump
 (set on-enter
      (lambda ()
        (when (> (get-player-jump-count) 1)
-         (hide-goal "label_space_to_jump"))))
+         (hide-label "label_space_to_jump"))))
 (set on-leave
      (lambda ()))

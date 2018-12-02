@@ -127,12 +127,13 @@ def save_labels(svg_root, output_file):
 
     output_file.write("%d\n" % (len(labels)))
     for label in labels:
+        label_id = label.attrib['id']
         x = label.attrib['x']
         y = label.attrib['y']
         color = color_from_style(label.attrib['style'])
         # TODO(#432): svg2rects doesn't handle newlines in labels
         text = ' '.join([tspan.text for tspan in label])
-        output_file.write("%s %s %s\n" % (x, y, color))
+        output_file.write("%s %s %s %s\n" % (label_id, x, y, color))
         output_file.write("%s\n" % (text))
 
 
