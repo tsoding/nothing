@@ -235,7 +235,7 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
     (void) scope;
 
     if (symbol_p(cons->car)) {
-        /* TODO: special forms should be just regular native functions but with no arguments evaluation */
+        /* TODO(#541): special forms should be just regular native functions but with no arguments evaluation */
         if (strcmp(cons->car.atom->sym, "+") == 0) {
             struct EvalResult args = eval_all_args(gc, scope, cons->cdr);
             if (args.is_error) {
