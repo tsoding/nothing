@@ -394,7 +394,6 @@ void load_std_library(Gc *gc, struct Scope *scope)
         NATIVE(gc, greaterThan, NULL));
 }
 
-/* TODO: match_list does not support NULL output arguments */
 struct EvalResult
 match_list(struct Gc *gc, const char *format, struct Expr xs, ...)
 {
@@ -418,7 +417,9 @@ match_list(struct Gc *gc, const char *format, struct Expr xs, ...)
             }
 
             long int *p = va_arg(args_list, long int *);
-            *p = x.atom->num;
+            if (p != NULL) {
+                *p = x.atom->num;
+            }
         } break;
 
         case 's': {
@@ -428,7 +429,9 @@ match_list(struct Gc *gc, const char *format, struct Expr xs, ...)
             }
 
             const char **p = va_arg(args_list, const char**);
-            *p = x.atom->str;
+            if (p != NULL) {
+                *p = x.atom->str;
+            }
         } break;
 
         case 'q': {
@@ -438,7 +441,9 @@ match_list(struct Gc *gc, const char *format, struct Expr xs, ...)
             }
 
             const char **p = va_arg(args_list, const char**);
-            *p = x.atom->sym;
+            if (p != NULL) {
+                *p = x.atom->sym;
+            }
         } break;
 
         case 'e': {
@@ -448,7 +453,9 @@ match_list(struct Gc *gc, const char *format, struct Expr xs, ...)
 
         case '*': {
             struct Expr *p = va_arg(args_list, struct Expr*);
-            *p = xs;
+            if (p != NULL) {
+                *p = xs;
+            }
             xs = NIL(gc);
         } break;
         }

@@ -180,6 +180,33 @@ TEST(match_list_head_tail_test)
     return 0;
 }
 
+TEST(match_list_wildcard_test)
+{
+    Gc *gc = create_gc();
+
+    struct Expr input = list(
+        gc, 4,
+        NUMBER(gc, 1),
+        NUMBER(gc, 2),
+        NUMBER(gc, 3),
+        NUMBER(gc, 4));
+
+    long int x = 0, y = 0;
+    struct EvalResult result = match_list(gc, "dddd", input, &x, NULL, &y, NULL);
+    ASSERT_TRUE(!result.is_error, {
+            fprintf(stderr, "Matching failed: ");
+            print_expr_as_sexpr(stderr, result.expr);
+            fprintf(stderr, "\n");
+    });
+
+    ASSERT_LONGINTEQ(1L, x);
+    ASSERT_LONGINTEQ(3L, y);
+
+    destroy_gc(gc);
+
+    return 0;
+}
+
 TEST_SUITE(interpreter_suite)
 {
     TEST_RUN(equal_test);
@@ -187,6 +214,7 @@ TEST_SUITE(interpreter_suite)
     TEST_RUN(match_list_test);
     TEST_RUN(match_list_empty_list_test);
     TEST_RUN(match_list_head_tail_test);
+    TEST_RUN(match_list_wildcard_test);
 
     return 0;
 }
