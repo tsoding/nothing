@@ -242,7 +242,7 @@ TEST_SUITE(interpreter_suite)
     TEST_RUN(match_list_empty_list_test);
     TEST_RUN(match_list_head_tail_test);
     TEST_RUN(match_list_wildcard_test);
-    // TODO: should we support matching the NIL at the end of the list? (match_list_singleton_tail_test)
+    // TODO(#545): should we support matching the NIL at the end of the list? (match_list_singleton_tail_test)
     TEST_IGNORE(match_list_singleton_tail_test);
 
     return 0;
