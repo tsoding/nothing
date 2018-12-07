@@ -396,14 +396,13 @@ match_list(struct Gc *gc, const char *format, struct Expr xs, ...)
     va_list args_list;
     va_start(args_list, xs);
 
-    /* TODO(#544): match_list is O(N) even in best case (format == "*") */
-    if (!list_p(xs)) {
-        va_end(args_list);
-        return wrong_argument_type(gc, "listp", xs);
-    }
-
     long int i = 0;
     for (i = 0; *format != 0 && !nil_p(xs); ++i) {
+        if (!cons_p(xs)) {
+            va_end(args_list);
+            return wrong_argument_type(gc, "consp", xs);
+        }
+
         struct Expr x = CAR(xs);
 
         switch (*format) {
