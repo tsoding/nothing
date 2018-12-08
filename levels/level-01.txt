@@ -1,5 +1,10 @@
 fffda5
 28.578053 -456.51523 ff8080
+4
+(set args '())
+(defun on-jump ()
+  (when (> (get-player-jump-count) 1)
+    (hide-label "label_space_to_jump")))
 21
 -656.11383 191.77144 2545.4624 1595.238 483737
 -711.37622 -1262.1708 548.61353 1633.9749 483737

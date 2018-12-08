@@ -33,6 +33,7 @@ struct Player {
 
     Rigid_rect *alive_body;
     Dying_rect *dying_body;
+    Script *script;
 
     int jump_threshold;
     int jump_count;
@@ -43,7 +44,7 @@ struct Player {
     int play_die_cue;
 };
 
-Player *create_player_from_line_stream(LineStream *line_stream)
+Player *create_player_from_line_stream(LineStream *line_stream, Level *level)
 {
     assert(line_stream);
 
@@ -67,7 +68,15 @@ Player *create_player_from_line_stream(LineStream *line_stream)
             "%f%f%6s",
             &x, &y, colorstr) == EOF) {
         log_fail("Could not read player\n");
-        return NULL;
+        RETURN_LT(lt, NULL);
+    }
+
+    player->script = PUSH_LT(
+        lt,
+        create_script_from_line_stream(line_stream, level),
+        destroy_script);
+    if (player->script == NULL) {
+        RETURN_LT(lt, NULL);
     }
 
     const Color color = hexstr(colorstr);

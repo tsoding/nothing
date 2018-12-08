@@ -70,7 +70,7 @@ Level *create_level_from_file(const char *file_name)
 
     level->player = PUSH_LT(
         lt,
-        create_player_from_line_stream(level_stream),
+        create_player_from_line_stream(level_stream, level),
         destroy_player);
     if (level->player == NULL) {
         RETURN_LT(lt, NULL);
@@ -299,7 +299,7 @@ int level_reload_preserve_player(Level *level, const char *file_name)
     }
     level->background = RESET_LT(level->lt, level->background, background);
 
-    Player * const skipped_player = create_player_from_line_stream(level_stream);
+    Player * const skipped_player = create_player_from_line_stream(level_stream, level);
     if (skipped_player == NULL) {
         RETURN_LT(lt, -1);
     }

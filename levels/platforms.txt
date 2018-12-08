@@ -1,5 +1,10 @@
 073642
 117.10616 417.59192 b58900
+4
+(set args '())
+(defun on-jump ()
+  (when (> (get-player-jump-count) 1)
+    (hide-label "label_space_to_jump")))
 22
 0 658.81897 1617.7523 1014.819 657b83
 -1609.375 0 1659.375 1673.6379 657b83
