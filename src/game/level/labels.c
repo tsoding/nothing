@@ -11,6 +11,13 @@
 
 #define LABEL_MAX_ID_SIZE 36
 
+enum LabelState
+{
+    LABEL_STATE_VIRGIN = 0,
+    LABEL_STATE_APPEARED,
+    LABEL_STATE_HIDDEN
+};
+
 struct Labels
 {
     Lt *lt;
