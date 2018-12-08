@@ -29,7 +29,6 @@ struct Labels
     float *alphas;
     float *delta_alphas;
     enum LabelState *states;
-    int *visible;
 };
 
 Labels *create_labels_from_line_stream(LineStream *line_stream)
@@ -90,17 +89,11 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    labels->visible = PUSH_LT(lt, nth_alloc(sizeof(int) * labels->count), free);
-    if (labels->visible == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
     char color[7];
     for (size_t i = 0; i < labels->count; ++i) {
         labels->alphas[i] = 0.0f;
         labels->delta_alphas[i] = 0.0f;
         labels->states[i] = LABEL_STATE_VIRGIN;
-        labels->visible[i] = 0;
         labels->texts[i] = NULL;
 
         labels->ids[i] = PUSH_LT(lt, nth_alloc(sizeof(char) * LABEL_MAX_ID_SIZE), free);
@@ -154,21 +147,19 @@ int labels_render(const Labels *label,
     assert(camera);
 
     for (size_t i = 0; i < label->count; ++i) {
-        if (label->visible[i]) {
-            /* Easing */
-            const float state = label->alphas[i] * (2 - label->alphas[i]);
+        /* Easing */
+        const float state = label->alphas[i] * (2 - label->alphas[i]);
 
-            if (camera_render_text(camera,
-                                   label->texts[i],
-                                   vec(2.0f, 2.0f),
-                                   rgba(label->colors[i].r,
-                                        label->colors[i].g,
-                                        label->colors[i].b,
-                                        state),
-                                   vec_sum(label->positions[i],
-                                           vec(0.0f, -8.0f * state))) < 0) {
-                return -1;
-            }
+        if (camera_render_text(camera,
+                               label->texts[i],
+                               vec(2.0f, 2.0f),
+                               rgba(label->colors[i].r,
+                                    label->colors[i].g,
+                                    label->colors[i].b,
+                                    state),
+                               vec_sum(label->positions[i],
+                                       vec(0.0f, -8.0f * state))) < 0) {
+            return -1;
         }
     }
 
@@ -209,14 +200,11 @@ void labels_enter_camera_event(Labels *labels,
             labels->positions[i],
             labels->texts[i]);
 
-        if (labels->states[i] == LABEL_STATE_VIRGIN && !labels->visible[i] && became_visible) {
+        if (labels->states[i] == LABEL_STATE_VIRGIN && became_visible) {
             labels->states[i] = LABEL_STATE_APPEARED;
             labels->alphas[i] = 0.0f;
             labels->delta_alphas[i] = 1.0f;
         }
-
-        /* TODO: can we replace labels->visible with labels->states? */
-        labels->visible[i] = became_visible;
     }
 }
 
