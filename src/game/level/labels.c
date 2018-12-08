@@ -26,7 +26,9 @@ struct Labels
     Vec *positions;
     Color *colors;
     char **texts;
-    float *animations;
+    float *alphas;
+    float *delta_alphas;
+    enum LabelState *states;
     int *visible;
     bool *enabled;
 };
@@ -74,8 +76,18 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    labels->animations = PUSH_LT(lt, nth_alloc(sizeof(float) * labels->count), free);
-    if (labels->animations == NULL) {
+    labels->alphas = PUSH_LT(lt, nth_alloc(sizeof(float) * labels->count), free);
+    if (labels->alphas == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    labels->delta_alphas = PUSH_LT(lt, nth_alloc(sizeof(float) * labels->count), free);
+    if (labels->delta_alphas == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    labels->states = PUSH_LT(lt, nth_alloc(sizeof(enum LabelState) * labels->count), free);
+    if (labels->states == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -91,7 +103,9 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
 
     char color[7];
     for (size_t i = 0; i < labels->count; ++i) {
-        labels->animations[i] = 1.0f;
+        labels->alphas[i] = 1.0f;
+        labels->delta_alphas[i] = 0.0f;
+        labels->states[i] = LABEL_STATE_VIRGIN;
         labels->visible[i] = 0;
         labels->enabled[i] = true;
         labels->texts[i] = NULL;
@@ -149,7 +163,7 @@ int labels_render(const Labels *label,
     for (size_t i = 0; i < label->count; ++i) {
         if (label->visible[i] && label->enabled[i]) {
             /* Easing */
-            const float state = label->animations[i] * (2 - label->animations[i]);
+            const float state = label->alphas[i] * (2 - label->alphas[i]);
 
             if (camera_render_text(camera,
                                    label->texts[i],
@@ -175,7 +189,17 @@ void labels_update(Labels *label,
     (void) delta_time;
 
     for (size_t i = 0; i < label->count; ++i) {
-        label->animations[i] = fminf(label->animations[i] + delta_time, 1.0f);
+        label->alphas[i] = label->alphas[i] + label->delta_alphas[i] * delta_time;
+
+        if (label->alphas[i] < 0.0f) {
+            label->alphas[i] = 0.0f;
+            label->delta_alphas[i] = 0.0f;
+        }
+
+        if (label->alphas[i] > 1.0f) {
+            label->alphas[i] = 1.0f;
+            label->delta_alphas[i] = 0.0f;
+        }
     }
 }
 
@@ -192,10 +216,13 @@ void labels_enter_camera_event(Labels *labels,
             labels->positions[i],
             labels->texts[i]);
 
-        if (!labels->visible[i] && became_visible) {
-            labels->animations[i] = 0.0f;
+        if (labels->states[i] == LABEL_STATE_VIRGIN && !labels->visible[i] && became_visible) {
+            labels->states[i] = LABEL_STATE_APPEARED;
+            labels->alphas[i] = 0.0f;
+            labels->delta_alphas[i] = 1.0f;
         }
 
+        /* TODO: can we replace labels->visible with labels->states? */
         labels->visible[i] = became_visible;
     }
 }
@@ -207,8 +234,10 @@ void labels_hide(Labels *labels,
     assert(label_id);
 
     for (size_t i = 0; i < labels->count; ++i) {
-        if (strcmp(labels->ids[i], label_id) == 0) {
-            labels->enabled[i] = false;
+        if (strcmp(labels->ids[i], label_id) == 0 && labels->states[i] != LABEL_STATE_HIDDEN) {
+            labels->states[i] = LABEL_STATE_HIDDEN;
+            labels->alphas[i] = 1.0f;
+            labels->delta_alphas[i] = -1.0f;
             return;
         }
     }
