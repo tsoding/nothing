@@ -206,6 +206,14 @@ static struct EvalResult call_callable(Gc *gc,
     return call_lambda(gc, scope, callable, args);
 }
 
+static struct Expr
+lambda(Gc *gc, struct Expr args, struct Expr body)
+{
+    return CONS(gc,
+                SYMBOL(gc, "lambda"),
+                CONS(gc, args, body));
+}
+
 static struct EvalResult eval_block(Gc *gc, struct Scope *scope, struct Expr block)
 {
     assert(gc);
@@ -275,6 +283,22 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
         } else if (is_lambda(cons)) {
             /* TODO(#335): lambda special form doesn't check if it forms a callable object */
             return eval_success(cons_as_expr(cons));
+        } else if (strcmp(cons->car.atom->sym, "defun") == 0) {
+            struct Expr name = NIL(gc);
+            struct Expr args = NIL(gc);
+            struct Expr body = NIL(gc);
+
+            /* TODO: defun doesn't support functions with empty body because of #545 */
+            struct EvalResult result = match_list(gc, "ee*", cons->cdr, &name, &args, &body);
+            if (result.is_error) {
+                return result;
+            }
+
+            return eval(gc, scope,
+                        list(gc, 3,
+                             SYMBOL(gc, "set"),
+                             name,
+                             lambda(gc, args, body)));
         } else if (strcmp(cons->car.atom->sym, "when") == 0) {
             struct Expr condition = NIL(gc);
             struct Expr body = NIL(gc);
