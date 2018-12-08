@@ -40,6 +40,4 @@ void level_show_goal(Level *level, const char *goal_id);
 
 void level_hide_label(Level *level, const char *label_id);
 
-long int level_player_jump_count(Level *level);
-
 #endif  // LEVEL_H_

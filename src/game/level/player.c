@@ -36,7 +36,6 @@ struct Player {
     Script *script;
 
     int jump_threshold;
-    int jump_count;
     Color color;
 
     Vec checkpoint;
@@ -103,7 +102,6 @@ Player *create_player_from_line_stream(LineStream *line_stream, Level *level)
     }
 
     player->jump_threshold = 0;
-    player->jump_count = 0;
     player->color = color;
     player->checkpoint = vec(x, y);
     player->play_die_cue = 0;
@@ -226,8 +224,6 @@ void player_jump(Player *player)
         if (script_has_scope_value(player->script, "on-jump")) {
             script_eval(player->script, "(on-jump)");
         }
-
-        player->jump_count++;
     }
 }
 
@@ -334,10 +330,4 @@ bool player_overlaps_rect(const Player *player,
         && rects_overlap(
             rect, rigid_rect_hitbox(
                 player->alive_body));
-}
-
-long int player_jump_count(const Player *player)
-{
-    assert(player);
-    return player->jump_count;
 }

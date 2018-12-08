@@ -57,6 +57,4 @@ void player_apply_force(Player *player, Vec force);
 
 Rigid_rect *player_rigid_rect(Player *player, const char *id);
 
-long int player_jump_count(const Player *player);
-
 #endif  // PLAYER_H_

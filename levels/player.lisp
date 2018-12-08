@@ -1,3 +1,6 @@
+(set jump-count 0)
+
 (defun on-jump ()
-  (when (> (get-player-jump-count) 1)
+  (set jump-count (+ jump-count 1))
+  (when (> jump-count 1)
     (hide-label "label_space_to_jump")))
