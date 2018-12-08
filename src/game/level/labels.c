@@ -30,7 +30,6 @@ struct Labels
     float *delta_alphas;
     enum LabelState *states;
     int *visible;
-    bool *enabled;
 };
 
 Labels *create_labels_from_line_stream(LineStream *line_stream)
@@ -96,18 +95,12 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    labels->enabled = PUSH_LT(lt, nth_alloc(sizeof(bool) * labels->count), free);
-    if (labels->enabled == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
     char color[7];
     for (size_t i = 0; i < labels->count; ++i) {
         labels->alphas[i] = 0.0f;
         labels->delta_alphas[i] = 0.0f;
         labels->states[i] = LABEL_STATE_VIRGIN;
         labels->visible[i] = 0;
-        labels->enabled[i] = true;
         labels->texts[i] = NULL;
 
         labels->ids[i] = PUSH_LT(lt, nth_alloc(sizeof(char) * LABEL_MAX_ID_SIZE), free);
@@ -161,7 +154,7 @@ int labels_render(const Labels *label,
     assert(camera);
 
     for (size_t i = 0; i < label->count; ++i) {
-        if (label->visible[i] && label->enabled[i]) {
+        if (label->visible[i]) {
             /* Easing */
             const float state = label->alphas[i] * (2 - label->alphas[i]);
 
