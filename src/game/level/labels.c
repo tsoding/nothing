@@ -11,6 +11,13 @@
 
 #define LABEL_MAX_ID_SIZE 36
 
+enum LabelState
+{
+    LABEL_STATE_VIRGIN = 0,
+    LABEL_STATE_APPEARED,
+    LABEL_STATE_HIDDEN
+};
+
 struct Labels
 {
     Lt *lt;
@@ -19,9 +26,9 @@ struct Labels
     Vec *positions;
     Color *colors;
     char **texts;
-    float *states;
-    int *visible;
-    bool *enabled;
+    float *alphas;
+    float *delta_alphas;
+    enum LabelState *states;
 };
 
 Labels *create_labels_from_line_stream(LineStream *line_stream)
@@ -67,26 +74,26 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    labels->states = PUSH_LT(lt, nth_alloc(sizeof(float) * labels->count), free);
+    labels->alphas = PUSH_LT(lt, nth_alloc(sizeof(float) * labels->count), free);
+    if (labels->alphas == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    labels->delta_alphas = PUSH_LT(lt, nth_alloc(sizeof(float) * labels->count), free);
+    if (labels->delta_alphas == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    labels->states = PUSH_LT(lt, nth_alloc(sizeof(enum LabelState) * labels->count), free);
     if (labels->states == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    labels->visible = PUSH_LT(lt, nth_alloc(sizeof(int) * labels->count), free);
-    if (labels->visible == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    labels->enabled = PUSH_LT(lt, nth_alloc(sizeof(bool) * labels->count), free);
-    if (labels->enabled == NULL) {
         RETURN_LT(lt, NULL);
     }
 
     char color[7];
     for (size_t i = 0; i < labels->count; ++i) {
-        labels->states[i] = 1.0f;
-        labels->visible[i] = 0;
-        labels->enabled[i] = true;
+        labels->alphas[i] = 0.0f;
+        labels->delta_alphas[i] = 0.0f;
+        labels->states[i] = LABEL_STATE_VIRGIN;
         labels->texts[i] = NULL;
 
         labels->ids[i] = PUSH_LT(lt, nth_alloc(sizeof(char) * LABEL_MAX_ID_SIZE), free);
@@ -140,21 +147,19 @@ int labels_render(const Labels *label,
     assert(camera);
 
     for (size_t i = 0; i < label->count; ++i) {
-        if (label->visible[i] && label->enabled[i]) {
-            /* Easing */
-            const float state = label->states[i] * (2 - label->states[i]);
+        /* Easing */
+        const float state = label->alphas[i] * (2 - label->alphas[i]);
 
-            if (camera_render_text(camera,
-                                   label->texts[i],
-                                   vec(2.0f, 2.0f),
-                                   rgba(label->colors[i].r,
-                                        label->colors[i].g,
-                                        label->colors[i].b,
-                                        state),
-                                   vec_sum(label->positions[i],
-                                           vec(0.0f, -8.0f * state))) < 0) {
-                return -1;
-            }
+        if (camera_render_text(camera,
+                               label->texts[i],
+                               vec(2.0f, 2.0f),
+                               rgba(label->colors[i].r,
+                                    label->colors[i].g,
+                                    label->colors[i].b,
+                                    state),
+                               vec_sum(label->positions[i],
+                                       vec(0.0f, -8.0f * state))) < 0) {
+            return -1;
         }
     }
 
@@ -168,7 +173,17 @@ void labels_update(Labels *label,
     (void) delta_time;
 
     for (size_t i = 0; i < label->count; ++i) {
-        label->states[i] = fminf(label->states[i] + delta_time, 1.0f);
+        label->alphas[i] = label->alphas[i] + label->delta_alphas[i] * delta_time;
+
+        if (label->alphas[i] < 0.0f) {
+            label->alphas[i] = 0.0f;
+            label->delta_alphas[i] = 0.0f;
+        }
+
+        if (label->alphas[i] > 1.0f) {
+            label->alphas[i] = 1.0f;
+            label->delta_alphas[i] = 0.0f;
+        }
     }
 }
 
@@ -185,11 +200,11 @@ void labels_enter_camera_event(Labels *labels,
             labels->positions[i],
             labels->texts[i]);
 
-        if (!labels->visible[i] && became_visible) {
-            labels->states[i] = 0.0f;
+        if (labels->states[i] == LABEL_STATE_VIRGIN && became_visible) {
+            labels->states[i] = LABEL_STATE_APPEARED;
+            labels->alphas[i] = 0.0f;
+            labels->delta_alphas[i] = 1.0f;
         }
-
-        labels->visible[i] = became_visible;
     }
 }
 
@@ -200,8 +215,10 @@ void labels_hide(Labels *labels,
     assert(label_id);
 
     for (size_t i = 0; i < labels->count; ++i) {
-        if (strcmp(labels->ids[i], label_id) == 0) {
-            labels->enabled[i] = false;
+        if (strcmp(labels->ids[i], label_id) == 0 && labels->states[i] != LABEL_STATE_HIDDEN) {
+            labels->states[i] = LABEL_STATE_HIDDEN;
+            labels->alphas[i] = 1.0f;
+            labels->delta_alphas[i] = -1.0f;
             return;
         }
     }
