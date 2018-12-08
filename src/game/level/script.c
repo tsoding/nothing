@@ -44,6 +44,10 @@ Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
 
     script->scope = create_scope(script->gc);
 
+    load_std_library(script->gc, &script->scope);
+    load_log_library(script->gc, &script->scope);
+    load_level_library(script->gc, &script->scope, level);
+
     size_t n = 0;
     sscanf(line_stream_next(line_stream), "%lu", &n);
 
@@ -55,10 +59,6 @@ Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
             line_stream_next(line_stream));
     }
     PUSH_LT(lt, source_code, free);
-
-    load_std_library(script->gc, &script->scope);
-    load_log_library(script->gc, &script->scope);
-    load_level_library(script->gc, &script->scope, level);
 
     struct ParseResult parse_result =
         read_all_exprs_from_string(
