@@ -288,7 +288,7 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
             struct Expr args = NIL(gc);
             struct Expr body = NIL(gc);
 
-            /* TODO: defun doesn't support functions with empty body because of #545 */
+            /* TODO(#554): defun doesn't support functions with empty body because of #545 */
             struct EvalResult result = match_list(gc, "ee*", cons->cdr, &name, &args, &body);
             if (result.is_error) {
                 return result;
