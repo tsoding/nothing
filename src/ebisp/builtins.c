@@ -130,7 +130,7 @@ bool lambda_p(struct Expr obj)
         return false;
     }
 
-    if (strcmp("lambda", obj.cons->car.atom->sym) != 0) {
+    if (!is_lambda(obj.cons)) {
         return false;
     }
 
@@ -183,4 +183,9 @@ struct Expr list(Gc *gc, size_t n, ...)
     struct Expr obj = list_rec(gc, n, args);
     va_end(args);
     return obj;
+}
+
+bool is_lambda(struct Cons *cons) {
+    return (strcmp(cons->car.atom->sym, "lambda") == 0) ||
+            (strcmp(cons->car.atom->sym, "λ") == 0);
 }

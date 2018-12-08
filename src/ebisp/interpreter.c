@@ -2,6 +2,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdarg.h>
+#include <stdbool.h>
 
 #include "./builtins.h"
 #include "./expr.h"
@@ -271,7 +272,7 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
             return eval_success(cons->cdr.cons->car);
         } else if (strcmp(cons->car.atom->sym, "begin") == 0) {
             return eval_block(gc, scope, CDR(cons_as_expr(cons)));
-        } else if (strcmp(cons->car.atom->sym, "lambda") == 0) {
+        } else if (is_lambda(cons)) {
             /* TODO(#335): lambda special form doesn't check if it forms a callable object */
             return eval_success(cons_as_expr(cons));
         } else if (strcmp(cons->car.atom->sym, "when") == 0) {
