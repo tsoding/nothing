@@ -26,7 +26,7 @@ struct Labels
     Vec *positions;
     Color *colors;
     char **texts;
-    float *states;
+    float *animations;
     int *visible;
     bool *enabled;
 };
@@ -74,8 +74,8 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    labels->states = PUSH_LT(lt, nth_alloc(sizeof(float) * labels->count), free);
-    if (labels->states == NULL) {
+    labels->animations = PUSH_LT(lt, nth_alloc(sizeof(float) * labels->count), free);
+    if (labels->animations == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -91,7 +91,7 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
 
     char color[7];
     for (size_t i = 0; i < labels->count; ++i) {
-        labels->states[i] = 1.0f;
+        labels->animations[i] = 1.0f;
         labels->visible[i] = 0;
         labels->enabled[i] = true;
         labels->texts[i] = NULL;
@@ -149,7 +149,7 @@ int labels_render(const Labels *label,
     for (size_t i = 0; i < label->count; ++i) {
         if (label->visible[i] && label->enabled[i]) {
             /* Easing */
-            const float state = label->states[i] * (2 - label->states[i]);
+            const float state = label->animations[i] * (2 - label->animations[i]);
 
             if (camera_render_text(camera,
                                    label->texts[i],
@@ -175,7 +175,7 @@ void labels_update(Labels *label,
     (void) delta_time;
 
     for (size_t i = 0; i < label->count; ++i) {
-        label->states[i] = fminf(label->states[i] + delta_time, 1.0f);
+        label->animations[i] = fminf(label->animations[i] + delta_time, 1.0f);
     }
 }
 
@@ -193,7 +193,7 @@ void labels_enter_camera_event(Labels *labels,
             labels->texts[i]);
 
         if (!labels->visible[i] && became_visible) {
-            labels->states[i] = 0.0f;
+            labels->animations[i] = 0.0f;
         }
 
         labels->visible[i] = became_visible;
