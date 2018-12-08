@@ -70,7 +70,7 @@ Level *create_level_from_file(const char *file_name)
 
     level->player = PUSH_LT(
         lt,
-        create_player_from_line_stream(level_stream),
+        create_player_from_line_stream(level_stream, level),
         destroy_player);
     if (level->player == NULL) {
         RETURN_LT(lt, NULL);
@@ -299,7 +299,7 @@ int level_reload_preserve_player(Level *level, const char *file_name)
     }
     level->background = RESET_LT(level->lt, level->background, background);
 
-    Player * const skipped_player = create_player_from_line_stream(level_stream);
+    Player * const skipped_player = create_player_from_line_stream(level_stream, level);
     if (skipped_player == NULL) {
         RETURN_LT(lt, -1);
     }
@@ -413,12 +413,6 @@ void level_hide_goal(Level *level, const char *goal_id)
 void level_show_goal(Level *level, const char *goal_id)
 {
     goals_show(level->goals, goal_id);
-}
-
-long int level_player_jump_count(Level *level)
-{
-    assert(level);
-    return player_jump_count(level->player);
 }
 
 void level_hide_label(Level *level, const char *label_id)

@@ -33,9 +33,9 @@ struct Player {
 
     Rigid_rect *alive_body;
     Dying_rect *dying_body;
+    Script *script;
 
     int jump_threshold;
-    int jump_count;
     Color color;
 
     Vec checkpoint;
@@ -43,7 +43,7 @@ struct Player {
     int play_die_cue;
 };
 
-Player *create_player_from_line_stream(LineStream *line_stream)
+Player *create_player_from_line_stream(LineStream *line_stream, Level *level)
 {
     assert(line_stream);
 
@@ -67,7 +67,15 @@ Player *create_player_from_line_stream(LineStream *line_stream)
             "%f%f%6s",
             &x, &y, colorstr) == EOF) {
         log_fail("Could not read player\n");
-        return NULL;
+        RETURN_LT(lt, NULL);
+    }
+
+    player->script = PUSH_LT(
+        lt,
+        create_script_from_line_stream(line_stream, level),
+        destroy_script);
+    if (player->script == NULL) {
+        RETURN_LT(lt, NULL);
     }
 
     const Color color = hexstr(colorstr);
@@ -94,7 +102,6 @@ Player *create_player_from_line_stream(LineStream *line_stream)
     }
 
     player->jump_threshold = 0;
-    player->jump_count = 0;
     player->color = color;
     player->checkpoint = vec(x, y);
     player->play_die_cue = 0;
@@ -213,7 +220,10 @@ void player_jump(Player *player)
         rigid_rect_apply_force(player->alive_body,
                                vec(0.0f, -PLAYER_JUMP));
         player->jump_threshold++;
-        player->jump_count++;
+
+        if (script_has_scope_value(player->script, "on-jump")) {
+            script_eval(player->script, "(on-jump)");
+        }
     }
 }
 
@@ -320,10 +330,4 @@ bool player_overlaps_rect(const Player *player,
         && rects_overlap(
             rect, rigid_rect_hitbox(
                 player->alive_body));
-}
-
-long int player_jump_count(const Player *player)
-{
-    assert(player);
-    return player->jump_count;
 }

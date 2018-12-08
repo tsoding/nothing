@@ -9,6 +9,7 @@
 #include "game/level_script.h"
 #include "sdl/renderer.h"
 #include "system/log.h"
+#include "system/log_script.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "ui/console.h"
@@ -78,6 +79,7 @@ Console *create_console(Level *level,
                                NIL(console->gc));
 
     load_std_library(console->gc, &console->scope);
+    load_log_library(console->gc, &console->scope);
     load_level_library(console->gc, &console->scope, level);
 
     console->edit_field = PUSH_LT(

@@ -105,6 +105,8 @@ add_executable(nothing
   src/game/level/script.c
   src/system/log.h
   src/system/log.c
+  src/system/log_script.h
+  src/system/log_script.c
   src/system/nth_alloc.h
   src/system/nth_alloc.c
   src/game/level_script.c

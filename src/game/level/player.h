@@ -16,7 +16,7 @@ typedef struct LineStream LineStream;
 typedef struct Script Script;
 typedef struct Level Level;
 
-Player *create_player_from_line_stream(LineStream *line_stream);
+Player *create_player_from_line_stream(LineStream *line_stream, Level *level);
 void destroy_player(Player * player);
 
 Solid_ref player_as_solid(Player *player);
@@ -56,7 +56,5 @@ bool player_overlaps_rect(const Player *player,
 void player_apply_force(Player *player, Vec force);
 
 Rigid_rect *player_rigid_rect(Player *player, const char *id);
-
-long int player_jump_count(const Player *player);
 
 #endif  // PLAYER_H_

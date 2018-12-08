@@ -47,7 +47,6 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    /* TODO: Label ids are not parsed */
     labels->ids = PUSH_LT(lt, nth_alloc(sizeof(char*) * labels->count), free);
     if (labels->ids == NULL) {
         RETURN_LT(lt, NULL);
