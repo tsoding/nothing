@@ -222,6 +222,11 @@ void player_jump(Player *player)
         rigid_rect_apply_force(player->alive_body,
                                vec(0.0f, -PLAYER_JUMP));
         player->jump_threshold++;
+
+        if (script_has_scope_value(player->script, "on-jump")) {
+            script_eval(player->script, "(on-jump)");
+        }
+
         player->jump_count++;
     }
 }
