@@ -103,7 +103,7 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
 
     char color[7];
     for (size_t i = 0; i < labels->count; ++i) {
-        labels->alphas[i] = 1.0f;
+        labels->alphas[i] = 0.0f;
         labels->delta_alphas[i] = 0.0f;
         labels->states[i] = LABEL_STATE_VIRGIN;
         labels->visible[i] = 0;
