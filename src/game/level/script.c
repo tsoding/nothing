@@ -10,6 +10,7 @@
 #include "str.h"
 #include "system/line_stream.h"
 #include "system/log.h"
+#include "system/log_script.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "ui/console.h"
@@ -56,6 +57,7 @@ Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
     PUSH_LT(lt, source_code, free);
 
     load_std_library(script->gc, &script->scope);
+    load_log_library(script->gc, &script->scope);
     load_level_library(script->gc, &script->scope, level);
 
     struct ParseResult parse_result =
