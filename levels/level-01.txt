@@ -1,12 +1,13 @@
 fffda5
 28.578053 -456.51523 ff8080
-7
+8
 (set args '())
 (set jump-count 0)
 
 (defun on-jump ()
   (set jump-count (+ jump-count 1))
-  (when (> jump-count 1)
+  (when (> jump-count 3)
+    ;; TODO(#553): label is hidden without any animation
     (hide-label "label_space_to_jump")))
 21
 -656.11383 191.77144 2545.4624 1595.238 483737
@@ -45,9 +46,9 @@ label-01 -41.109612 217.17818 fffda5
 WASD to move
 label_space_to_jump 1733.6071 146.905 fffda5
 SPACE to Jump
-label-01-3-7 950.9303 -279.0629 fffda5
+label_double_jump 950.9303 -279.0629 fffda5
 Double Jump
-5
+6
 659.88593 -301.85339 904.875 333.04886 deaa87
 7
 (set args '("goal1"))
@@ -87,3 +88,10 @@ Double Jump
        (show-goal (car args))))
 (set on-leave
      (lambda ()))
+1146.1157 -862.22498 103.71667 569.73328 d35f5f
+5
+(set args '())
+(defun on-enter ()
+  (hide-label "label_double_jump"))
+(defun on-leave ()
+  nil)

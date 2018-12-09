@@ -1,12 +1,13 @@
 073642
 117.10616 417.59192 b58900
-7
+8
 (set args '())
 (set jump-count 0)
 
 (defun on-jump ()
   (set jump-count (+ jump-count 1))
-  (when (> jump-count 1)
+  (when (> jump-count 3)
+    ;; TODO(#553): label is hidden without any animation
     (hide-label "label_space_to_jump")))
 22
 0 658.81897 1617.7523 1014.819 657b83

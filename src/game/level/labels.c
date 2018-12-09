@@ -218,7 +218,7 @@ void labels_hide(Labels *labels,
         if (strcmp(labels->ids[i], label_id) == 0 && labels->states[i] != LABEL_STATE_HIDDEN) {
             labels->states[i] = LABEL_STATE_HIDDEN;
             labels->alphas[i] = 1.0f;
-            labels->delta_alphas[i] = -1.0f;
+            labels->delta_alphas[i] = -3.0f;
             return;
         }
     }
