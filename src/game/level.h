@@ -23,8 +23,7 @@ int level_event(Level *level, const SDL_Event *event);
 int level_input(Level *level,
                 const Uint8 *const keyboard_state,
                 SDL_Joystick *the_stick_of_joy);
-int level_enter_camera_event(Level *level,
-                             const Camera *camera);
+int level_enter_camera_event(Level *level, Camera *camera);
 
 int level_reload_preserve_player(Level *level,
                                  const char *file_name);
