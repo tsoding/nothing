@@ -97,19 +97,6 @@ hide_label(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return eval_success(NIL(gc));
 }
 
-static struct EvalResult
-show_label(void *param, Gc *gc, struct Scope *scope, struct Expr args)
-{
-    assert(param);
-    assert(gc);
-    assert(scope);
-    (void) args;
-
-    /* TODO(#523): show-label is not implemented */
-
-    return not_implemented(gc);
-}
-
 void load_level_library(Gc *gc, struct Scope *scope, Level *level)
 {
     set_scope_value(
@@ -127,11 +114,6 @@ void load_level_library(Gc *gc, struct Scope *scope, Level *level)
         scope,
         SYMBOL(gc, "show-goal"),
         NATIVE(gc, show_goal, level));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "show-label"),
-        NATIVE(gc, show_label, level));
     set_scope_value(
         gc,
         scope,
