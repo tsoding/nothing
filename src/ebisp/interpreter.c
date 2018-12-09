@@ -127,7 +127,6 @@ static struct EvalResult eval_all_args(Gc *gc, struct Scope *scope, struct Expr 
                              args));
 }
 
-/* TODO(#540): plus_op should be part of std library */
 static struct EvalResult
 plus_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
