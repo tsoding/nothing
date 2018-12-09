@@ -160,8 +160,6 @@ int level_render(const Level *level, Camera *camera)
 {
     assert(level);
 
-    player_focus_camera(level->player, camera);
-
     if (background_render(level->background, camera) < 0) {
         return -1;
     }
@@ -376,9 +374,9 @@ void level_toggle_debug_mode(Level *level)
     background_toggle_debug_mode(level->background);
 }
 
-int level_enter_camera_event(Level *level,
-                             const Camera *camera)
+int level_enter_camera_event(Level *level, Camera *camera)
 {
+    player_focus_camera(level->player, camera);
     goals_cue(level->goals, camera);
     goals_checkpoint(level->goals, level->player);
     labels_enter_camera_event(level->labels, camera);
