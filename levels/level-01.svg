@@ -25,23 +25,23 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.25"
-     inkscape:cx="4787.1445"
-     inkscape:cy="2803.7695"
+     inkscape:zoom="0.35355339"
+     inkscape:cx="4052.4284"
+     inkscape:cy="2398.7406"
      inkscape:document-units="mm"
      inkscape:current-layer="svg4541"
      showgrid="false"
-     inkscape:window-width="1916"
-     inkscape:window-height="1041"
+     inkscape:window-width="956"
+     inkscape:window-height="1023"
      inkscape:window-x="0"
-     inkscape:window-y="18"
+     inkscape:window-y="36"
      inkscape:window-maximized="0"
      inkscape:snap-bbox="true"
      inkscape:bbox-paths="true"
      inkscape:bbox-nodes="true"
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:snap-bbox-midpoints="false"
-     inkscape:snap-global="true"
+     inkscape:snap-global="false"
      showguides="true"
      inkscape:guide-bbox="true" />
   <metadata
@@ -165,31 +165,6 @@
      x="2409.0159"
      y="-321.88171" />
   <rect
-     style="fill:#ccff00;fill-opacity:1;stroke:none;stroke-width:0.12863588"
-     id="script44"
-     width="74.083344"
-     height="899.58337"
-     x="2185.4583"
-     y="-1044.4375"
-     inkscape:label="#rect44">
-    <title
-       id="title45-6">level-01/script44.lisp</title>
-  </rect>
-  <rect
-     style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-     id="rect5109-3-5-3-6"
-     width="83.564545"
-     height="80.417938"
-     x="2180.145"
-     y="-279.07034" />
-  <rect
-     style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-     id="rect4561-2-3"
-     width="314.32022"
-     height="18.520832"
-     x="-938.56213"
-     y="917.25397" />
-  <rect
      style="fill:#deaa87;fill-opacity:0.54726371;stroke:none;stroke-width:0.39077589"
      id="script_hide_goal_2"
      width="920.82434"
@@ -200,6 +175,13 @@
     <title
        id="title49">level-01/goal-hide.lisp goal2</title>
   </rect>
+  <rect
+     style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+     id="rect4561-2-3"
+     width="314.32022"
+     height="18.520832"
+     x="-938.56213"
+     y="917.25397" />
   <rect
      style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
      id="goal2"
@@ -248,7 +230,7 @@
      id="box-1"
      width="64.009789"
      height="61.599514"
-     x="2960.1287"
+     x="3019.3953"
      y="-383.48123"
      inkscape:label="#rect5109-3-5-3-6-2" />
   <rect
@@ -325,6 +307,13 @@
      height="78.925652"
      x="935.01154"
      y="-317.58987" />
+  <rect
+     style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.05077947"
+     id="rect5109-3-5-3-67-1-7-3"
+     width="58.440285"
+     height="87.957947"
+     x="1124.3452"
+     y="-340.61493" />
   <text
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:25.17981339px;line-height:15.73738289px;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#fffda5;fill-opacity:1;stroke:none;stroke-width:0.62949532px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -337,17 +326,6 @@
        x="950.9303"
        y="-279.0629"
        style="fill:#fffda5;fill-opacity:1;stroke-width:0.62949532px">Double Jump</tspan></text>
-  <rect
-     style="fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:0.11723439"
-     id="script43"
-     width="74.083344"
-     height="747.18329"
-     x="1673.0083"
-     y="-1055.1857"
-     inkscape:label="#rect43">
-    <title
-       id="title45">level-01/script43.lisp</title>
-  </rect>
   <rect
      style="fill:#deaa87;fill-opacity:0.54726371;stroke:none;stroke-width:0.32506543"
      id="script_show_goal_2"
