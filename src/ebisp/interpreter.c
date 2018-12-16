@@ -75,10 +75,6 @@ static struct EvalResult eval_atom(Gc *gc, struct Scope *scope, struct Atom *ato
         return eval_success(atom_as_expr(atom));
 
     case ATOM_SYMBOL: {
-        if (nil_p(atom_as_expr(atom))) {
-            return eval_success(atom_as_expr(atom));
-        }
-
         struct Expr value = get_scope_value(scope, atom_as_expr(atom));
 
         if (nil_p(value)) {
@@ -398,8 +394,7 @@ greaterThan(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     }
 
     if (x > y) {
-        /* TODO(#537): in ebisp t is not a special symbol that evaluates to itself */
-        return eval_success(SYMBOL(gc, "t"));
+        return eval_success(T(gc));
     } else {
         return eval_success(NIL(gc));
     }
@@ -427,6 +422,16 @@ void load_std_library(Gc *gc, struct Scope *scope)
         scope,
         SYMBOL(gc, "list"),
         NATIVE(gc, list_op, NULL));
+    set_scope_value(
+        gc,
+        scope,
+        SYMBOL(gc, "t"),
+        SYMBOL(gc, "t"));
+    set_scope_value(
+        gc,
+        scope,
+        SYMBOL(gc, "nil"),
+        SYMBOL(gc, "nil"));
 }
 
 struct EvalResult

@@ -17,6 +17,7 @@ struct Atom;
 #define NATIVE(G, F, P) atom_as_expr(create_native_atom(G, F, P))
 #define CONS(G, CAR, CDR) cons_as_expr(create_cons(G, CAR, CDR))
 #define NIL(G) SYMBOL(G, "nil")
+#define T(G) SYMBOL(G, "t")
 
 #define CAR(O) ((O).cons->car)
 #define CDR(O) ((O).cons->cdr)
