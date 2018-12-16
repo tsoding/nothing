@@ -29,4 +29,7 @@ void load_std_library(Gc *gc, struct Scope *scope);
 struct EvalResult
 match_list(struct Gc *gc, const char *format, struct Expr args, ...);
 
+struct Expr
+format_list(Gc *gc, const char *format, ...);
+
 #endif  // INTERPRETER_H_
