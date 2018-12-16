@@ -394,7 +394,7 @@ greaterThan(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     }
 
     if (x > y) {
-        return eval_success(SYMBOL(gc, "t"));
+        return eval_success(T(gc));
     } else {
         return eval_success(NIL(gc));
     }
