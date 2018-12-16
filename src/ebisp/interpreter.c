@@ -501,6 +501,14 @@ match_list(struct Gc *gc, const char *format, struct Expr xs, ...)
         }
     }
 
+    if (*format == '*' && nil_p(xs)) {
+        struct Expr *p = va_arg(args_list, struct Expr*);
+        if (p != NULL) {
+            *p = NIL(gc);
+        }
+        format++;
+    }
+
     if (*format != 0 || !nil_p(xs)) {
         va_end(args_list);
         return wrong_number_of_arguments(gc, i);
