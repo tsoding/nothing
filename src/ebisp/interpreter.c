@@ -372,6 +372,16 @@ car(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return eval_success(CAR(xs));
 }
 
+static struct EvalResult
+list_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    assert(gc);
+    assert(scope);
+    (void) param;
+
+    return eval_success(args);
+}
+
 /* TODO(#536): greaterThan does not support arbitrary amount of arguments */
 static struct EvalResult
 greaterThan(void *param, Gc *gc, struct Scope *scope, struct Expr args)
@@ -412,6 +422,11 @@ void load_std_library(Gc *gc, struct Scope *scope)
         scope,
         SYMBOL(gc, "+"),
         NATIVE(gc, plus_op, NULL));
+    set_scope_value(
+        gc,
+        scope,
+        SYMBOL(gc, "list"),
+        NATIVE(gc, list_op, NULL));
 }
 
 struct EvalResult
