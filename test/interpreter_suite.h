@@ -211,7 +211,7 @@ TEST(match_list_singleton_tail_test)
 {
     Gc *gc = create_gc();
 
-    struct Expr input = list(gc, 4, NUMBER(gc, 1));
+    struct Expr input = list(gc, 1, NUMBER(gc, 1));
     long int x;
     struct Expr xs = NIL(gc);
     struct EvalResult res = match_list(gc, "d*", input, &x, &xs);
@@ -242,8 +242,7 @@ TEST_SUITE(interpreter_suite)
     TEST_RUN(match_list_empty_list_test);
     TEST_RUN(match_list_head_tail_test);
     TEST_RUN(match_list_wildcard_test);
-    // TODO(#545): should we support matching the NIL at the end of the list? (match_list_singleton_tail_test)
-    TEST_IGNORE(match_list_singleton_tail_test);
+    TEST_RUN(match_list_singleton_tail_test);
 
     return 0;
 }
