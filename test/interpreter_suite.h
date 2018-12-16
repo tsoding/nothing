@@ -87,11 +87,11 @@ TEST(match_list_test)
 {
     Gc *gc = create_gc();
 
-    struct Expr input = list(
-        gc, 4,
-        NUMBER(gc, 42),
-        STRING(gc, "hello"),
-        SYMBOL(gc, "world"),
+    struct Expr input = format_list(
+        gc, "dsqe",
+        42,
+        "hello",
+        "world",
         CONS(gc, NUMBER(gc, 1), NUMBER(gc, 2)));
 
     long int d = 0;
@@ -148,12 +148,7 @@ TEST(match_list_head_tail_test)
 {
     Gc *gc = create_gc();
 
-    struct Expr input = list(
-        gc, 4,
-        NUMBER(gc, 1),
-        NUMBER(gc, 2),
-        NUMBER(gc, 3),
-        NUMBER(gc, 4));
+    struct Expr input = format_list(gc, "dddd", 1, 2, 3, 4);
 
     long int x = 0;
     struct Expr xs = NIL(gc);
@@ -169,7 +164,7 @@ TEST(match_list_head_tail_test)
             fprintf(stderr, "Expected: 1, Actual: %ld\n", x);
     });
 
-    ASSERT_TRUE(equal(xs, list(gc, 3, NUMBER(gc, 2), NUMBER(gc, 3), NUMBER(gc, 4))), {
+    ASSERT_TRUE(equal(xs, format_list(gc, "ddd", 2, 3, 4)), {
             fprintf(stderr, "Expected: (2 3 4), Actual: ");
             print_expr_as_sexpr(stderr, xs);
             fprintf(stderr, "\n");
@@ -184,12 +179,8 @@ TEST(match_list_wildcard_test)
 {
     Gc *gc = create_gc();
 
-    struct Expr input = list(
-        gc, 4,
-        NUMBER(gc, 1),
-        NUMBER(gc, 2),
-        NUMBER(gc, 3),
-        NUMBER(gc, 4));
+    struct Expr input = format_list(
+        gc, "dddd", 1, 2, 3, 4);
 
     long int x = 0, y = 0;
     struct EvalResult result = match_list(gc, "dddd", input, &x, NULL, &y, NULL);
@@ -211,7 +202,7 @@ TEST(match_list_singleton_tail_test)
 {
     Gc *gc = create_gc();
 
-    struct Expr input = list(gc, 1, NUMBER(gc, 1));
+    struct Expr input = format_list(gc, "d", 1);
     long int x;
     struct Expr xs = NIL(gc);
     struct EvalResult res = match_list(gc, "d*", input, &x, &xs);
