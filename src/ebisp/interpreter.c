@@ -75,10 +75,6 @@ static struct EvalResult eval_atom(Gc *gc, struct Scope *scope, struct Atom *ato
         return eval_success(atom_as_expr(atom));
 
     case ATOM_SYMBOL: {
-        if (nil_p(atom_as_expr(atom))) {
-            return eval_success(atom_as_expr(atom));
-        }
-
         struct Expr value = get_scope_value(scope, atom_as_expr(atom));
 
         if (nil_p(value)) {
@@ -431,6 +427,11 @@ void load_std_library(Gc *gc, struct Scope *scope)
         scope,
         SYMBOL(gc, "t"),
         SYMBOL(gc, "t"));
+    set_scope_value(
+        gc,
+        scope,
+        SYMBOL(gc, "nil"),
+        SYMBOL(gc, "nil"));
 }
 
 struct EvalResult
