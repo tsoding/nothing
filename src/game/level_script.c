@@ -16,7 +16,7 @@ hide_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     assert(scope);
 
     Level * const level = (Level*)param;
-    const char * const goal_id = NULL;
+    char * goal_id = NULL;
 
     struct EvalResult result = match_list(gc, "s", args, &goal_id);
     if (result.is_error) {
