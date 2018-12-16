@@ -398,7 +398,6 @@ greaterThan(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     }
 
     if (x > y) {
-        /* TODO(#537): in ebisp t is not a special symbol that evaluates to itself */
         return eval_success(SYMBOL(gc, "t"));
     } else {
         return eval_success(NIL(gc));
@@ -427,6 +426,11 @@ void load_std_library(Gc *gc, struct Scope *scope)
         scope,
         SYMBOL(gc, "list"),
         NATIVE(gc, list_op, NULL));
+    set_scope_value(
+        gc,
+        scope,
+        SYMBOL(gc, "t"),
+        SYMBOL(gc, "t"));
 }
 
 struct EvalResult
