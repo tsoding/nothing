@@ -25,23 +25,23 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35355339"
-     inkscape:cx="4052.4284"
-     inkscape:cy="2398.7406"
+     inkscape:zoom="0.088388348"
+     inkscape:cx="5149.6201"
+     inkscape:cy="4376.2901"
      inkscape:document-units="mm"
      inkscape:current-layer="svg4541"
      showgrid="false"
-     inkscape:window-width="956"
-     inkscape:window-height="1023"
+     inkscape:window-width="1916"
+     inkscape:window-height="1041"
      inkscape:window-x="0"
-     inkscape:window-y="36"
+     inkscape:window-y="18"
      inkscape:window-maximized="0"
      inkscape:snap-bbox="true"
      inkscape:bbox-paths="true"
      inkscape:bbox-nodes="true"
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:snap-bbox-midpoints="false"
-     inkscape:snap-global="false"
+     inkscape:snap-global="true"
      showguides="true"
      inkscape:guide-bbox="true" />
   <metadata
@@ -68,16 +68,16 @@
      id="backrect5109-3-5-3-67-3-6"
      width="2142.8638"
      height="1647.9801"
-     x="2409.0159"
+     x="2561.6802"
      y="-1966.4855"
      inkscape:label="#backrect5109-3-5-3-67-3-6" />
   <rect
-     style="fill:#d35f5f;fill-opacity:1;stroke:none;stroke-width:0.2281588"
+     style="fill:#d35f5f;fill-opacity:1;stroke:none;stroke-width:0.28714254"
      id="lava4590"
-     width="442.59833"
-     height="112.86826"
+     width="595.2627"
+     height="132.92101"
      x="2000.6281"
-     y="-249.33835"
+     y="-259.36472"
      inkscape:label="#rect4590" />
   <rect
      style="fill:#ff8080;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -162,15 +162,15 @@
      id="rect5109-3-5-3"
      width="1466.9517"
      height="647.5036"
-     x="2409.0159"
+     x="2561.6802"
      y="-321.88171" />
   <rect
-     style="fill:#deaa87;fill-opacity:0.54726371;stroke:none;stroke-width:0.39077589"
+     style="fill:#deaa87;fill-opacity:0.54726371;stroke:none;stroke-width:0.2623193"
      id="script_hide_goal_2"
-     width="920.82434"
+     width="414.93658"
      height="276.87665"
-     x="2017.5438"
-     y="-854.8988"
+     x="2585.5828"
+     y="-849.07794"
      inkscape:label="#region4530">
     <title
        id="title49">level-01/goal-hide.lisp goal2</title>
@@ -187,7 +187,7 @@
      id="goal2"
      width="33.141422"
      height="27.79603"
-     x="2379.0662"
+     x="2531.7305"
      y="-605.81818"
      inkscape:label="#goal4530" />
   <rect
@@ -195,42 +195,42 @@
      id="rect5109-3-5-3-67"
      width="30.6577"
      height="161.29671"
-     x="2409.0159"
+     x="2561.6802"
      y="-578.02216" />
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.20491032"
      id="rect4561-2-1-5"
      width="88.073227"
      height="13.412691"
-     x="2351.6003"
+     x="2504.2646"
      y="-578.02216" />
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.14756984"
      id="rect5109-3-5-3-67-3"
      width="529.35242"
      height="29.707256"
-     x="2409.0159"
+     x="2561.6802"
      y="-578.02216" />
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.11517082"
      id="rect5109-3-5-3-67-36"
      width="30.6577"
      height="312.43344"
-     x="2409.0159"
+     x="2561.6802"
      y="-941.7406" />
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.20491034"
      id="rect4561-2-1-5-5"
      width="88.073227"
      height="13.412692"
-     x="2351.6003"
+     x="2504.2646"
      y="-738.55756" />
   <rect
      style="fill:#a02c2c;fill-opacity:1;stroke:none;stroke-width:0.20266876"
      id="box-1"
      width="64.009789"
      height="61.599514"
-     x="3019.3953"
+     x="3172.0596"
      y="-383.48123"
      inkscape:label="#rect5109-3-5-3-6-2" />
   <rect
@@ -238,21 +238,21 @@
      id="rect5109-3-5-3-67-1"
      width="30.6577"
      height="161.29671"
-     x="2409.0159"
+     x="2561.6802"
      y="-338.51266" />
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:1.26291418"
      id="rect5109-3-5-3-67-2"
      width="905.16364"
      height="1272.4272"
-     x="3647.3328"
+     x="3799.9971"
      y="-946.80536" />
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.08275159"
      id="rect5109-3-5-3-67-1-7"
      width="84.632698"
      height="161.29671"
-     x="3616.6748"
+     x="3769.3391"
      y="-338.51266" />
   <text
      xml:space="preserve"
@@ -284,7 +284,7 @@
      width="64.009789"
      height="61.599514"
      x="1761.9082"
-     y="-529.19391"
+     y="-523.20709"
      inkscape:label="#rect5109-3-5-3-6-2" />
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.07321876"
@@ -307,13 +307,6 @@
      height="78.925652"
      x="935.01154"
      y="-317.58987" />
-  <rect
-     style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.05077947"
-     id="rect5109-3-5-3-67-1-7-3"
-     width="58.440285"
-     height="87.957947"
-     x="1124.3452"
-     y="-340.61493" />
   <text
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:25.17981339px;line-height:15.73738289px;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#fffda5;fill-opacity:1;stroke:none;stroke-width:0.62949532px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -338,14 +331,21 @@
        id="title49-6">level-01/goal-show.lisp goal2</title>
   </rect>
   <rect
-     style="fill:#d35f5f;fill-opacity:0.66169152;stroke:none;stroke-width:0.12112708"
+     style="fill:#d35f5f;fill-opacity:0.66169152;stroke:none;stroke-width:0.17478877"
      id="script_hide_label_double_jump"
-     width="103.71667"
+     width="215.96986"
      height="569.73328"
-     x="1146.1157"
+     x="1033.8625"
      y="-862.22498"
      inkscape:label="#rect44">
     <title
        id="title45-6-6">level-01/hide_label_double_jump.lisp</title>
   </rect>
+  <rect
+     style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.03527637"
+     id="rect5109-3-6-3-3"
+     width="88.026321"
+     height="88.026321"
+     x="2244.4761"
+     y="-293.35153" />
 </svg>
