@@ -8,7 +8,7 @@ addons:
       - libsdl2-dev
       - libsdl2-mixer-dev
       - python3
-  brew:
+  homebrew:
     packages:
       - sdl2
       - sdl2_mixer
