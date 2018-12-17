@@ -13,13 +13,7 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 
 include_directories(src/)
-
-if(APPLE)
-  include_directories(${SDL2_INCLUDE_DIR}/..)
-else()
-  include_directories(${SDL2_INCLUDE_DIR})
-endif()
-
+include_directories(${SDL2_INCLUDE_DIR})
 include_directories(${SDL2_MIXER_INCLUDE_DIR})
 
 add_executable(nothing 
