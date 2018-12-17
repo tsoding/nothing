@@ -8,6 +8,11 @@ addons:
       - libsdl2-dev
       - libsdl2-mixer-dev
       - python3
+  brew:
+    packages:
+      - sdl2
+      - sdl2_mixer
+      - python3
 os:
   - linux
   - osx
