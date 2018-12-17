@@ -8,6 +8,9 @@ addons:
       - libsdl2-dev
       - libsdl2-mixer-dev
       - python3
+os:
+  - linux
+  - osx
 compiler:
   - clang
   - gcc
