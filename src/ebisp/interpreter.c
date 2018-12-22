@@ -207,14 +207,6 @@ struct EvalResult eval_block(Gc *gc, struct Scope *scope, struct Expr block)
     return eval_result;
 }
 
-static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *cons)
-{
-    assert(cons);
-    (void) scope;
-
-    return call_callable(gc, scope, cons->car, cons->cdr);
-}
-
 struct EvalResult eval(Gc *gc, struct Scope *scope, struct Expr expr)
 {
     switch(expr.type) {
@@ -222,7 +214,7 @@ struct EvalResult eval(Gc *gc, struct Scope *scope, struct Expr expr)
         return eval_atom(gc, scope, expr.atom);
 
     case EXPR_CONS:
-        return eval_funcall(gc, scope, expr.cons);
+        return call_callable(gc, scope, expr.cons->car, expr.cons->cdr);
 
     default: {}
     }
