@@ -427,6 +427,19 @@ greaterThan(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     }
 }
 
+static struct EvalResult
+quasiquote(void *param, Gc *gc, struct Scope *scope, struct Expr expr)
+{
+    (void) param;
+    assert(gc);
+    assert(scope);
+    (void) expr;
+
+    /* TODO: quasiquote special form is not implemented */
+
+    return not_implemented(gc);
+}
+
 void load_std_library(Gc *gc, struct Scope *scope)
 {
     set_scope_value(
@@ -464,6 +477,11 @@ void load_std_library(Gc *gc, struct Scope *scope)
         scope,
         SYMBOL(gc, "assoc"),
         NATIVE(gc, assoc_op, NULL));
+    set_scope_value(
+        gc,
+        scope,
+        SYMBOL(gc, "quasiquote"),
+        NATIVE(gc, quasiquote, NULL));
 }
 
 struct EvalResult
