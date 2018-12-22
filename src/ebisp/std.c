@@ -118,6 +118,22 @@ set(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return eval_success(result.expr);
 }
 
+static struct EvalResult
+quote(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    (void) param;
+    assert(gc);
+    assert(scope);
+
+    struct Expr expr = void_expr();
+    struct EvalResult result = match_list(gc, "e", args, &expr);
+    if (result.is_error) {
+        return result;
+    }
+
+    return eval_success(expr);
+}
+
 void load_std_library(Gc *gc, struct Scope *scope)
 {
     set_scope_value(gc, scope, SYMBOL(gc, "car"), NATIVE(gc, car, NULL));
@@ -129,4 +145,5 @@ void load_std_library(Gc *gc, struct Scope *scope)
     set_scope_value(gc, scope, SYMBOL(gc, "assoc"), NATIVE(gc, assoc_op, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "quasiquote"), NATIVE(gc, quasiquote, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "set"), NATIVE(gc, set, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "quote"), NATIVE(gc, quote, NULL));
 }

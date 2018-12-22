@@ -220,11 +220,7 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
     (void) scope;
 
     if (symbol_p(cons->car)) {
-        /* TODO(#580): eval_funcall contains some special forms that are not native function of stdlib */
-        if (strcmp(cons->car.atom->sym, "quote") == 0) {
-            /* TODO(#334): quote does not check the amout of it's arguments */
-            return eval_success(cons->cdr.cons->car);
-        } else if (strcmp(cons->car.atom->sym, "begin") == 0) {
+        if (strcmp(cons->car.atom->sym, "begin") == 0) {
             return eval_block(gc, scope, CDR(cons_as_expr(cons)));
         } else if (is_lambda(cons)) {
             /* TODO(#335): lambda special form doesn't check if it forms a callable object */
