@@ -281,7 +281,7 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
     (void) scope;
 
     if (symbol_p(cons->car)) {
-        /* TODO: eval_funcall contains some special forms that are not native function of stdlib */
+        /* TODO(#580): eval_funcall contains some special forms that are not native function of stdlib */
         if (strcmp(cons->car.atom->sym, "set") == 0) {
             struct Expr args = cons->cdr;
             struct EvalResult n = length(gc, args);
