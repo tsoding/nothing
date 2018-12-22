@@ -435,7 +435,7 @@ quasiquote(void *param, Gc *gc, struct Scope *scope, struct Expr expr)
     assert(scope);
     (void) expr;
 
-    /* TODO: quasiquote special form is not implemented */
+    /* TODO(#582): quasiquote special form is not implemented */
 
     return not_implemented(gc);
 }
