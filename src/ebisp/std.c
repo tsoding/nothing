@@ -96,44 +96,12 @@ assoc_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 
 void load_std_library(Gc *gc, struct Scope *scope)
 {
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "car"),
-        NATIVE(gc, car, NULL));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, ">"),
-        NATIVE(gc, greaterThan, NULL));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "+"),
-        NATIVE(gc, plus_op, NULL));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "list"),
-        NATIVE(gc, list_op, NULL));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "t"),
-        SYMBOL(gc, "t"));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "nil"),
-        SYMBOL(gc, "nil"));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "assoc"),
-        NATIVE(gc, assoc_op, NULL));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "quasiquote"),
-        NATIVE(gc, quasiquote, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "car"), NATIVE(gc, car, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, ">"), NATIVE(gc, greaterThan, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "+"), NATIVE(gc, plus_op, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "list"), NATIVE(gc, list_op, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "t"), SYMBOL(gc, "t"));
+    set_scope_value(gc, scope, SYMBOL(gc, "nil"), SYMBOL(gc, "nil"));
+    set_scope_value(gc, scope, SYMBOL(gc, "assoc"), NATIVE(gc, assoc_op, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "quasiquote"), NATIVE(gc, quasiquote, NULL));
 }
