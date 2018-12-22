@@ -212,31 +212,9 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
     assert(cons);
     (void) scope;
 
-    if (symbol_p(cons->car)) {
-        if (is_lambda(cons)) {
-            /* TODO(#335): lambda special form doesn't check if it forms a callable object */
-            return eval_success(cons_as_expr(cons));
-        } else if (strcmp(cons->car.atom->sym, "when") == 0) {
-            struct Expr condition = NIL(gc);
-            struct Expr body = NIL(gc);
-
-            struct EvalResult result = match_list(
-                gc, "e*", cons->cdr, &condition, &body);
-            if (result.is_error) {
-                return result;
-            }
-
-            result = eval(gc, scope, condition);
-            if (result.is_error) {
-                return result;
-            }
-
-            if (!nil_p(result.expr)) {
-                return eval_block(gc, scope, body);
-            }
-
-            return eval_success(NIL(gc));
-        }
+    if (symbol_p(cons->car) && is_lambda(cons)) {
+        /* TODO(#335): lambda special form doesn't check if it forms a callable object */
+        return eval_success(cons_as_expr(cons));
     }
 
     return call_callable(gc, scope, cons->car, cons->cdr);

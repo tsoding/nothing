@@ -181,6 +181,34 @@ defun(void *param, Gc *gc, struct Scope *scope, struct Expr args)
                      lambda(gc, args_list, body)));
 }
 
+static struct EvalResult
+when(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    (void) param;
+    assert(gc);
+    assert(scope);
+
+    struct Expr condition = void_expr();
+    struct Expr body = void_expr();
+
+    struct EvalResult result = match_list(
+        gc, "e*", args, &condition, &body);
+    if (result.is_error) {
+        return result;
+    }
+
+    result = eval(gc, scope, condition);
+    if (result.is_error) {
+        return result;
+    }
+
+    if (!nil_p(result.expr)) {
+        return eval_block(gc, scope, body);
+    }
+
+    return eval_success(NIL(gc));
+}
+
 void load_std_library(Gc *gc, struct Scope *scope)
 {
     set_scope_value(gc, scope, SYMBOL(gc, "car"), NATIVE(gc, car, NULL));
@@ -195,4 +223,5 @@ void load_std_library(Gc *gc, struct Scope *scope)
     set_scope_value(gc, scope, SYMBOL(gc, "quote"), NATIVE(gc, quote, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "begin"), NATIVE(gc, begin, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "defun"), NATIVE(gc, defun, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "when"), NATIVE(gc, when, NULL));
 }
