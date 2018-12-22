@@ -156,11 +156,11 @@ long int length_of_list(struct Expr obj)
 struct Expr assoc(struct Expr key, struct Expr alist)
 {
     while (cons_p(alist)) {
-        if (cons_p(alist.cons->car) && equal(alist.cons->car.cons->car, key)) {
-            return alist.cons->car;
+        if (cons_p(CAR(alist)) && equal(CAR(CAR(alist)), key)) {
+            return CAR(alist);
         }
 
-        alist = alist.cons->cdr;
+        alist = CDR(alist);
     }
 
     return alist;
