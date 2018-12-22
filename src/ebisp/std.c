@@ -134,6 +134,22 @@ quote(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return eval_success(expr);
 }
 
+static struct EvalResult
+begin(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    (void) param;
+    assert(gc);
+    assert(scope);
+
+    struct Expr block = void_expr();
+    struct EvalResult result = match_list(gc, "*", args, &block);
+    if (result.is_error) {
+        return result;
+    }
+
+    return eval_block(gc, scope, block);
+}
+
 void load_std_library(Gc *gc, struct Scope *scope)
 {
     set_scope_value(gc, scope, SYMBOL(gc, "car"), NATIVE(gc, car, NULL));
@@ -146,4 +162,5 @@ void load_std_library(Gc *gc, struct Scope *scope)
     set_scope_value(gc, scope, SYMBOL(gc, "quasiquote"), NATIVE(gc, quasiquote, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "set"), NATIVE(gc, set, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "quote"), NATIVE(gc, quote, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "begin"), NATIVE(gc, begin, NULL));
 }
