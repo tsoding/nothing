@@ -7,6 +7,14 @@
 
 #include "std.h"
 
+static struct Expr
+lambda(Gc *gc, struct Expr args, struct Expr body)
+{
+    return CONS(gc,
+                SYMBOL(gc, "lambda"),
+                CONS(gc, args, body));
+}
+
 static struct EvalResult
 quasiquote(void *param, Gc *gc, struct Scope *scope, struct Expr expr)
 {
@@ -150,6 +158,29 @@ begin(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return eval_block(gc, scope, block);
 }
 
+static struct EvalResult
+defun(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    (void) param;
+    assert(gc);
+    assert(scope);
+
+    struct Expr name = void_expr();
+    struct Expr args_list = void_expr();
+    struct Expr body = void_expr();
+
+    struct EvalResult result = match_list(gc, "ee*", args, &name, &args_list, &body);
+    if (result.is_error) {
+        return result;
+    }
+
+    return eval(gc, scope,
+                list(gc, 3,
+                     SYMBOL(gc, "set"),
+                     name,
+                     lambda(gc, args_list, body)));
+}
+
 void load_std_library(Gc *gc, struct Scope *scope)
 {
     set_scope_value(gc, scope, SYMBOL(gc, "car"), NATIVE(gc, car, NULL));
@@ -163,4 +194,5 @@ void load_std_library(Gc *gc, struct Scope *scope)
     set_scope_value(gc, scope, SYMBOL(gc, "set"), NATIVE(gc, set, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "quote"), NATIVE(gc, quote, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "begin"), NATIVE(gc, begin, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "defun"), NATIVE(gc, defun, NULL));
 }
