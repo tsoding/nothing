@@ -194,7 +194,7 @@ bool is_lambda(struct Cons *cons) {
 const char *specials[] = {
     "set", "quote", "begin",
     "defun", "lambda", "λ",
-    "defun", "when"
+    "defun", "when", "quasiquote"
 };
 
 bool is_special(const char *name)
