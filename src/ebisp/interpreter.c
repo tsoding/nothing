@@ -124,6 +124,23 @@ static struct EvalResult eval_all_args(Gc *gc, struct Scope *scope, struct Expr 
 }
 
 static struct EvalResult
+assoc_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    (void) param;
+    assert(gc);
+    assert(scope);
+
+    struct Expr key = NIL(gc);
+    struct Expr alist = NIL(gc);
+    struct EvalResult result = match_list(gc, "ee", args, &key, &alist);
+    if (result.is_error) {
+        return result;
+    }
+
+    return eval_success(assoc(key, alist));
+}
+
+static struct EvalResult
 plus_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     (void) param;
@@ -432,6 +449,11 @@ void load_std_library(Gc *gc, struct Scope *scope)
         scope,
         SYMBOL(gc, "nil"),
         SYMBOL(gc, "nil"));
+    set_scope_value(
+        gc,
+        scope,
+        SYMBOL(gc, "assoc"),
+        NATIVE(gc, assoc_op, NULL));
 }
 
 struct EvalResult
