@@ -265,16 +265,6 @@ static struct EvalResult eval_block(Gc *gc, struct Scope *scope, struct Expr blo
     return eval_result;
 }
 
-static struct EvalResult
-foo(void *param, Gc *gc, struct Scope *scope, struct Expr args)
-{
-    (void) param;
-    assert(gc);
-    assert(scope);
-
-    return eval_success(args);
-}
-
 static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *cons)
 {
     assert(cons);
@@ -474,11 +464,6 @@ void load_std_library(Gc *gc, struct Scope *scope)
         scope,
         SYMBOL(gc, "assoc"),
         NATIVE(gc, assoc_op, NULL));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "foo"),
-        NATIVE(gc, foo, NULL));
 }
 
 struct EvalResult
