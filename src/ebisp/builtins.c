@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "builtins.h"
 
@@ -188,4 +189,24 @@ struct Expr list(Gc *gc, size_t n, ...)
 bool is_lambda(struct Cons *cons) {
     return (strcmp(cons->car.atom->sym, "lambda") == 0) ||
             (strcmp(cons->car.atom->sym, "λ") == 0);
+}
+
+const char *specials[] = {
+    "set", "quote", "begin",
+    "defun", "lambda", "λ",
+    "defun", "when"
+};
+
+bool is_special(const char *name)
+{
+    assert(name);
+
+    size_t n = sizeof(specials) / sizeof(const char*);
+    for (size_t i = 0; i < n; ++i) {
+        if (strcmp(name, specials[i]) == 0) {
+            return true;
+        }
+    }
+
+    return false;
 }
