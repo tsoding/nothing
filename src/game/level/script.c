@@ -4,6 +4,7 @@
 #include "ebisp/interpreter.h"
 #include "ebisp/parser.h"
 #include "ebisp/scope.h"
+#include "ebisp/std.h"
 #include "game/level.h"
 #include "game/level_script.h"
 #include "script.h"

@@ -24,8 +24,6 @@ car(void *param, Gc *gc, struct Scope *scope, struct Expr args);
 
 struct EvalResult eval(Gc *gc, struct Scope *scope, struct Expr expr);
 
-void load_std_library(Gc *gc, struct Scope *scope);
-
 struct EvalResult
 match_list(struct Gc *gc, const char *format, struct Expr args, ...);
 

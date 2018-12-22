@@ -117,6 +117,8 @@ add_executable(nothing
   src/system/nth_alloc.c
   src/game/level_script.c
   src/game/level_script.h
+  src/ebisp/std.h
+  src/ebisp/std.c
 )
 
 add_executable(repl
@@ -149,6 +151,8 @@ add_executable(repl
   src/system/nth_alloc.c
   src/ebisp/repl_runtime.h
   src/ebisp/repl_runtime.c
+  src/ebisp/std.h
+  src/ebisp/std.c
   )
 add_executable(nothing_test
   src/ebisp/builtins.c
