@@ -209,13 +209,28 @@ static struct EvalResult call_lambda(Gc *gc,
 
 static struct EvalResult call_callable(Gc *gc,
                                        struct Scope *scope,
-                                       struct Expr callable,
-                                       struct Expr args) {
-    if (callable.type == EXPR_ATOM && callable.atom->type == ATOM_NATIVE) {
-        return ((NativeFunction)callable.atom->native.fun)(callable.atom->native.param, gc, scope, args);
+                                       struct Expr callable_expr,
+                                       struct Expr args_expr) {
+    struct EvalResult callable_result = eval(gc, scope, callable_expr);
+    if (callable_result.is_error) {
+        return callable_result;
     }
 
-    return call_lambda(gc, scope, callable, args);
+    struct EvalResult args_result = symbol_p(callable_expr) && is_special(callable_expr.atom->sym)
+        ? eval_success(args_expr)
+        : eval_all_args(gc, scope, args_expr);
+
+    if (args_result.is_error) {
+        return args_result;
+    }
+
+    if (callable_result.expr.type == EXPR_ATOM &&
+        callable_result.expr.atom->type == ATOM_NATIVE) {
+        return ((NativeFunction)callable_result.expr.atom->native.fun)(
+            callable_result.expr.atom->native.param, gc, scope, args_result.expr);
+    }
+
+    return call_lambda(gc, scope, callable_result.expr, args_result.expr);
 }
 
 static struct Expr
@@ -256,6 +271,7 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
     (void) scope;
 
     if (symbol_p(cons->car)) {
+        /* TODO(#580): eval_funcall contains some special forms that are not native function of stdlib */
         if (strcmp(cons->car.atom->sym, "set") == 0) {
             struct Expr args = cons->cdr;
             struct EvalResult n = length(gc, args);
@@ -334,13 +350,7 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
         }
     }
 
-    struct EvalResult r = eval_all_args(gc, scope, cons_as_expr(cons));
-
-    if (r.is_error) {
-        return r;
-    }
-
-    return call_callable(gc, scope, r.expr.cons->car, r.expr.cons->cdr);
+    return call_callable(gc, scope, cons->car, cons->cdr);
 }
 
 struct EvalResult eval(Gc *gc, struct Scope *scope, struct Expr expr)
