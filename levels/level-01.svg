@@ -25,23 +25,23 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.088388348"
-     inkscape:cx="5149.6201"
-     inkscape:cy="4376.2901"
+     inkscape:zoom="0.0625"
+     inkscape:cx="6597.604"
+     inkscape:cy="5642.2805"
      inkscape:document-units="mm"
      inkscape:current-layer="svg4541"
      showgrid="false"
-     inkscape:window-width="1916"
-     inkscape:window-height="1041"
+     inkscape:window-width="956"
+     inkscape:window-height="1023"
      inkscape:window-x="0"
-     inkscape:window-y="18"
+     inkscape:window-y="36"
      inkscape:window-maximized="0"
      inkscape:snap-bbox="true"
      inkscape:bbox-paths="true"
      inkscape:bbox-nodes="true"
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:snap-bbox-midpoints="false"
-     inkscape:snap-global="true"
+     inkscape:snap-global="false"
      showguides="true"
      inkscape:guide-bbox="true" />
   <metadata
@@ -165,17 +165,6 @@
      x="2561.6802"
      y="-321.88171" />
   <rect
-     style="fill:#deaa87;fill-opacity:0.54726371;stroke:none;stroke-width:0.2623193"
-     id="script_hide_goal_2"
-     width="414.93658"
-     height="276.87665"
-     x="2585.5828"
-     y="-849.07794"
-     inkscape:label="#region4530">
-    <title
-       id="title49">level-01/goal-hide.lisp goal2</title>
-  </rect>
-  <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.26458332"
      id="rect4561-2-3"
      width="314.32022"
@@ -188,49 +177,49 @@
      width="33.141422"
      height="27.79603"
      x="2531.7305"
-     y="-605.81818"
+     y="-590.85107"
      inkscape:label="#goal4530" />
   <rect
-     style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.08275159"
+     style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.07699144"
      id="rect5109-3-5-3-67"
      width="30.6577"
-     height="161.29671"
+     height="139.62325"
      x="2561.6802"
-     y="-578.02216" />
+     y="-556.34869" />
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.20491032"
      id="rect4561-2-1-5"
      width="88.073227"
      height="13.412691"
      x="2504.2646"
-     y="-578.02216" />
+     y="-563.05505" />
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.14756984"
      id="rect5109-3-5-3-67-3"
      width="529.35242"
      height="29.707256"
      x="2561.6802"
-     y="-578.02216" />
+     y="-563.05505" />
   <rect
-     style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.11517082"
+     style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.12677628"
      id="rect5109-3-5-3-67-36"
      width="30.6577"
-     height="312.43344"
+     height="378.57208"
      x="2561.6802"
-     y="-941.7406" />
+     y="-926.7735" />
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.20491034"
      id="rect4561-2-1-5-5"
      width="88.073227"
      height="13.412692"
      x="2504.2646"
-     y="-738.55756" />
+     y="-723.59045" />
   <rect
      style="fill:#a02c2c;fill-opacity:1;stroke:none;stroke-width:0.20266876"
      id="box-1"
      width="64.009789"
      height="61.599514"
-     x="3172.0596"
+     x="3495.9097"
      y="-383.48123"
      inkscape:label="#rect5109-3-5-3-6-2" />
   <rect
@@ -348,4 +337,11 @@
      height="88.026321"
      x="2244.4761"
      y="-293.35153" />
+  <rect
+     style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.14756984"
+     id="rect5109-3-5-3-67-3-3"
+     width="529.35242"
+     height="29.707258"
+     x="3270.6445"
+     y="-726.63574" />
 </svg>
