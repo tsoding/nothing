@@ -94,6 +94,30 @@ assoc_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return eval_success(assoc(key, alist));
 }
 
+static struct EvalResult
+set(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    (void) param;
+    assert(gc);
+    assert(scope);
+
+    const char *name = NULL;
+    struct Expr value = void_expr();
+    struct EvalResult result = match_list(gc, "qe", args, &name, &value);
+    if (result.is_error) {
+        return result;
+    }
+
+    result = eval(gc, scope, value);
+    if (result.is_error) {
+        return result;
+    }
+
+    set_scope_value(gc, scope, SYMBOL(gc, name), result.expr);
+
+    return eval_success(result.expr);
+}
+
 void load_std_library(Gc *gc, struct Scope *scope)
 {
     set_scope_value(gc, scope, SYMBOL(gc, "car"), NATIVE(gc, car, NULL));
@@ -104,4 +128,5 @@ void load_std_library(Gc *gc, struct Scope *scope)
     set_scope_value(gc, scope, SYMBOL(gc, "nil"), SYMBOL(gc, "nil"));
     set_scope_value(gc, scope, SYMBOL(gc, "assoc"), NATIVE(gc, assoc_op, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "quasiquote"), NATIVE(gc, quasiquote, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "set"), NATIVE(gc, set, NULL));
 }

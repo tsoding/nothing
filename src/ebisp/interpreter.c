@@ -54,15 +54,6 @@ not_implemented(Gc *gc)
     return eval_failure(SYMBOL(gc, "not-implemented"));
 }
 
-static struct EvalResult length(Gc *gc, struct Expr obj)
-{
-    if (!list_p(obj)) {
-        return wrong_argument_type(gc, "listp", obj);
-    }
-
-    return eval_success(NUMBER(gc, length_of_list(obj)));
-}
-
 static struct EvalResult eval_atom(Gc *gc, struct Scope *scope, struct Atom *atom)
 {
     (void) scope;
@@ -230,38 +221,7 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
 
     if (symbol_p(cons->car)) {
         /* TODO(#580): eval_funcall contains some special forms that are not native function of stdlib */
-        if (strcmp(cons->car.atom->sym, "set") == 0) {
-            struct Expr args = cons->cdr;
-            struct EvalResult n = length(gc, args);
-
-            if (n.is_error) {
-                return n;
-            }
-
-            if (n.expr.atom->num != 2) {
-                return eval_failure(list(gc, 3,
-                                         SYMBOL(gc, "wrong-number-of-arguments"),
-                                         SYMBOL(gc, "set"),
-                                         NUMBER(gc, n.expr.atom->num)));
-            }
-
-            struct Expr name = args.cons->car;
-            if (!symbol_p(name)) {
-                return eval_failure(list(gc, 3,
-                                         SYMBOL(gc, "wrong-type-argument"),
-                                         SYMBOL(gc, "symbolp"),
-                                         name));
-            }
-
-            struct EvalResult value = eval(gc, scope, args.cons->cdr.cons->car);
-            if (value.is_error) {
-                return value;
-            }
-
-            set_scope_value(gc, scope, name, value.expr);
-
-            return eval_success(value.expr);
-        } else if (strcmp(cons->car.atom->sym, "quote") == 0) {
+        if (strcmp(cons->car.atom->sym, "quote") == 0) {
             /* TODO(#334): quote does not check the amout of it's arguments */
             return eval_success(cons->cdr.cons->car);
         } else if (strcmp(cons->car.atom->sym, "begin") == 0) {
