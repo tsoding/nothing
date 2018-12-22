@@ -209,6 +209,28 @@ when(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return eval_success(NIL(gc));
 }
 
+static struct EvalResult
+lambda_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    (void) param;
+    assert(gc);
+    assert(scope);
+
+    struct Expr args_list = void_expr();
+    struct Expr body = void_expr();
+
+    struct EvalResult result = match_list(gc, "e*", args, &args_list, &body);
+    if (result.is_error) {
+        return result;
+    }
+
+    if (!list_of_symbols_p(args_list)) {
+        return wrong_argument_type(gc, "list-of-symbolsp", args_list);
+    }
+
+    return eval_success(lambda(gc, args_list, body));
+}
+
 void load_std_library(Gc *gc, struct Scope *scope)
 {
     set_scope_value(gc, scope, SYMBOL(gc, "car"), NATIVE(gc, car, NULL));
@@ -224,4 +246,6 @@ void load_std_library(Gc *gc, struct Scope *scope)
     set_scope_value(gc, scope, SYMBOL(gc, "begin"), NATIVE(gc, begin, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "defun"), NATIVE(gc, defun, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "when"), NATIVE(gc, when, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "lambda"), NATIVE(gc, lambda_op, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "λ"), NATIVE(gc, lambda_op, NULL));
 }

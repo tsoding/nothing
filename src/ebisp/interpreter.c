@@ -212,11 +212,6 @@ static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *
     assert(cons);
     (void) scope;
 
-    if (symbol_p(cons->car) && is_lambda(cons)) {
-        /* TODO(#335): lambda special form doesn't check if it forms a callable object */
-        return eval_success(cons_as_expr(cons));
-    }
-
     return call_callable(gc, scope, cons->car, cons->cdr);
 }
 
