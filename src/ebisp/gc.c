@@ -133,9 +133,10 @@ static void gc_traverse_expr(Gc *gc, struct Expr root)
     const long int root_index = gc_find_expr(gc, root);
     /* TODO(#578): gc_traverse_expr just crashes when we try to collect already collected root */
     if (root_index < 0) {
-        fprintf(stderr, "GC tried to collect something that was not registered");
+        fprintf(stderr, "GC tried to collect something that was not registered\n");
         print_expr_as_sexpr(stderr, root);
         fprintf(stderr, "\n");
+        assert(root_index >= 0);
     }
 
     if (gc->visited[root_index]) {

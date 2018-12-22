@@ -1,11 +1,12 @@
 #include <assert.h>
 #include <stdbool.h>
 
-#include "parser.h"
-#include "interpreter.h"
-#include "scope.h"
 #include "gc.h"
+#include "interpreter.h"
+#include "parser.h"
 #include "repl_runtime.h"
+#include "scope.h"
+#include "std.h"
 
 #define REPL_BUFFER_MAX 1024
 

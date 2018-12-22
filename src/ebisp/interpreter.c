@@ -54,15 +54,6 @@ not_implemented(Gc *gc)
     return eval_failure(SYMBOL(gc, "not-implemented"));
 }
 
-static struct EvalResult length(Gc *gc, struct Expr obj)
-{
-    if (!list_p(obj)) {
-        return wrong_argument_type(gc, "listp", obj);
-    }
-
-    return eval_success(NUMBER(gc, length_of_list(obj)));
-}
-
 static struct EvalResult eval_atom(Gc *gc, struct Scope *scope, struct Atom *atom)
 {
     (void) scope;
@@ -123,48 +114,6 @@ static struct EvalResult eval_all_args(Gc *gc, struct Scope *scope, struct Expr 
                              args));
 }
 
-static struct EvalResult
-assoc_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
-{
-    (void) param;
-    assert(gc);
-    assert(scope);
-
-    struct Expr key = NIL(gc);
-    struct Expr alist = NIL(gc);
-    struct EvalResult result = match_list(gc, "ee", args, &key, &alist);
-    if (result.is_error) {
-        return result;
-    }
-
-    return eval_success(assoc(key, alist));
-}
-
-static struct EvalResult
-plus_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
-{
-    (void) param;
-    assert(gc);
-    assert(scope);
-
-    long int result = 0L;
-
-    while (!nil_p(args)) {
-        if (!cons_p(args)) {
-            return wrong_argument_type(gc, "consp", args);
-        }
-
-        if (!number_p(CAR(args))) {
-            return wrong_argument_type(gc, "numberp", CAR(args));
-        }
-
-        result += CAR(args).atom->num;
-        args = CDR(args);
-    }
-
-    return eval_success(NUMBER(gc, result));
-}
-
 static struct EvalResult call_lambda(Gc *gc,
                                      struct Scope *scope,
                                      struct Expr lambda,
@@ -207,10 +156,10 @@ static struct EvalResult call_lambda(Gc *gc,
     return result;
 }
 
-static struct EvalResult call_callable(Gc *gc,
-                                       struct Scope *scope,
-                                       struct Expr callable_expr,
-                                       struct Expr args_expr) {
+static struct EvalResult eval_funcall(Gc *gc,
+                                      struct Scope *scope,
+                                      struct Expr callable_expr,
+                                      struct Expr args_expr) {
     struct EvalResult callable_result = eval(gc, scope, callable_expr);
     if (callable_result.is_error) {
         return callable_result;
@@ -233,15 +182,8 @@ static struct EvalResult call_callable(Gc *gc,
     return call_lambda(gc, scope, callable_result.expr, args_result.expr);
 }
 
-static struct Expr
-lambda(Gc *gc, struct Expr args, struct Expr body)
-{
-    return CONS(gc,
-                SYMBOL(gc, "lambda"),
-                CONS(gc, args, body));
-}
 
-static struct EvalResult eval_block(Gc *gc, struct Scope *scope, struct Expr block)
+struct EvalResult eval_block(Gc *gc, struct Scope *scope, struct Expr block)
 {
     assert(gc);
     assert(scope);
@@ -265,94 +207,6 @@ static struct EvalResult eval_block(Gc *gc, struct Scope *scope, struct Expr blo
     return eval_result;
 }
 
-static struct EvalResult eval_funcall(Gc *gc, struct Scope *scope, struct Cons *cons)
-{
-    assert(cons);
-    (void) scope;
-
-    if (symbol_p(cons->car)) {
-        /* TODO(#580): eval_funcall contains some special forms that are not native function of stdlib */
-        if (strcmp(cons->car.atom->sym, "set") == 0) {
-            struct Expr args = cons->cdr;
-            struct EvalResult n = length(gc, args);
-
-            if (n.is_error) {
-                return n;
-            }
-
-            if (n.expr.atom->num != 2) {
-                return eval_failure(list(gc, 3,
-                                         SYMBOL(gc, "wrong-number-of-arguments"),
-                                         SYMBOL(gc, "set"),
-                                         NUMBER(gc, n.expr.atom->num)));
-            }
-
-            struct Expr name = args.cons->car;
-            if (!symbol_p(name)) {
-                return eval_failure(list(gc, 3,
-                                         SYMBOL(gc, "wrong-type-argument"),
-                                         SYMBOL(gc, "symbolp"),
-                                         name));
-            }
-
-            struct EvalResult value = eval(gc, scope, args.cons->cdr.cons->car);
-            if (value.is_error) {
-                return value;
-            }
-
-            set_scope_value(gc, scope, name, value.expr);
-
-            return eval_success(value.expr);
-        } else if (strcmp(cons->car.atom->sym, "quote") == 0) {
-            /* TODO(#334): quote does not check the amout of it's arguments */
-            return eval_success(cons->cdr.cons->car);
-        } else if (strcmp(cons->car.atom->sym, "begin") == 0) {
-            return eval_block(gc, scope, CDR(cons_as_expr(cons)));
-        } else if (is_lambda(cons)) {
-            /* TODO(#335): lambda special form doesn't check if it forms a callable object */
-            return eval_success(cons_as_expr(cons));
-        } else if (strcmp(cons->car.atom->sym, "defun") == 0) {
-            struct Expr name = NIL(gc);
-            struct Expr args = NIL(gc);
-            struct Expr body = NIL(gc);
-
-            /* TODO(#554): defun doesn't support functions with empty body because of #545 */
-            struct EvalResult result = match_list(gc, "ee*", cons->cdr, &name, &args, &body);
-            if (result.is_error) {
-                return result;
-            }
-
-            return eval(gc, scope,
-                        list(gc, 3,
-                             SYMBOL(gc, "set"),
-                             name,
-                             lambda(gc, args, body)));
-        } else if (strcmp(cons->car.atom->sym, "when") == 0) {
-            struct Expr condition = NIL(gc);
-            struct Expr body = NIL(gc);
-
-            struct EvalResult result = match_list(
-                gc, "e*", cons->cdr, &condition, &body);
-            if (result.is_error) {
-                return result;
-            }
-
-            result = eval(gc, scope, condition);
-            if (result.is_error) {
-                return result;
-            }
-
-            if (!nil_p(result.expr)) {
-                return eval_block(gc, scope, body);
-            }
-
-            return eval_success(NIL(gc));
-        }
-    }
-
-    return call_callable(gc, scope, cons->car, cons->cdr);
-}
-
 struct EvalResult eval(Gc *gc, struct Scope *scope, struct Expr expr)
 {
     switch(expr.type) {
@@ -360,7 +214,7 @@ struct EvalResult eval(Gc *gc, struct Scope *scope, struct Expr expr)
         return eval_atom(gc, scope, expr.atom);
 
     case EXPR_CONS:
-        return eval_funcall(gc, scope, expr.cons);
+        return eval_funcall(gc, scope, expr.cons->car, expr.cons->cdr);
 
     default: {}
     }
@@ -393,95 +247,6 @@ car(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     }
 
     return eval_success(CAR(xs));
-}
-
-static struct EvalResult
-list_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
-{
-    assert(gc);
-    assert(scope);
-    (void) param;
-
-    return eval_success(args);
-}
-
-/* TODO(#536): greaterThan does not support arbitrary amount of arguments */
-static struct EvalResult
-greaterThan(void *param, Gc *gc, struct Scope *scope, struct Expr args)
-{
-    assert(gc);
-    assert(scope);
-    (void) param;
-
-    long int x = 0, y = 0;
-
-    struct EvalResult result = match_list(gc, "dd", args, &x, &y);
-    if (result.is_error) {
-        return result;
-    }
-
-    if (x > y) {
-        return eval_success(T(gc));
-    } else {
-        return eval_success(NIL(gc));
-    }
-}
-
-static struct EvalResult
-quasiquote(void *param, Gc *gc, struct Scope *scope, struct Expr expr)
-{
-    (void) param;
-    assert(gc);
-    assert(scope);
-    (void) expr;
-
-    /* TODO(#582): quasiquote special form is not implemented */
-
-    return not_implemented(gc);
-}
-
-void load_std_library(Gc *gc, struct Scope *scope)
-{
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "car"),
-        NATIVE(gc, car, NULL));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, ">"),
-        NATIVE(gc, greaterThan, NULL));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "+"),
-        NATIVE(gc, plus_op, NULL));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "list"),
-        NATIVE(gc, list_op, NULL));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "t"),
-        SYMBOL(gc, "t"));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "nil"),
-        SYMBOL(gc, "nil"));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "assoc"),
-        NATIVE(gc, assoc_op, NULL));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "quasiquote"),
-        NATIVE(gc, quasiquote, NULL));
 }
 
 struct EvalResult
