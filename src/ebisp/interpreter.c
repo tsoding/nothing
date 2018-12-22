@@ -156,10 +156,10 @@ static struct EvalResult call_lambda(Gc *gc,
     return result;
 }
 
-static struct EvalResult call_callable(Gc *gc,
-                                       struct Scope *scope,
-                                       struct Expr callable_expr,
-                                       struct Expr args_expr) {
+static struct EvalResult eval_funcall(Gc *gc,
+                                      struct Scope *scope,
+                                      struct Expr callable_expr,
+                                      struct Expr args_expr) {
     struct EvalResult callable_result = eval(gc, scope, callable_expr);
     if (callable_result.is_error) {
         return callable_result;
@@ -214,7 +214,7 @@ struct EvalResult eval(Gc *gc, struct Scope *scope, struct Expr expr)
         return eval_atom(gc, scope, expr.atom);
 
     case EXPR_CONS:
-        return call_callable(gc, scope, expr.cons->car, expr.cons->cdr);
+        return eval_funcall(gc, scope, expr.cons->car, expr.cons->cdr);
 
     default: {}
     }
