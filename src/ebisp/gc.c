@@ -130,6 +130,7 @@ static long int gc_find_expr(Gc *gc, struct Expr expr)
 static void gc_traverse_expr(Gc *gc, struct Expr root)
 {
     assert(gc);
+    assert(root.type != EXPR_VOID);
     const long int root_index = gc_find_expr(gc, root);
     /* TODO(#578): gc_traverse_expr just crashes when we try to collect already collected root */
     if (root_index < 0) {
