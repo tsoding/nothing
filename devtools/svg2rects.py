@@ -3,28 +3,15 @@
 import xml.etree.ElementTree as ET
 import sys
 import re
-
-
-RECT_TAG_NAME = '{http://www.w3.org/2000/svg}rect'
-TEXT_TAG_NAME = '{http://www.w3.org/2000/svg}text'
-
+from svg.tags import *
+from svg.selectors import *
 
 def list_as_sexpr(xs):
     return "'(" + ' '.join(map(lambda x: '"' + x + '"', xs)) + ')'
 
-
 def color_from_style(style):
     m = re.match(".*fill:#([0-9a-z]{6}).*", style)
     return m.group(1)
-
-
-def svg_rects(svg_root):
-    return [rect for rect in svg_root.iter(RECT_TAG_NAME)]
-
-
-def svg_texts(svg_root):
-    return [rect for rect in svg_root.iter(TEXT_TAG_NAME)]
-
 
 def save_background(svg_root, output_file):
     [background] = [rect
