@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <string.h>
 
 #include "ebisp/gc.h"
 #include "ebisp/interpreter.h"
@@ -16,16 +17,48 @@ lambda(Gc *gc, struct Expr args, struct Expr body)
 }
 
 static struct EvalResult
-quasiquote(void *param, Gc *gc, struct Scope *scope, struct Expr expr)
+quasiquote(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     (void) param;
     assert(gc);
     assert(scope);
-    (void) expr;
 
-    /* TODO(#582): quasiquote special form is not implemented */
+    struct Expr expr = void_expr();
+    struct EvalResult result = match_list(gc, "e", args, &expr);
+    if (result.is_error) {
+        return result;
+    }
 
-    return not_implemented(gc);
+    const char *unquote = NULL;
+    struct Expr unquote_expr = void_expr();
+    result = match_list(gc, "qe", expr, &unquote, &unquote_expr);
+
+    if (!result.is_error && strcmp(unquote, "unquote") == 0) {
+        return eval(gc, scope, unquote_expr);
+    } else if (cons_p(expr)) {
+        struct EvalResult left = quasiquote(param, gc, scope, CONS(gc, CAR(expr), NIL(gc)));
+        if (left.is_error) {
+            return left;
+        }
+        struct EvalResult right = quasiquote(param, gc, scope, CONS(gc, CDR(expr), NIL(gc)));
+        if (right.is_error) {
+            return right;
+        }
+        return eval_success(CONS(gc, left.expr, right.expr));
+    } else {
+        return eval_success(expr);
+    }
+}
+
+static struct EvalResult
+unquote(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    (void) param;
+    assert(gc);
+    assert(scope);
+    (void) args;
+
+    return eval_failure(STRING(gc, "Using unquote outside of quasiquote."));
 }
 
 /* TODO(#536): greaterThan does not support arbitrary amount of arguments */
@@ -248,4 +281,5 @@ void load_std_library(Gc *gc, struct Scope *scope)
     set_scope_value(gc, scope, SYMBOL(gc, "when"), NATIVE(gc, when, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "lambda"), NATIVE(gc, lambda_op, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "λ"), NATIVE(gc, lambda_op, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "unquote"), NATIVE(gc, unquote, NULL));
 }
