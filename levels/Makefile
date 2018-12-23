@@ -1,10 +1,11 @@
 SVGS=$(wildcard ./*.svg)
-LISPS=$(wildcard ./*.lisp)
 TXTS=$(SVGS:.svg=.txt)
 
 all: $(TXTS)
 
-%.txt: %.svg $(LISPS)
+.SECONDEXPANSION:
+
+%.txt: %.svg $$(shell python3 ../devtools/scripts_of_svg.py $$*.svg)
 	python3 ../devtools/svg2rects.py $< $@
 
 .PHONY: clean watch
