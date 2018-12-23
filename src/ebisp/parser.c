@@ -161,6 +161,31 @@ static struct ParseResult parse_expr(Gc *gc, struct Token current_token)
 
         return result;
     } break;
+
+    case '`': {
+        struct ParseResult result = parse_expr(gc, next_token(current_token.end));
+
+        if (result.is_error) {
+            return result;
+        }
+
+        result.expr = list(gc, 2, SYMBOL(gc, "quasiquote"), result.expr);
+
+        return result;
+    } break;
+
+    case ',': {
+        struct ParseResult result = parse_expr(gc, next_token(current_token.end));
+
+        if (result.is_error) {
+            return result;
+        }
+
+        result.expr = list(gc, 2, SYMBOL(gc, "unquote"), result.expr);
+
+        return result;
+    } break;
+
     default: {}
     }
 

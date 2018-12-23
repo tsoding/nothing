@@ -18,7 +18,7 @@ static struct Token token(const char *begin, const char *end)
 static bool is_symbol_char(char x)
 {
     static const char forbidden_symbol_chars[] = {
-        '(', ')', '"', '\'', ';', '.'
+        '(', ')', '"', '\'', ';', '.', '`', ','
     };
     static const size_t n = sizeof(forbidden_symbol_chars) / sizeof(char);
 
@@ -94,6 +94,8 @@ struct Token next_token(const char *str)
     case ')':
     case '.':
     case '\'':
+    case '`':
+    case ',':
         return token(str, str + 1);
 
     case '"': {
