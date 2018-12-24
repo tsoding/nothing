@@ -61,7 +61,6 @@ unquote(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return eval_failure(STRING(gc, "Using unquote outside of quasiquote."));
 }
 
-/* TODO(#536): greaterThan does not support arbitrary amount of arguments */
 static struct EvalResult
 greaterThan(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
@@ -69,18 +68,33 @@ greaterThan(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     assert(scope);
     (void) param;
 
-    long int x = 0, y = 0;
+    long int x1 = 0;
+    struct Expr xs = void_expr();
 
-    struct EvalResult result = match_list(gc, "dd", args, &x, &y);
+    struct EvalResult result = match_list(gc, "d*", args, &x1, &xs);
     if (result.is_error) {
         return result;
     }
 
-    if (x > y) {
-        return eval_success(T(gc));
-    } else {
-        return eval_success(NIL(gc));
+    bool sorted = true;
+
+    while (!nil_p(xs) && sorted) {
+        long int x2 = 0;
+        result = match_list(gc, "d*", xs, &x2, NULL);
+        if (result.is_error) {
+            return result;
+        }
+
+        sorted = sorted && (x1 > x2);
+        args = xs;
+
+        result = match_list(gc, "d*", args, &x1, &xs);
+        if (result.is_error) {
+            return result;
+        }
     }
+
+    return eval_success(bool_as_expr(gc, sorted));
 }
 
 static struct EvalResult
