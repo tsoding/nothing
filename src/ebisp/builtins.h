@@ -23,4 +23,6 @@ struct Expr assoc(struct Expr key, struct Expr alist);
 
 struct Expr list(Gc *gc, const char *format, ...);
 
+struct Expr bool_as_expr(Gc *gc, bool condition);
+
 #endif  // BUILTINS_H_

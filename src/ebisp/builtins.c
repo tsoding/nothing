@@ -244,3 +244,8 @@ list(Gc *gc, const char *format, ...)
 
     return result;
 }
+
+struct Expr bool_as_expr(Gc *gc, bool condition)
+{
+    return condition ? T(gc) : NIL(gc);
+}
