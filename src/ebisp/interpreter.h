@@ -28,7 +28,4 @@ struct EvalResult eval_block(Gc *gc, struct Scope *scope, struct Expr block);
 struct EvalResult
 match_list(struct Gc *gc, const char *format, struct Expr args, ...);
 
-struct Expr
-format_list(Gc *gc, const char *format, ...);
-
 #endif  // INTERPRETER_H_

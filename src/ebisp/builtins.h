@@ -21,7 +21,7 @@ long int length_of_list(struct Expr obj);
 
 struct Expr assoc(struct Expr key, struct Expr alist);
 
-// TODO(#568): list() function is obsolete because of format_list()
-struct Expr list(Gc *gc, size_t n, ...);
+struct Expr
+format_list(Gc *gc, const char *format, ...);
 
 #endif  // BUILTINS_H_

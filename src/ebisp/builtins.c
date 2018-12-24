@@ -167,25 +167,6 @@ struct Expr assoc(struct Expr key, struct Expr alist)
     return alist;
 }
 
-static struct Expr list_rec(Gc *gc, size_t n, va_list args)
-{
-    if (n == 0) {
-        return NIL(gc);
-    }
-
-    struct Expr obj = va_arg(args, struct Expr);
-    return CONS(gc, obj, list_rec(gc, n - 1, args));
-}
-
-struct Expr list(Gc *gc, size_t n, ...)
-{
-    va_list args;
-    va_start(args, n);
-    struct Expr obj = list_rec(gc, n, args);
-    va_end(args);
-    return obj;
-}
-
 bool is_lambda(struct Cons *cons) {
     return (strcmp(cons->car.atom->sym, "lambda") == 0) ||
             (strcmp(cons->car.atom->sym, "λ") == 0);
@@ -209,4 +190,57 @@ bool is_special(const char *name)
     }
 
     return false;
+}
+
+
+static struct Expr
+format_list_rec(Gc *gc, const char *format, va_list args)
+{
+    assert(gc);
+    assert(format);
+
+    if (*format == 0) {
+        return NIL(gc);
+    }
+
+    switch (*format) {
+    case 'd': {
+        long int p = va_arg(args, long int);
+        return CONS(gc, NUMBER(gc, p),
+                    format_list_rec(gc, format + 1, args));
+    }
+
+    case 's': {
+        const char* p = va_arg(args, const char*);
+        return CONS(gc, STRING(gc, p),
+                    format_list_rec(gc, format + 1, args));
+    }
+
+    case 'q': {
+        const char* p = va_arg(args, const char*);
+        return CONS(gc, SYMBOL(gc, p),
+                    format_list_rec(gc, format + 1, args));
+    }
+
+    case 'e': {
+        struct Expr p = va_arg(args, struct Expr);
+        return CONS(gc, p, format_list_rec(gc, format + 1, args));
+    }
+
+    default: {
+        fprintf(stderr, "Wrong format parameter: %c\n", *format);
+        assert(0);
+    }
+    }
+}
+
+struct Expr
+format_list(Gc *gc, const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    struct Expr result = format_list_rec(gc, format, args);
+    va_end(args);
+
+    return result;
 }

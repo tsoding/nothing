@@ -33,10 +33,7 @@ struct EvalResult
 wrong_argument_type(Gc *gc, const char *type, struct Expr obj)
 {
     return eval_failure(
-        list(gc, 3,
-             SYMBOL(gc, "wrong-argument-type"),
-             SYMBOL(gc, type),
-             obj));
+        format_list(gc, "qqe", "wrong-argument-type", type, obj));
 }
 
 struct EvalResult
@@ -336,56 +333,4 @@ match_list(struct Gc *gc, const char *format, struct Expr xs, ...)
 
     va_end(args_list);
     return eval_success(NIL(gc));
-}
-
-static struct Expr
-format_list_rec(Gc *gc, const char *format, va_list args)
-{
-    assert(gc);
-    assert(format);
-
-    if (*format == 0) {
-        return NIL(gc);
-    }
-
-    switch (*format) {
-    case 'd': {
-        long int p = va_arg(args, long int);
-        return CONS(gc, NUMBER(gc, p),
-                    format_list_rec(gc, format + 1, args));
-    }
-
-    case 's': {
-        const char* p = va_arg(args, const char*);
-        return CONS(gc, STRING(gc, p),
-                    format_list_rec(gc, format + 1, args));
-    }
-
-    case 'q': {
-        const char* p = va_arg(args, const char*);
-        return CONS(gc, SYMBOL(gc, p),
-                    format_list_rec(gc, format + 1, args));
-    }
-
-    case 'e': {
-        struct Expr p = va_arg(args, struct Expr);
-        return CONS(gc, p, format_list_rec(gc, format + 1, args));
-    }
-
-    default: {
-        fprintf(stderr, "Wrong format parameter: %c\n", *format);
-        assert(0);
-    }
-    }
-}
-
-struct Expr
-format_list(Gc *gc, const char *format, ...)
-{
-    va_list args;
-    va_start(args, format);
-    struct Expr result = format_list_rec(gc, format, args);
-    va_end(args);
-
-    return result;
 }
