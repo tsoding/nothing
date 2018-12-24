@@ -10,20 +10,18 @@ TEST(lambda_p_test)
 
     ASSERT_TRUE(!lambda_p(NIL(gc)),
                 { fprintf(stderr, "nil should not be lambda"); });
-    ASSERT_TRUE(!lambda_p(list(gc, 1, SYMBOL(gc, "lambda"))),
+    ASSERT_TRUE(!lambda_p(list(gc, "q", "lambda")),
                 { fprintf(stderr, "(lambda) should not be lambda"); });
-    ASSERT_TRUE(!lambda_p(list(gc, 2,
-                                SYMBOL(gc, "lambda"),
-                                list(gc, 1, NUMBER(gc, 1)))),
+    ASSERT_TRUE(!lambda_p(list(gc, "qe", "lambda", list(gc, "d", 1))),
                 { fprintf(stderr, "(lambda (1)) should not be lambda"); });
-    ASSERT_TRUE(lambda_p(list(gc, 2,
-                                 SYMBOL(gc, "lambda"),
-                                 list(gc, 1, SYMBOL(gc, "a")))),
+    ASSERT_TRUE(lambda_p(list(gc, "qe",
+                                     "lambda",
+                                     list(gc, "q", "a"))),
                 { fprintf(stderr, "(lambda (a)) should be lambda"); });
-    ASSERT_TRUE(lambda_p(list(gc, 3,
-                                SYMBOL(gc, "lambda"),
-                                list(gc, 1, SYMBOL(gc, "a")),
-                                STRING(gc, "hello"))),
+    ASSERT_TRUE(lambda_p(list(gc, "qes",
+                                     "lambda",
+                                     list(gc, "q", "a"),
+                                     "hello")),
                 { fprintf(stderr, "(lambda (a) \"hello\") should be lambda"); });
 
     destroy_gc(gc);

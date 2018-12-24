@@ -208,10 +208,8 @@ defun(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     }
 
     return eval(gc, scope,
-                list(gc, 3,
-                     SYMBOL(gc, "set"),
-                     name,
-                     lambda(gc, args_list, body)));
+                list(gc, "qee", "set", name,
+                            lambda(gc, args_list, body)));
 }
 
 static struct EvalResult
