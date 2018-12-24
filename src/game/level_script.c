@@ -55,26 +55,31 @@ rect_apply_force(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     assert(scope);
     assert(param);
 
-    /* TODO(#401): rect_apply_force doesn't sanitize it's input */
-
     Level *level = (Level*) param;
-    const char *rect_id = CAR(args).atom->str;
-    struct Expr vector_force_expr = CAR(CDR(args));
-    const float force_x = (float) CAR(vector_force_expr).atom->num;
-    const float force_y = (float) CDR(vector_force_expr).atom->num;
 
-    print_expr_as_sexpr(stdout, args); printf("\n");
+    const char *rect_id = NULL;
+    struct Expr force = void_expr();
+    struct EvalResult result = match_list(gc, "se", args, &rect_id, &force);
+    if (result.is_error) {
+        return result;
+    }
+
+    long int force_x = 0L;
+    long int force_y = 0L;
+    result = match_list(gc, "dd", force, &force_x, &force_y);
+    if (result.is_error) {
+        return result;
+    }
 
     Rigid_rect *rigid_rect = level_rigid_rect(level, rect_id);
     if (rigid_rect != NULL) {
         log_info("Found rect `%s`\n", rect_id);
-        log_info("Applying force (%f, %f)\n", force_x, force_y);
-        rigid_rect_apply_force(rigid_rect, vec(force_x, force_y));
+        log_info("Applying force (%ld, %ld)\n", force_x, force_y);
+        rigid_rect_apply_force(rigid_rect, vec((float) force_x, (float) force_y));
+        return eval_success(NIL(gc));
     } else {
-        log_fail("Couldn't find rigid_rect `%s`\n", rect_id);
+        return eval_failure(list(gc, "qs", "unexisting-rigid-rect", rect_id));
     }
-
-    return eval_success(NIL(gc));
 }
 
 static struct EvalResult
