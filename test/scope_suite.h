@@ -18,8 +18,8 @@ TEST(set_scope_value_test)
     };
 
     push_scope_frame(gc, &scope,
-                     format_list(gc, "ee", x, y),
-                     format_list(gc, "ss", "hello", "world"));
+                     list(gc, "ee", x, y),
+                     list(gc, "ss", "hello", "world"));
 
     set_scope_value(gc, &scope, z, STRING(gc, "foo"));
 

@@ -157,7 +157,7 @@ static struct ParseResult parse_expr(Gc *gc, struct Token current_token)
             return result;
         }
 
-        result.expr = format_list(gc, "qe", "quote", result.expr);
+        result.expr = list(gc, "qe", "quote", result.expr);
 
         return result;
     } break;
@@ -169,7 +169,7 @@ static struct ParseResult parse_expr(Gc *gc, struct Token current_token)
             return result;
         }
 
-        result.expr = format_list(gc, "qe", "quasiquote", result.expr);
+        result.expr = list(gc, "qe", "quasiquote", result.expr);
 
         return result;
     } break;
@@ -181,7 +181,7 @@ static struct ParseResult parse_expr(Gc *gc, struct Token current_token)
             return result;
         }
 
-        result.expr = format_list(gc, "qe", "unquote", result.expr);
+        result.expr = list(gc, "qe", "unquote", result.expr);
 
         return result;
     } break;

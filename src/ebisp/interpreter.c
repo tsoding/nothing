@@ -33,7 +33,7 @@ struct EvalResult
 wrong_argument_type(Gc *gc, const char *type, struct Expr obj)
 {
     return eval_failure(
-        format_list(gc, "qqe", "wrong-argument-type", type, obj));
+        list(gc, "qqe", "wrong-argument-type", type, obj));
 }
 
 struct EvalResult

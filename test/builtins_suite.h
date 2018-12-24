@@ -10,17 +10,17 @@ TEST(lambda_p_test)
 
     ASSERT_TRUE(!lambda_p(NIL(gc)),
                 { fprintf(stderr, "nil should not be lambda"); });
-    ASSERT_TRUE(!lambda_p(format_list(gc, "q", "lambda")),
+    ASSERT_TRUE(!lambda_p(list(gc, "q", "lambda")),
                 { fprintf(stderr, "(lambda) should not be lambda"); });
-    ASSERT_TRUE(!lambda_p(format_list(gc, "qe", "lambda", format_list(gc, "d", 1))),
+    ASSERT_TRUE(!lambda_p(list(gc, "qe", "lambda", list(gc, "d", 1))),
                 { fprintf(stderr, "(lambda (1)) should not be lambda"); });
-    ASSERT_TRUE(lambda_p(format_list(gc, "qe",
+    ASSERT_TRUE(lambda_p(list(gc, "qe",
                                      "lambda",
-                                     format_list(gc, "q", "a"))),
+                                     list(gc, "q", "a"))),
                 { fprintf(stderr, "(lambda (a)) should be lambda"); });
-    ASSERT_TRUE(lambda_p(format_list(gc, "qes",
+    ASSERT_TRUE(lambda_p(list(gc, "qes",
                                      "lambda",
-                                     format_list(gc, "q", "a"),
+                                     list(gc, "q", "a"),
                                      "hello")),
                 { fprintf(stderr, "(lambda (a) \"hello\") should be lambda"); });
 

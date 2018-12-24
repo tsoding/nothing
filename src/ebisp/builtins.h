@@ -21,7 +21,6 @@ long int length_of_list(struct Expr obj);
 
 struct Expr assoc(struct Expr key, struct Expr alist);
 
-struct Expr
-format_list(Gc *gc, const char *format, ...);
+struct Expr list(Gc *gc, const char *format, ...);
 
 #endif  // BUILTINS_H_

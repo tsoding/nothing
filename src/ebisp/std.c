@@ -208,7 +208,7 @@ defun(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     }
 
     return eval(gc, scope,
-                format_list(gc, "qee", "set", name,
+                list(gc, "qee", "set", name,
                             lambda(gc, args_list, body)));
 }
 
