@@ -288,6 +288,57 @@ struct ParseResult read_expr_from_file(Gc *gc, const char *filename)
     RETURN_LT(lt, result);
 }
 
+/* TODO: duplicate code in read_all_exprs_from_file and read_expr_from_file  */
+struct ParseResult read_all_exprs_from_file(Gc *gc, const char *filename)
+{
+    trace_assert(filename);
+
+    Lt *lt = create_lt();
+    if (lt == NULL) {
+        return parse_failure("Could not create Lt object", NULL);
+    }
+
+    FILE *stream = PUSH_LT(lt, fopen(filename, "rb"), fclose_lt);
+    if (!stream) {
+        RETURN_LT(lt, parse_failure(strerror(errno), NULL));
+    }
+
+    if (fseek(stream, 0, SEEK_END) != 0) {
+        RETURN_LT(lt, parse_failure("Could not find the end of the file", NULL));
+    }
+
+    const long int buffer_length = ftell(stream);
+
+    if (buffer_length < 0) {
+        RETURN_LT(lt, parse_failure("Couldn't get the size of file", NULL));
+    }
+
+    if (buffer_length == 0) {
+        RETURN_LT(lt, parse_failure("File is empty", NULL));
+    }
+
+    if (buffer_length >= MAX_BUFFER_LENGTH) {
+        RETURN_LT(lt, parse_failure("File is too big", NULL));
+    }
+
+    if (fseek(stream, 0, SEEK_SET) != 0) {
+        RETURN_LT(lt, parse_failure("Could not find the beginning of the file", NULL));
+    }
+
+    char * const buffer = PUSH_LT(lt, malloc((size_t) buffer_length + 1), free);
+    if (buffer == NULL) {
+        RETURN_LT(lt, parse_failure(strerror(errno), NULL));
+    }
+
+    if (fread(buffer, 1, (size_t) buffer_length, stream) != (size_t) buffer_length) {
+        RETURN_LT(lt, parse_failure("Could not read the file", NULL));
+    }
+
+    struct ParseResult result = read_all_exprs_from_string(gc, buffer);
+
+    RETURN_LT(lt, result);
+}
+
 struct ParseResult parse_success(struct Expr expr,
                                  const char *end)
 {

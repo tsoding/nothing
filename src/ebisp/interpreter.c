@@ -51,6 +51,13 @@ not_implemented(Gc *gc)
     return eval_failure(SYMBOL(gc, "not-implemented"));
 }
 
+struct EvalResult
+read_error(Gc *gc, const char *error_message, long int character)
+{
+    return eval_failure(
+        list(gc, "qsd", "read-error", error_message, character));
+}
+
 static struct EvalResult eval_atom(Gc *gc, struct Scope *scope, struct Atom *atom)
 {
     (void) scope;

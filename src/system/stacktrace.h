@@ -1,6 +1,7 @@
 #ifndef STACKTRACE_H_
 #define STACKTRACE_H_
 
+// TODO: trace_assert cannot be disabled
 #define trace_assert(condition)                         \
     if (!(condition)) {                                 \
         fprintf(                                        \
