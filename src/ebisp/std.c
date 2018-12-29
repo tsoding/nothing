@@ -133,6 +133,31 @@ plus_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 }
 
 static struct EvalResult
+mul_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    (void) param;
+    trace_assert(gc);
+    trace_assert(scope);
+
+    long int result = 1L;
+
+    while (!nil_p(args)) {
+        if (!cons_p(args)) {
+            return wrong_argument_type(gc, "consp", args);
+        }
+
+        if (!number_p(CAR(args))) {
+            return wrong_argument_type(gc, "numberp", CAR(args));
+        }
+
+        result *= CAR(args).atom->num;
+        args = CDR(args);
+    }
+
+    return eval_success(NUMBER(gc, result));
+}
+
+static struct EvalResult
 assoc_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     (void) param;
@@ -281,6 +306,7 @@ void load_std_library(Gc *gc, struct Scope *scope)
     set_scope_value(gc, scope, SYMBOL(gc, "car"), NATIVE(gc, car, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, ">"), NATIVE(gc, greaterThan, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "+"), NATIVE(gc, plus_op, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "*"), NATIVE(gc, mul_op, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "list"), NATIVE(gc, list_op, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "t"), SYMBOL(gc, "t"));
     set_scope_value(gc, scope, SYMBOL(gc, "nil"), SYMBOL(gc, "nil"));
