@@ -68,7 +68,7 @@ Rigid_rect *create_rigid_rect(Rect rect, Color color, const char *id)
     }
     rigid_rect->lt = lt;
 
-    rigid_rect->id = nth_alloc(sizeof(char) * RIGID_RECT_MAX_ID_SIZE);
+    rigid_rect->id = PUSH_LT(lt, nth_alloc(sizeof(char) * RIGID_RECT_MAX_ID_SIZE), free);
     if (rigid_rect->id == NULL) {
         RETURN_LT(lt, NULL);
     }

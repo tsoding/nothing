@@ -80,7 +80,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
 
     regions->states = PUSH_LT(
         lt,
-        nth_alloc(sizeof(bool) * regions->count),
+        nth_alloc(sizeof(enum RegionState) * regions->count),
         free);
     if (regions->states == NULL) {
         RETURN_LT(lt, NULL);
