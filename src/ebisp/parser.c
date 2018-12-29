@@ -288,7 +288,7 @@ struct ParseResult read_expr_from_file(Gc *gc, const char *filename)
     RETURN_LT(lt, result);
 }
 
-/* TODO: duplicate code in read_all_exprs_from_file and read_expr_from_file  */
+/* TODO(#598): duplicate code in read_all_exprs_from_file and read_expr_from_file  */
 struct ParseResult read_all_exprs_from_file(Gc *gc, const char *filename)
 {
     trace_assert(filename);
