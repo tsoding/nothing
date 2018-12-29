@@ -1,18 +1,12 @@
 #ifndef STACKTRACE_H_
 #define STACKTRACE_H_
 
-// TODO(#600): trace_assert cannot be disabled
-#define trace_assert(condition)                         \
-    if (!(condition)) {                                 \
-        fprintf(                                        \
-            stderr,                                     \
-            "%s:%d: %s: Assertion `%s' failed\n",       \
-            __FILE__, __LINE__,                         \
-            __func__,                                   \
-            #condition);                                \
-        print_stacktrace();                             \
-        exit(1);                                        \
-    }
+#ifndef NDEBUG
+#define trace_assert(condition) (void)((condition) || (__trace_assert(__FILE__, __LINE__, __func__, #condition), 0))
+#else
+#define trace_assert(condition) (void)(condition)
+#endif
+void __trace_assert(const char *file, int line, const char *function, const char *message);
 
 void print_stacktrace(void);
 

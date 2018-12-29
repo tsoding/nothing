@@ -232,6 +232,8 @@ list_rec(Gc *gc, const char *format, va_list args)
         trace_assert(0);
     }
     }
+
+    return NIL(gc);
 }
 
 struct Expr

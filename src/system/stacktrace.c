@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #ifdef __GNUC__
 #include <execinfo.h>
@@ -6,7 +7,7 @@
 
 #include "./stacktrace.h"
 
-#define N 10
+#define N 100
 
 void print_stacktrace(void)
 {
@@ -23,4 +24,16 @@ void print_stacktrace(void)
     fprintf(stderr, "Stacktrace: \n");
     backtrace_symbols_fd(array + 1, size - 1, STDERR_FILENO);
 #endif
+}
+
+void __trace_assert(const char *file, int line, const char *function, const char *message)
+{
+    fprintf(
+        stderr,
+        "%s:%d: %s: Assertion `%s' failed\n",
+        file, line,
+        function,
+        message);
+    print_stacktrace();
+    exit(1);
 }
