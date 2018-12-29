@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <math.h>
 
 #include "goals.h"
@@ -36,7 +36,7 @@ struct Goals {
 
 Goals *create_goals_from_line_stream(LineStream *line_stream)
 {
-    assert(line_stream);
+    trace_assert(line_stream);
 
     Lt *const lt = create_lt();
     if (lt == NULL) {
@@ -116,7 +116,7 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
 
 void destroy_goals(Goals *goals)
 {
-    assert(goals);
+    trace_assert(goals);
     RETURN_LT0(goals->lt);
 }
 
@@ -124,8 +124,8 @@ static int goals_render_core(const Goals *goals,
                              size_t goal_index,
                              Camera *camera)
 {
-    assert(goals);
-    assert(camera);
+    trace_assert(goals);
+    trace_assert(camera);
 
     const Point position = vec_sum(
         goals->points[goal_index],
@@ -156,8 +156,8 @@ static int goals_render_core(const Goals *goals,
 int goals_render(const Goals *goals,
                  Camera *camera)
 {
-    assert(goals);
-    assert(camera);
+    trace_assert(goals);
+    trace_assert(camera);
 
     for (size_t i = 0; i < goals->count; ++i) {
         if (!goals_is_goal_hidden(goals, i)) {
@@ -173,8 +173,8 @@ int goals_render(const Goals *goals,
 void goals_update(Goals *goals,
                   float delta_time)
 {
-    assert(goals);
-    assert(delta_time > 0.0f);
+    trace_assert(goals);
+    trace_assert(delta_time > 0.0f);
     goals->angle = fmodf(goals->angle + 2.0f * delta_time, 2.0f * PI);
 }
 
@@ -228,8 +228,8 @@ void goals_cue(Goals *goals,
 void goals_checkpoint(const Goals *goals,
                       Player *player)
 {
-    assert(goals);
-    assert(player);
+    trace_assert(goals);
+    trace_assert(player);
 
     for (size_t i = 0; i < goals->count; ++i) {
         if (goals->cue_states[i] == CUE_STATE_HIT_NOTHING) {
@@ -240,8 +240,8 @@ void goals_checkpoint(const Goals *goals,
 
 void goals_hide(Goals *goals, const char *id)
 {
-    assert(goals);
-    assert(id);
+    trace_assert(goals);
+    trace_assert(id);
 
     for (size_t i = 0; i < goals->count; ++i) {
         if (strcmp(id, goals->ids[i]) == 0) {
@@ -253,8 +253,8 @@ void goals_hide(Goals *goals, const char *id)
 
 void goals_show(Goals *goals, const char *id)
 {
-    assert(goals);
-    assert(id);
+    trace_assert(goals);
+    trace_assert(id);
 
     for (size_t i = 0; i < goals->count; ++i) {
         if (strcmp(id, goals->ids[i]) == 0) {

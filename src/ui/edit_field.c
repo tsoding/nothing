@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <stdbool.h>
 
 #include "edit_field.h"
@@ -30,7 +30,7 @@ Edit_field *create_edit_field(const Sprite_font *font,
                                 Vec font_size,
                                 Color font_color)
 {
-    assert(font);
+    trace_assert(font);
 
     Lt *lt = create_lt();
 
@@ -62,7 +62,7 @@ Edit_field *create_edit_field(const Sprite_font *font,
 
 void destroy_edit_field(Edit_field *edit_field)
 {
-    assert(edit_field);
+    trace_assert(edit_field);
     RETURN_LT0(edit_field->lt);
 }
 
@@ -70,8 +70,8 @@ int edit_field_render(const Edit_field *edit_field,
                       SDL_Renderer *renderer,
                       Point position)
 {
-    assert(edit_field);
-    assert(renderer);
+    trace_assert(edit_field);
+    trace_assert(renderer);
 
     const float cursor_y_overflow = 10.0f;
     const float cursor_width = 2.0f;
@@ -102,8 +102,8 @@ int edit_field_render(const Edit_field *edit_field,
 int edit_field_handle_event(Edit_field *edit_field,
                             const SDL_Event *event)
 {
-    assert(edit_field);
-    assert(event);
+    trace_assert(edit_field);
+    trace_assert(event);
 
     switch (event->type) {
     case SDL_KEYDOWN:
@@ -143,7 +143,7 @@ int edit_field_handle_event(Edit_field *edit_field,
 
 const char *edit_field_as_text(const Edit_field *edit_field)
 {
-    assert(edit_field);
+    trace_assert(edit_field);
     return edit_field->buffer;
 }
 
@@ -156,7 +156,7 @@ static void edit_field_left(Edit_field *edit_field)
 
 static void edit_field_right(Edit_field *edit_field)
 {
-    assert(edit_field);
+    trace_assert(edit_field);
     if (edit_field->cursor < edit_field->buffer_size) {
         edit_field->cursor++;
     }
@@ -164,7 +164,7 @@ static void edit_field_right(Edit_field *edit_field)
 
 static void edit_field_backspace(Edit_field *edit_field)
 {
-    assert(edit_field);
+    trace_assert(edit_field);
 
     if (edit_field->cursor == 0) {
         return;
@@ -180,7 +180,7 @@ static void edit_field_backspace(Edit_field *edit_field)
 
 static void edit_field_delete(Edit_field *edit_field)
 {
-    assert(edit_field);
+    trace_assert(edit_field);
 
     if (edit_field->cursor >= edit_field->buffer_size) {
         return;
@@ -195,7 +195,7 @@ static void edit_field_delete(Edit_field *edit_field)
 
 static void edit_field_insert_char(Edit_field *edit_field, char c)
 {
-    assert(edit_field);
+    trace_assert(edit_field);
 
     if (edit_field->buffer_size >= BUFFER_CAPACITY) {
         return;
@@ -211,7 +211,7 @@ static void edit_field_insert_char(Edit_field *edit_field, char c)
 
 void edit_field_clean(Edit_field *edit_field)
 {
-    assert(edit_field);
+    trace_assert(edit_field);
 
     edit_field->cursor = 0;
     edit_field->buffer_size = 0;
@@ -220,7 +220,7 @@ void edit_field_clean(Edit_field *edit_field)
 
 void edit_field_replace(Edit_field *edit_field, const char *text)
 {
-    assert(edit_field);
+    trace_assert(edit_field);
 
     edit_field_clean(edit_field);
 

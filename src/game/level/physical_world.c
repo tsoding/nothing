@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <stdlib.h>
 
 #include "game/level/platforms.h"
@@ -48,7 +48,7 @@ Physical_world *create_physical_world(void)
 
 void destroy_physical_world(Physical_world *physical_world)
 {
-    assert(physical_world);
+    trace_assert(physical_world);
     RETURN_LT0(physical_world->lt);
 }
 
@@ -64,7 +64,7 @@ void physical_world_apply_gravity(Physical_world *physical_world)
 void physical_world_collide_solids(Physical_world *physical_world,
                                    Platforms *platforms)
 {
-    assert(physical_world);
+    trace_assert(physical_world);
 
     for (size_t i = 0; i < physical_world->size; ++i) {
         solid_collide_with_solid(
@@ -88,7 +88,7 @@ void physical_world_collide_solids(Physical_world *physical_world,
 int physical_world_add_solid(Physical_world *physical_world,
                              Solid_ref solid)
 {
-    assert(physical_world);
+    trace_assert(physical_world);
 
     if (physical_world->size >= physical_world->capacity) {
         const size_t new_capacity = physical_world->capacity * 2;
@@ -114,6 +114,6 @@ int physical_world_add_solid(Physical_world *physical_world,
 
 void physical_world_clean(Physical_world *physical_world)
 {
-    assert(physical_world);
+    trace_assert(physical_world);
     physical_world->size = 0;
 }

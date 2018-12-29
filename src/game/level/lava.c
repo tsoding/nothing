@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <stdio.h>
 
 #include "color.h"
@@ -22,7 +22,7 @@ struct Lava {
 
 Lava *create_lava_from_line_stream(LineStream *line_stream)
 {
-    assert(line_stream);
+    trace_assert(line_stream);
 
     Lt *lt = create_lt();
     if (lt == NULL) {
@@ -61,7 +61,7 @@ Lava *create_lava_from_line_stream(LineStream *line_stream)
 
 void destroy_lava(Lava *lava)
 {
-    assert(lava);
+    trace_assert(lava);
     RETURN_LT0(lava->lt);
 }
 
@@ -69,8 +69,8 @@ void destroy_lava(Lava *lava)
 int lava_render(const Lava *lava,
                 Camera *camera)
 {
-    assert(lava);
-    assert(camera);
+    trace_assert(lava);
+    trace_assert(camera);
 
     for (size_t i = 0; i < lava->rects_count; ++i) {
         if (wavy_rect_render(lava->rects[i], camera) < 0) {
@@ -83,7 +83,7 @@ int lava_render(const Lava *lava,
 
 int lava_update(Lava *lava, float delta_time)
 {
-    assert(lava);
+    trace_assert(lava);
 
     for (size_t i = 0; i < lava->rects_count; ++i) {
         if (wavy_rect_update(lava->rects[i], delta_time) < 0) {
@@ -97,7 +97,7 @@ int lava_update(Lava *lava, float delta_time)
 bool lava_overlaps_rect(const Lava *lava,
                         Rect rect)
 {
-    assert(lava);
+    trace_assert(lava);
 
     for (size_t i = 0; i < lava->rects_count; ++i) {
         if (rects_overlap(wavy_rect_hitbox(lava->rects[i]), rect)) {
@@ -110,7 +110,7 @@ bool lava_overlaps_rect(const Lava *lava,
 
 void lava_float_rigid_rect(Lava *lava, Rigid_rect *object)
 {
-    assert(lava);
+    trace_assert(lava);
 
     const Rect object_hitbox = rigid_rect_hitbox(object);
     for (size_t i = 0; i < lava->rects_count; ++i) {

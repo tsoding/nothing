@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -9,8 +9,8 @@
 
 static bool equal_atoms(struct Atom *atom1, struct Atom *atom2)
 {
-    assert(atom1);
-    assert(atom2);
+    trace_assert(atom1);
+    trace_assert(atom2);
 
     if (atom1->type != atom2->type) {
         return false;
@@ -36,8 +36,8 @@ static bool equal_atoms(struct Atom *atom1, struct Atom *atom2)
 
 static bool equal_cons(struct Cons *cons1, struct Cons *cons2)
 {
-    assert(cons1);
-    assert(cons2);
+    trace_assert(cons1);
+    trace_assert(cons2);
     return equal(cons1->car, cons2->car) && equal(cons1->cdr, cons2->cdr);
 }
 
@@ -180,7 +180,7 @@ const char *specials[] = {
 
 bool is_special(const char *name)
 {
-    assert(name);
+    trace_assert(name);
 
     size_t n = sizeof(specials) / sizeof(const char*);
     for (size_t i = 0; i < n; ++i) {
@@ -196,8 +196,8 @@ bool is_special(const char *name)
 static struct Expr
 list_rec(Gc *gc, const char *format, va_list args)
 {
-    assert(gc);
-    assert(format);
+    trace_assert(gc);
+    trace_assert(format);
 
     if (*format == 0) {
         return NIL(gc);
@@ -229,7 +229,7 @@ list_rec(Gc *gc, const char *format, va_list args)
 
     default: {
         fprintf(stderr, "Wrong format parameter: %c\n", *format);
-        assert(0);
+        trace_assert(0);
     }
     }
 }

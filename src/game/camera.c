@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <math.h>
 #include <stdbool.h>
 
@@ -51,7 +51,7 @@ Camera *create_camera(SDL_Renderer *renderer,
 
 void destroy_camera(Camera *camera)
 {
-    assert(camera);
+    trace_assert(camera);
 
     free(camera);
 }
@@ -60,7 +60,7 @@ int camera_fill_rect(Camera *camera,
                      Rect rect,
                      Color color)
 {
-    assert(camera);
+    trace_assert(camera);
 
     SDL_Rect view_port;
     SDL_RenderGetViewport(camera->renderer, &view_port);
@@ -94,7 +94,7 @@ int camera_draw_rect(Camera * camera,
                      Rect rect,
                      Color color)
 {
-    assert(camera);
+    trace_assert(camera);
 
     SDL_Rect view_port;
     SDL_RenderGetViewport(camera->renderer, &view_port);
@@ -121,7 +121,7 @@ int camera_draw_triangle(Camera *camera,
                          Triangle t,
                          Color color)
 {
-    assert(camera);
+    trace_assert(camera);
 
     SDL_Rect view_port;
     SDL_RenderGetViewport(camera->renderer, &view_port);
@@ -144,7 +144,7 @@ int camera_fill_triangle(Camera *camera,
                          Triangle t,
                          Color color)
 {
-    assert(camera);
+    trace_assert(camera);
 
     SDL_Rect view_port;
     SDL_RenderGetViewport(camera->renderer, &view_port);
@@ -200,8 +200,8 @@ int camera_render_debug_text(Camera *camera,
                              const char *text,
                              Vec position)
 {
-    assert(camera);
-    assert(text);
+    trace_assert(camera);
+    trace_assert(text);
 
     if (!camera->debug_mode) {
         return 0;
@@ -239,25 +239,25 @@ int camera_clear_background(Camera *camera,
 
 void camera_center_at(Camera *camera, Point position)
 {
-    assert(camera);
+    trace_assert(camera);
     camera->position = position;
 }
 
 void camera_toggle_debug_mode(Camera *camera)
 {
-    assert(camera);
+    trace_assert(camera);
     camera->debug_mode = !camera->debug_mode;
 }
 
 void camera_disable_debug_mode(Camera *camera)
 {
-    assert(camera);
+    trace_assert(camera);
     camera->debug_mode = 0;
 }
 
 void camera_toggle_blackwhite_mode(Camera *camera)
 {
-    assert(camera);
+    trace_assert(camera);
     camera->blackwhite_mode = !camera->blackwhite_mode;
 }
 
@@ -273,7 +273,7 @@ int camera_is_point_visible(const Camera *camera, Point p)
 
 Rect camera_view_port(const Camera *camera)
 {
-    assert(camera);
+    trace_assert(camera);
 
     SDL_Rect view_port;
     SDL_RenderGetViewport(camera->renderer, &view_port);
@@ -292,8 +292,8 @@ int camera_is_text_visible(const Camera *camera,
                            Vec position,
                            const char *text)
 {
-    assert(camera);
-    assert(text);
+    trace_assert(camera);
+    trace_assert(text);
 
     SDL_Rect view_port;
     SDL_RenderGetViewport(camera->renderer, &view_port);
@@ -369,7 +369,7 @@ int camera_render_debug_rect(Camera *camera,
                              Rect rect,
                              Color c)
 {
-    assert(camera);
+    trace_assert(camera);
 
     if (!camera->debug_mode) {
         return 0;

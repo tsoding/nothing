@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
@@ -58,7 +58,7 @@ Console_Log *create_console_log(const Sprite_font *font,
 
 void destroy_console_log(Console_Log *console_log)
 {
-    assert(console_log);
+    trace_assert(console_log);
     for (size_t i = 0; i < console_log->capacity; ++i) {
         if (console_log->buffer[i]) {
             free(console_log->buffer[i]);
@@ -71,8 +71,8 @@ int console_log_render(const Console_Log *console_log,
                SDL_Renderer *renderer,
                Point position)
 {
-    assert(console_log);
-    assert(renderer);
+    trace_assert(console_log);
+    trace_assert(renderer);
     (void) position;
 
     for (size_t i = 0; i < console_log->capacity; ++i) {
@@ -95,8 +95,8 @@ int console_log_render(const Console_Log *console_log,
 
 int console_log_push_line(Console_Log *console_log, const char *line, Color color)
 {
-    assert(console_log);
-    assert(line);
+    trace_assert(console_log);
+    trace_assert(line);
 
     const size_t next_cursor = (console_log->cursor + 1) % console_log->capacity;
 

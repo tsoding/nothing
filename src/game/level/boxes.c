@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 
 #include "game/level/boxes.h"
 #include "game/level/physical_world.h"
@@ -18,7 +18,7 @@ struct Boxes
 
 Boxes *create_boxes_from_line_stream(LineStream *line_stream)
 {
-    assert(line_stream);
+    trace_assert(line_stream);
 
     Lt *lt = create_lt();
 
@@ -61,14 +61,14 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream)
 
 void destroy_boxes(Boxes *boxes)
 {
-    assert(boxes);
+    trace_assert(boxes);
     RETURN_LT0(boxes->lt);
 }
 
 int boxes_render(Boxes *boxes, Camera *camera)
 {
-    assert(boxes);
-    assert(camera);
+    trace_assert(boxes);
+    trace_assert(camera);
 
     for (size_t i = 0; i < boxes->count; ++i) {
         if (rigid_rect_render(boxes->bodies[i], camera) < 0) {
@@ -82,8 +82,8 @@ int boxes_render(Boxes *boxes, Camera *camera)
 int boxes_update(Boxes *boxes,
                  float delta_time)
 {
-    assert(boxes);
-    assert(delta_time);
+    trace_assert(boxes);
+    trace_assert(delta_time);
 
     for (size_t i = 0; i < boxes->count; ++i) {
         if (rigid_rect_update(boxes->bodies[i], delta_time) < 0) {
@@ -97,8 +97,8 @@ int boxes_update(Boxes *boxes,
 int boxes_add_to_physical_world(const Boxes *boxes,
                                 Physical_world *physical_world)
 {
-    assert(boxes);
-    assert(physical_world);
+    trace_assert(boxes);
+    trace_assert(physical_world);
 
     for (size_t i = 0; i < boxes->count; ++i) {
         if (physical_world_add_solid(
@@ -113,8 +113,8 @@ int boxes_add_to_physical_world(const Boxes *boxes,
 
 void boxes_float_in_lava(Boxes *boxes, Lava *lava)
 {
-    assert(boxes);
-    assert(lava);
+    trace_assert(boxes);
+    trace_assert(lava);
 
     for (size_t i = 0; i < boxes->count; ++i) {
         lava_float_rigid_rect(lava, boxes->bodies[i]);
@@ -123,8 +123,8 @@ void boxes_float_in_lava(Boxes *boxes, Lava *lava)
 
 Rigid_rect *boxes_rigid_rect(Boxes *boxes, const char *id)
 {
-    assert(boxes);
-    assert(id);
+    trace_assert(boxes);
+    trace_assert(id);
 
     for (size_t i = 0; i < boxes->count; ++i) {
         if (rigid_rect_has_id(boxes->bodies[i], id)) {

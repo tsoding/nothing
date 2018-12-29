@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,8 +32,8 @@ static long int value_of_expr(struct Expr expr)
 
 static int compare_exprs(const void *a, const void *b)
 {
-    assert(a);
-    assert(b);
+    trace_assert(a);
+    trace_assert(b);
 
     const long int ptr_a = value_of_expr(*(const struct Expr *)a);
     const long int ptr_b = value_of_expr(*(const struct Expr *)b);
@@ -79,7 +79,7 @@ Gc *create_gc(void)
 
 void destroy_gc(Gc *gc)
 {
-    assert(gc);
+    trace_assert(gc);
 
     for (size_t i = 0; i < gc->size; ++i) {
         destroy_expr(gc->exprs[i]);
@@ -90,7 +90,7 @@ void destroy_gc(Gc *gc)
 
 int gc_add_expr(Gc *gc, struct Expr expr)
 {
-    assert(gc);
+    trace_assert(gc);
 
     if (gc->size >= gc->capacity) {
         const size_t new_capacity = gc->capacity * 2;
@@ -113,7 +113,7 @@ int gc_add_expr(Gc *gc, struct Expr expr)
 
 static long int gc_find_expr(Gc *gc, struct Expr expr)
 {
-    assert(gc);
+    trace_assert(gc);
     (void) expr;
 
     struct Expr *result =
@@ -129,15 +129,15 @@ static long int gc_find_expr(Gc *gc, struct Expr expr)
 
 static void gc_traverse_expr(Gc *gc, struct Expr root)
 {
-    assert(gc);
-    assert(root.type != EXPR_VOID);
+    trace_assert(gc);
+    trace_assert(root.type != EXPR_VOID);
     const long int root_index = gc_find_expr(gc, root);
     /* TODO(#578): gc_traverse_expr just crashes when we try to collect already collected root */
     if (root_index < 0) {
         fprintf(stderr, "GC tried to collect something that was not registered\n");
         print_expr_as_sexpr(stderr, root);
         fprintf(stderr, "\n");
-        assert(root_index >= 0);
+        trace_assert(root_index >= 0);
     }
 
     if (gc->visited[root_index]) {
@@ -154,7 +154,7 @@ static void gc_traverse_expr(Gc *gc, struct Expr root)
 
 void gc_collect(Gc *gc, struct Expr root)
 {
-    assert(gc);
+    trace_assert(gc);
     (void) root;
 
     /* Sort gc->exprs O(nlogn) */

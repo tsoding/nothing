@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <assert.h>
+#include "system/stacktrace.h"
 
 #include "color.h"
 #include "game/camera.h"
@@ -38,7 +38,7 @@ struct Level
 
 Level *create_level_from_file(const char *file_name)
 {
-    assert(file_name);
+    trace_assert(file_name);
 
     Lt *const lt = create_lt();
     if (lt == NULL) {
@@ -152,13 +152,13 @@ Level *create_level_from_file(const char *file_name)
 
 void destroy_level(Level *level)
 {
-    assert(level);
+    trace_assert(level);
     RETURN_LT0(level->lt);
 }
 
 int level_render(const Level *level, Camera *camera)
 {
-    assert(level);
+    trace_assert(level);
 
     if (background_render(level->background, camera) < 0) {
         return -1;
@@ -201,8 +201,8 @@ int level_render(const Level *level, Camera *camera)
 
 int level_update(Level *level, float delta_time)
 {
-    assert(level);
-    assert(delta_time > 0);
+    trace_assert(level);
+    trace_assert(delta_time > 0);
 
     physical_world_apply_gravity(level->physical_world);
     boxes_float_in_lava(level->boxes, level->lava);
@@ -226,8 +226,8 @@ int level_update(Level *level, float delta_time)
 
 int level_event(Level *level, const SDL_Event *event)
 {
-    assert(level);
-    assert(event);
+    trace_assert(level);
+    trace_assert(event);
 
     switch (event->type) {
     case SDL_KEYDOWN:
@@ -252,8 +252,8 @@ int level_input(Level *level,
                 const Uint8 *const keyboard_state,
                 SDL_Joystick *the_stick_of_joy)
 {
-    assert(level);
-    assert(keyboard_state);
+    trace_assert(level);
+    trace_assert(keyboard_state);
     (void) the_stick_of_joy;
 
     if (keyboard_state[SDL_SCANCODE_A]) {
@@ -386,8 +386,8 @@ int level_enter_camera_event(Level *level, Camera *camera)
 Rigid_rect *level_rigid_rect(Level *level,
                              const char *rigid_rect_id)
 {
-    assert(level);
-    assert(rigid_rect_id);
+    trace_assert(level);
+    trace_assert(rigid_rect_id);
 
     Rigid_rect *rigid_rect = player_rigid_rect(level->player,
                                                rigid_rect_id);
@@ -415,8 +415,8 @@ void level_show_goal(Level *level, const char *goal_id)
 
 void level_hide_label(Level *level, const char *label_id)
 {
-    assert(level);
-    assert(label_id);
+    trace_assert(level);
+    trace_assert(label_id);
 
     labels_hide(level->labels, label_id);
 }

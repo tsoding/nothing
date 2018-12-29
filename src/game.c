@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <stdio.h>
 
 #include "game.h"
@@ -39,7 +39,7 @@ Game *create_game(const char *level_file_path,
                     size_t sound_sample_files_count,
                     SDL_Renderer *renderer)
 {
-    assert(level_file_path);
+    trace_assert(level_file_path);
 
     Lt *const lt = create_lt();
     if (lt == NULL) {
@@ -106,13 +106,13 @@ Game *create_game(const char *level_file_path,
 
 void destroy_game(Game *game)
 {
-    assert(game);
+    trace_assert(game);
     RETURN_LT0(game->lt);
 }
 
 int game_render(const Game *game)
 {
-    assert(game);
+    trace_assert(game);
 
     if (game->state == GAME_STATE_QUIT) {
         return 0;
@@ -138,8 +138,8 @@ int game_sound(Game *game)
 
 int game_update(Game *game, float delta_time)
 {
-    assert(game);
-    assert(delta_time > 0.0f);
+    trace_assert(game);
+    trace_assert(delta_time > 0.0f);
 
     if (game->state == GAME_STATE_QUIT) {
         return 0;
@@ -165,8 +165,8 @@ int game_update(Game *game, float delta_time)
 
 static int game_event_pause(Game *game, const SDL_Event *event)
 {
-    assert(game);
-    assert(event);
+    trace_assert(game);
+    trace_assert(event);
 
     switch (event->type) {
     case SDL_QUIT:
@@ -193,8 +193,8 @@ static int game_event_pause(Game *game, const SDL_Event *event)
 
 static int game_event_running(Game *game, const SDL_Event *event)
 {
-    assert(game);
-    assert(event);
+    trace_assert(game);
+    trace_assert(event);
 
     switch (event->type) {
     case SDL_QUIT:
@@ -284,8 +284,8 @@ static int game_event_console(Game *game, const SDL_Event *event)
 
 int game_event(Game *game, const SDL_Event *event)
 {
-    assert(game);
-    assert(event);
+    trace_assert(game);
+    trace_assert(event);
 
     switch (game->state) {
     case GAME_STATE_RUNNING:
@@ -308,8 +308,8 @@ int game_input(Game *game,
                const Uint8 *const keyboard_state,
                SDL_Joystick *the_stick_of_joy)
 {
-    assert(game);
-    assert(keyboard_state);
+    trace_assert(game);
+    trace_assert(keyboard_state);
 
     if (game->state == GAME_STATE_QUIT  ||
         game->state == GAME_STATE_PAUSE ||

@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -32,8 +32,8 @@ static int mix_get_free_channel(void)
 Sound_samples *create_sound_samples(const char *sample_files[],
                                       size_t sample_files_count)
 {
-    assert(sample_files);
-    assert(sample_files_count > 0);
+    trace_assert(sample_files);
+    trace_assert(sample_files_count > 0);
 
     Lt *lt = create_lt();
     if (lt == NULL) {
@@ -74,7 +74,7 @@ Sound_samples *create_sound_samples(const char *sample_files[],
 
 void destroy_sound_samples(Sound_samples *sound_samples)
 {
-    assert(sound_samples);
+    trace_assert(sound_samples);
     RETURN_LT0(sound_samples->lt);
 }
 
@@ -82,7 +82,7 @@ int sound_samples_play_sound(Sound_samples *sound_samples,
                             size_t sound_index,
                             int loops)
 {
-    assert(sound_samples);
+    trace_assert(sound_samples);
 
     if (sound_index < sound_samples->samples_count) {
         const int free_channel = mix_get_free_channel();
@@ -99,7 +99,7 @@ int sound_samples_play_sound(Sound_samples *sound_samples,
 
 int sound_samples_toggle_pause(Sound_samples *sound_samples)
 {
-    assert(sound_samples);
+    trace_assert(sound_samples);
 
     if (sound_samples->paused) {
         Mix_Resume(-1);

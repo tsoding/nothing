@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <assert.h>
+#include "system/stacktrace.h"
 
 #include "dying_rect.h"
 #include "math/rand.h"
@@ -57,15 +57,15 @@ Dying_rect *create_dying_rect(Color color,
 
 void destroy_dying_rect(Dying_rect *dying_rect)
 {
-    assert(dying_rect);
+    trace_assert(dying_rect);
     RETURN_LT0(dying_rect->lt);
 }
 
 int dying_rect_render(const Dying_rect *dying_rect,
                       Camera *camera)
 {
-    assert(dying_rect);
-    assert(camera);
+    trace_assert(dying_rect);
+    trace_assert(camera);
 
     for (size_t i = 0; i < DYING_RECT_PIECE_COUNT; ++i) {
         Color color = dying_rect->color;
@@ -90,8 +90,8 @@ int dying_rect_render(const Dying_rect *dying_rect,
 int dying_rect_update(Dying_rect *dying_rect,
                       float delta_time)
 {
-    assert(dying_rect);
-    assert(delta_time > 0.0f);
+    trace_assert(dying_rect);
+    trace_assert(delta_time > 0.0f);
 
     if (dying_rect_is_dead(dying_rect)) {
         return 0;
@@ -115,7 +115,7 @@ int dying_rect_update(Dying_rect *dying_rect,
 
 int dying_rect_is_dead(const Dying_rect *dying_rect)
 {
-    assert(dying_rect);
+    trace_assert(dying_rect);
     return dying_rect->time_passed >= dying_rect->duration;
 }
 

@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <ctype.h>
 #include <errno.h>
 #include <stdint.h>
@@ -201,15 +201,15 @@ static struct ParseResult parse_expr(Gc *gc, struct Token current_token)
 
 struct ParseResult read_expr_from_string(Gc *gc, const char *str)
 {
-    assert(gc);
-    assert(str);
+    trace_assert(gc);
+    trace_assert(str);
     return parse_expr(gc, next_token(str));
 }
 
 struct ParseResult read_all_exprs_from_string(Gc *gc, const char *str)
 {
-    assert(gc);
-    assert(str);
+    trace_assert(gc);
+    trace_assert(str);
 
     struct Token current_token = next_token(str);
     struct ParseResult parse_result = parse_expr(gc, current_token);
@@ -239,7 +239,7 @@ struct ParseResult read_all_exprs_from_string(Gc *gc, const char *str)
 
 struct ParseResult read_expr_from_file(Gc *gc, const char *filename)
 {
-    assert(filename);
+    trace_assert(filename);
 
     Lt *lt = create_lt();
     if (lt == NULL) {

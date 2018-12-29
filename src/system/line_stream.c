@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -22,8 +22,8 @@ LineStream *create_line_stream(const char *filename,
                                const char *mode,
                                size_t capacity)
 {
-    assert(filename);
-    assert(mode);
+    trace_assert(filename);
+    trace_assert(mode);
 
     Lt *lt = create_lt();
     if (lt == NULL) {
@@ -63,14 +63,14 @@ LineStream *create_line_stream(const char *filename,
 
 void destroy_line_stream(LineStream *line_stream)
 {
-    assert(line_stream);
+    trace_assert(line_stream);
 
     RETURN_LT0(line_stream->lt);
 }
 
 const char *line_stream_next(LineStream *line_stream)
 {
-    assert(line_stream);
+    trace_assert(line_stream);
     return fgets(line_stream->buffer,
                  (int) line_stream->capacity,
                  line_stream->stream);

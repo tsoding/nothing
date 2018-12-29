@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -40,7 +40,7 @@ nth_alloc_lt_fail:
 
 void destroy_lt(Lt *lt)
 {
-    assert(lt);
+    trace_assert(lt);
 
     while (lt->size-- > 0) {
         if (lt->frames[lt->size]) {
@@ -54,9 +54,9 @@ void destroy_lt(Lt *lt)
 
 void *lt_push(Lt *lt, void *resource, Lt_destroy resource_destroy)
 {
-    assert(lt);
-    assert(resource_destroy);
-    assert(lt != resource);
+    trace_assert(lt);
+    trace_assert(resource_destroy);
+    trace_assert(lt != resource);
 
     if (resource == NULL) {
         return NULL;
@@ -78,10 +78,10 @@ void *lt_push(Lt *lt, void *resource, Lt_destroy resource_destroy)
 
 void* lt_reset(Lt *lt, void *old_resource, void *new_resource)
 {
-    assert(lt);
-    assert(old_resource);
-    assert(new_resource);
-    assert(old_resource != new_resource);
+    trace_assert(lt);
+    trace_assert(old_resource);
+    trace_assert(new_resource);
+    trace_assert(old_resource != new_resource);
 
     for (size_t i = 0; i < lt->size; ++i) {
         if (lt->frames[i] && lt_slot_contains_resource(lt->frames[i], old_resource)) {
@@ -95,8 +95,8 @@ void* lt_reset(Lt *lt, void *old_resource, void *new_resource)
 
 void *lt_release(Lt *lt, void *resource)
 {
-    assert(lt);
-    assert(resource);
+    trace_assert(lt);
+    trace_assert(resource);
 
     for (size_t i = 0; i < lt->size; ++i) {
         if (lt->frames[i] && lt_slot_contains_resource(lt->frames[i], resource)) {
@@ -111,9 +111,9 @@ void *lt_release(Lt *lt, void *resource)
 
 void *lt_replace(Lt *lt, void *old_resource, void *new_resource)
 {
-    assert(lt);
-    assert(old_resource);
-    assert(new_resource);
+    trace_assert(lt);
+    trace_assert(old_resource);
+    trace_assert(new_resource);
 
     for (size_t i = 0; i < lt->size; ++i) {
         if (lt->frames[i] && lt_slot_contains_resource(lt->frames[i], old_resource)) {
