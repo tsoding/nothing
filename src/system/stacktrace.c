@@ -6,7 +6,7 @@
 
 #include "./stacktrace.h"
 
-#define N 10
+#define N 100
 
 void print_stacktrace(void)
 {
