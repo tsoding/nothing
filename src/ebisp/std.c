@@ -317,7 +317,7 @@ load(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 
     struct ParseResult parse_result = read_all_exprs_from_file(gc, filename);
     if (parse_result.is_error) {
-        /* TODO: (load) does not provide position of the parse error  */
+        /* TODO(#599): (load) does not provide position of the parse error  */
         return read_error(gc, parse_result.error_message, 0);
     }
 
