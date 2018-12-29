@@ -18,6 +18,8 @@ struct EvalResult
 wrong_number_of_arguments(Gc *gc, long int count);
 struct EvalResult
 not_implemented(Gc *gc);
+struct EvalResult
+read_error(Gc *gc, const char *error_message, long int character);
 
 struct EvalResult
 car(void *param, Gc *gc, struct Scope *scope, struct Expr args);

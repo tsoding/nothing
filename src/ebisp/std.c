@@ -5,6 +5,7 @@
 #include "ebisp/interpreter.h"
 #include "ebisp/builtins.h"
 #include "ebisp/scope.h"
+#include "ebisp/parser.h"
 
 #include "std.h"
 
@@ -301,6 +302,28 @@ lambda_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return eval_success(lambda(gc, args_list, body));
 }
 
+static struct EvalResult
+load(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    (void) param;
+    trace_assert(gc);
+    trace_assert(scope);
+
+    const char *filename = NULL;
+    struct EvalResult result = match_list(gc, "s", args, &filename);
+    if (result.is_error) {
+        return result;
+    }
+
+    struct ParseResult parse_result = read_all_exprs_from_file(gc, filename);
+    if (parse_result.is_error) {
+        /* TODO(#599): (load) does not provide position of the parse error  */
+        return read_error(gc, parse_result.error_message, 0);
+    }
+
+    return eval_block(gc, scope, parse_result.expr);
+}
+
 void load_std_library(Gc *gc, struct Scope *scope)
 {
     set_scope_value(gc, scope, SYMBOL(gc, "car"), NATIVE(gc, car, NULL));
@@ -320,4 +343,5 @@ void load_std_library(Gc *gc, struct Scope *scope)
     set_scope_value(gc, scope, SYMBOL(gc, "lambda"), NATIVE(gc, lambda_op, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "λ"), NATIVE(gc, lambda_op, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "unquote"), NATIVE(gc, unquote, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "load"), NATIVE(gc, load, NULL));
 }
