@@ -21,7 +21,6 @@ struct ParseResult parse_success(struct Expr expr,
 struct ParseResult parse_failure(const char *error,
                                  const char *end);
 
-// TODO(#583): parse does not support quasiquote syntax
 
 struct ParseResult read_expr_from_string(Gc *gc, const char *str);
 struct ParseResult read_all_exprs_from_string(Gc *gc, const char *str);
