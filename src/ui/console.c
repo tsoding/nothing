@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 
 #include "ebisp/gc.h"
 #include "ebisp/interpreter.h"
@@ -127,7 +127,7 @@ Console *create_console(Level *level,
 
 void destroy_console(Console *console)
 {
-    assert(console);
+    trace_assert(console);
     RETURN_LT0(console->lt);
 }
 
@@ -251,7 +251,7 @@ int console_render(const Console *console,
 
 int console_update(Console *console, float delta_time)
 {
-    assert(console);
+    trace_assert(console);
 
     if (console->a < 1.0f) {
         console->a += 1.0f / SLIDE_DOWN_TIME * delta_time;
@@ -266,6 +266,6 @@ int console_update(Console *console, float delta_time)
 
 void console_slide_down(Console *console)
 {
-    assert(console);
+    trace_assert(console);
     console->a = 0.0f;
 }

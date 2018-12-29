@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -44,7 +44,7 @@ Wavy_rect *create_wavy_rect(Rect rect, Color color)
 
 Wavy_rect *create_wavy_rect_from_line_stream(LineStream *line_stream)
 {
-    assert(line_stream);
+    trace_assert(line_stream);
     char color_name[7];
     Rect rect;
 
@@ -65,15 +65,15 @@ Wavy_rect *create_wavy_rect_from_line_stream(LineStream *line_stream)
 
 void destroy_wavy_rect(Wavy_rect *wavy_rect)
 {
-    assert(wavy_rect);
+    trace_assert(wavy_rect);
     RETURN_LT0(wavy_rect->lt);
 }
 
 int wavy_rect_render(const Wavy_rect *wavy_rect,
                      Camera *camera)
 {
-    assert(wavy_rect);
-    assert(camera);
+    trace_assert(wavy_rect);
+    trace_assert(camera);
 
     srand(42);
     for (float wave_scanner = 0;
@@ -100,7 +100,7 @@ int wavy_rect_render(const Wavy_rect *wavy_rect,
 int wavy_rect_update(Wavy_rect *wavy_rect,
                      float delta_time)
 {
-    assert(wavy_rect);
+    trace_assert(wavy_rect);
     wavy_rect->angle = fmodf(wavy_rect->angle + 2.0f * delta_time, 2 * PI);
 
     return 0;

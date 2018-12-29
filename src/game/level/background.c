@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 
 #include "game/level/background.h"
 #include "math/rand.h"
@@ -61,7 +61,7 @@ Background *create_background_from_line_stream(LineStream *line_stream)
 
 void destroy_background(Background *background)
 {
-    assert(background);
+    trace_assert(background);
     RETURN_LT0(background->lt);
 }
 
@@ -69,8 +69,8 @@ void destroy_background(Background *background)
 int background_render(const Background *background,
                       Camera *camera)
 {
-    assert(background);
-    assert(camera);
+    trace_assert(background);
+    trace_assert(camera);
 
     if (camera_clear_background(
             camera,
@@ -116,8 +116,8 @@ int background_render(const Background *background,
 
 static void chunk_of_point(Point p, int *x, int *y)
 {
-    assert(x);
-    assert(y);
+    trace_assert(x);
+    trace_assert(y);
     *x = (int) (p.x / BACKGROUND_CHUNK_WIDTH);
     *y = (int) (p.y / BACKGROUND_CHUNK_HEIGHT);
 }

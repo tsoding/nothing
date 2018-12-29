@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 
 #include "scope.h"
 #include "interpreter.h"
@@ -8,8 +8,8 @@
 
 static struct EvalResult gc_inspect_adapter(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
     (void) param;
     (void) args;
 
@@ -20,8 +20,8 @@ static struct EvalResult gc_inspect_adapter(void *param, Gc *gc, struct Scope *s
 
 static struct EvalResult quit(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
     (void) args;
     (void) param;
 
@@ -32,8 +32,8 @@ static struct EvalResult quit(void *param, Gc *gc, struct Scope *scope, struct E
 
 static struct EvalResult get_scope(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
     (void) param;
     (void) args;
 
@@ -42,8 +42,8 @@ static struct EvalResult get_scope(void *param, Gc *gc, struct Scope *scope, str
 
 static struct EvalResult print(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
     (void) param;
 
     const char *s = NULL;

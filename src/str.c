@@ -1,8 +1,8 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
+#include "system/stacktrace.h"
 
 #include "str.h"
 #include "system/nth_alloc.h"
@@ -43,7 +43,7 @@ char *trim_endline(char *s)
 
 char *string_append(char *prefix, const char *suffix)
 {
-    assert(suffix);
+    trace_assert(suffix);
 
     if (prefix == NULL) {
         return string_duplicate(suffix, NULL);

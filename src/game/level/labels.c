@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <stdbool.h>
 
 #include "game/camera.h"
@@ -33,7 +33,7 @@ struct Labels
 
 Labels *create_labels_from_line_stream(LineStream *line_stream)
 {
-    assert(line_stream);
+    trace_assert(line_stream);
 
     Lt *const lt = create_lt();
     if (lt == NULL) {
@@ -136,15 +136,15 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
 
 void destroy_labels(Labels *label)
 {
-    assert(label);
+    trace_assert(label);
     RETURN_LT0(label->lt);
 }
 
 int labels_render(const Labels *label,
                  Camera *camera)
 {
-    assert(label);
-    assert(camera);
+    trace_assert(label);
+    trace_assert(camera);
 
     for (size_t i = 0; i < label->count; ++i) {
         /* Easing */
@@ -169,7 +169,7 @@ int labels_render(const Labels *label,
 void labels_update(Labels *label,
                    float delta_time)
 {
-    assert(label);
+    trace_assert(label);
     (void) delta_time;
 
     for (size_t i = 0; i < label->count; ++i) {
@@ -190,8 +190,8 @@ void labels_update(Labels *label,
 void labels_enter_camera_event(Labels *labels,
                                const Camera *camera)
 {
-    assert(labels);
-    assert(camera);
+    trace_assert(labels);
+    trace_assert(camera);
 
     for (size_t i = 0; i < labels->count; ++i) {
         const int became_visible = camera_is_text_visible(
@@ -211,8 +211,8 @@ void labels_enter_camera_event(Labels *labels,
 void labels_hide(Labels *labels,
                  const char *label_id)
 {
-    assert(labels);
-    assert(label_id);
+    trace_assert(labels);
+    trace_assert(label_id);
 
     for (size_t i = 0; i < labels->count; ++i) {
         if (strcmp(labels->ids[i], label_id) == 0 && labels->states[i] != LABEL_STATE_HIDDEN) {

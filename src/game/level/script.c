@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 
 #include "ebisp/gc.h"
 #include "ebisp/interpreter.h"
@@ -25,7 +25,7 @@ struct Script
 
 Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
 {
-    assert(line_stream);
+    trace_assert(line_stream);
 
     Lt *lt = create_lt();
     if (lt == NULL) {
@@ -91,14 +91,14 @@ Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
 
 void destroy_script(Script *script)
 {
-    assert(script);
+    trace_assert(script);
     RETURN_LT0(script->lt);
 }
 
 int script_eval(Script *script, const char *source_code)
 {
-    assert(script);
-    assert(source_code);
+    trace_assert(script);
+    trace_assert(source_code);
 
     struct ParseResult parse_result = read_expr_from_string(
         script->gc,

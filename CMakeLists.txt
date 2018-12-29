@@ -119,6 +119,8 @@ add_executable(nothing
   src/game/level_script.h
   src/ebisp/std.h
   src/ebisp/std.c
+  src/system/stacktrace.h
+  src/system/stacktrace.c
 )
 
 add_executable(repl
@@ -153,6 +155,8 @@ add_executable(repl
   src/ebisp/repl_runtime.c
   src/ebisp/std.h
   src/ebisp/std.c
+  src/system/stacktrace.h
+  src/system/stacktrace.c
   )
 add_executable(nothing_test
   src/ebisp/builtins.c
@@ -184,6 +188,8 @@ add_executable(nothing_test
   src/system/log.c
   src/system/nth_alloc.h
   src/system/nth_alloc.c
+  src/system/stacktrace.h
+  src/system/stacktrace.c
   )
 target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} m)
 target_link_libraries(nothing_test ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} m)

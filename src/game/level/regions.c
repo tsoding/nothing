@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 
 #include "ebisp/gc.h"
 #include "ebisp/interpreter.h"
@@ -30,7 +30,7 @@ struct Regions
 
 Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
 {
-    assert(line_stream);
+    trace_assert(line_stream);
 
     Lt *lt = create_lt();
     if (lt == NULL) {
@@ -133,14 +133,14 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
 
 void destroy_regions(Regions *regions)
 {
-    assert(regions);
+    trace_assert(regions);
     RETURN_LT0(regions->lt);
 }
 
 void regions_player_enter(Regions *regions, Player *player)
 {
-    assert(regions);
-    assert(player);
+    trace_assert(regions);
+    trace_assert(player);
 
     for (size_t i = 0; i < regions->count; ++i) {
         if (regions->states[i] == RS_PLAYER_OUTSIDE &&
@@ -153,8 +153,8 @@ void regions_player_enter(Regions *regions, Player *player)
 
 void regions_player_leave(Regions *regions, Player *player)
 {
-    assert(regions);
-    assert(player);
+    trace_assert(regions);
+    trace_assert(player);
 
     for (size_t i = 0; i < regions->count; ++i) {
         if (regions->states[i] == RS_PLAYER_INSIDE &&
@@ -167,8 +167,8 @@ void regions_player_leave(Regions *regions, Player *player)
 
 int regions_render(Regions *regions, Camera *camera)
 {
-    assert(regions);
-    assert(camera);
+    trace_assert(regions);
+    trace_assert(camera);
 
     for (size_t i = 0; i < regions->count; ++i) {
         if (camera_render_debug_rect(

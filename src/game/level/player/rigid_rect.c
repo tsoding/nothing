@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -54,7 +54,7 @@ static Vec opposing_force_by_sides(int sides[RECT_SIDE_N])
 
 Rigid_rect *create_rigid_rect(Rect rect, Color color, const char *id)
 {
-    assert(id);
+    trace_assert(id);
 
     Lt *lt = create_lt();
 
@@ -91,7 +91,7 @@ Rigid_rect *create_rigid_rect(Rect rect, Color color, const char *id)
 
 Rigid_rect *create_rigid_rect_from_line_stream(LineStream *line_stream)
 {
-    assert(line_stream);
+    trace_assert(line_stream);
 
     char color[7];
     Rect rect;
@@ -155,7 +155,7 @@ int rigid_rect_render(const Rigid_rect *rigid_rect,
 int rigid_rect_update(Rigid_rect * rigid_rect,
                       float delta_time)
 {
-    assert(rigid_rect);
+    trace_assert(rigid_rect);
 
     rigid_rect->touches_ground = 0;
 
@@ -181,8 +181,8 @@ int rigid_rect_update(Rigid_rect * rigid_rect,
 void rigid_rect_collide_with_solid(Rigid_rect * rigid_rect,
                                    Solid_ref solid)
 {
-    assert(rigid_rect);
-    assert(rigid_rect != solid.ptr);
+    trace_assert(rigid_rect);
+    trace_assert(rigid_rect != solid.ptr);
 
     int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
 
@@ -285,8 +285,8 @@ void rigid_rect_damper(Rigid_rect *rigid_rect, Vec v)
 bool rigid_rect_has_id(Rigid_rect *rigid_rect,
                        const char *id)
 {
-    assert(rigid_rect);
-    assert(id);
+    trace_assert(rigid_rect);
+    trace_assert(id);
 
     return strcmp(rigid_rect->id, id) == 0;
 }

@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -21,8 +21,8 @@ struct Sprite_font
 Sprite_font *create_sprite_font_from_file(const char *bmp_file_path,
                                             SDL_Renderer *renderer)
 {
-    assert(bmp_file_path);
-    assert(renderer);
+    trace_assert(bmp_file_path);
+    trace_assert(renderer);
 
     Lt * const lt = create_lt();
     if (lt == NULL) {
@@ -66,13 +66,13 @@ Sprite_font *create_sprite_font_from_file(const char *bmp_file_path,
 
 void destroy_sprite_font(Sprite_font *sprite_font)
 {
-    assert(sprite_font);
+    trace_assert(sprite_font);
     RETURN_LT0(sprite_font->lt);
 }
 
 static SDL_Rect sprite_font_char_rect(const Sprite_font *sprite_font, char x)
 {
-    assert(sprite_font);
+    trace_assert(sprite_font);
 
     if (32 <= x && x <= 126) {
         const SDL_Rect rect = {
@@ -94,9 +94,9 @@ int sprite_font_render_text(const Sprite_font *sprite_font,
                             Color color,
                             const char *text)
 {
-    assert(sprite_font);
-    assert(renderer);
-    assert(text);
+    trace_assert(sprite_font);
+    trace_assert(renderer);
+    trace_assert(text);
 
     const SDL_Color sdl_color = color_for_sdl(color);
 
@@ -132,8 +132,8 @@ Rect sprite_font_boundary_box(const Sprite_font *sprite_font,
                                 Vec size,
                                 const char *text)
 {
-    assert(sprite_font);
-    assert(text);
+    trace_assert(sprite_font);
+    trace_assert(text);
     return rect(
         position.x, position.y,
         size.x * FONT_CHAR_WIDTH * (float) strlen(text),

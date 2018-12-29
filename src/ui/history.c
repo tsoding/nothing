@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
+#include "system/stacktrace.h"
 
 #include "history.h"
 #include "str.h"
@@ -47,7 +47,7 @@ History *create_history(size_t capacity)
 
 void destroy_history(History *history)
 {
-    assert(history);
+    trace_assert(history);
 
     for (size_t i = 0; i < history->capacity; ++i) {
         if (history->buffer[i] != NULL) {
@@ -60,8 +60,8 @@ void destroy_history(History *history)
 
 int history_push(History *history, const char *command)
 {
-    assert(history);
-    assert(command);
+    trace_assert(history);
+    trace_assert(command);
 
     const size_t next_begin = (history->begin + 1) % history->capacity;
 
@@ -83,13 +83,13 @@ int history_push(History *history, const char *command)
 
 const char *history_current(History *history)
 {
-    assert(history);
+    trace_assert(history);
     return history->buffer[history->cursor];
 }
 
 void history_prev(History *history)
 {
-    assert(history);
+    trace_assert(history);
     if (history->cursor == 0) {
         history->cursor = history->capacity - 1;
     } else {
@@ -99,6 +99,6 @@ void history_prev(History *history)
 
 void history_next(History *history)
 {
-    assert(history);
+    trace_assert(history);
     history->cursor = (history->cursor + 1) % history->capacity;
 }

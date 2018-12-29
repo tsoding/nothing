@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <string.h>
 
 #include "ebisp/gc.h"
@@ -20,8 +20,8 @@ static struct EvalResult
 quasiquote(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     (void) param;
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
 
     struct Expr expr = void_expr();
     struct EvalResult result = match_list(gc, "e", args, &expr);
@@ -54,8 +54,8 @@ static struct EvalResult
 unquote(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     (void) param;
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
     (void) args;
 
     return eval_failure(STRING(gc, "Using unquote outside of quasiquote."));
@@ -64,8 +64,8 @@ unquote(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 static struct EvalResult
 greaterThan(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
     (void) param;
 
     long int x1 = 0;
@@ -100,8 +100,8 @@ greaterThan(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 static struct EvalResult
 list_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
     (void) param;
 
     return eval_success(args);
@@ -111,8 +111,8 @@ static struct EvalResult
 plus_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     (void) param;
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
 
     long int result = 0L;
 
@@ -136,8 +136,8 @@ static struct EvalResult
 assoc_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     (void) param;
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
 
     struct Expr key = NIL(gc);
     struct Expr alist = NIL(gc);
@@ -153,8 +153,8 @@ static struct EvalResult
 set(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     (void) param;
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
 
     const char *name = NULL;
     struct Expr value = void_expr();
@@ -177,8 +177,8 @@ static struct EvalResult
 quote(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     (void) param;
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
 
     struct Expr expr = void_expr();
     struct EvalResult result = match_list(gc, "e", args, &expr);
@@ -193,8 +193,8 @@ static struct EvalResult
 begin(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     (void) param;
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
 
     struct Expr block = void_expr();
     struct EvalResult result = match_list(gc, "*", args, &block);
@@ -209,8 +209,8 @@ static struct EvalResult
 defun(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     (void) param;
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
 
     struct Expr name = void_expr();
     struct Expr args_list = void_expr();
@@ -230,8 +230,8 @@ static struct EvalResult
 when(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     (void) param;
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
 
     struct Expr condition = void_expr();
     struct Expr body = void_expr();
@@ -258,8 +258,8 @@ static struct EvalResult
 lambda_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     (void) param;
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
 
     struct Expr args_list = void_expr();
     struct Expr body = void_expr();

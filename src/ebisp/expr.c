@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -40,7 +40,7 @@ struct Expr void_expr(void)
 
 void print_atom_as_sexpr(FILE *stream, struct Atom *atom)
 {
-    assert(atom);
+    trace_assert(atom);
 
     switch (atom->type) {
     case ATOM_SYMBOL:
@@ -63,7 +63,7 @@ void print_atom_as_sexpr(FILE *stream, struct Atom *atom)
 
 void print_cons_as_sexpr(FILE *stream, struct Cons *head)
 {
-    assert(head);
+    trace_assert(head);
 
     struct Cons *cons = head;
 
@@ -266,8 +266,8 @@ void destroy_atom(struct Atom *atom)
 
 static int atom_as_sexpr(struct Atom *atom, char *output, size_t n)
 {
-    assert(atom);
-    assert(output);
+    trace_assert(atom);
+    trace_assert(output);
 
     switch (atom->type) {
     case ATOM_SYMBOL:
@@ -288,8 +288,8 @@ static int atom_as_sexpr(struct Atom *atom, char *output, size_t n)
 
 static int cons_as_sexpr(struct Cons *head, char *output, size_t n)
 {
-    assert(head);
-    assert(output);
+    trace_assert(head);
+    trace_assert(output);
 
     /* TODO(#378): cons_as_sexpr does not handle encoding errors of snprintf */
 

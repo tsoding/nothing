@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <math.h>
 #include <string.h>
 
@@ -67,7 +67,7 @@ float line_length(Line line)
 
 void rect_object_impact(Rect object, Rect obstacle, int *sides)
 {
-    assert(sides);
+    trace_assert(sides);
 
     Rect int_area = rects_overlap_area(object, obstacle);
 

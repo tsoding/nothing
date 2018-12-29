@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,7 +22,7 @@ struct Platforms {
 
 Platforms *create_platforms_from_line_stream(LineStream *line_stream)
 {
-    assert(line_stream);
+    trace_assert(line_stream);
 
     Lt *const lt = create_lt();
     if (lt == NULL) {
@@ -73,15 +73,15 @@ Platforms *create_platforms_from_line_stream(LineStream *line_stream)
 
 void destroy_platforms(Platforms *platforms)
 {
-    assert(platforms);
+    trace_assert(platforms);
     RETURN_LT0(platforms->lt);
 }
 
 int platforms_save_to_file(const Platforms *platforms,
                            const char *filename)
 {
-    assert(platforms);
-    assert(filename);
+    trace_assert(platforms);
+    trace_assert(filename);
 
     Lt *const lt = create_lt();
     if (lt == NULL) {
@@ -137,7 +137,7 @@ void platforms_touches_rect_sides(const Platforms *platforms,
                                   Rect object,
                                   int sides[RECT_SIDE_N])
 {
-    assert(platforms);
+    trace_assert(platforms);
 
     for (size_t i = 0; i < platforms->rects_size; ++i) {
         rect_object_impact(object, platforms->rects[i], sides);

@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <assert.h>
+#include "system/stacktrace.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -45,7 +45,7 @@ struct Player {
 
 Player *create_player_from_line_stream(LineStream *line_stream, Level *level)
 {
-    assert(line_stream);
+    trace_assert(line_stream);
 
     Lt *lt = create_lt();
 
@@ -128,8 +128,8 @@ Solid_ref player_as_solid(Player *player)
 int player_render(const Player * player,
                   Camera *camera)
 {
-    assert(player);
-    assert(camera);
+    trace_assert(player);
+    trace_assert(camera);
 
     switch (player->state) {
     case PLAYER_STATE_ALIVE:
@@ -147,7 +147,7 @@ int player_render(const Player * player,
 void player_update(Player *player,
                    float delta_time)
 {
-    assert(player);
+    trace_assert(player);
 
     switch (player->state) {
     case PLAYER_STATE_ALIVE: {
@@ -191,27 +191,27 @@ void player_collide_with_solid(Player *player, Solid_ref solid)
 
 void player_move_left(Player *player)
 {
-    assert(player);
+    trace_assert(player);
     rigid_rect_move(player->alive_body, vec(-PLAYER_SPEED, 0.0f));
 }
 
 void player_move_right(Player *player)
 {
-    assert(player);
+    trace_assert(player);
 
     rigid_rect_move(player->alive_body, vec(PLAYER_SPEED, 0.0f));
 }
 
 void player_stop(Player *player)
 {
-    assert(player);
+    trace_assert(player);
 
     rigid_rect_move(player->alive_body, vec(0.0f, 0.0f));
 }
 
 void player_jump(Player *player)
 {
-    assert(player);
+    trace_assert(player);
     if (player->jump_threshold < PLAYER_MAX_JUMP_THRESHOLD) {
         rigid_rect_transform_velocity(player->alive_body,
                                       make_mat3x3(1.0f, 0.0f, 0.0f,
@@ -229,7 +229,7 @@ void player_jump(Player *player)
 
 void player_die(Player *player)
 {
-    assert(player);
+    trace_assert(player);
 
     if (player->state == PLAYER_STATE_ALIVE) {
         const Rect hitbox =
@@ -244,8 +244,8 @@ void player_die(Player *player)
 void player_focus_camera(Player *player,
                          Camera *camera)
 {
-    assert(player);
-    assert(camera);
+    trace_assert(player);
+    trace_assert(camera);
 
     const Rect player_hitbox = rigid_rect_hitbox(player->alive_body);
 
@@ -259,8 +259,8 @@ void player_focus_camera(Player *player,
 void player_hide_goals(const Player *player,
                        Goals *goals)
 {
-    assert(player);
-    assert(goals);
+    trace_assert(player);
+    trace_assert(goals);
     goals_hide_from_player(goals, rigid_rect_hitbox(player->alive_body));
 }
 
@@ -309,8 +309,8 @@ void player_apply_force(Player *player, Vec force)
 
 Rigid_rect *player_rigid_rect(Player *player, const char *id)
 {
-    assert(player);
-    assert(id);
+    trace_assert(player);
+    trace_assert(id);
 
     if (player->state == PLAYER_STATE_ALIVE) {
         if (rigid_rect_has_id(player->alive_body, id)) {
@@ -324,7 +324,7 @@ Rigid_rect *player_rigid_rect(Player *player, const char *id)
 bool player_overlaps_rect(const Player *player,
                           Rect rect)
 {
-    assert(player);
+    trace_assert(player);
 
     return player->state == PLAYER_STATE_ALIVE
         && rects_overlap(

@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 
 #include "ebisp/gc.h"
 #include "ebisp/interpreter.h"
@@ -11,9 +11,9 @@
 static struct EvalResult
 hide_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
-    assert(param);
-    assert(gc);
-    assert(scope);
+    trace_assert(param);
+    trace_assert(gc);
+    trace_assert(scope);
 
     Level * const level = (Level*)param;
     char * goal_id = NULL;
@@ -31,9 +31,9 @@ hide_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 static struct EvalResult
 show_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
-    assert(param);
-    assert(gc);
-    assert(scope);
+    trace_assert(param);
+    trace_assert(gc);
+    trace_assert(scope);
 
     Level * const level = (Level*)param;
     const char *goal_id = NULL;
@@ -51,9 +51,9 @@ show_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 static struct EvalResult
 rect_apply_force(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
-    assert(gc);
-    assert(scope);
-    assert(param);
+    trace_assert(gc);
+    trace_assert(scope);
+    trace_assert(param);
 
     Level *level = (Level*) param;
 
@@ -85,9 +85,9 @@ rect_apply_force(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 static struct EvalResult
 hide_label(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
-    assert(param);
-    assert(gc);
-    assert(scope);
+    trace_assert(param);
+    trace_assert(gc);
+    trace_assert(scope);
 
     Level *level = (Level*) param;
     const char *label_id = NULL;

@@ -1,5 +1,5 @@
 #include <SDL2/SDL.h>
-#include <assert.h>
+#include "system/stacktrace.h"
 
 #include "renderer.h"
 #include "system/lt.h"
@@ -8,7 +8,7 @@
 int draw_triangle(SDL_Renderer *render,
                   Triangle t)
 {
-    assert(render);
+    trace_assert(render);
 
     if (SDL_RenderDrawLine(render,
                            (int) roundf(t.p1.x),
@@ -43,7 +43,7 @@ int draw_triangle(SDL_Renderer *render,
 static int fill_bottom_flat_triangle(SDL_Renderer *render,
                                      Triangle t)
 {
-    assert(render);
+    trace_assert(render);
 
     const float invslope1 = (t.p2.x - t.p1.x) / (t.p2.y - t.p1.y);
     const float invslope2 = (t.p3.x - t.p1.x) / (t.p3.y - t.p1.y);
@@ -72,7 +72,7 @@ static int fill_bottom_flat_triangle(SDL_Renderer *render,
 static int fill_top_flat_triangle(SDL_Renderer *render,
                                   Triangle t)
 {
-    assert(render);
+    trace_assert(render);
 
     const float invslope1 = (t.p3.x - t.p1.x) / (t.p3.y - t.p1.y);
     const float invslope2 = (t.p3.x - t.p2.x) / (t.p3.y - t.p2.y);

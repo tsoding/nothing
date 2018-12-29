@@ -1,4 +1,4 @@
-#include <assert.h>
+#include "system/stacktrace.h"
 
 #include "ebisp/gc.h"
 #include "ebisp/scope.h"
@@ -9,8 +9,8 @@
 static struct EvalResult
 print(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
-    assert(gc);
-    assert(scope);
+    trace_assert(gc);
+    trace_assert(scope);
     (void) param;
 
     const char *s = NULL;
