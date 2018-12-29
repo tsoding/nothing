@@ -119,6 +119,8 @@ add_executable(nothing
   src/game/level_script.h
   src/ebisp/std.h
   src/ebisp/std.c
+  src/system/stacktrace.h
+  src/system/stacktrace.c
 )
 
 add_executable(repl
