@@ -7,7 +7,7 @@
 #include "str.h"
 #include "game/level/background.h"
 
-/* TODO: LevelPicker doesn't allow to select any levels */
+/* TODO(#606): LevelPicker doesn't allow to select any levels */
 
 struct LevelPicker
 {
