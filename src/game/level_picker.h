@@ -17,4 +17,7 @@ int level_picker_input(LevelPicker *level_picker,
                        const Uint8 *const keyboard_state,
                        SDL_Joystick *the_stick_of_joy);
 
+const char *level_picker_selected_level(const LevelPicker *level_picker);
+void level_picker_clean_selection(LevelPicker *level_picker);
+
 #endif  // LEVEL_PICKER_H_
