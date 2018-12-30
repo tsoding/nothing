@@ -32,16 +32,16 @@ typedef struct Game {
     Level *level;
     char *level_file_path;
     Sound_samples *sound_samples;
-    Camera *camera;
     Sprite_font *font;
+    Camera *camera;
     Console *console;
     SDL_Renderer *renderer;
 } Game;
 
 Game *create_game(const char *level_file_path,
-                    const char *sound_sample_files[],
-                    size_t sound_sample_files_count,
-                    SDL_Renderer *renderer)
+                  const char *sound_sample_files[],
+                  size_t sound_sample_files_count,
+                  SDL_Renderer *renderer)
 {
     trace_assert(level_file_path);
 
@@ -56,7 +56,15 @@ Game *create_game(const char *level_file_path,
     }
     game->lt = lt;
 
-    game->renderer = renderer;
+    game->state = GAME_STATE_RUNNING;
+
+    game->level_picker = PUSH_LT(
+        lt,
+        create_level_picker(level_file_path),
+        destroy_level_picker);
+    if (game->level_picker == NULL) {
+        RETURN_LT(lt, NULL);
+    }
 
     game->level = PUSH_LT(
         lt,
@@ -66,21 +74,11 @@ Game *create_game(const char *level_file_path,
         RETURN_LT(lt, NULL);
     }
 
-    game->level_file_path = PUSH_LT(lt, string_duplicate(level_file_path, NULL), free);
-    if (game->level_file_path == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    game->font = PUSH_LT(
+    game->level_file_path = PUSH_LT(
         lt,
-        create_sprite_font_from_file("fonts/charmap-oldschool.bmp", renderer),
-        destroy_sprite_font);
-    if (game->font == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    game->camera = PUSH_LT(lt, create_camera(renderer, game->font), destroy_camera);
-    if (game->camera == NULL) {
+        string_duplicate(level_file_path, NULL),
+        free);
+    if (game->level_file_path == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -94,6 +92,24 @@ Game *create_game(const char *level_file_path,
         RETURN_LT(lt, NULL);
     }
 
+    game->font = PUSH_LT(
+        lt,
+        create_sprite_font_from_file(
+            "fonts/charmap-oldschool.bmp",
+            renderer),
+        destroy_sprite_font);
+    if (game->font == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    game->camera = PUSH_LT(
+        lt,
+        create_camera(renderer, game->font),
+        destroy_camera);
+    if (game->camera == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     game->console = PUSH_LT(
         lt,
         create_console(game->level, game->font),
@@ -102,7 +118,7 @@ Game *create_game(const char *level_file_path,
         RETURN_LT(lt, NULL);
     }
 
-    game->state = GAME_STATE_RUNNING;
+    game->renderer = renderer;
 
     return game;
 }
