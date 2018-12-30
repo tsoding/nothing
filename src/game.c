@@ -6,38 +6,40 @@
 #include "game.h"
 #include "game/level.h"
 #include "game/sound_samples.h"
+#include "game/level_picker.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "ui/console.h"
 #include "ui/edit_field.h"
+#include "str.h"
 
 typedef enum Game_state {
     GAME_STATE_RUNNING = 0,
     GAME_STATE_PAUSE,
     GAME_STATE_CONSOLE,
-    GAME_STATE_QUIT,
-
-    GAME_STATE_N
+    GAME_STATE_LEVEL_PICKER,
+    GAME_STATE_QUIT
 } Game_state;
 
 typedef struct Game {
     Lt *lt;
 
     Game_state state;
+    LevelPicker *level_picker;
     Level *level;
     char *level_file_path;
     Sound_samples *sound_samples;
-    Camera *camera;
     Sprite_font *font;
+    Camera *camera;
     Console *console;
     SDL_Renderer *renderer;
 } Game;
 
 Game *create_game(const char *level_file_path,
-                    const char *sound_sample_files[],
-                    size_t sound_sample_files_count,
-                    SDL_Renderer *renderer)
+                  const char *sound_sample_files[],
+                  size_t sound_sample_files_count,
+                  SDL_Renderer *renderer)
 {
     trace_assert(level_file_path);
 
@@ -52,32 +54,23 @@ Game *create_game(const char *level_file_path,
     }
     game->lt = lt;
 
-    game->renderer = renderer;
+    game->state = GAME_STATE_LEVEL_PICKER;
 
-    game->level = PUSH_LT(
+    game->level_picker = PUSH_LT(
         lt,
-        create_level_from_file(level_file_path),
-        destroy_level);
-    if (game->level == NULL) {
+        create_level_picker(level_file_path),
+        destroy_level_picker);
+    if (game->level_picker == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    game->level_file_path = PUSH_LT(lt, nth_alloc(sizeof(char) * (strlen(level_file_path) + 1)), free);
+    game->level = NULL;
+
+    game->level_file_path = PUSH_LT(
+        lt,
+        string_duplicate(level_file_path, NULL),
+        free);
     if (game->level_file_path == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    strcpy(game->level_file_path, level_file_path);
-
-    game->font = PUSH_LT(
-        lt,
-        create_sprite_font_from_file("fonts/charmap-oldschool.bmp", renderer),
-        destroy_sprite_font);
-    if (game->font == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    game->camera = PUSH_LT(lt, create_camera(renderer, game->font), destroy_camera);
-    if (game->camera == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -91,6 +84,24 @@ Game *create_game(const char *level_file_path,
         RETURN_LT(lt, NULL);
     }
 
+    game->font = PUSH_LT(
+        lt,
+        create_sprite_font_from_file(
+            "fonts/charmap-oldschool.bmp",
+            renderer),
+        destroy_sprite_font);
+    if (game->font == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    game->camera = PUSH_LT(
+        lt,
+        create_camera(renderer, game->font),
+        destroy_camera);
+    if (game->camera == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     game->console = PUSH_LT(
         lt,
         create_console(game->level, game->font),
@@ -99,7 +110,7 @@ Game *create_game(const char *level_file_path,
         RETURN_LT(lt, NULL);
     }
 
-    game->state = GAME_STATE_RUNNING;
+    game->renderer = renderer;
 
     return game;
 }
@@ -114,18 +125,31 @@ int game_render(const Game *game)
 {
     trace_assert(game);
 
-    if (game->state == GAME_STATE_QUIT) {
-        return 0;
-    }
+    switch(game->state) {
+    case GAME_STATE_RUNNING:
+    case GAME_STATE_PAUSE: {
+        if (level_render(game->level, game->camera) < 0) {
+            return -1;
+        }
+    } break;
 
-    if (level_render(game->level, game->camera) < 0) {
-        return -1;
-    }
+    case GAME_STATE_CONSOLE: {
+        if (level_render(game->level, game->camera) < 0) {
+            return -1;
+        }
 
-    if (game->state == GAME_STATE_CONSOLE) {
         if (console_render(game->console, game->renderer) < 0) {
             return -1;
         }
+    } break;
+
+    case GAME_STATE_LEVEL_PICKER: {
+        if (level_picker_render(game->level_picker, game->camera, game->renderer) < 0) {
+            return -1;
+        }
+    } break;
+
+    case GAME_STATE_QUIT: break;
     }
 
     return 0;
@@ -133,7 +157,17 @@ int game_render(const Game *game)
 
 int game_sound(Game *game)
 {
-    return level_sound(game->level, game->sound_samples);
+    switch (game->state) {
+    case GAME_STATE_RUNNING:
+    case GAME_STATE_PAUSE:
+    case GAME_STATE_CONSOLE:
+        return level_sound(game->level, game->sound_samples);
+    case GAME_STATE_LEVEL_PICKER:
+    case GAME_STATE_QUIT:
+        return 0;
+    }
+
+    return 0;
 }
 
 int game_update(Game *game, float delta_time)
@@ -141,11 +175,19 @@ int game_update(Game *game, float delta_time)
     trace_assert(game);
     trace_assert(delta_time > 0.0f);
 
-    if (game->state == GAME_STATE_QUIT) {
-        return 0;
-    }
+    switch (game->state) {
+    case GAME_STATE_RUNNING: {
+        if (level_update(game->level, delta_time) < 0) {
+            return -1;
+        }
 
-    if (game->state == GAME_STATE_RUNNING || game->state == GAME_STATE_CONSOLE) {
+        if (level_enter_camera_event(game->level, game->camera) < 0) {
+            return -1;
+        }
+
+    } break;
+
+    case GAME_STATE_CONSOLE: {
         if (level_update(game->level, delta_time) < 0) {
             return -1;
         }
@@ -157,6 +199,37 @@ int game_update(Game *game, float delta_time)
         if (console_update(game->console, delta_time) < 0) {
             return -1;
         }
+    } break;
+
+    case GAME_STATE_LEVEL_PICKER: {
+        if (level_picker_update(game->level_picker, delta_time) < 0) {
+            return -1;
+        }
+
+        if (level_picker_enter_camera_event(game->level_picker, game->camera) < 0) {
+            return -1;
+        }
+
+        const char *level_file_path = level_picker_selected_level(game->level_picker);
+
+        trace_assert(game->level == NULL);
+
+        if (level_file_path != NULL) {
+            game->level = PUSH_LT(
+                game->lt,
+                create_level_from_file(level_file_path),
+                destroy_level);
+            if (game->level == NULL) {
+                return -1;
+            }
+
+            game->state = GAME_STATE_RUNNING;
+        }
+    } break;
+
+    case GAME_STATE_PAUSE:
+    case GAME_STATE_QUIT:
+        break;
     }
 
     return 0;
@@ -282,6 +355,21 @@ static int game_event_console(Game *game, const SDL_Event *event)
     return console_handle_event(game->console, event);
 }
 
+static int game_event_level_picker(Game *game, const SDL_Event *event)
+{
+    trace_assert(game);
+    trace_assert(event);
+
+    switch (event->type) {
+    case SDL_QUIT:
+        game->state = GAME_STATE_QUIT;
+        return 0;
+
+    default:
+        return level_picker_event(game->level_picker, event);
+    }
+}
+
 int game_event(Game *game, const SDL_Event *event)
 {
     trace_assert(game);
@@ -297,6 +385,9 @@ int game_event(Game *game, const SDL_Event *event)
     case GAME_STATE_CONSOLE:
         return game_event_console(game, event);
 
+    case GAME_STATE_LEVEL_PICKER:
+        return game_event_level_picker(game, event);
+
     default: {}
     }
 
@@ -311,13 +402,20 @@ int game_input(Game *game,
     trace_assert(game);
     trace_assert(keyboard_state);
 
-    if (game->state == GAME_STATE_QUIT  ||
-        game->state == GAME_STATE_PAUSE ||
-        game->state == GAME_STATE_CONSOLE) {
+    switch (game->state) {
+    case GAME_STATE_QUIT:
+    case GAME_STATE_PAUSE:
+    case GAME_STATE_CONSOLE:
         return 0;
+
+    case GAME_STATE_RUNNING:
+        return level_input(game->level, keyboard_state, the_stick_of_joy);
+
+    case GAME_STATE_LEVEL_PICKER:
+        return level_picker_input(game->level_picker, keyboard_state, the_stick_of_joy);
     }
 
-    return level_input(game->level, keyboard_state, the_stick_of_joy);
+    return 0;
 }
 
 int game_over_check(const Game *game)

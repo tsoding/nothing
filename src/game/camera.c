@@ -34,6 +34,9 @@ static Triangle camera_triangle(const Camera *camera,
 Camera *create_camera(SDL_Renderer *renderer,
                       Sprite_font *font)
 {
+    trace_assert(renderer);
+    trace_assert(font);
+
     Camera *camera = nth_alloc(sizeof(Camera));
 
     if (camera == NULL) {
