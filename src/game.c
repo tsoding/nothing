@@ -144,7 +144,7 @@ int game_render(const Game *game)
     } break;
 
     case GAME_STATE_LEVEL_PICKER: {
-        if (level_picker_render(game->level_picker, game->renderer) < 0) {
+        if (level_picker_render(game->level_picker, game->camera, game->renderer) < 0) {
             return -1;
         }
     } break;
@@ -203,6 +203,10 @@ int game_update(Game *game, float delta_time)
 
     case GAME_STATE_LEVEL_PICKER: {
         if (level_picker_update(game->level_picker, delta_time) < 0) {
+            return -1;
+        }
+
+        if (level_picker_enter_camera_event(game->level_picker, game->camera) < 0) {
             return -1;
         }
 
