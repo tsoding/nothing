@@ -121,6 +121,8 @@ add_executable(nothing
   src/ebisp/std.c
   src/system/stacktrace.h
   src/system/stacktrace.c
+  src/game/level_picker.h
+  src/game/level_picker.c
 )
 
 add_executable(repl

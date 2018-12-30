@@ -6,6 +6,7 @@
 #include "game.h"
 #include "game/level.h"
 #include "game/sound_samples.h"
+#include "game/level_picker.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
@@ -16,6 +17,7 @@ typedef enum Game_state {
     GAME_STATE_RUNNING = 0,
     GAME_STATE_PAUSE,
     GAME_STATE_CONSOLE,
+    GAME_STATE_LEVEL_PICKER,
     GAME_STATE_QUIT,
 
     GAME_STATE_N
@@ -25,6 +27,7 @@ typedef struct Game {
     Lt *lt;
 
     Game_state state;
+    LevelPicker *level_picker;
     Level *level;
     char *level_file_path;
     Sound_samples *sound_samples;
