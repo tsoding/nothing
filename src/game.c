@@ -19,9 +19,7 @@ typedef enum Game_state {
     GAME_STATE_PAUSE,
     GAME_STATE_CONSOLE,
     GAME_STATE_LEVEL_PICKER,
-    GAME_STATE_QUIT,
-
-    GAME_STATE_N
+    GAME_STATE_QUIT
 } Game_state;
 
 typedef struct Game {
@@ -133,18 +131,31 @@ int game_render(const Game *game)
 {
     trace_assert(game);
 
-    if (game->state == GAME_STATE_QUIT) {
-        return 0;
-    }
+    switch(game->state) {
+    case GAME_STATE_RUNNING:
+    case GAME_STATE_PAUSE: {
+        if (level_render(game->level, game->camera) < 0) {
+            return -1;
+        }
+    } break;
 
-    if (level_render(game->level, game->camera) < 0) {
-        return -1;
-    }
+    case GAME_STATE_CONSOLE: {
+        if (level_render(game->level, game->camera) < 0) {
+            return -1;
+        }
 
-    if (game->state == GAME_STATE_CONSOLE) {
         if (console_render(game->console, game->renderer) < 0) {
             return -1;
         }
+    } break;
+
+    case GAME_STATE_LEVEL_PICKER: {
+        if (level_picker_render(game->level_picker, game->renderer) < 0) {
+            return -1;
+        }
+    } break;
+
+    case GAME_STATE_QUIT: break;
     }
 
     return 0;
