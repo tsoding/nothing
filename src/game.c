@@ -12,6 +12,7 @@
 #include "system/nth_alloc.h"
 #include "ui/console.h"
 #include "ui/edit_field.h"
+#include "str.h"
 
 typedef enum Game_state {
     GAME_STATE_RUNNING = 0,
@@ -65,11 +66,10 @@ Game *create_game(const char *level_file_path,
         RETURN_LT(lt, NULL);
     }
 
-    game->level_file_path = PUSH_LT(lt, nth_alloc(sizeof(char) * (strlen(level_file_path) + 1)), free);
+    game->level_file_path = PUSH_LT(lt, string_duplicate(level_file_path, NULL), free);
     if (game->level_file_path == NULL) {
         RETURN_LT(lt, NULL);
     }
-    strcpy(game->level_file_path, level_file_path);
 
     game->font = PUSH_LT(
         lt,
