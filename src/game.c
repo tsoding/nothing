@@ -331,6 +331,21 @@ static int game_event_console(Game *game, const SDL_Event *event)
     return console_handle_event(game->console, event);
 }
 
+static int game_event_level_picker(Game *game, const SDL_Event *event)
+{
+    trace_assert(game);
+    trace_assert(event);
+
+    switch (event->type) {
+    case SDL_QUIT:
+        game->state = GAME_STATE_QUIT;
+        return 0;
+
+    default:
+        return level_picker_event(game->level_picker, event);
+    }
+}
+
 int game_event(Game *game, const SDL_Event *event)
 {
     trace_assert(game);
@@ -345,6 +360,9 @@ int game_event(Game *game, const SDL_Event *event)
 
     case GAME_STATE_CONSOLE:
         return game_event_console(game, event);
+
+    case GAME_STATE_LEVEL_PICKER:
+        return game_event_level_picker(game, event);
 
     default: {}
     }
