@@ -171,11 +171,19 @@ int game_update(Game *game, float delta_time)
     trace_assert(game);
     trace_assert(delta_time > 0.0f);
 
-    if (game->state == GAME_STATE_QUIT) {
-        return 0;
-    }
+    switch (game->state) {
+    case GAME_STATE_RUNNING: {
+        if (level_update(game->level, delta_time) < 0) {
+            return -1;
+        }
 
-    if (game->state == GAME_STATE_RUNNING || game->state == GAME_STATE_CONSOLE) {
+        if (level_enter_camera_event(game->level, game->camera) < 0) {
+            return -1;
+        }
+
+    } break;
+
+    case GAME_STATE_CONSOLE: {
         if (level_update(game->level, delta_time) < 0) {
             return -1;
         }
@@ -187,6 +195,17 @@ int game_update(Game *game, float delta_time)
         if (console_update(game->console, delta_time) < 0) {
             return -1;
         }
+    } break;
+
+    case GAME_STATE_LEVEL_PICKER: {
+        if (level_picker_update(game->level_picker, delta_time) < 0) {
+            return -1;
+        }
+    } break;
+
+    case GAME_STATE_PAUSE:
+    case GAME_STATE_QUIT:
+        break;
     }
 
     return 0;
