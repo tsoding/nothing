@@ -7,6 +7,8 @@
 #include "str.h"
 #include "game/level/background.h"
 
+/* TODO: LevelPicker doesn't allow to select any levels */
+
 struct LevelPicker
 {
     Lt *lt;
