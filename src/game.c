@@ -157,7 +157,17 @@ int game_render(const Game *game)
 
 int game_sound(Game *game)
 {
-    return level_sound(game->level, game->sound_samples);
+    switch (game->state) {
+    case GAME_STATE_RUNNING:
+    case GAME_STATE_PAUSE:
+    case GAME_STATE_CONSOLE:
+        return level_sound(game->level, game->sound_samples);
+    case GAME_STATE_LEVEL_PICKER:
+    case GAME_STATE_QUIT:
+        return 0;
+    }
+
+    return 0;
 }
 
 int game_update(Game *game, float delta_time)
