@@ -4,10 +4,12 @@
 #include "system/stacktrace.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "str.h"
 
 struct LevelPicker
 {
     Lt *lt;
+    const char *dirpath;
 };
 
 LevelPicker *create_level_picker(const char *dirpath)
@@ -27,6 +29,14 @@ LevelPicker *create_level_picker(const char *dirpath)
         RETURN_LT(lt, NULL);
     }
     level_picker->lt = lt;
+
+    level_picker->dirpath = PUSH_LT(
+        lt,
+        string_duplicate(dirpath, NULL),
+        free);
+    if (level_picker->dirpath == NULL) {
+        RETURN_LT(lt, NULL);
+    }
 
     return level_picker;
 }
@@ -73,7 +83,7 @@ int level_picker_input(LevelPicker *level_picker,
 const char *level_picker_selected_level(const LevelPicker *level_picker)
 {
     trace_assert(level_picker);
-    return NULL;
+    return level_picker->dirpath;
 }
 
 void level_picker_clean_selection(LevelPicker *level_picker)

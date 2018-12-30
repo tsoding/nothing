@@ -54,7 +54,7 @@ Game *create_game(const char *level_file_path,
     }
     game->lt = lt;
 
-    game->state = GAME_STATE_RUNNING;
+    game->state = GAME_STATE_LEVEL_PICKER;
 
     game->level_picker = PUSH_LT(
         lt,
@@ -64,13 +64,7 @@ Game *create_game(const char *level_file_path,
         RETURN_LT(lt, NULL);
     }
 
-    game->level = PUSH_LT(
-        lt,
-        create_level_from_file(level_file_path),
-        destroy_level);
-    if (game->level == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    game->level = NULL;
 
     game->level_file_path = PUSH_LT(
         lt,
@@ -200,6 +194,22 @@ int game_update(Game *game, float delta_time)
     case GAME_STATE_LEVEL_PICKER: {
         if (level_picker_update(game->level_picker, delta_time) < 0) {
             return -1;
+        }
+
+        const char *level_file_path = level_picker_selected_level(game->level_picker);
+
+        trace_assert(game->level == NULL);
+
+        if (level_file_path != NULL) {
+            game->level = PUSH_LT(
+                game->lt,
+                create_level_from_file(level_file_path),
+                destroy_level);
+            if (game->level == NULL) {
+                return -1;
+            }
+
+            game->state = GAME_STATE_RUNNING;
         }
     } break;
 
@@ -378,13 +388,20 @@ int game_input(Game *game,
     trace_assert(game);
     trace_assert(keyboard_state);
 
-    if (game->state == GAME_STATE_QUIT  ||
-        game->state == GAME_STATE_PAUSE ||
-        game->state == GAME_STATE_CONSOLE) {
+    switch (game->state) {
+    case GAME_STATE_QUIT:
+    case GAME_STATE_PAUSE:
+    case GAME_STATE_CONSOLE:
         return 0;
+
+    case GAME_STATE_RUNNING:
+        return level_input(game->level, keyboard_state, the_stick_of_joy);
+
+    case GAME_STATE_LEVEL_PICKER:
+        return level_picker_input(game->level_picker, keyboard_state, the_stick_of_joy);
     }
 
-    return level_input(game->level, keyboard_state, the_stick_of_joy);
+    return 0;
 }
 
 int game_over_check(const Game *game)
