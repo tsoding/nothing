@@ -15,7 +15,8 @@ install:
   - conan --version
 
 build_script:
-  - conan install --build missing --install-folder build
+  - mkdir build
   - cd build
-  - cmake ../
+  - conan install ..
+  - cmake ..
   - cmake --build .
