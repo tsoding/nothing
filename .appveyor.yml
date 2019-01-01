@@ -1,0 +1,21 @@
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      DEVENV_EXE: C:\"Program Files (x86)"\"Microsoft Visual Studio 14.0"\Common7\IDE\devenv.exe
+      VSDEVCMD_BAT: C:\"Program Files (x86)"\"Microsoft Visual Studio 14.0"\Common7\Tools\VsDevCmd.bat
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      DEVENV_EXE: C:\"Program Files (x86)"\"Microsoft Visual Studio"\2017\Community\Common7\IDE\devenv.exe
+      VSDEVCMD_BAT: C:\"Program Files (x86)"\"Microsoft Visual Studio"\2017\Community\Common7\Tools\VsDevCmd.bat
+
+install:
+  - cmmd: echo "Downloading conan..."
+  - cmmd: set PATH=%PATH%;%PYTHON%/Scripts/
+  - cmmd: pip.exe install conan
+  - cmmd: conan user # Create the conan data directory
+  - cmmd: conan --version
+
+build_script:
+  - cmmd: conan install --build missing --install-folder build
+  - cmmd: cd build
+  - cmmd: cmake ../
+  - cmmd: cmake --build .
