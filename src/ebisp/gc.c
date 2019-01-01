@@ -103,8 +103,17 @@ int gc_add_expr(Gc *gc, struct Expr expr)
             return -1;
         }
 
+        int *const new_visited = realloc(
+            gc->visited,
+            sizeof(int) * new_capacity);
+
+        if (new_visited == NULL) {
+            return -1;
+        }
+
         gc->capacity = new_capacity;
         gc->exprs = REPLACE_LT(gc->lt, gc->exprs, new_exprs);
+        gc->visited = REPLACE_LT(gc->lt, gc->visited, new_visited);
     }
 
     gc->exprs[gc->size++] = expr;
