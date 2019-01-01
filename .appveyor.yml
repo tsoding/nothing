@@ -15,7 +15,7 @@ install:
   - conan --version
   - git clone https://github.com/lasote/conan-sdl2.git
   - cd conan-sdl2
-  - conan export SDL2/2.0.5@lasote/stable
+  - conan export "SDL2/2.0.5@lasote/stable"
   - cd ..
 
 build_script:
