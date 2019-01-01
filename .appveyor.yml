@@ -13,6 +13,10 @@ install:
   - pip.exe install conan
   - conan user # Create the conan data directory
   - conan --version
+  - git clone https://github.com/lasote/conan-sdl2.git
+  - cd conan-sdl2
+  - conan export SDL2/2.0.5@lasote/stable
+  - cd ..
 
 build_script:
   - mkdir build
