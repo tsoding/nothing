@@ -1,5 +1,5 @@
 [requires]
-SDL2/2.0.5@lasote/stable
+sdl2/2.0.9@bincrafters/stable
 zlib/1.2.11@conan/stable
 
 [generators]
