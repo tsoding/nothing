@@ -165,6 +165,33 @@ $ cmake .. -G "Visual Studio 15 2017 Win64"
 
 After that, build the `build/nothing.sln` file with Visual Studio.
 
+## Build on Windows - build.bat
+
+1. Download and install [Visual Studio 2017][visual-studio]
+1. Download [SDL2 Development Lib][sdl2_dev_lib_win] and [SDL2 Mixer Development Lib][sdl2_mixer_dev_lib_win]
+2. Inside the SDL2 zip:
+    * extract the content of `include` folder in a directory with the following structure: C:\\Dev\\include\\SDL2\\*.h
+    * extract the content of `lib\x64` folder in directory with the following structure: C:\\Dev\\lib\\
+3. Inside the SDL2 Mixer zip:
+    * extract the content of `include` folder in a directory with the following structure: C:\\Dev\\include\\SDL2\\*.h
+    * extract the content of `lib\x64` folder in directory with the following structure: C:\\Dev\\lib\\
+4. Inside the `nothing` directory edit the `build.bat` file and specify where the headers and libs for SDL2 and SDL2 Mixer are
+
+### Building
+
+Execute the following commands inside of the `nothing` directory:
+
+```console
+> %comspec% /k "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+> build.bat
+```
+It will build, inside `win32_build` folder, the main executable, `nothing.exe`, plus repl.exe and nothing_test.exe.
+If everything went wright type
+
+```console
+> win32_build\nothing.exe levels\level-01.txt
+```
+
 ## Support
 
 You can support my work via
@@ -175,6 +202,8 @@ You can support my work via
 [conan]: https://www.conan.io/
 [conan-sdl2]: https://bintray.com/conan/conan-transit/SDL2%3Alasote/2.0.5%3Astable
 [visual-studio]: https://www.visualstudio.com/
+[sdl2_dev_lib_win]: https://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip
+[sdl2_mixer_dev_lib_win]: https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-devel-2.0.4-VC.zip
 [svg2rects.py]: ./devtools/svg2rects.py
 [./levels/]: ./levels/
 [./levels/Makefile]: ./levels/Makefile

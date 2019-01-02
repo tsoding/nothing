@@ -7,6 +7,9 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
+#ifdef WINDOWS_OS
+#include <stdio.h> // for EOF macro
+#endif
 
 #define BACKGROUND_CHUNK_COUNT 5
 #define BACKGROUND_CHUNK_WIDTH 250.0f

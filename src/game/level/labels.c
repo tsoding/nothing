@@ -8,6 +8,9 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
+#ifdef WINDOWS_OS
+#include <stdio.h> // for EOF macro
+#endif
 
 #define LABEL_MAX_ID_SIZE 36
 
@@ -48,7 +51,11 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
 
     if (sscanf(
             line_stream_next(line_stream),
+            #ifdef X64_BUILD
+            "%llu",
+#else
             "%lu",
+#endif
             &labels->count) == EOF) {
         log_fail("Could not read amount of labels\n");
         RETURN_LT(lt, NULL);

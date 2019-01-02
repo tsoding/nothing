@@ -8,6 +8,9 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
+#ifdef WINDOWS_OS
+#include <stdio.h> // for EOF macro
+#endif
 
 struct Boxes
 {
@@ -33,7 +36,11 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream)
 
     if (sscanf(
             line_stream_next(line_stream),
+#ifdef X64_BUILD
+            "%llu",
+#else
             "%lu",
+#endif
             &boxes->count) == EOF) {
         log_fail("Could not read amount of boxes\n");
         RETURN_LT(lt, NULL);

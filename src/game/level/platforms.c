@@ -37,7 +37,11 @@ Platforms *create_platforms_from_line_stream(LineStream *line_stream)
     platforms->rects_size = 0;
     if (sscanf(
             line_stream_next(line_stream),
+#ifdef X64_BUILD
+            "%llu",
+#else
             "%lu",
+#endif
             &platforms->rects_size) == EOF) {
         log_fail("Could not read amount of platforms\n");
         RETURN_LT(lt, NULL);

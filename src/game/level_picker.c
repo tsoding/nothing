@@ -100,7 +100,7 @@ int level_picker_input(LevelPicker *level_picker,
 {
     trace_assert(level_picker);
     trace_assert(keyboard_state);
-    trace_assert(the_stick_of_joy);
+    //trace_assert(the_stick_of_joy); // if you don't have a joystick the game will crash
     return 0;
 }
 

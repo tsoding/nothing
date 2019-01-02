@@ -10,6 +10,9 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
+#ifdef WINDOWS_OS
+#include <stdio.h> // for EOF macro
+#endif
 
 #define GOAL_RADIUS 10.0f
 #define GOAL_MAX_ID_SIZE 36
@@ -51,7 +54,11 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
     goals->count = 0;
     if (sscanf(
             line_stream_next(line_stream),
+            #ifdef X64_BUILD
+            "%llu",
+#else
             "%lu",
+#endif
             &goals->count) == EOF) {
         log_fail("Could not read amount of goals\n");
         RETURN_LT(lt, NULL);

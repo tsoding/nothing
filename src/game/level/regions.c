@@ -48,7 +48,11 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
 
     if(sscanf(
            line_stream_next(line_stream),
-           "%lu",
+#ifdef X64_BUILD
+            "%llu",
+#else
+            "%lu",
+#endif
            &regions->count) < 0) {
         log_fail("Could not read amount of script regions\n");
         RETURN_LT(lt, NULL);

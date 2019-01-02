@@ -3,7 +3,11 @@
 #ifdef __GNUC__
 #include <execinfo.h>
 #endif
-#include <unistd.h>
+#ifdef WINDOWS_OS
+    #include <io.h>
+#else
+    #include <unistd.h>
+#endif
 
 #include "./stacktrace.h"
 

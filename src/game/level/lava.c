@@ -36,7 +36,11 @@ Lava *create_lava_from_line_stream(LineStream *line_stream)
 
     if (sscanf(
             line_stream_next(line_stream),
+#ifdef X64_BUILD
+            "%llu",
+#else
             "%lu",
+#endif
             &lava->rects_count) < 0) {
         log_fail("Could not read amount of lavas\n");
         RETURN_LT(lt, NULL);

@@ -50,7 +50,13 @@ Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
     load_level_library(script->gc, &script->scope, level);
 
     size_t n = 0;
-    sscanf(line_stream_next(line_stream), "%lu", &n);
+    sscanf(line_stream_next(line_stream), 
+#ifdef X64_BUILD
+            "%llu",
+#else
+            "%lu",
+#endif
+           &n);
 
     char *source_code = NULL;
     for (size_t i = 0; i < n; ++i) {
