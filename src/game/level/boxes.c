@@ -8,9 +8,13 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
-#ifdef WINDOWS_OS
 #include <stdio.h> // for EOF macro
+
+#if (defined(_MSC_VER) && defined(_M_X64)) || \
+    (defined(__GNUC__) && defined(__x86_64__))
+#define X64_BUILD
 #endif
+
 
 struct Boxes
 {

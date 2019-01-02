@@ -8,8 +8,11 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
-#ifdef WINDOWS_OS
 #include <stdio.h> // for EOF macro
+
+#if (defined(_MSC_VER) && defined(_M_X64)) || \
+    (defined(__GNUC__) && defined(__x86_64__))
+#define X64_BUILD
 #endif
 
 #define LABEL_MAX_ID_SIZE 36
@@ -51,7 +54,7 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
 
     if (sscanf(
             line_stream_next(line_stream),
-            #ifdef X64_BUILD
+#ifdef X64_BUILD
             "%llu",
 #else
             "%lu",

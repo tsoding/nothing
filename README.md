@@ -139,7 +139,7 @@ All of the levels reside in the [./levels/] folder. Use
 
 ## Build on Windows
 
-You need to install [conan][] and [Visual Studio 2017][visual-studio].
+You need to install [python3][], [conan][] and [Visual Studio 2017][visual-studio].
 
 ### Dependencies
 
@@ -148,9 +148,25 @@ repository is not compatible with the latest conan, so you'll need to install
 it locally from the git repository:
 
 ```console
-$ git clone https://github.com/lasote/conan-sdl2.git # temporary, I hope hope hope
+$ git clone https://github.com/bincrafters/conan-sdl2.git # temporary, I hope hope hope
 $ cd conan-sdl2
-$ conan export SDL2/2.0.5@lasote/stable
+$ conan export -k . sdl2/2.0.9@lasote/stable
+```
+and the same for SDL2 Mixer and it's dependencies
+```console
+$ git clone https://github.com/sixten-hilborn/conan-smpeg.git
+$ cd conan-smpeg
+$ conan export -k . smpeg2/2.0.0@sixten-hilborn/stable
+```
+```console
+$ git clone https://github.com/sixten-hilborn/conan-libmikmod.git
+$ cd conan-libmikmod
+$ conan export -k . libmikmod/3.3.11.1@sixten-hilborn/stable
+```
+```console
+$git clone https://github.com/sixten-hilborn/conan-libmodplug.git
+$cd conan-libmodplug
+$conan export -k . libmodplug/0.8.8.5@sixten-hilborn/stable
 ```
 
 ### Building
@@ -158,9 +174,9 @@ $ conan export SDL2/2.0.5@lasote/stable
 Execute the following commands inside of the `nothing` directory:
 
 ```console
-$ conan install --build missing --install-folder build
-$ cd build
-$ cmake .. -G "Visual Studio 15 2017 Win64"
+$conan install --build missing --install-folder build .
+$cd build
+$cmake .. -G "Visual Studio 15 2017 Win64"
 ```
 
 After that, build the `build/nothing.sln` file with Visual Studio.
@@ -200,6 +216,7 @@ You can support my work via
 - Patreon: https://www.patreon.com/tsoding
 
 [conan]: https://www.conan.io/
+[python3]: https://www.python.org/
 [conan-sdl2]: https://bintray.com/conan/conan-transit/SDL2%3Alasote/2.0.5%3Astable
 [visual-studio]: https://www.visualstudio.com/
 [sdl2_dev_lib_win]: https://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip

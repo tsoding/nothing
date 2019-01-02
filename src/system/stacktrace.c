@@ -2,11 +2,9 @@
 #include <stdio.h>
 #ifdef __GNUC__
 #include <execinfo.h>
-#endif
-#ifdef WINDOWS_OS
-    #include <io.h>
+#include <unistd.h>
 #else
-    #include <unistd.h>
+#include <io.h>
 #endif
 
 #include "./stacktrace.h"

@@ -13,6 +13,11 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 
+#if (defined(_MSC_VER) && defined(_M_X64)) || \
+    (defined(__GNUC__) && defined(__x86_64__))
+#define X64_BUILD
+#endif
+
 enum RegionState {
     RS_PLAYER_INSIDE = 0,
     RS_PLAYER_OUTSIDE

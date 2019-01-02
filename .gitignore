@@ -4,3 +4,4 @@ GRTAGS
 GTAGS
 __pycache__/
 win32_build
+.vs
