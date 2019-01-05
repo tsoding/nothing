@@ -17,6 +17,8 @@
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
 #include "system/nth_alloc.h"
+#include "ebisp/interpreter.h"
+#include "ebisp/builtins.h"
 
 #define LEVEL_LINE_MAX_LENGTH 512
 
@@ -36,7 +38,7 @@ struct Level
     Regions *regions;
 };
 
-Level *create_level_from_file(const char *file_name)
+Level *create_level_from_file(const char *file_name, Game *game)
 {
     trace_assert(file_name);
 
@@ -70,7 +72,7 @@ Level *create_level_from_file(const char *file_name)
 
     level->player = PUSH_LT(
         lt,
-        create_player_from_line_stream(level_stream, level),
+        create_player_from_line_stream(level_stream, game),
         destroy_player);
     if (level->player == NULL) {
         RETURN_LT(lt, NULL);
@@ -126,7 +128,7 @@ Level *create_level_from_file(const char *file_name)
 
     level->regions = PUSH_LT(
         lt,
-        create_regions_from_line_stream(level_stream, level),
+        create_regions_from_line_stream(level_stream, game),
         destroy_regions);
     if (level->regions == NULL) {
         RETURN_LT(lt, NULL);
@@ -271,7 +273,7 @@ int level_input(Level *level,
     return 0;
 }
 
-int level_reload_preserve_player(Level *level, const char *file_name)
+int level_reload_preserve_player(Level *level, const char *file_name, Game *game)
 {
     Lt * const lt = create_lt();
     if (lt == NULL) {
@@ -297,7 +299,7 @@ int level_reload_preserve_player(Level *level, const char *file_name)
     }
     level->background = RESET_LT(level->lt, level->background, background);
 
-    Player * const skipped_player = create_player_from_line_stream(level_stream, level);
+    Player * const skipped_player = create_player_from_line_stream(level_stream, game);
     if (skipped_player == NULL) {
         RETURN_LT(lt, -1);
     }
@@ -339,7 +341,7 @@ int level_reload_preserve_player(Level *level, const char *file_name)
     }
     level->labels = RESET_LT(level->lt, level->labels, labels);
 
-    Regions * const regions = create_regions_from_line_stream(level_stream, level);
+    Regions * const regions = create_regions_from_line_stream(level_stream, game);
     if (regions == NULL) {
         RETURN_LT(lt, -1);
     }
@@ -419,4 +421,26 @@ void level_hide_label(Level *level, const char *label_id)
     trace_assert(label_id);
 
     labels_hide(level->labels, label_id);
+}
+
+static struct EvalResult
+unknown_object(Gc *gc, const char *source, const char *target)
+{
+    return eval_failure(
+        list(gc, "qqq", "unknown-object", source, target));
+}
+
+struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct Expr path)
+{
+    trace_assert(level);
+    trace_assert(gc);
+    trace_assert(scope);
+
+    const char *target = NULL;
+    struct EvalResult res = match_list(gc, "q*", path, &target, NULL);
+    if (res.is_error) {
+        return res;
+    }
+
+    return unknown_object(gc, "level", target);
 }

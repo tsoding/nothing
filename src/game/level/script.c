@@ -15,6 +15,7 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "ui/console.h"
+#include "game_script.h"
 
 struct Script
 {
@@ -23,7 +24,7 @@ struct Script
     struct Scope scope;
 };
 
-Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
+Script *create_script_from_line_stream(LineStream *line_stream, Game *game)
 {
     trace_assert(line_stream);
 
@@ -47,7 +48,7 @@ Script *create_script_from_line_stream(LineStream *line_stream, Level *level)
 
     load_std_library(script->gc, &script->scope);
     load_log_library(script->gc, &script->scope);
-    load_level_library(script->gc, &script->scope, level);
+    load_game_library(script->gc, &script->scope, game);
 
     size_t n = 0;
     sscanf(line_stream_next(line_stream), "%lu", &n);

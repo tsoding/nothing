@@ -13,6 +13,7 @@
 #include "ui/console.h"
 #include "ui/edit_field.h"
 #include "str.h"
+#include "ebisp/builtins.h"
 
 typedef enum Game_state {
     GAME_STATE_RUNNING = 0,
@@ -104,7 +105,7 @@ Game *create_game(const char *level_file_path,
 
     game->console = PUSH_LT(
         lt,
-        create_console(game->level, game->font),
+        create_console(game, game->font),
         destroy_console);
     if (game->console == NULL) {
         RETURN_LT(lt, NULL);
@@ -217,7 +218,7 @@ int game_update(Game *game, float delta_time)
         if (level_file_path != NULL) {
             game->level = PUSH_LT(
                 game->lt,
-                create_level_from_file(level_file_path),
+                create_level_from_file(level_file_path, game),
                 destroy_level);
             if (game->level == NULL) {
                 return -1;
@@ -283,7 +284,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
                 game->lt,
                 game->level,
                 create_level_from_file(
-                    game->level_file_path));
+                    game->level_file_path, game));
 
             if (game->level == NULL) {
                 log_fail("Could not reload level %s\n", game->level_file_path);
@@ -297,7 +298,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
 
         case SDLK_q:
             log_info("Reloading the level's platforms from '%s'...\n", game->level_file_path);
-            if (level_reload_preserve_player(game->level, game->level_file_path) < 0) {
+            if (level_reload_preserve_player(game->level, game->level_file_path, game) < 0) {
                 log_fail("Could not reload level %s\n", game->level_file_path);
                 game->state = GAME_STATE_QUIT;
                 return -1;
@@ -421,4 +422,36 @@ int game_input(Game *game,
 int game_over_check(const Game *game)
 {
     return game->state == GAME_STATE_QUIT;
+}
+
+static struct EvalResult
+unknown_object(Gc *gc, const char *source, const char *target)
+{
+    return eval_failure(
+        list(gc, "qqq", "unknown-object", source, target));
+}
+
+struct EvalResult
+game_send(Game *game, Gc *gc, struct Scope *scope,
+          struct Expr path)
+{
+    trace_assert(game);
+    trace_assert(gc);
+    trace_assert(scope);
+    (void) path;
+
+    const char *target = NULL;
+    struct Expr rest = void_expr();
+    struct EvalResult res = match_list(gc, "q*", path, &target, &rest);
+    if (res.is_error) {
+        return res;
+    }
+
+    if (strcmp(target, "level") == 0) {
+        return level_send(game->level, gc, scope, rest);
+    } else {
+        return unknown_object(gc, "game", target);
+    }
+
+    return not_implemented(gc);
 }

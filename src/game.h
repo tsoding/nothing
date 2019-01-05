@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 
 #include "game/sound_samples.h"
+#include "ebisp/expr.h"
 
 typedef struct Game Game;
 
@@ -23,5 +24,8 @@ int game_input(Game *game,
                SDL_Joystick *the_stick_of_joy);
 
 int game_over_check(const Game *game);
+
+struct EvalResult
+game_send(Game *game, Gc *gc, struct Scope *scope, struct Expr path);
 
 #endif  // GAME_H_
