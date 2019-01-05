@@ -13,6 +13,7 @@
 #include "ui/console.h"
 #include "ui/edit_field.h"
 #include "str.h"
+#include "ebisp/builtins.h"
 
 typedef enum Game_state {
     GAME_STATE_RUNNING = 0,
@@ -421,4 +422,36 @@ int game_input(Game *game,
 int game_over_check(const Game *game)
 {
     return game->state == GAME_STATE_QUIT;
+}
+
+static struct EvalResult
+unknown_object(Gc *gc, const char *source, const char *target)
+{
+    return eval_failure(
+        list(gc, "qqq", "unknown-object", source, target));
+}
+
+struct EvalResult
+game_send(Game *game, Gc *gc, struct Scope *scope,
+          struct Expr path)
+{
+    trace_assert(game);
+    trace_assert(gc);
+    trace_assert(scope);
+    (void) path;
+
+    const char *target = NULL;
+    struct Expr rest = void_expr();
+    struct EvalResult res = match_list(gc, "q*", path, &target, &rest);
+    if (res.is_error) {
+        return res;
+    }
+
+    if (strcmp(target, "level") == 0) {
+        return level_send(game->level, gc, scope, rest);
+    } else {
+        return unknown_object(gc, "game", target);
+    }
+
+    return not_implemented(gc);
 }

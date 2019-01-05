@@ -17,6 +17,8 @@
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
 #include "system/nth_alloc.h"
+#include "ebisp/interpreter.h"
+#include "ebisp/builtins.h"
 
 #define LEVEL_LINE_MAX_LENGTH 512
 
@@ -419,4 +421,26 @@ void level_hide_label(Level *level, const char *label_id)
     trace_assert(label_id);
 
     labels_hide(level->labels, label_id);
+}
+
+static struct EvalResult
+unknown_object(Gc *gc, const char *source, const char *target)
+{
+    return eval_failure(
+        list(gc, "qqq", "unknown-object", source, target));
+}
+
+struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct Expr path)
+{
+    trace_assert(level);
+    trace_assert(gc);
+    trace_assert(scope);
+
+    const char *target = NULL;
+    struct EvalResult res = match_list(gc, "q*", path, &target, NULL);
+    if (res.is_error) {
+        return res;
+    }
+
+    return unknown_object(gc, "level", target);
 }

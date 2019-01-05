@@ -1,6 +1,6 @@
-(set on-enter
-     (lambda ()
-       (hide-goal (car args))))
-(set on-leave
-     (lambda ()
-       (show-goal (car args))))
+(defun on-enter ()
+  (send `(level goal ,(car args) hide)))
+(defun on-leave ()
+  ;; TODO: showing goals is not implemented
+  (send `(level goal ,(car args) show)))
+

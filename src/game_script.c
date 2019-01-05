@@ -10,11 +10,16 @@ send(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     trace_assert(param);
     trace_assert(gc);
     trace_assert(scope);
-    (void) args;
 
-    /* TODO: send is not implemented */
+    Game *game = (Game*) param;
 
-    return not_implemented(gc);
+    struct Expr path = void_expr();
+    struct EvalResult result = match_list(gc, "e", args, &path);
+    if (result.is_error) {
+        return result;
+    }
+
+    return game_send(game, gc, scope, path);
 }
 
 void load_game_library(Gc *gc, struct Scope *scope, Game *game)

@@ -1,5 +1,4 @@
-(set on-enter
-     (lambda ()
-       (show-goal (car args))))
-(set on-leave
-     (lambda ()))
+(defun on-enter ()
+  (send '(level goal ,(car args) show)))
+(defun on-leave ())
+
