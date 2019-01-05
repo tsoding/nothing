@@ -36,7 +36,7 @@ struct Level
     Regions *regions;
 };
 
-Level *create_level_from_file(const char *file_name)
+Level *create_level_from_file(const char *file_name, Game *game)
 {
     trace_assert(file_name);
 
@@ -70,7 +70,7 @@ Level *create_level_from_file(const char *file_name)
 
     level->player = PUSH_LT(
         lt,
-        create_player_from_line_stream(level_stream, level),
+        create_player_from_line_stream(level_stream, game),
         destroy_player);
     if (level->player == NULL) {
         RETURN_LT(lt, NULL);
@@ -126,7 +126,7 @@ Level *create_level_from_file(const char *file_name)
 
     level->regions = PUSH_LT(
         lt,
-        create_regions_from_line_stream(level_stream, level),
+        create_regions_from_line_stream(level_stream, game),
         destroy_regions);
     if (level->regions == NULL) {
         RETURN_LT(lt, NULL);
@@ -271,7 +271,7 @@ int level_input(Level *level,
     return 0;
 }
 
-int level_reload_preserve_player(Level *level, const char *file_name)
+int level_reload_preserve_player(Level *level, const char *file_name, Game *game)
 {
     Lt * const lt = create_lt();
     if (lt == NULL) {
@@ -297,7 +297,7 @@ int level_reload_preserve_player(Level *level, const char *file_name)
     }
     level->background = RESET_LT(level->lt, level->background, background);
 
-    Player * const skipped_player = create_player_from_line_stream(level_stream, level);
+    Player * const skipped_player = create_player_from_line_stream(level_stream, game);
     if (skipped_player == NULL) {
         RETURN_LT(lt, -1);
     }
@@ -339,7 +339,7 @@ int level_reload_preserve_player(Level *level, const char *file_name)
     }
     level->labels = RESET_LT(level->lt, level->labels, labels);
 
-    Regions * const regions = create_regions_from_line_stream(level_stream, level);
+    Regions * const regions = create_regions_from_line_stream(level_stream, game);
     if (regions == NULL) {
         RETURN_LT(lt, -1);
     }

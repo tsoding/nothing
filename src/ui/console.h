@@ -5,11 +5,11 @@
 #include "ebisp/interpreter.h"
 
 typedef struct Console Console;
-typedef struct Level Level;
+typedef struct Game Game;
 typedef struct Sprite_font Sprite_font;
 typedef struct Camera Camera;
 
-Console *create_console(Level *level,
+Console *create_console(Game *game,
                         const Sprite_font *font);
 void destroy_console(Console *console);
 

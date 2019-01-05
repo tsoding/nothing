@@ -9,9 +9,10 @@
 #include "game/level/player.h"
 #include "sound_samples.h"
 
+typedef struct Game Game;
 typedef struct Level Level;
 
-Level *create_level_from_file(const char *file_name);
+Level *create_level_from_file(const char *file_name, Game *game);
 void destroy_level(Level *level);
 
 int level_render(const Level *level, Camera *camera);
@@ -26,7 +27,8 @@ int level_input(Level *level,
 int level_enter_camera_event(Level *level, Camera *camera);
 
 int level_reload_preserve_player(Level *level,
-                                 const char *file_name);
+                                 const char *file_name,
+                                 Game *game);
 
 Rigid_rect *level_rigid_rect(Level *level,
                              const char *rigid_rect_id);

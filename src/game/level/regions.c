@@ -28,7 +28,7 @@ struct Regions
     enum RegionState *states;
 };
 
-Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
+Regions *create_regions_from_line_stream(LineStream *line_stream, Game *game)
 {
     trace_assert(line_stream);
 
@@ -107,7 +107,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Level *level)
 
         regions->scripts[i] = PUSH_LT(
             lt,
-            create_script_from_line_stream(line_stream, level),
+            create_script_from_line_stream(line_stream, game),
             destroy_script);
         if (regions->scripts[i] == NULL) {
             RETURN_LT(lt, NULL);
