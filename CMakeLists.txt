@@ -115,8 +115,6 @@ add_executable(nothing
   src/system/log_script.c
   src/system/nth_alloc.h
   src/system/nth_alloc.c
-  src/game/level_script.c
-  src/game/level_script.h
   src/ebisp/std.h
   src/ebisp/std.c
   src/system/stacktrace.h

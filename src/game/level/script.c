@@ -5,7 +5,6 @@
 #include "ebisp/scope.h"
 #include "ebisp/std.h"
 #include "game/level.h"
-#include "game/level_script.h"
 #include "script.h"
 #include "str.h"
 #include "system/line_stream.h"

@@ -8,6 +8,7 @@
 #include "game/level/solid.h"
 #include "math/mat3x3.h"
 #include "math/rect.h"
+#include "ebisp/expr.h"
 
 typedef struct Rigid_rect Rigid_rect;
 typedef struct Boxes Boxes;
@@ -54,5 +55,8 @@ void rigid_rect_damper(Rigid_rect *rigid_rect,
 
 bool rigid_rect_has_id(Rigid_rect *rigid_rect,
                        const char *id);
+
+struct EvalResult
+rigid_rect_send(Rigid_rect *rigid_rect, Gc *gc, struct Scope *scope, struct Expr path);
 
 #endif  // RIGID_RECT_H_

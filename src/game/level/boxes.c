@@ -8,6 +8,8 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
+#include "ebisp/interpreter.h"
+#include "broadcast.h"
 
 struct Boxes
 {
@@ -133,4 +135,27 @@ Rigid_rect *boxes_rigid_rect(Boxes *boxes, const char *id)
     }
 
     return 0;
+}
+
+struct EvalResult
+boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path)
+{
+    trace_assert(boxes);
+    trace_assert(gc);
+    trace_assert(scope);
+
+    const char *target = NULL;
+    struct Expr rest = void_expr();
+    struct EvalResult res = match_list(gc, "s*", path, &target, &rest);
+    if (res.is_error) {
+        return res;
+    }
+
+    for (size_t i = 0; i < boxes->count; ++i) {
+        if (rigid_rect_has_id(boxes->bodies[i], target)) {
+            return rigid_rect_send(boxes->bodies[i], gc, scope, rest);
+        }
+    }
+
+    return unknown_target(gc, "box", target);
 }
