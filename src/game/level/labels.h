@@ -3,6 +3,7 @@
 
 #include "math/point.h"
 #include "color.h"
+#include "ebisp/expr.h"
 
 typedef struct Labels Labels;
 typedef struct Camera Camera;
@@ -18,7 +19,7 @@ void labels_update(Labels *label,
 void labels_enter_camera_event(Labels *label,
                                const Camera *camera);
 
-void labels_hide(Labels *labels,
-                 const char *label_id);
+struct EvalResult
+labels_send(Labels *labels, Gc *gc, struct Scope *scope, struct Expr path);
 
 #endif  // LABELS_H_

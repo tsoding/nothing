@@ -8,6 +8,8 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
+#include "ebisp/interpreter.h"
+#include "broadcast.h"
 
 #define LABEL_MAX_ID_SIZE 36
 
@@ -208,18 +210,55 @@ void labels_enter_camera_event(Labels *labels,
     }
 }
 
-void labels_hide(Labels *labels,
-                 const char *label_id)
+static struct EvalResult
+labels_action(Labels *labels,
+              size_t index,
+              Gc *gc,
+              struct Scope *scope,
+              struct Expr path)
 {
     trace_assert(labels);
-    trace_assert(label_id);
+    trace_assert(gc);
+    trace_assert(scope);
+
+    const char *target = NULL;
+    struct Expr rest = void_expr();
+    struct EvalResult res = match_list(gc, "q*", path, &target, &rest);
+    if (res.is_error) {
+        return res;
+    }
+
+    if (strcmp(target, "hide") == 0) {
+        if (labels->states[index] != LABEL_STATE_HIDDEN) {
+            labels->states[index] = LABEL_STATE_HIDDEN;
+            labels->alphas[index] = 1.0f;
+            labels->delta_alphas[index] = -3.0f;
+        }
+        return eval_success(NIL(gc));
+    }
+
+    return unknown_target(gc, labels->ids[index], target);
+}
+
+struct EvalResult
+labels_send(Labels *labels, Gc *gc, struct Scope *scope, struct Expr path)
+{
+    trace_assert(labels);
+    trace_assert(gc);
+    trace_assert(scope);
+
+    const char *target = NULL;
+    struct Expr rest = void_expr();
+    struct EvalResult res = match_list(gc, "s*", path, &target, &rest);
+    if (res.is_error) {
+        return res;
+    }
 
     for (size_t i = 0; i < labels->count; ++i) {
-        if (strcmp(labels->ids[i], label_id) == 0 && labels->states[i] != LABEL_STATE_HIDDEN) {
-            labels->states[i] = LABEL_STATE_HIDDEN;
-            labels->alphas[i] = 1.0f;
-            labels->delta_alphas[i] = -3.0f;
-            return;
+        if (strcmp(target, labels->ids[i]) == 0) {
+            return labels_action(labels, i, gc, scope, rest);
         }
     }
+
+    return unknown_target(gc, "label", target);
 }
