@@ -240,19 +240,6 @@ void goals_checkpoint(const Goals *goals,
     }
 }
 
-void goals_hide(Goals *goals, const char *id)
-{
-    trace_assert(goals);
-    trace_assert(id);
-
-    for (size_t i = 0; i < goals->count; ++i) {
-        if (strcmp(id, goals->ids[i]) == 0) {
-            goals->visible[i] = false;
-            return;
-        }
-    }
-}
-
 static struct EvalResult
 goals_action(Goals *goals, size_t index, Gc *gc, struct Scope *scope, struct Expr path)
 {
@@ -269,6 +256,9 @@ goals_action(Goals *goals, size_t index, Gc *gc, struct Scope *scope, struct Exp
     if (strcmp(target, "show") == 0) {
         goals->visible[index] = true;
         return eval_success(NIL(gc));
+    } else if (strcmp(target, "hide") == 0) {
+        goals->visible[index] = false;
+        return eval_success(NIL(gc));
     }
 
     return unknown_target(gc, goals->ids[index], target);
@@ -283,7 +273,7 @@ goals_send(Goals *goals, Gc *gc, struct Scope *scope, struct Expr path)
 
     const char *target = NULL;
     struct Expr rest = void_expr();
-    struct EvalResult res = match_list(gc, "q*", path, &target, &rest);
+    struct EvalResult res = match_list(gc, "s*", path, &target, &rest);
     if (res.is_error) {
         return res;
     }

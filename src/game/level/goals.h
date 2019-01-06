@@ -29,8 +29,6 @@ void goals_checkpoint(const Goals *goals,
 void goals_cue(Goals *goals,
                const Camera *camera);
 
-void goals_hide(Goals *goals, const char *id);
-
 struct EvalResult goals_send(Goals *goals, Gc *gc, struct Scope *scope, struct Expr path);
 
 #endif  // GOALS_H_
