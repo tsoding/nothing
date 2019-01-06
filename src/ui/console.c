@@ -17,7 +17,7 @@
 #include "ui/console_log.h"
 #include "ui/edit_field.h"
 #include "ui/history.h"
-#include "game_script.h"
+#include "broadcast.h"
 
 #define FONT_WIDTH_SCALE 3.0f
 #define FONT_HEIGHT_SCALE 3.0f
@@ -55,7 +55,7 @@ struct Console
 /* TODO(#357): Console does not show the state of the GC of the script */
 /* TODO(#358): Console does not support copy, cut, paste operations */
 
-Console *create_console(Game *game,
+Console *create_console(Broadcast *broadcast,
                         const Sprite_font *font)
 {
     Lt *lt = create_lt();
@@ -81,7 +81,7 @@ Console *create_console(Game *game,
 
     load_std_library(console->gc, &console->scope);
     load_log_library(console->gc, &console->scope);
-    load_game_library(console->gc, &console->scope, game);
+    broadcast_load_library(broadcast, console->gc, &console->scope);
 
     console->edit_field = PUSH_LT(
         lt,

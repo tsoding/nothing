@@ -123,8 +123,8 @@ add_executable(nothing
   src/system/stacktrace.c
   src/game/level_picker.h
   src/game/level_picker.c
-  src/game_script.h
-  src/game_script.c
+  src/broadcast.c
+  src/broadcast.h
 )
 
 add_executable(repl

@@ -43,7 +43,7 @@ struct Player {
     int play_die_cue;
 };
 
-Player *create_player_from_line_stream(LineStream *line_stream, Game *game)
+Player *create_player_from_line_stream(LineStream *line_stream, Broadcast *broadcast)
 {
     trace_assert(line_stream);
 
@@ -72,7 +72,7 @@ Player *create_player_from_line_stream(LineStream *line_stream, Game *game)
 
     player->script = PUSH_LT(
         lt,
-        create_script_from_line_stream(line_stream, game),
+        create_script_from_line_stream(line_stream, broadcast),
         destroy_script);
     if (player->script == NULL) {
         RETURN_LT(lt, NULL);
