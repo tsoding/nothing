@@ -10,6 +10,8 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
+#include "ebisp/interpreter.h"
+#include "broadcast.h"
 
 #define GOAL_RADIUS 10.0f
 #define GOAL_MAX_ID_SIZE 36
@@ -238,30 +240,51 @@ void goals_checkpoint(const Goals *goals,
     }
 }
 
-void goals_hide(Goals *goals, const char *id)
+static struct EvalResult
+goals_action(Goals *goals, size_t index, Gc *gc, struct Scope *scope, struct Expr path)
 {
     trace_assert(goals);
-    trace_assert(id);
+    trace_assert(gc);
+    trace_assert(scope);
 
-    for (size_t i = 0; i < goals->count; ++i) {
-        if (strcmp(id, goals->ids[i]) == 0) {
-            goals->visible[i] = false;
-            return;
-        }
+    const char *target = NULL;
+    struct EvalResult res = match_list(gc, "q*", path, &target, NULL);
+    if (res.is_error) {
+        return res;
     }
+
+    if (strcmp(target, "show") == 0) {
+        goals->visible[index] = true;
+        return eval_success(NIL(gc));
+    } else if (strcmp(target, "hide") == 0) {
+        goals->visible[index] = false;
+        return eval_success(NIL(gc));
+    }
+
+    return unknown_target(gc, goals->ids[index], target);
 }
 
-void goals_show(Goals *goals, const char *id)
+struct EvalResult
+goals_send(Goals *goals, Gc *gc, struct Scope *scope, struct Expr path)
 {
     trace_assert(goals);
-    trace_assert(id);
+    trace_assert(gc);
+    trace_assert(scope);
+
+    const char *target = NULL;
+    struct Expr rest = void_expr();
+    struct EvalResult res = match_list(gc, "s*", path, &target, &rest);
+    if (res.is_error) {
+        return res;
+    }
 
     for (size_t i = 0; i < goals->count; ++i) {
-        if (strcmp(id, goals->ids[i]) == 0) {
-            goals->visible[i] = true;
-            return;
+        if (strcmp(target, goals->ids[i]) == 0) {
+            return goals_action(goals, i, gc, scope, rest);
         }
     }
+
+    return unknown_target(gc, "goals", target);
 }
 
 /* Private Functions */
