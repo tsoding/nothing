@@ -1,5 +1,4 @@
 #include "system/stacktrace.h"
-
 #include "ebisp/gc.h"
 #include "ebisp/interpreter.h"
 #include "ebisp/parser.h"
@@ -15,7 +14,7 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "ui/console.h"
-#include "game_script.h"
+#include "broadcast.h"
 
 struct Script
 {
@@ -24,7 +23,7 @@ struct Script
     struct Scope scope;
 };
 
-Script *create_script_from_line_stream(LineStream *line_stream, Game *game)
+Script *create_script_from_line_stream(LineStream *line_stream, Broadcast *broadcast)
 {
     trace_assert(line_stream);
 
@@ -48,7 +47,7 @@ Script *create_script_from_line_stream(LineStream *line_stream, Game *game)
 
     load_std_library(script->gc, &script->scope);
     load_log_library(script->gc, &script->scope);
-    load_game_library(script->gc, &script->scope, game);
+    broadcast_load_library(broadcast, script->gc, &script->scope);
 
     size_t n = 0;
     sscanf(line_stream_next(line_stream), "%lu", &n);

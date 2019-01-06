@@ -7,7 +7,7 @@ fffda5
 (defun on-jump ()
   (set jump-count (+ jump-count 1))
   (when (> jump-count 3)
-    (send `(level label "label_space_to_jump" hide))))
+    (send `(game level label "label_space_to_jump" hide))))
 22
 -656.11383 191.77144 2545.4624 1595.238 483737
 -711.37622 -1262.1708 548.61353 1633.9749 483737
@@ -53,22 +53,22 @@ Double Jump
 7
 (set args '("goal1"))
 (defun on-enter ()
-  (send `(level goal ,(car args) hide)))
+  (send `(game level goal ,(car args) hide)))
 (defun on-leave ()
-  ;; TODO: showing goals is not implemented
-  (send `(level goal ,(car args) show)))
+  ;; TODO(#615): showing goals is not implemented
+  (send `(game level goal ,(car args) show)))
 
 1249.8324 -862.22498 323.92441 544.63507 deaa87
 5
 (set args '("goal2"))
 (defun on-enter ()
-  (send '(level goal ,(car args) show)))
+  (send '(game level goal ,(car args) show)))
 (defun on-leave ())
 
 1033.8625 -862.22498 215.96986 569.73328 d35f5f
 5
 (set args '())
 (defun on-enter ()
-  ;; TODO: hiding labels is not implemented
-  (send `(level label "label_double_jump" hide)))
+  ;; TODO(#616): hiding labels is not implemented
+  (send `(game level label "label_double_jump" hide)))
 (defun on-leave ())

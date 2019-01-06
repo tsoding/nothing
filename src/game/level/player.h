@@ -14,9 +14,9 @@ typedef struct Goals Goals;
 typedef struct Rigid_rect Rigid_rect;
 typedef struct LineStream LineStream;
 typedef struct Script Script;
-typedef struct Game Game;
+typedef struct Broadcast Broadcast;
 
-Player *create_player_from_line_stream(LineStream *line_stream, Game *game);
+Player *create_player_from_line_stream(LineStream *line_stream, Broadcast *broadcast);
 void destroy_player(Player * player);
 
 Solid_ref player_as_solid(Player *player);

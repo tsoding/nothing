@@ -14,6 +14,7 @@
 #include "ui/edit_field.h"
 #include "str.h"
 #include "ebisp/builtins.h"
+#include "broadcast.h"
 
 typedef enum Game_state {
     GAME_STATE_RUNNING = 0,
@@ -27,6 +28,7 @@ typedef struct Game {
     Lt *lt;
 
     Game_state state;
+    Broadcast *broadcast;
     LevelPicker *level_picker;
     Level *level;
     char *level_file_path;
@@ -56,6 +58,14 @@ Game *create_game(const char *level_file_path,
     game->lt = lt;
 
     game->state = GAME_STATE_LEVEL_PICKER;
+
+    game->broadcast = PUSH_LT(
+        lt,
+        create_broadcast(game),
+        destroy_broadcast);
+    if (game->broadcast == NULL) {
+        RETURN_LT(lt, NULL);
+    }
 
     game->level_picker = PUSH_LT(
         lt,
@@ -105,7 +115,7 @@ Game *create_game(const char *level_file_path,
 
     game->console = PUSH_LT(
         lt,
-        create_console(game, game->font),
+        create_console(game->broadcast, game->font),
         destroy_console);
     if (game->console == NULL) {
         RETURN_LT(lt, NULL);
@@ -218,7 +228,7 @@ int game_update(Game *game, float delta_time)
         if (level_file_path != NULL) {
             game->level = PUSH_LT(
                 game->lt,
-                create_level_from_file(level_file_path, game),
+                create_level_from_file(level_file_path, game->broadcast),
                 destroy_level);
             if (game->level == NULL) {
                 return -1;
@@ -284,7 +294,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
                 game->lt,
                 game->level,
                 create_level_from_file(
-                    game->level_file_path, game));
+                    game->level_file_path, game->broadcast));
 
             if (game->level == NULL) {
                 log_fail("Could not reload level %s\n", game->level_file_path);
@@ -298,7 +308,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
 
         case SDLK_q:
             log_info("Reloading the level's platforms from '%s'...\n", game->level_file_path);
-            if (level_reload_preserve_player(game->level, game->level_file_path, game) < 0) {
+            if (level_reload_preserve_player(game->level, game->level_file_path, game->broadcast) < 0) {
                 log_fail("Could not reload level %s\n", game->level_file_path);
                 game->state = GAME_STATE_QUIT;
                 return -1;
@@ -424,13 +434,6 @@ int game_over_check(const Game *game)
     return game->state == GAME_STATE_QUIT;
 }
 
-static struct EvalResult
-unknown_object(Gc *gc, const char *source, const char *target)
-{
-    return eval_failure(
-        list(gc, "qqq", "unknown-object", source, target));
-}
-
 struct EvalResult
 game_send(Game *game, Gc *gc, struct Scope *scope,
           struct Expr path)
@@ -438,7 +441,6 @@ game_send(Game *game, Gc *gc, struct Scope *scope,
     trace_assert(game);
     trace_assert(gc);
     trace_assert(scope);
-    (void) path;
 
     const char *target = NULL;
     struct Expr rest = void_expr();
@@ -449,9 +451,7 @@ game_send(Game *game, Gc *gc, struct Scope *scope,
 
     if (strcmp(target, "level") == 0) {
         return level_send(game->level, gc, scope, rest);
-    } else {
-        return unknown_object(gc, "game", target);
     }
 
-    return not_implemented(gc);
+    return unknown_target(gc, "game", target);
 }

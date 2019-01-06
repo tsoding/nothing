@@ -10,10 +10,10 @@
 #include "sound_samples.h"
 #include "ebisp/expr.h"
 
-typedef struct Game Game;
+typedef struct Broadcast Broadcast;
 typedef struct Level Level;
 
-Level *create_level_from_file(const char *file_name, Game *game);
+Level *create_level_from_file(const char *file_name, Broadcast *broadcast);
 void destroy_level(Level *level);
 
 int level_render(const Level *level, Camera *camera);
@@ -29,7 +29,7 @@ int level_enter_camera_event(Level *level, Camera *camera);
 
 int level_reload_preserve_player(Level *level,
                                  const char *file_name,
-                                 Game *game);
+                                 Broadcast *broadcast);
 
 Rigid_rect *level_rigid_rect(Level *level,
                              const char *rigid_rect_id);
