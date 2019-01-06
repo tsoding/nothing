@@ -411,11 +411,6 @@ void level_hide_goal(Level *level, const char *goal_id)
     goals_hide(level->goals, goal_id);
 }
 
-void level_show_goal(Level *level, const char *goal_id)
-{
-    goals_show(level->goals, goal_id);
-}
-
 void level_hide_label(Level *level, const char *label_id)
 {
     trace_assert(level);
@@ -431,9 +426,14 @@ struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct E
     trace_assert(scope);
 
     const char *target = NULL;
-    struct EvalResult res = match_list(gc, "q*", path, &target, NULL);
+    struct Expr rest = void_expr();
+    struct EvalResult res = match_list(gc, "q*", path, &target, &rest);
     if (res.is_error) {
         return res;
+    }
+
+    if (strcmp(target, "goal") == 0) {
+        return goals_send(level->goals, gc, scope, rest);
     }
 
     return unknown_target(gc, "level", target);

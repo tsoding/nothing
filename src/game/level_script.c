@@ -29,26 +29,6 @@ hide_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 }
 
 static struct EvalResult
-show_goal(void *param, Gc *gc, struct Scope *scope, struct Expr args)
-{
-    trace_assert(param);
-    trace_assert(gc);
-    trace_assert(scope);
-
-    Level * const level = (Level*)param;
-    const char *goal_id = NULL;
-
-    struct EvalResult result = match_list(gc, "s", args, &goal_id);
-    if (result.is_error) {
-        return result;
-    }
-
-    level_show_goal(level, goal_id);
-
-    return eval_success(NIL(gc));
-}
-
-static struct EvalResult
 rect_apply_force(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     trace_assert(gc);
@@ -114,11 +94,6 @@ void load_level_library(Gc *gc, struct Scope *scope, Level *level)
         scope,
         SYMBOL(gc, "hide-goal"),
         NATIVE(gc, hide_goal, level));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "show-goal"),
-        NATIVE(gc, show_goal, level));
     set_scope_value(
         gc,
         scope,
