@@ -62,7 +62,7 @@ Double Jump
 5
 (set args '("goal2"))
 (defun on-enter ()
-  (send '(game level goal ,(car args) show)))
+  (send `(game level goal ,(car args) show)))
 (defun on-leave ())
 
 1033.8625 -862.22498 215.96986 569.73328 d35f5f

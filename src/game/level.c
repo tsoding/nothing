@@ -406,14 +406,6 @@ Rigid_rect *level_rigid_rect(Level *level,
     return NULL;
 }
 
-void level_hide_label(Level *level, const char *label_id)
-{
-    trace_assert(level);
-    trace_assert(label_id);
-
-    labels_hide(level->labels, label_id);
-}
-
 struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct Expr path)
 {
     trace_assert(level);
@@ -429,6 +421,8 @@ struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct E
 
     if (strcmp(target, "goal") == 0) {
         return goals_send(level->goals, gc, scope, rest);
+    } else if (strcmp(target, "label") == 0) {
+        return labels_send(level->labels, gc, scope, rest);
     }
 
     return unknown_target(gc, "level", target);

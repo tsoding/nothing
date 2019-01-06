@@ -42,26 +42,6 @@ rect_apply_force(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     }
 }
 
-static struct EvalResult
-hide_label(void *param, Gc *gc, struct Scope *scope, struct Expr args)
-{
-    trace_assert(param);
-    trace_assert(gc);
-    trace_assert(scope);
-
-    Level *level = (Level*) param;
-    const char *label_id = NULL;
-
-    struct EvalResult result = match_list(gc, "s", args, &label_id);
-    if (result.is_error) {
-        return result;
-    }
-
-    level_hide_label(level, label_id);
-
-    return eval_success(NIL(gc));
-}
-
 void load_level_library(Gc *gc, struct Scope *scope, Level *level)
 {
     set_scope_value(
@@ -69,9 +49,4 @@ void load_level_library(Gc *gc, struct Scope *scope, Level *level)
         scope,
         SYMBOL(gc, "rect-apply-force"),
         NATIVE(gc, rect_apply_force, level));
-    set_scope_value(
-        gc,
-        scope,
-        SYMBOL(gc, "hide-label"),
-        NATIVE(gc, hide_label, level));
 }

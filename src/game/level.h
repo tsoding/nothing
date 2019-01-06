@@ -37,8 +37,6 @@ Rigid_rect *level_rigid_rect(Level *level,
 void level_toggle_debug_mode(Level *level);
 void level_toggle_pause_mode(Level *level);
 
-void level_hide_label(Level *level, const char *label_id);
-
 struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct Expr path);
 
 #endif  // LEVEL_H_
