@@ -205,7 +205,7 @@ boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path)
                 return res;
             }
 
-            /* TODO: the color and id of added box is hardcoded */
+            /* TODO(#629): the color and id of added box is hardcoded */
             boxes_add_box(boxes, rect((float) x, (float) y, (float) w, (float) h), hexstr("a02c2c"), "khooy");
 
             return eval_success(NIL(gc));
