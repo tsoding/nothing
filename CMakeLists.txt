@@ -123,6 +123,8 @@ add_executable(nothing
   src/game/level_picker.c
   src/broadcast.c
   src/broadcast.h
+  src/game/level/rigid_bodies.h
+  src/game/level/rigid_bodies.c
 )
 
 add_executable(repl
