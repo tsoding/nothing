@@ -12,6 +12,8 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
+#include "ebisp/interpreter.h"
+#include "broadcast.h"
 
 #define RIGID_RECT_MAX_ID_SIZE 36
 
@@ -289,4 +291,43 @@ bool rigid_rect_has_id(Rigid_rect *rigid_rect,
     trace_assert(id);
 
     return strcmp(rigid_rect->id, id) == 0;
+}
+
+struct EvalResult
+rigid_rect_send(Rigid_rect *rigid_rect, Gc *gc, struct Scope *scope, struct Expr path)
+{
+    trace_assert(rigid_rect);
+    trace_assert(gc);
+    trace_assert(scope);
+
+    const char *target = NULL;
+    struct Expr rest = void_expr();
+    struct EvalResult res = match_list(gc, "q*", path, &target, &rest);
+    if (res.is_error) {
+        return res;
+    }
+
+    if (strcmp(target, "apply-force") == 0) {
+        struct Expr force = void_expr();
+        res = match_list(gc, "e*", rest, &force, NULL);
+        if (res.is_error) {
+            return res;
+        }
+
+        long int force_x = 0L;
+        long int force_y = 0L;
+
+        res = match_list(gc, "dd", force, &force_x, &force_y);
+        if (res.is_error) {
+            return res;
+        }
+
+        rigid_rect_apply_force(
+            rigid_rect,
+            vec((float) force_x, (float) force_y));
+
+        return eval_success(NIL(gc));
+    }
+
+    return unknown_target(gc, rigid_rect->id, target);
 }

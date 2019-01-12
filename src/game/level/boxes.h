@@ -4,6 +4,7 @@
 #include "game/camera.h"
 #include "game/level/platforms.h"
 #include "lava.h"
+#include "ebisp/expr.h"
 
 typedef struct Boxes Boxes;
 typedef struct Player Player;
@@ -22,5 +23,8 @@ int boxes_add_to_physical_world(const Boxes *boxes,
                                 Physical_world *Physical_world);
 
 Rigid_rect *boxes_rigid_rect(Boxes *boxes, const char *id);
+
+struct EvalResult
+boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path);
 
 #endif  // BOXES_H_

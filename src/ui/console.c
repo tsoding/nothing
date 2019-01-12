@@ -7,7 +7,6 @@
 #include "ebisp/std.h"
 #include "game/level.h"
 #include "game/level/player/rigid_rect.h"
-#include "game/level_script.h"
 #include "sdl/renderer.h"
 #include "system/log.h"
 #include "system/log_script.h"

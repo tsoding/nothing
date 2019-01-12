@@ -423,6 +423,8 @@ struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct E
         return goals_send(level->goals, gc, scope, rest);
     } else if (strcmp(target, "label") == 0) {
         return labels_send(level->labels, gc, scope, rest);
+    } else if (strcmp(target, "box") == 0) {
+        return boxes_send(level->boxes, gc, scope, rest);
     }
 
     return unknown_target(gc, "level", target);
