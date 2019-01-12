@@ -146,7 +146,7 @@ int boxes_add_box(Boxes *boxes, Rect rect, Color color, const char *id)
     trace_assert(boxes);
     trace_assert(id);
 
-    /* TODO: boxes_add_box is unable to register a new box in the physical world */
+    /* TODO(#628): boxes_add_box is unable to register a new box in the physical world */
 
     if (boxes->count >= boxes->capacity) {
         const size_t new_capacity = boxes->capacity * 2;
