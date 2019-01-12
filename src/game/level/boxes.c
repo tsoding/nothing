@@ -9,6 +9,7 @@
 #include "system/nth_alloc.h"
 #include "system/log.h"
 #include "ebisp/interpreter.h"
+#include "ebisp/builtins.h"
 #include "broadcast.h"
 
 struct Boxes
@@ -16,6 +17,7 @@ struct Boxes
     Lt *lt;
     size_t count;
     Rigid_rect **bodies;
+    size_t capacity;
 };
 
 Boxes *create_boxes_from_line_stream(LineStream *line_stream)
@@ -40,6 +42,7 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream)
         log_fail("Could not read amount of boxes\n");
         RETURN_LT(lt, NULL);
     }
+    boxes->capacity = boxes->count;
 
     boxes->bodies = PUSH_LT(lt, nth_alloc(sizeof(Rigid_rect*) * boxes->count), free);
     if (boxes->bodies == NULL) {
@@ -137,6 +140,37 @@ Rigid_rect *boxes_rigid_rect(Boxes *boxes, const char *id)
     return 0;
 }
 
+static
+int boxes_add_box(Boxes *boxes, Rect rect, Color color, const char *id)
+{
+    trace_assert(boxes);
+    trace_assert(id);
+
+    /* TODO: boxes_add_box is unable to register a new box in the physical world */
+
+    if (boxes->count >= boxes->capacity) {
+        const size_t new_capacity = boxes->capacity * 2;
+
+        Rigid_rect **const new_bodies = nth_realloc(
+            boxes->bodies,
+            sizeof(Rigid_rect*) * new_capacity);
+
+        if (new_bodies == NULL) {
+            return -1;
+        }
+
+        boxes->capacity = new_capacity;
+        boxes->bodies = REPLACE_LT(
+            boxes->lt,
+            boxes->bodies,
+            new_bodies);
+    }
+
+    boxes->bodies[boxes->count++] = create_rigid_rect(rect, color, id);
+
+    return 0;
+}
+
 struct EvalResult
 boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path)
 {
@@ -144,18 +178,41 @@ boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path)
     trace_assert(gc);
     trace_assert(scope);
 
-    const char *target = NULL;
+    struct Expr target = void_expr();
     struct Expr rest = void_expr();
-    struct EvalResult res = match_list(gc, "s*", path, &target, &rest);
+    struct EvalResult res = match_list(gc, "e*", path, &target, &rest);
     if (res.is_error) {
         return res;
     }
 
-    for (size_t i = 0; i < boxes->count; ++i) {
-        if (rigid_rect_has_id(boxes->bodies[i], target)) {
-            return rigid_rect_send(boxes->bodies[i], gc, scope, rest);
+    if (string_p(target)) {
+        const char *box_id = target.atom->str;
+
+        for (size_t i = 0; i < boxes->count; ++i) {
+            if (rigid_rect_has_id(boxes->bodies[i], box_id)) {
+                return rigid_rect_send(boxes->bodies[i], gc, scope, rest);
+            }
         }
+
+        return unknown_target(gc, "box", box_id);
+    } else if (symbol_p(target)) {
+        const char *action = target.atom->str;
+
+        if (strcmp(action, "new") == 0) {
+            long int x, y, w, h;
+            res = match_list(gc, "dddd", rest, &x, &y, &w, &h);
+            if (res.is_error) {
+                return res;
+            }
+
+            /* TODO: the color and id of added box is hardcoded */
+            boxes_add_box(boxes, rect((float) x, (float) y, (float) w, (float) h), hexstr("a02c2c"), "khooy");
+
+            return eval_success(NIL(gc));
+        }
+
+        return unknown_target(gc, "box", action);
     }
 
-    return unknown_target(gc, "box", target);
+    return wrong_argument_type(gc, "string-or-symbol-p", target);
 }
