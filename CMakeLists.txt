@@ -125,6 +125,8 @@ add_executable(nothing
   src/broadcast.h
   src/game/level/rigid_bodies.h
   src/game/level/rigid_bodies.c
+  src/algo/dynarray.h
+  src/algo/dynarray.c
 )
 
 add_executable(repl
