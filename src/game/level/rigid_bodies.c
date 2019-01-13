@@ -112,7 +112,7 @@ int rigid_bodies_update(RigidBodies *rigid_bodies,
 {
     trace_assert(rigid_bodies);
     (void) delta_time;
-    /* TODO: rigid_bodies_update is not implemented */
+    /* TODO(#639): rigid_bodies_update is not implemented */
     return 0;
 }
 
