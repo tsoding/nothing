@@ -148,7 +148,7 @@ int rigid_bodies_add(RigidBodies *rigid_bodies,
     (void) color;
     (void) id;
 
-    /* TODO: rigid_bodies_add is not implemented */
+    /* TODO(#640): rigid_bodies_add is not implemented */
 
     return 0;
 }
