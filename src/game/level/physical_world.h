@@ -3,7 +3,7 @@
 
 #include "game/level/solid.h"
 
-// TODO: remove Physical_world when it's not used anywhere anymore
+// TODO(#632): remove Physical_world when it's not used anywhere anymore
 
 typedef struct Physical_world Physical_world;
 
