@@ -158,6 +158,6 @@ int rigid_bodies_remove(RigidBodies *rigid_bodies,
 {
     trace_assert(rigid_bodies);
     (void) id;
-    /* TODO: rigid_bodies_remove is not implemented */
+    /* TODO(#641): rigid_bodies_remove is not implemented */
     return 0;
 }
