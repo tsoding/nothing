@@ -10,6 +10,8 @@
 #include "math/rect.h"
 #include "ebisp/expr.h"
 
+// TODO(#634): remove Rigid_rect when it's not used anywhere anymore
+
 typedef struct Rigid_rect Rigid_rect;
 typedef struct Boxes Boxes;
 typedef struct LineStream LineStream;

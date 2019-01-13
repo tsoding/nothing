@@ -27,6 +27,7 @@ typedef enum Player_state {
     PLAYER_STATE_DYING
 } Player_state;
 
+/* TODO(#633): Player's alive_body should be a body from RigidBodies */
 struct Player {
     Lt *lt;
     Player_state state;
