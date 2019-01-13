@@ -10,7 +10,7 @@
 #include "math/rect.h"
 #include "ebisp/expr.h"
 
-// TODO: remove Rigid_rect when it's not used anywhere anymore
+// TODO(#634): remove Rigid_rect when it's not used anywhere anymore
 
 typedef struct Rigid_rect Rigid_rect;
 typedef struct Boxes Boxes;
