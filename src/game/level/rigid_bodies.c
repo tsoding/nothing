@@ -146,6 +146,10 @@ int rigid_bodies_add(RigidBodies *rigid_bodies,
     trace_assert(id);
     (void) rect;
     (void) color;
+    (void) id;
+
+    /* TODO: rigid_bodies_add is not implemented */
+
     return 0;
 }
 
