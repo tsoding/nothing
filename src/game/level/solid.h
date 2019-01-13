@@ -3,7 +3,7 @@
 
 #include "math/rect.h"
 
-// TODO: remove solid interface when it's not used anywhere anymore
+// TODO(#636): remove solid interface when it's not used anywhere anymore
 
 typedef enum Solid_tag {
     SOLID_PLATFORMS = 0,
