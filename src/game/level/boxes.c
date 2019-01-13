@@ -12,7 +12,7 @@
 #include "ebisp/builtins.h"
 #include "broadcast.h"
 
-/* TODO: Boxes entity should be implemented in terms of RigidBodies instead of Rigid_rect */
+/* TODO(#631): Boxes entity should be implemented in terms of RigidBodies instead of Rigid_rect */
 
 struct Boxes
 {
