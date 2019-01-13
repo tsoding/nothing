@@ -7,7 +7,7 @@
 
 #include "./rigid_bodies.h"
 
-/* TODO: RigidBodies doesn't have enough functionality to replace Rigid_rect */
+/* TODO(#635): RigidBodies doesn't have enough functionality to replace Rigid_rect */
 
 struct RigidBodies
 {
