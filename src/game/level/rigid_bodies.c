@@ -112,6 +112,7 @@ int rigid_bodies_update(RigidBodies *rigid_bodies,
 {
     trace_assert(rigid_bodies);
     (void) delta_time;
+    /* TODO: rigid_bodies_update is not implemented */
     return 0;
 }
 
@@ -120,6 +121,19 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
 {
     trace_assert(rigid_bodies);
     trace_assert(camera);
+
+    const size_t n = dynarray_count(rigid_bodies->positions);
+    for (size_t i = 0; i < n; ++i) {
+        if (camera_fill_rect(
+                camera,
+                rect_from_vecs(
+                    rigid_bodies->positions[i],
+                    rigid_bodies->sizes[i]),
+                rigid_bodies->colors[i]) < 0) {
+            return -1;
+        }
+    }
+
     return 0;
 }
 
@@ -140,5 +154,6 @@ int rigid_bodies_remove(RigidBodies *rigid_bodies,
 {
     trace_assert(rigid_bodies);
     (void) id;
+    /* TODO: rigid_bodies_remove is not implemented */
     return 0;
 }
