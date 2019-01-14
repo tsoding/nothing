@@ -1,0 +1,1398 @@
+fffda5
+30.0 -150.0 ff8080
+1
+(set args '())
+100
+0.00 -0.00 100.00 100.00 483737
+400.00 -0.00 100.00 100.00 483737
+800.00 -0.00 100.00 100.00 483737
+1200.00 -0.00 100.00 100.00 483737
+1600.00 -0.00 100.00 100.00 483737
+2000.00 -0.00 100.00 100.00 483737
+2400.00 -0.00 100.00 100.00 483737
+2800.00 -0.00 100.00 100.00 483737
+3200.00 -0.00 100.00 100.00 483737
+3600.00 -0.00 100.00 100.00 483737
+4000.00 -0.00 100.00 100.00 483737
+4400.00 -0.00 100.00 100.00 483737
+4800.00 -0.00 100.00 100.00 483737
+5200.00 -0.00 100.00 100.00 483737
+5600.00 -0.00 100.00 100.00 483737
+6000.00 -0.00 100.00 100.00 483737
+6400.00 -0.00 100.00 100.00 483737
+6800.00 -0.00 100.00 100.00 483737
+7200.00 -0.00 100.00 100.00 483737
+7600.00 -0.00 100.00 100.00 483737
+8000.00 -0.00 100.00 100.00 483737
+8400.00 -0.00 100.00 100.00 483737
+8800.00 -0.00 100.00 100.00 483737
+9200.00 -0.00 100.00 100.00 483737
+9600.00 -0.00 100.00 100.00 483737
+10000.00 -0.00 100.00 100.00 483737
+10400.00 -0.00 100.00 100.00 483737
+10800.00 -0.00 100.00 100.00 483737
+11200.00 -0.00 100.00 100.00 483737
+11600.00 -0.00 100.00 100.00 483737
+12000.00 -0.00 100.00 100.00 483737
+12400.00 -0.00 100.00 100.00 483737
+12800.00 -0.00 100.00 100.00 483737
+13200.00 -0.00 100.00 100.00 483737
+13600.00 -0.00 100.00 100.00 483737
+14000.00 -0.00 100.00 100.00 483737
+14400.00 -0.00 100.00 100.00 483737
+14800.00 -0.00 100.00 100.00 483737
+15200.00 -0.00 100.00 100.00 483737
+15600.00 -0.00 100.00 100.00 483737
+16000.00 -0.00 100.00 100.00 483737
+16400.00 -0.00 100.00 100.00 483737
+16800.00 -0.00 100.00 100.00 483737
+17200.00 -0.00 100.00 100.00 483737
+17600.00 -0.00 100.00 100.00 483737
+18000.00 -0.00 100.00 100.00 483737
+18400.00 -0.00 100.00 100.00 483737
+18800.00 -0.00 100.00 100.00 483737
+19200.00 -0.00 100.00 100.00 483737
+19600.00 -0.00 100.00 100.00 483737
+20000.00 -0.00 100.00 100.00 483737
+20400.00 -0.00 100.00 100.00 483737
+20800.00 -0.00 100.00 100.00 483737
+21200.00 -0.00 100.00 100.00 483737
+21600.00 -0.00 100.00 100.00 483737
+22000.00 -0.00 100.00 100.00 483737
+22400.00 -0.00 100.00 100.00 483737
+22800.00 -0.00 100.00 100.00 483737
+23200.00 -0.00 100.00 100.00 483737
+23600.00 -0.00 100.00 100.00 483737
+24000.00 -0.00 100.00 100.00 483737
+24400.00 -0.00 100.00 100.00 483737
+24800.00 -0.00 100.00 100.00 483737
+25200.00 -0.00 100.00 100.00 483737
+25600.00 -0.00 100.00 100.00 483737
+26000.00 -0.00 100.00 100.00 483737
+26400.00 -0.00 100.00 100.00 483737
+26800.00 -0.00 100.00 100.00 483737
+27200.00 -0.00 100.00 100.00 483737
+27600.00 -0.00 100.00 100.00 483737
+28000.00 -0.00 100.00 100.00 483737
+28400.00 -0.00 100.00 100.00 483737
+28800.00 -0.00 100.00 100.00 483737
+29200.00 -0.00 100.00 100.00 483737
+29600.00 -0.00 100.00 100.00 483737
+30000.00 -0.00 100.00 100.00 483737
+30400.00 -0.00 100.00 100.00 483737
+30800.00 -0.00 100.00 100.00 483737
+31200.00 -0.00 100.00 100.00 483737
+31600.00 -0.00 100.00 100.00 483737
+32000.00 -0.00 100.00 100.00 483737
+32400.00 -0.00 100.00 100.00 483737
+32800.00 -0.00 100.00 100.00 483737
+33200.00 -0.00 100.00 100.00 483737
+33600.00 -0.00 100.00 100.00 483737
+34000.00 -0.00 100.00 100.00 483737
+34400.00 -0.00 100.00 100.00 483737
+34800.00 -0.00 100.00 100.00 483737
+35200.00 -0.00 100.00 100.00 483737
+35600.00 -0.00 100.00 100.00 483737
+36000.00 -0.00 100.00 100.00 483737
+36400.00 -0.00 100.00 100.00 483737
+36800.00 -0.00 100.00 100.00 483737
+37200.00 -0.00 100.00 100.00 483737
+37600.00 -0.00 100.00 100.00 483737
+38000.00 -0.00 100.00 100.00 483737
+38400.00 -0.00 100.00 100.00 483737
+38800.00 -0.00 100.00 100.00 483737
+39200.00 -0.00 100.00 100.00 483737
+39600.00 -0.00 100.00 100.00 483737
+99
+goal1 450.00 -20.00 000000
+goal2 850.00 -20.00 000000
+goal3 1250.00 -20.00 000000
+goal4 1650.00 -20.00 000000
+goal5 2050.00 -20.00 000000
+goal6 2450.00 -20.00 000000
+goal7 2850.00 -20.00 000000
+goal8 3250.00 -20.00 000000
+goal9 3650.00 -20.00 000000
+goal10 4050.00 -20.00 000000
+goal11 4450.00 -20.00 000000
+goal12 4850.00 -20.00 000000
+goal13 5250.00 -20.00 000000
+goal14 5650.00 -20.00 000000
+goal15 6050.00 -20.00 000000
+goal16 6450.00 -20.00 000000
+goal17 6850.00 -20.00 000000
+goal18 7250.00 -20.00 000000
+goal19 7650.00 -20.00 000000
+goal20 8050.00 -20.00 000000
+goal21 8450.00 -20.00 000000
+goal22 8850.00 -20.00 000000
+goal23 9250.00 -20.00 000000
+goal24 9650.00 -20.00 000000
+goal25 10050.00 -20.00 000000
+goal26 10450.00 -20.00 000000
+goal27 10850.00 -20.00 000000
+goal28 11250.00 -20.00 000000
+goal29 11650.00 -20.00 000000
+goal30 12050.00 -20.00 000000
+goal31 12450.00 -20.00 000000
+goal32 12850.00 -20.00 000000
+goal33 13250.00 -20.00 000000
+goal34 13650.00 -20.00 000000
+goal35 14050.00 -20.00 000000
+goal36 14450.00 -20.00 000000
+goal37 14850.00 -20.00 000000
+goal38 15250.00 -20.00 000000
+goal39 15650.00 -20.00 000000
+goal40 16050.00 -20.00 000000
+goal41 16450.00 -20.00 000000
+goal42 16850.00 -20.00 000000
+goal43 17250.00 -20.00 000000
+goal44 17650.00 -20.00 000000
+goal45 18050.00 -20.00 000000
+goal46 18450.00 -20.00 000000
+goal47 18850.00 -20.00 000000
+goal48 19250.00 -20.00 000000
+goal49 19650.00 -20.00 000000
+goal50 20050.00 -20.00 000000
+goal51 20450.00 -20.00 000000
+goal52 20850.00 -20.00 000000
+goal53 21250.00 -20.00 000000
+goal54 21650.00 -20.00 000000
+goal55 22050.00 -20.00 000000
+goal56 22450.00 -20.00 000000
+goal57 22850.00 -20.00 000000
+goal58 23250.00 -20.00 000000
+goal59 23650.00 -20.00 000000
+goal60 24050.00 -20.00 000000
+goal61 24450.00 -20.00 000000
+goal62 24850.00 -20.00 000000
+goal63 25250.00 -20.00 000000
+goal64 25650.00 -20.00 000000
+goal65 26050.00 -20.00 000000
+goal66 26450.00 -20.00 000000
+goal67 26850.00 -20.00 000000
+goal68 27250.00 -20.00 000000
+goal69 27650.00 -20.00 000000
+goal70 28050.00 -20.00 000000
+goal71 28450.00 -20.00 000000
+goal72 28850.00 -20.00 000000
+goal73 29250.00 -20.00 000000
+goal74 29650.00 -20.00 000000
+goal75 30050.00 -20.00 000000
+goal76 30450.00 -20.00 000000
+goal77 30850.00 -20.00 000000
+goal78 31250.00 -20.00 000000
+goal79 31650.00 -20.00 000000
+goal80 32050.00 -20.00 000000
+goal81 32450.00 -20.00 000000
+goal82 32850.00 -20.00 000000
+goal83 33250.00 -20.00 000000
+goal84 33650.00 -20.00 000000
+goal85 34050.00 -20.00 000000
+goal86 34450.00 -20.00 000000
+goal87 34850.00 -20.00 000000
+goal88 35250.00 -20.00 000000
+goal89 35650.00 -20.00 000000
+goal90 36050.00 -20.00 000000
+goal91 36450.00 -20.00 000000
+goal92 36850.00 -20.00 000000
+goal93 37250.00 -20.00 000000
+goal94 37650.00 -20.00 000000
+goal95 38050.00 -20.00 000000
+goal96 38450.00 -20.00 000000
+goal97 38850.00 -20.00 000000
+goal98 39250.00 -20.00 000000
+goal99 39650.00 -20.00 000000
+99
+100.00 50.00 300.00 50.00 d35f5f
+500.00 50.00 300.00 50.00 d35f5f
+900.00 50.00 300.00 50.00 d35f5f
+1300.00 50.00 300.00 50.00 d35f5f
+1700.00 50.00 300.00 50.00 d35f5f
+2100.00 50.00 300.00 50.00 d35f5f
+2500.00 50.00 300.00 50.00 d35f5f
+2900.00 50.00 300.00 50.00 d35f5f
+3300.00 50.00 300.00 50.00 d35f5f
+3700.00 50.00 300.00 50.00 d35f5f
+4100.00 50.00 300.00 50.00 d35f5f
+4500.00 50.00 300.00 50.00 d35f5f
+4900.00 50.00 300.00 50.00 d35f5f
+5300.00 50.00 300.00 50.00 d35f5f
+5700.00 50.00 300.00 50.00 d35f5f
+6100.00 50.00 300.00 50.00 d35f5f
+6500.00 50.00 300.00 50.00 d35f5f
+6900.00 50.00 300.00 50.00 d35f5f
+7300.00 50.00 300.00 50.00 d35f5f
+7700.00 50.00 300.00 50.00 d35f5f
+8100.00 50.00 300.00 50.00 d35f5f
+8500.00 50.00 300.00 50.00 d35f5f
+8900.00 50.00 300.00 50.00 d35f5f
+9300.00 50.00 300.00 50.00 d35f5f
+9700.00 50.00 300.00 50.00 d35f5f
+10100.00 50.00 300.00 50.00 d35f5f
+10500.00 50.00 300.00 50.00 d35f5f
+10900.00 50.00 300.00 50.00 d35f5f
+11300.00 50.00 300.00 50.00 d35f5f
+11700.00 50.00 300.00 50.00 d35f5f
+12100.00 50.00 300.00 50.00 d35f5f
+12500.00 50.00 300.00 50.00 d35f5f
+12900.00 50.00 300.00 50.00 d35f5f
+13300.00 50.00 300.00 50.00 d35f5f
+13700.00 50.00 300.00 50.00 d35f5f
+14100.00 50.00 300.00 50.00 d35f5f
+14500.00 50.00 300.00 50.00 d35f5f
+14900.00 50.00 300.00 50.00 d35f5f
+15300.00 50.00 300.00 50.00 d35f5f
+15700.00 50.00 300.00 50.00 d35f5f
+16100.00 50.00 300.00 50.00 d35f5f
+16500.00 50.00 300.00 50.00 d35f5f
+16900.00 50.00 300.00 50.00 d35f5f
+17300.00 50.00 300.00 50.00 d35f5f
+17700.00 50.00 300.00 50.00 d35f5f
+18100.00 50.00 300.00 50.00 d35f5f
+18500.00 50.00 300.00 50.00 d35f5f
+18900.00 50.00 300.00 50.00 d35f5f
+19300.00 50.00 300.00 50.00 d35f5f
+19700.00 50.00 300.00 50.00 d35f5f
+20100.00 50.00 300.00 50.00 d35f5f
+20500.00 50.00 300.00 50.00 d35f5f
+20900.00 50.00 300.00 50.00 d35f5f
+21300.00 50.00 300.00 50.00 d35f5f
+21700.00 50.00 300.00 50.00 d35f5f
+22100.00 50.00 300.00 50.00 d35f5f
+22500.00 50.00 300.00 50.00 d35f5f
+22900.00 50.00 300.00 50.00 d35f5f
+23300.00 50.00 300.00 50.00 d35f5f
+23700.00 50.00 300.00 50.00 d35f5f
+24100.00 50.00 300.00 50.00 d35f5f
+24500.00 50.00 300.00 50.00 d35f5f
+24900.00 50.00 300.00 50.00 d35f5f
+25300.00 50.00 300.00 50.00 d35f5f
+25700.00 50.00 300.00 50.00 d35f5f
+26100.00 50.00 300.00 50.00 d35f5f
+26500.00 50.00 300.00 50.00 d35f5f
+26900.00 50.00 300.00 50.00 d35f5f
+27300.00 50.00 300.00 50.00 d35f5f
+27700.00 50.00 300.00 50.00 d35f5f
+28100.00 50.00 300.00 50.00 d35f5f
+28500.00 50.00 300.00 50.00 d35f5f
+28900.00 50.00 300.00 50.00 d35f5f
+29300.00 50.00 300.00 50.00 d35f5f
+29700.00 50.00 300.00 50.00 d35f5f
+30100.00 50.00 300.00 50.00 d35f5f
+30500.00 50.00 300.00 50.00 d35f5f
+30900.00 50.00 300.00 50.00 d35f5f
+31300.00 50.00 300.00 50.00 d35f5f
+31700.00 50.00 300.00 50.00 d35f5f
+32100.00 50.00 300.00 50.00 d35f5f
+32500.00 50.00 300.00 50.00 d35f5f
+32900.00 50.00 300.00 50.00 d35f5f
+33300.00 50.00 300.00 50.00 d35f5f
+33700.00 50.00 300.00 50.00 d35f5f
+34100.00 50.00 300.00 50.00 d35f5f
+34500.00 50.00 300.00 50.00 d35f5f
+34900.00 50.00 300.00 50.00 d35f5f
+35300.00 50.00 300.00 50.00 d35f5f
+35700.00 50.00 300.00 50.00 d35f5f
+36100.00 50.00 300.00 50.00 d35f5f
+36500.00 50.00 300.00 50.00 d35f5f
+36900.00 50.00 300.00 50.00 d35f5f
+37300.00 50.00 300.00 50.00 d35f5f
+37700.00 50.00 300.00 50.00 d35f5f
+38100.00 50.00 300.00 50.00 d35f5f
+38500.00 50.00 300.00 50.00 d35f5f
+38900.00 50.00 300.00 50.00 d35f5f
+39300.00 50.00 300.00 50.00 d35f5f
+99
+0.00 75.00 400.00 100.00 83647d
+400.00 75.00 400.00 100.00 83647d
+800.00 75.00 400.00 100.00 83647d
+1200.00 75.00 400.00 100.00 83647d
+1600.00 75.00 400.00 100.00 83647d
+2000.00 75.00 400.00 100.00 83647d
+2400.00 75.00 400.00 100.00 83647d
+2800.00 75.00 400.00 100.00 83647d
+3200.00 75.00 400.00 100.00 83647d
+3600.00 75.00 400.00 100.00 83647d
+4000.00 75.00 400.00 100.00 83647d
+4400.00 75.00 400.00 100.00 83647d
+4800.00 75.00 400.00 100.00 83647d
+5200.00 75.00 400.00 100.00 83647d
+5600.00 75.00 400.00 100.00 83647d
+6000.00 75.00 400.00 100.00 83647d
+6400.00 75.00 400.00 100.00 83647d
+6800.00 75.00 400.00 100.00 83647d
+7200.00 75.00 400.00 100.00 83647d
+7600.00 75.00 400.00 100.00 83647d
+8000.00 75.00 400.00 100.00 83647d
+8400.00 75.00 400.00 100.00 83647d
+8800.00 75.00 400.00 100.00 83647d
+9200.00 75.00 400.00 100.00 83647d
+9600.00 75.00 400.00 100.00 83647d
+10000.00 75.00 400.00 100.00 83647d
+10400.00 75.00 400.00 100.00 83647d
+10800.00 75.00 400.00 100.00 83647d
+11200.00 75.00 400.00 100.00 83647d
+11600.00 75.00 400.00 100.00 83647d
+12000.00 75.00 400.00 100.00 83647d
+12400.00 75.00 400.00 100.00 83647d
+12800.00 75.00 400.00 100.00 83647d
+13200.00 75.00 400.00 100.00 83647d
+13600.00 75.00 400.00 100.00 83647d
+14000.00 75.00 400.00 100.00 83647d
+14400.00 75.00 400.00 100.00 83647d
+14800.00 75.00 400.00 100.00 83647d
+15200.00 75.00 400.00 100.00 83647d
+15600.00 75.00 400.00 100.00 83647d
+16000.00 75.00 400.00 100.00 83647d
+16400.00 75.00 400.00 100.00 83647d
+16800.00 75.00 400.00 100.00 83647d
+17200.00 75.00 400.00 100.00 83647d
+17600.00 75.00 400.00 100.00 83647d
+18000.00 75.00 400.00 100.00 83647d
+18400.00 75.00 400.00 100.00 83647d
+18800.00 75.00 400.00 100.00 83647d
+19200.00 75.00 400.00 100.00 83647d
+19600.00 75.00 400.00 100.00 83647d
+20000.00 75.00 400.00 100.00 83647d
+20400.00 75.00 400.00 100.00 83647d
+20800.00 75.00 400.00 100.00 83647d
+21200.00 75.00 400.00 100.00 83647d
+21600.00 75.00 400.00 100.00 83647d
+22000.00 75.00 400.00 100.00 83647d
+22400.00 75.00 400.00 100.00 83647d
+22800.00 75.00 400.00 100.00 83647d
+23200.00 75.00 400.00 100.00 83647d
+23600.00 75.00 400.00 100.00 83647d
+24000.00 75.00 400.00 100.00 83647d
+24400.00 75.00 400.00 100.00 83647d
+24800.00 75.00 400.00 100.00 83647d
+25200.00 75.00 400.00 100.00 83647d
+25600.00 75.00 400.00 100.00 83647d
+26000.00 75.00 400.00 100.00 83647d
+26400.00 75.00 400.00 100.00 83647d
+26800.00 75.00 400.00 100.00 83647d
+27200.00 75.00 400.00 100.00 83647d
+27600.00 75.00 400.00 100.00 83647d
+28000.00 75.00 400.00 100.00 83647d
+28400.00 75.00 400.00 100.00 83647d
+28800.00 75.00 400.00 100.00 83647d
+29200.00 75.00 400.00 100.00 83647d
+29600.00 75.00 400.00 100.00 83647d
+30000.00 75.00 400.00 100.00 83647d
+30400.00 75.00 400.00 100.00 83647d
+30800.00 75.00 400.00 100.00 83647d
+31200.00 75.00 400.00 100.00 83647d
+31600.00 75.00 400.00 100.00 83647d
+32000.00 75.00 400.00 100.00 83647d
+32400.00 75.00 400.00 100.00 83647d
+32800.00 75.00 400.00 100.00 83647d
+33200.00 75.00 400.00 100.00 83647d
+33600.00 75.00 400.00 100.00 83647d
+34000.00 75.00 400.00 100.00 83647d
+34400.00 75.00 400.00 100.00 83647d
+34800.00 75.00 400.00 100.00 83647d
+35200.00 75.00 400.00 100.00 83647d
+35600.00 75.00 400.00 100.00 83647d
+36000.00 75.00 400.00 100.00 83647d
+36400.00 75.00 400.00 100.00 83647d
+36800.00 75.00 400.00 100.00 83647d
+37200.00 75.00 400.00 100.00 83647d
+37600.00 75.00 400.00 100.00 83647d
+38000.00 75.00 400.00 100.00 83647d
+38400.00 75.00 400.00 100.00 83647d
+38800.00 75.00 400.00 100.00 83647d
+39200.00 75.00 400.00 100.00 83647d
+99
+box1 225.00 50.00 50.00 50.00 a02c2c
+box2 625.00 50.00 50.00 50.00 a02c2c
+box3 1025.00 50.00 50.00 50.00 a02c2c
+box4 1425.00 50.00 50.00 50.00 a02c2c
+box5 1825.00 50.00 50.00 50.00 a02c2c
+box6 2225.00 50.00 50.00 50.00 a02c2c
+box7 2625.00 50.00 50.00 50.00 a02c2c
+box8 3025.00 50.00 50.00 50.00 a02c2c
+box9 3425.00 50.00 50.00 50.00 a02c2c
+box10 3825.00 50.00 50.00 50.00 a02c2c
+box11 4225.00 50.00 50.00 50.00 a02c2c
+box12 4625.00 50.00 50.00 50.00 a02c2c
+box13 5025.00 50.00 50.00 50.00 a02c2c
+box14 5425.00 50.00 50.00 50.00 a02c2c
+box15 5825.00 50.00 50.00 50.00 a02c2c
+box16 6225.00 50.00 50.00 50.00 a02c2c
+box17 6625.00 50.00 50.00 50.00 a02c2c
+box18 7025.00 50.00 50.00 50.00 a02c2c
+box19 7425.00 50.00 50.00 50.00 a02c2c
+box20 7825.00 50.00 50.00 50.00 a02c2c
+box21 8225.00 50.00 50.00 50.00 a02c2c
+box22 8625.00 50.00 50.00 50.00 a02c2c
+box23 9025.00 50.00 50.00 50.00 a02c2c
+box24 9425.00 50.00 50.00 50.00 a02c2c
+box25 9825.00 50.00 50.00 50.00 a02c2c
+box26 10225.00 50.00 50.00 50.00 a02c2c
+box27 10625.00 50.00 50.00 50.00 a02c2c
+box28 11025.00 50.00 50.00 50.00 a02c2c
+box29 11425.00 50.00 50.00 50.00 a02c2c
+box30 11825.00 50.00 50.00 50.00 a02c2c
+box31 12225.00 50.00 50.00 50.00 a02c2c
+box32 12625.00 50.00 50.00 50.00 a02c2c
+box33 13025.00 50.00 50.00 50.00 a02c2c
+box34 13425.00 50.00 50.00 50.00 a02c2c
+box35 13825.00 50.00 50.00 50.00 a02c2c
+box36 14225.00 50.00 50.00 50.00 a02c2c
+box37 14625.00 50.00 50.00 50.00 a02c2c
+box38 15025.00 50.00 50.00 50.00 a02c2c
+box39 15425.00 50.00 50.00 50.00 a02c2c
+box40 15825.00 50.00 50.00 50.00 a02c2c
+box41 16225.00 50.00 50.00 50.00 a02c2c
+box42 16625.00 50.00 50.00 50.00 a02c2c
+box43 17025.00 50.00 50.00 50.00 a02c2c
+box44 17425.00 50.00 50.00 50.00 a02c2c
+box45 17825.00 50.00 50.00 50.00 a02c2c
+box46 18225.00 50.00 50.00 50.00 a02c2c
+box47 18625.00 50.00 50.00 50.00 a02c2c
+box48 19025.00 50.00 50.00 50.00 a02c2c
+box49 19425.00 50.00 50.00 50.00 a02c2c
+box50 19825.00 50.00 50.00 50.00 a02c2c
+box51 20225.00 50.00 50.00 50.00 a02c2c
+box52 20625.00 50.00 50.00 50.00 a02c2c
+box53 21025.00 50.00 50.00 50.00 a02c2c
+box54 21425.00 50.00 50.00 50.00 a02c2c
+box55 21825.00 50.00 50.00 50.00 a02c2c
+box56 22225.00 50.00 50.00 50.00 a02c2c
+box57 22625.00 50.00 50.00 50.00 a02c2c
+box58 23025.00 50.00 50.00 50.00 a02c2c
+box59 23425.00 50.00 50.00 50.00 a02c2c
+box60 23825.00 50.00 50.00 50.00 a02c2c
+box61 24225.00 50.00 50.00 50.00 a02c2c
+box62 24625.00 50.00 50.00 50.00 a02c2c
+box63 25025.00 50.00 50.00 50.00 a02c2c
+box64 25425.00 50.00 50.00 50.00 a02c2c
+box65 25825.00 50.00 50.00 50.00 a02c2c
+box66 26225.00 50.00 50.00 50.00 a02c2c
+box67 26625.00 50.00 50.00 50.00 a02c2c
+box68 27025.00 50.00 50.00 50.00 a02c2c
+box69 27425.00 50.00 50.00 50.00 a02c2c
+box70 27825.00 50.00 50.00 50.00 a02c2c
+box71 28225.00 50.00 50.00 50.00 a02c2c
+box72 28625.00 50.00 50.00 50.00 a02c2c
+box73 29025.00 50.00 50.00 50.00 a02c2c
+box74 29425.00 50.00 50.00 50.00 a02c2c
+box75 29825.00 50.00 50.00 50.00 a02c2c
+box76 30225.00 50.00 50.00 50.00 a02c2c
+box77 30625.00 50.00 50.00 50.00 a02c2c
+box78 31025.00 50.00 50.00 50.00 a02c2c
+box79 31425.00 50.00 50.00 50.00 a02c2c
+box80 31825.00 50.00 50.00 50.00 a02c2c
+box81 32225.00 50.00 50.00 50.00 a02c2c
+box82 32625.00 50.00 50.00 50.00 a02c2c
+box83 33025.00 50.00 50.00 50.00 a02c2c
+box84 33425.00 50.00 50.00 50.00 a02c2c
+box85 33825.00 50.00 50.00 50.00 a02c2c
+box86 34225.00 50.00 50.00 50.00 a02c2c
+box87 34625.00 50.00 50.00 50.00 a02c2c
+box88 35025.00 50.00 50.00 50.00 a02c2c
+box89 35425.00 50.00 50.00 50.00 a02c2c
+box90 35825.00 50.00 50.00 50.00 a02c2c
+box91 36225.00 50.00 50.00 50.00 a02c2c
+box92 36625.00 50.00 50.00 50.00 a02c2c
+box93 37025.00 50.00 50.00 50.00 a02c2c
+box94 37425.00 50.00 50.00 50.00 a02c2c
+box95 37825.00 50.00 50.00 50.00 a02c2c
+box96 38225.00 50.00 50.00 50.00 a02c2c
+box97 38625.00 50.00 50.00 50.00 a02c2c
+box98 39025.00 50.00 50.00 50.00 a02c2c
+box99 39425.00 50.00 50.00 50.00 a02c2c
+99
+label1 150.00 70.00 fffda5
+Lava a plenty!
+label2 550.00 70.00 fffda5
+Lava a plenty!
+label3 950.00 70.00 fffda5
+Lava a plenty!
+label4 1350.00 70.00 fffda5
+Lava a plenty!
+label5 1750.00 70.00 fffda5
+Lava a plenty!
+label6 2150.00 70.00 fffda5
+Lava a plenty!
+label7 2550.00 70.00 fffda5
+Lava a plenty!
+label8 2950.00 70.00 fffda5
+Lava a plenty!
+label9 3350.00 70.00 fffda5
+Lava a plenty!
+label10 3750.00 70.00 fffda5
+Lava a plenty!
+label11 4150.00 70.00 fffda5
+Lava a plenty!
+label12 4550.00 70.00 fffda5
+Lava a plenty!
+label13 4950.00 70.00 fffda5
+Lava a plenty!
+label14 5350.00 70.00 fffda5
+Lava a plenty!
+label15 5750.00 70.00 fffda5
+Lava a plenty!
+label16 6150.00 70.00 fffda5
+Lava a plenty!
+label17 6550.00 70.00 fffda5
+Lava a plenty!
+label18 6950.00 70.00 fffda5
+Lava a plenty!
+label19 7350.00 70.00 fffda5
+Lava a plenty!
+label20 7750.00 70.00 fffda5
+Lava a plenty!
+label21 8150.00 70.00 fffda5
+Lava a plenty!
+label22 8550.00 70.00 fffda5
+Lava a plenty!
+label23 8950.00 70.00 fffda5
+Lava a plenty!
+label24 9350.00 70.00 fffda5
+Lava a plenty!
+label25 9750.00 70.00 fffda5
+Lava a plenty!
+label26 10150.00 70.00 fffda5
+Lava a plenty!
+label27 10550.00 70.00 fffda5
+Lava a plenty!
+label28 10950.00 70.00 fffda5
+Lava a plenty!
+label29 11350.00 70.00 fffda5
+Lava a plenty!
+label30 11750.00 70.00 fffda5
+Lava a plenty!
+label31 12150.00 70.00 fffda5
+Lava a plenty!
+label32 12550.00 70.00 fffda5
+Lava a plenty!
+label33 12950.00 70.00 fffda5
+Lava a plenty!
+label34 13350.00 70.00 fffda5
+Lava a plenty!
+label35 13750.00 70.00 fffda5
+Lava a plenty!
+label36 14150.00 70.00 fffda5
+Lava a plenty!
+label37 14550.00 70.00 fffda5
+Lava a plenty!
+label38 14950.00 70.00 fffda5
+Lava a plenty!
+label39 15350.00 70.00 fffda5
+Lava a plenty!
+label40 15750.00 70.00 fffda5
+Lava a plenty!
+label41 16150.00 70.00 fffda5
+Lava a plenty!
+label42 16550.00 70.00 fffda5
+Lava a plenty!
+label43 16950.00 70.00 fffda5
+Lava a plenty!
+label44 17350.00 70.00 fffda5
+Lava a plenty!
+label45 17750.00 70.00 fffda5
+Lava a plenty!
+label46 18150.00 70.00 fffda5
+Lava a plenty!
+label47 18550.00 70.00 fffda5
+Lava a plenty!
+label48 18950.00 70.00 fffda5
+Lava a plenty!
+label49 19350.00 70.00 fffda5
+Lava a plenty!
+label50 19750.00 70.00 fffda5
+Lava a plenty!
+label51 20150.00 70.00 fffda5
+Lava a plenty!
+label52 20550.00 70.00 fffda5
+Lava a plenty!
+label53 20950.00 70.00 fffda5
+Lava a plenty!
+label54 21350.00 70.00 fffda5
+Lava a plenty!
+label55 21750.00 70.00 fffda5
+Lava a plenty!
+label56 22150.00 70.00 fffda5
+Lava a plenty!
+label57 22550.00 70.00 fffda5
+Lava a plenty!
+label58 22950.00 70.00 fffda5
+Lava a plenty!
+label59 23350.00 70.00 fffda5
+Lava a plenty!
+label60 23750.00 70.00 fffda5
+Lava a plenty!
+label61 24150.00 70.00 fffda5
+Lava a plenty!
+label62 24550.00 70.00 fffda5
+Lava a plenty!
+label63 24950.00 70.00 fffda5
+Lava a plenty!
+label64 25350.00 70.00 fffda5
+Lava a plenty!
+label65 25750.00 70.00 fffda5
+Lava a plenty!
+label66 26150.00 70.00 fffda5
+Lava a plenty!
+label67 26550.00 70.00 fffda5
+Lava a plenty!
+label68 26950.00 70.00 fffda5
+Lava a plenty!
+label69 27350.00 70.00 fffda5
+Lava a plenty!
+label70 27750.00 70.00 fffda5
+Lava a plenty!
+label71 28150.00 70.00 fffda5
+Lava a plenty!
+label72 28550.00 70.00 fffda5
+Lava a plenty!
+label73 28950.00 70.00 fffda5
+Lava a plenty!
+label74 29350.00 70.00 fffda5
+Lava a plenty!
+label75 29750.00 70.00 fffda5
+Lava a plenty!
+label76 30150.00 70.00 fffda5
+Lava a plenty!
+label77 30550.00 70.00 fffda5
+Lava a plenty!
+label78 30950.00 70.00 fffda5
+Lava a plenty!
+label79 31350.00 70.00 fffda5
+Lava a plenty!
+label80 31750.00 70.00 fffda5
+Lava a plenty!
+label81 32150.00 70.00 fffda5
+Lava a plenty!
+label82 32550.00 70.00 fffda5
+Lava a plenty!
+label83 32950.00 70.00 fffda5
+Lava a plenty!
+label84 33350.00 70.00 fffda5
+Lava a plenty!
+label85 33750.00 70.00 fffda5
+Lava a plenty!
+label86 34150.00 70.00 fffda5
+Lava a plenty!
+label87 34550.00 70.00 fffda5
+Lava a plenty!
+label88 34950.00 70.00 fffda5
+Lava a plenty!
+label89 35350.00 70.00 fffda5
+Lava a plenty!
+label90 35750.00 70.00 fffda5
+Lava a plenty!
+label91 36150.00 70.00 fffda5
+Lava a plenty!
+label92 36550.00 70.00 fffda5
+Lava a plenty!
+label93 36950.00 70.00 fffda5
+Lava a plenty!
+label94 37350.00 70.00 fffda5
+Lava a plenty!
+label95 37750.00 70.00 fffda5
+Lava a plenty!
+label96 38150.00 70.00 fffda5
+Lava a plenty!
+label97 38550.00 70.00 fffda5
+Lava a plenty!
+label98 38950.00 70.00 fffda5
+Lava a plenty!
+label99 39350.00 70.00 fffda5
+Lava a plenty!
+99
+425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal1"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal2"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+1225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal3"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+1625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal4"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+2025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal5"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+2425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal6"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+2825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal7"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+3225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal8"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+3625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal9"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+4025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal10"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+4425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal11"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+4825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal12"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+5225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal13"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+5625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal14"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+6025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal15"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+6425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal16"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+6825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal17"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+7225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal18"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+7625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal19"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+8025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal20"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+8425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal21"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+8825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal22"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+9225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal23"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+9625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal24"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+10025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal25"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+10425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal26"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+10825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal27"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+11225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal28"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+11625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal29"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+12025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal30"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+12425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal31"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+12825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal32"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+13225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal33"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+13625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal34"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+14025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal35"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+14425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal36"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+14825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal37"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+15225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal38"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+15625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal39"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+16025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal40"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+16425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal41"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+16825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal42"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+17225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal43"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+17625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal44"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+18025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal45"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+18425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal46"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+18825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal47"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+19225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal48"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+19625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal49"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+20025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal50"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+20425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal51"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+20825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal52"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+21225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal53"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+21625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal54"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+22025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal55"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+22425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal56"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+22825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal57"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+23225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal58"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+23625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal59"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+24025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal60"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+24425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal61"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+24825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal62"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+25225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal63"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+25625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal64"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+26025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal65"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+26425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal66"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+26825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal67"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+27225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal68"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+27625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal69"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+28025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal70"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+28425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal71"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+28825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal72"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+29225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal73"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+29625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal74"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+30025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal75"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+30425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal76"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+30825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal77"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+31225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal78"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+31625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal79"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+32025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal80"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+32425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal81"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+32825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal82"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+33225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal83"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+33625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal84"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+34025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal85"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+34425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal86"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+34825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal87"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+35225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal88"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+35625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal89"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+36025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal90"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+36425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal91"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+36825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal92"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+37225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal93"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+37625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal94"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+38025.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal95"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+38425.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal96"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+38825.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal97"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+39225.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal98"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
+39625.00 -200.00 50.00 300.00 deaa87
+5
+(set args '("goal99"))
+ (defun on-enter ()
+  (send `(game level goal ,(car args) hide)))
+ (defun on-leave ()
+ ())
