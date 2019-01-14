@@ -22,3 +22,5 @@
     - create TODOs right in the code for the unfinished work,
     - submit PR with the unfinished work and TODOs,
     - TODOs will be converted to separate issues
+- Neglected PRs older than two weeks are gonna be automatically closed.
+- Don't get discouraged if your PR was not merged. The Rules and CI are designed to keep the quality of the code high so you don't have to worry about it yourself. Keep experimenting, keep improving.
