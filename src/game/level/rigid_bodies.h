@@ -4,6 +4,8 @@
 typedef struct RigidBodies RigidBodies;
 typedef struct Camera Camera;
 
+typedef unsigned int RigidBodyId;
+
 RigidBodies *create_rigid_bodies(void);
 void destroy_rigid_bodies(RigidBodies *rigid_bodies);
 
@@ -16,8 +18,8 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
 int rigid_bodies_add(RigidBodies *rigid_bodies,
                      Rect rect,
                      Color color,
-                     unsigned int *id);
+                     RigidBodyId *id);
 int rigid_bodies_remove(RigidBodies *rigid_bodies,
-                        unsigned int id);
+                        RigidBodyId id);
 
 #endif  // RIGID_BODIES_H_

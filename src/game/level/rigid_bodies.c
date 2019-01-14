@@ -140,7 +140,7 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
 int rigid_bodies_add(RigidBodies *rigid_bodies,
                      Rect rect,
                      Color color,
-                     unsigned int *id)
+                     RigidBodyId *id)
 {
     trace_assert(rigid_bodies);
     trace_assert(id);
@@ -154,7 +154,7 @@ int rigid_bodies_add(RigidBodies *rigid_bodies,
 }
 
 int rigid_bodies_remove(RigidBodies *rigid_bodies,
-                        unsigned int id)
+                        RigidBodyId id)
 {
     trace_assert(rigid_bodies);
     (void) id;
