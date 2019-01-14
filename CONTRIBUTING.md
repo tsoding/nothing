@@ -15,7 +15,7 @@
 
 # Pull Requests
 
-- Keep your PRs nice and small around 300 changes. PRs that are way over that threshold won't be merged.
+- Keep your PRs nice and small around 300 changes (including adding new lines). PRs that are way over that threshold won't be merged.
   - If 300 changes is not enough,
     - make as many changes as you can according to the PR size limitation,
     - make sure that the code is compilable and the application is usable,
