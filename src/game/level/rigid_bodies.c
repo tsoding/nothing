@@ -8,8 +8,6 @@
 
 #include "./rigid_bodies.h"
 
-/* TODO(#635): RigidBodies doesn't have enough functionality to replace Rigid_rect */
-
 struct RigidBodies
 {
     Lt *lt;
@@ -129,11 +127,77 @@ RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
     return id;
 }
 
-void rigid_bodies_disable(RigidBodies *rigid_bodies,
-                          RigidBodyId id)
+Rect rigid_bodies_hitbox(const RigidBodies *rigid_bodies,
+                         RigidBodyId id)
 {
     trace_assert(rigid_bodies);
-    (void) id;
+    trace_assert(id < rigid_bodies->count);
 
-    /* TODO: rigid_bodies_disable is not implemented */
+    return rect_from_vecs(rigid_bodies->positions[id],
+                          rigid_bodies->sizes[id]);
+}
+
+void rigid_bodies_move(RigidBodies *rigid_bodies,
+                       RigidBodyId id,
+                       Vec movement)
+{
+    trace_assert(rigid_bodies);
+    trace_assert(id < rigid_bodies->count);
+
+    rigid_bodies->movements[id] = movement;
+}
+
+int rigid_bodies_touches_ground(const RigidBodies *rigid_bodies,
+                                RigidBodyId id)
+{
+    trace_assert(rigid_bodies);
+    trace_assert(id < rigid_bodies->count);
+
+    return rigid_bodies->grounded[id];
+}
+
+void rigid_bodies_apply_force(RigidBodies * rigid_bodies,
+                              RigidBodyId id,
+                              Vec force)
+{
+    trace_assert(rigid_bodies);
+    trace_assert(id < rigid_bodies->count);
+
+    rigid_bodies->forces[id] = vec_sum(rigid_bodies->forces[id], force);
+}
+
+void rigid_bodies_transform_velocity(RigidBodies *rigid_bodies,
+                                     RigidBodyId id,
+                                     mat3x3 trans_mat)
+{
+    trace_assert(rigid_bodies);
+    trace_assert(id < rigid_bodies->count);
+
+    rigid_bodies->velocities[id] = point_mat3x3_product(
+        rigid_bodies->velocities[id],
+        trans_mat);
+}
+
+void rigid_bodies_teleport_to(RigidBodies *rigid_bodies,
+                              RigidBodyId id,
+                              Vec position)
+{
+    trace_assert(rigid_bodies);
+    trace_assert(id < rigid_bodies->count);
+
+    rigid_bodies->positions[id] = position;
+}
+
+void rigid_bodies_damper(RigidBodies *rigid_bodies,
+                         RigidBodyId id,
+                         Vec v)
+{
+    trace_assert(rigid_bodies);
+    trace_assert(id < rigid_bodies->count);
+
+    rigid_bodies_apply_force(
+        rigid_bodies, id,
+        vec(
+            rigid_bodies->velocities[id].x * v.x,
+            rigid_bodies->velocities[id].y * v.y));
 }
