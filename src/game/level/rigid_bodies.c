@@ -127,15 +127,6 @@ RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
     return id;
 }
 
-void rigid_bodies_disable(RigidBodies *rigid_bodies,
-                          RigidBodyId id)
-{
-    trace_assert(rigid_bodies);
-    (void) id;
-
-    /* TODO: rigid_bodies_disable is not implemented */
-}
-
 Rect rigid_bodies_hitbox(const RigidBodies *rigid_bodies,
                          RigidBodyId id)
 {
