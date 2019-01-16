@@ -119,12 +119,14 @@ RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
                              Color color)
 {
     trace_assert(rigid_bodies);
-    (void) rect;
-    (void) color;
+    trace_assert(rigid_bodies->count < rigid_bodies->capacity);
 
-    /* TODO(#640): rigid_bodies_add is not implemented */
+    RigidBodyId id = rigid_bodies->count;
+    rigid_bodies->positions[id] = vec(rect.x, rect.y);
+    rigid_bodies->sizes[id] = vec(rect.w, rect.h);
+    rigid_bodies->colors[id] = color;
 
-    return 0;
+    return id;
 }
 
 void rigid_bodies_disable(RigidBodies *rigid_bodies,
