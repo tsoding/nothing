@@ -27,16 +27,16 @@ struct Level
 {
     Lt *lt;
 
-    Physical_world *physical_world;
+    Background *background;
     Player *player;
     Platforms *platforms;
     Goals *goals;
     Lava *lava;
     Platforms *back_platforms;
-    Background *background;
     Boxes *boxes;
     Labels *labels;
     Regions *regions;
+    Physical_world *physical_world;
 };
 
 Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
