@@ -20,5 +20,31 @@ RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
 void rigid_bodies_disable(RigidBodies *rigid_bodies,
                           RigidBodyId id);
 
+Rect rigid_bodies_hitbox(const RigidBodies *rigid_bodies,
+                         RigidBodyId id);
+
+void rigid_bodies_move(RigidBodies *rigid_bodies,
+                       RigidBodyId id,
+                       Vec movement);
+
+int rigid_bodies_touches_ground(const RigidBodies *rigid_bodies,
+                                RigidBodyId id);
+
+void rigid_bodies_apply_force(RigidBodies * rigid_bodies,
+                              RigidBodyId id,
+                              Vec force);
+
+void rigid_bodies_transform_velocity(RigidBodies *rigid_bodies,
+                                     RigidBodyId id,
+                                     mat3x3 trans_mat);
+
+void rigid_bodies_teleport_to(RigidBodies *rigid_bodies,
+                              RigidBodyId id,
+                              Vec position);
+
+void rigid_bodies_damper(RigidBodies *rigid_bodies,
+                         RigidBodyId id,
+                         Vec v);
+
 
 #endif  // RIGID_BODIES_H_
