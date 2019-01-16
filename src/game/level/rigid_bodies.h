@@ -17,5 +17,8 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
 RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
                              Rect rect,
                              Color color);
+void rigid_bodies_disable(RigidBodies *rigid_bodies,
+                          RigidBodyId id);
+
 
 #endif  // RIGID_BODIES_H_
