@@ -16,9 +16,6 @@ struct RigidBodies
     size_t capacity;
     size_t count;
 
-    bool *removed;
-    RigidBodyId *ids;
-
     Vec *positions;
     Vec *velocities;
     Vec *movements;
@@ -43,20 +40,6 @@ RigidBodies *create_rigid_bodies(size_t capacity)
 
     rigid_bodies->capacity = capacity;
     rigid_bodies->count = 0;
-
-    rigid_bodies->removed = PUSH_LT(lt, nth_calloc(capacity, sizeof(bool)), free);
-    if (rigid_bodies->removed == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    rigid_bodies->ids = PUSH_LT(lt, nth_calloc(capacity, sizeof(RigidBodyId)), free);
-    if (rigid_bodies->ids == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    for (size_t i = 0; i < capacity; ++i) {
-        rigid_bodies->ids[i] = i;
-    }
 
     rigid_bodies->positions = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec)), free);
     if (rigid_bodies->positions == NULL) {
@@ -144,14 +127,5 @@ int rigid_bodies_add(RigidBodies *rigid_bodies,
 
     /* TODO(#640): rigid_bodies_add is not implemented */
 
-    return 0;
-}
-
-int rigid_bodies_remove(RigidBodies *rigid_bodies,
-                        RigidBodyId id)
-{
-    trace_assert(rigid_bodies);
-    (void) id;
-    /* TODO(#641): rigid_bodies_remove is not implemented */
     return 0;
 }

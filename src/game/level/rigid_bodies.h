@@ -19,7 +19,5 @@ int rigid_bodies_add(RigidBodies *rigid_bodies,
                      Rect rect,
                      Color color,
                      RigidBodyId *id);
-int rigid_bodies_remove(RigidBodies *rigid_bodies,
-                        RigidBodyId id);
 
 #endif  // RIGID_BODIES_H_
