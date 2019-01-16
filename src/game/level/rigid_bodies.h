@@ -4,9 +4,9 @@
 typedef struct RigidBodies RigidBodies;
 typedef struct Camera Camera;
 
-typedef unsigned int RigidBodyId;
+typedef size_t RigidBodyId;
 
-RigidBodies *create_rigid_bodies(void);
+RigidBodies *create_rigid_bodies(size_t capacity);
 void destroy_rigid_bodies(RigidBodies *rigid_bodies);
 
 int rigid_bodies_update(RigidBodies *rigid_bodies,
