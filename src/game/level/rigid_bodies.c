@@ -121,7 +121,7 @@ RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
     trace_assert(rigid_bodies);
     trace_assert(rigid_bodies->count < rigid_bodies->capacity);
 
-    RigidBodyId id = rigid_bodies->count;
+    RigidBodyId id = rigid_bodies->count++;
     rigid_bodies->positions[id] = vec(rect.x, rect.y);
     rigid_bodies->sizes[id] = vec(rect.w, rect.h);
     rigid_bodies->colors[id] = color;
