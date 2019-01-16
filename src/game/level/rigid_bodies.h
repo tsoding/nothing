@@ -14,10 +14,8 @@ int rigid_bodies_update(RigidBodies *rigid_bodies,
 
 int rigid_bodies_render(RigidBodies *rigid_bodies,
                         Camera *camera);
-
-int rigid_bodies_add(RigidBodies *rigid_bodies,
-                     Rect rect,
-                     Color color,
-                     RigidBodyId *id);
+RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
+                             Rect rect,
+                             Color color);
 
 #endif  // RIGID_BODIES_H_

@@ -114,16 +114,13 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
     return 0;
 }
 
-int rigid_bodies_add(RigidBodies *rigid_bodies,
-                     Rect rect,
-                     Color color,
-                     RigidBodyId *id)
+RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
+                             Rect rect,
+                             Color color)
 {
     trace_assert(rigid_bodies);
-    trace_assert(id);
     (void) rect;
     (void) color;
-    (void) id;
 
     /* TODO(#640): rigid_bodies_add is not implemented */
 
