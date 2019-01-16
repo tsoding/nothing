@@ -1,10 +1,10 @@
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/stacktrace.h"
 #include "game/camera.h"
-#include "algo/dynarray.h"
 
 #include "./rigid_bodies.h"
 
@@ -12,99 +12,77 @@
 
 struct RigidBodies
 {
+    Lt *lt;
+    size_t capacity;
+    size_t count;
+
     Vec *positions;
     Vec *velocities;
     Vec *movements;
     Vec *sizes;
     Color *colors;
-    int *ground_touches;
+    bool *grounded;
     Vec *forces;
 };
 
-RigidBodies *create_rigid_bodies(void)
+RigidBodies *create_rigid_bodies(size_t capacity)
 {
-    RigidBodies *rigid_bodies = nth_calloc(1, sizeof(RigidBodies));
+    Lt *lt = create_lt();
+    if (lt == NULL) {
+        return NULL;
+    }
+
+    RigidBodies *rigid_bodies = PUSH_LT(lt, nth_calloc(1, sizeof(RigidBodies)), free);
     if (rigid_bodies == NULL) {
-        goto fail;
+        RETURN_LT(lt, NULL);
     }
+    rigid_bodies->lt = lt;
 
-    rigid_bodies->positions = create_dynarray(sizeof(Vec));
+    rigid_bodies->capacity = capacity;
+    rigid_bodies->count = 0;
+
+    rigid_bodies->positions = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec)), free);
     if (rigid_bodies->positions == NULL) {
-        goto fail;
+        RETURN_LT(lt, NULL);
     }
 
-    rigid_bodies->velocities = create_dynarray(sizeof(Vec));
+    rigid_bodies->velocities = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec)), free);
     if (rigid_bodies->velocities == NULL) {
-        goto fail;
+        RETURN_LT(lt, NULL);
     }
 
-    rigid_bodies->movements = create_dynarray(sizeof(Vec));
+    rigid_bodies->movements = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec)), free);
     if (rigid_bodies->movements == NULL) {
-        goto fail;
+        RETURN_LT(lt, NULL);
     }
 
-    rigid_bodies->sizes = create_dynarray(sizeof(Vec));
+    rigid_bodies->sizes = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec)), free);
     if (rigid_bodies->sizes == NULL) {
-        goto fail;
+        RETURN_LT(lt, NULL);
     }
 
-    rigid_bodies->colors = create_dynarray(sizeof(Color));
+    rigid_bodies->colors = PUSH_LT(lt, nth_calloc(capacity, sizeof(Color)), free);
     if (rigid_bodies->colors == NULL) {
-        goto fail;
+        RETURN_LT(lt, NULL);
     }
 
-    rigid_bodies->ground_touches = create_dynarray(sizeof(int));
-    if (rigid_bodies->ground_touches == NULL) {
-        goto fail;
+    rigid_bodies->grounded = PUSH_LT(lt, nth_calloc(capacity, sizeof(bool)), free);
+    if (rigid_bodies->grounded == NULL) {
+        RETURN_LT(lt, NULL);
     }
 
-    rigid_bodies->forces = create_dynarray(sizeof(Vec));
+    rigid_bodies->forces = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec)), free);
     if (rigid_bodies->forces == NULL) {
-        goto fail;
+        RETURN_LT(lt, NULL);
     }
 
     return rigid_bodies;
-
-fail:
-    destroy_rigid_bodies(rigid_bodies);
-    return NULL;
 }
 
 void destroy_rigid_bodies(RigidBodies *rigid_bodies)
 {
-    if (rigid_bodies == NULL) {
-        return;
-    }
-
-    if (rigid_bodies->positions != NULL) {
-        destroy_dynarray(rigid_bodies->positions);
-    }
-
-    if (rigid_bodies->velocities != NULL) {
-        destroy_dynarray(rigid_bodies->velocities);
-    }
-
-    if (rigid_bodies->movements != NULL) {
-        destroy_dynarray(rigid_bodies->movements);
-    }
-
-    if (rigid_bodies->sizes != NULL) {
-        destroy_dynarray(rigid_bodies->sizes);
-    }
-
-    if (rigid_bodies->colors != NULL) {
-        destroy_dynarray(rigid_bodies->colors);
-    }
-
-    if (rigid_bodies->ground_touches != NULL) {
-        destroy_dynarray(rigid_bodies->ground_touches);
-    }
-
-    if (rigid_bodies->forces != NULL) {
-        destroy_dynarray(rigid_bodies->forces);
-    }
-
-    free(rigid_bodies);
+    trace_assert(rigid_bodies);
+    RETURN_LT0(rigid_bodies->lt);
 }
 
 int rigid_bodies_update(RigidBodies *rigid_bodies,
@@ -122,8 +100,7 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
     trace_assert(rigid_bodies);
     trace_assert(camera);
 
-    const size_t n = dynarray_count(rigid_bodies->positions);
-    for (size_t i = 0; i < n; ++i) {
+    for (size_t i = 0; i < rigid_bodies->count; ++i) {
         if (camera_fill_rect(
                 camera,
                 rect_from_vecs(
@@ -137,27 +114,26 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
     return 0;
 }
 
-int rigid_bodies_add(RigidBodies *rigid_bodies,
-                     Rect rect,
-                     Color color,
-                     unsigned int *id)
+RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
+                             Rect rect,
+                             Color color)
 {
     trace_assert(rigid_bodies);
-    trace_assert(id);
-    (void) rect;
-    (void) color;
-    (void) id;
+    trace_assert(rigid_bodies->count < rigid_bodies->capacity);
 
-    /* TODO(#640): rigid_bodies_add is not implemented */
+    RigidBodyId id = rigid_bodies->count++;
+    rigid_bodies->positions[id] = vec(rect.x, rect.y);
+    rigid_bodies->sizes[id] = vec(rect.w, rect.h);
+    rigid_bodies->colors[id] = color;
 
-    return 0;
+    return id;
 }
 
-int rigid_bodies_remove(RigidBodies *rigid_bodies,
-                        unsigned int id)
+void rigid_bodies_disable(RigidBodies *rigid_bodies,
+                          RigidBodyId id)
 {
     trace_assert(rigid_bodies);
     (void) id;
-    /* TODO(#641): rigid_bodies_remove is not implemented */
-    return 0;
+
+    /* TODO: rigid_bodies_disable is not implemented */
 }
