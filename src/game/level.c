@@ -1,7 +1,10 @@
 #include <SDL2/SDL.h>
 #include "system/stacktrace.h"
 
+#include "broadcast.h"
 #include "color.h"
+#include "ebisp/builtins.h"
+#include "ebisp/interpreter.h"
 #include "game/camera.h"
 #include "game/level.h"
 #include "game/level/background.h"
@@ -13,13 +16,11 @@
 #include "game/level/platforms.h"
 #include "game/level/player.h"
 #include "game/level/regions.h"
+#include "game/level/rigid_bodies.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
 #include "system/nth_alloc.h"
-#include "ebisp/interpreter.h"
-#include "ebisp/builtins.h"
-#include "broadcast.h"
 
 #define LEVEL_LINE_MAX_LENGTH 512
 
@@ -37,6 +38,7 @@ struct Level
     Labels *labels;
     Regions *regions;
     Physical_world *physical_world;
+    RigidBodies *rigid_bodies;
 };
 
 Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
@@ -146,6 +148,11 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
             level->boxes,
             level->physical_world) < 0) { RETURN_LT(lt, NULL); }
 
+    level->rigid_bodies = PUSH_LT(lt, create_rigid_bodies(1024), destroy_rigid_bodies);
+    if (level->rigid_bodies == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->lt = lt;
 
     destroy_line_stream(RELEASE_LT(lt, level_stream));
@@ -196,6 +203,10 @@ int level_render(const Level *level, Camera *camera)
     }
 
     if (regions_render(level->regions, camera) < 0) {
+        return -1;
+    }
+
+    if (rigid_bodies_render(level->rigid_bodies, camera) < 0) {
         return -1;
     }
 
