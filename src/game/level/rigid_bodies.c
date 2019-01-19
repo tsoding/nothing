@@ -113,7 +113,7 @@ int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
 {
     trace_assert(rigid_bodies);
 
-    /* TODO: rigid_bodies_collide_with_itself is not implemented */
+    /* TODO(#647): rigid_bodies_collide_with_itself is not implemented */
 
     return 0;
 }
@@ -214,8 +214,6 @@ int rigid_bodies_update(RigidBodies *rigid_bodies,
 
     memset(rigid_bodies->forces, 0,
            sizeof(Vec) * rigid_bodies->count);
-
-    /* TODO: not implemented */
 
     return 0;
 }
