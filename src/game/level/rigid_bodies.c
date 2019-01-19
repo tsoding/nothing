@@ -1,10 +1,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "game/camera.h"
+#include "game/level/platforms.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/stacktrace.h"
-#include "game/camera.h"
 
 #include "./rigid_bodies.h"
 
@@ -22,6 +23,31 @@ struct RigidBodies
     bool *grounded;
     Vec *forces;
 };
+
+static const Vec opposing_rect_side_forces[RECT_SIDE_N] = {
+    { .x = 1.0f,  .y =  0.0f  },  /* RECT_SIDE_LEFT = 0, */
+    { .x = -1.0f, .y =  0.0f  },  /* RECT_SIDE_RIGHT, */
+    { .x = 0.0f,  .y =  1.0f, },  /* RECT_SIDE_TOP, */
+    { .x = 0.0f,  .y = -1.0f, }   /* RECT_SIDE_BOTTOM, */
+};
+
+static Vec opposing_force_by_sides(int sides[RECT_SIDE_N])
+{
+    Vec opposing_force = {
+        .x = 0.0f,
+        .y = 0.0f
+    };
+
+    for (Rect_side side = 0; side < RECT_SIDE_N; ++side) {
+        if (sides[side]) {
+            vec_add(
+                &opposing_force,
+                opposing_rect_side_forces[side]);
+        }
+    }
+
+    return opposing_force;
+}
 
 RigidBodies *create_rigid_bodies(size_t capacity)
 {
@@ -83,12 +109,105 @@ void destroy_rigid_bodies(RigidBodies *rigid_bodies)
     RETURN_LT0(rigid_bodies->lt);
 }
 
+int rigid_bodies_collide_with_platforms(
+    RigidBodies *rigid_bodies,
+    const Platforms *platforms)
+{
+    trace_assert(rigid_bodies);
+    trace_assert(platforms);
+
+    int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
+
+    for (size_t i = 0; i < rigid_bodies->count; ++i) {
+        memset(sides, 0, sizeof(int) * RECT_SIDE_N);
+
+        platforms_touches_rect_sides(platforms, rigid_bodies_hitbox(rigid_bodies, i), sides);
+
+        if (sides[RECT_SIDE_BOTTOM]) {
+            rigid_bodies->grounded[i] = true;
+        }
+
+        Vec opforce_direction = opposing_force_by_sides(sides);
+
+        /* It's an opposing force that we apply to platforms. But
+         * since platforms are impenetrable, it's not needed
+         * here. Plus we are trying to apply that force to the rigid
+         * body itself, because I'm dumb. */
+        /*
+        rigid_bodies_apply_force(
+            rigid_bodies, i,
+            vec_scala_mult(
+                vec_neg(vec_norm(opforce_direction)),
+                vec_length(
+                    vec_sum(rigid_bodies->velocities[i],
+                            rigid_bodies->movements[i])) * 8.0f));
+        */
+
+        if (fabs(opforce_direction.x) > 1e-6 && (opforce_direction.x < 0.0f) != ((rigid_bodies->velocities[i].x + rigid_bodies->movements[i].x) < 0.0f)) {
+            rigid_bodies->velocities[i].x = 0.0f;
+            rigid_bodies->movements[i].x = 0.0f;
+        }
+
+        if (fabs(opforce_direction.y) > 1e-6 && (opforce_direction.y < 0.0f) != ((rigid_bodies->velocities[i].y + rigid_bodies->movements[i].y) < 0.0f)) {
+            rigid_bodies->velocities[i].y = 0.0f;
+            rigid_bodies->movements[i].y = 0.0f;
+
+            if (vec_length(rigid_bodies->velocities[i]) > 1e-6) {
+                rigid_bodies_apply_force(
+                    rigid_bodies, i,
+                    vec_scala_mult(
+                        vec_neg(rigid_bodies->velocities[i]),
+                        16.0f));
+            }
+        }
+
+        for (int j = 0; j < 1000 && vec_length(opforce_direction) > 1e-6; ++j) {
+            rigid_bodies->positions[i] = vec_sum(
+                rigid_bodies->positions[i],
+                vec_scala_mult(
+                    opforce_direction,
+                    1e-2f));
+
+            memset(sides, 0, sizeof(int) * RECT_SIDE_N);
+            platforms_touches_rect_sides(platforms, rigid_bodies_hitbox(rigid_bodies, i), sides);
+            opforce_direction = opposing_force_by_sides(sides);
+        }
+    }
+
+    return 0;
+}
+
 int rigid_bodies_update(RigidBodies *rigid_bodies,
                         float delta_time)
 {
     trace_assert(rigid_bodies);
-    (void) delta_time;
-    /* TODO(#639): rigid_bodies_update is not implemented */
+
+    memset(rigid_bodies->grounded, 0,
+           sizeof(bool) * rigid_bodies->count);
+
+    for (size_t i = 0; i < rigid_bodies->count; ++i) {
+        rigid_bodies->velocities[i] = vec_sum(
+            rigid_bodies->velocities[i],
+            vec_scala_mult(
+                rigid_bodies->forces[i],
+                delta_time));
+    }
+
+    for (size_t i = 0; i < rigid_bodies->count; ++i) {
+        rigid_bodies->positions[i] = vec_sum(
+            rigid_bodies->positions[i],
+            vec_scala_mult(
+                vec_sum(
+                    rigid_bodies->velocities[i],
+                    rigid_bodies->movements[i]),
+                delta_time));
+    }
+
+    memset(rigid_bodies->forces, 0,
+           sizeof(Vec) * rigid_bodies->count);
+
+    /* TODO: not implemented */
+
     return 0;
 }
 
@@ -154,6 +273,14 @@ int rigid_bodies_touches_ground(const RigidBodies *rigid_bodies,
     trace_assert(id < rigid_bodies->count);
 
     return rigid_bodies->grounded[id];
+}
+
+void rigid_bodies_apply_omniforce(RigidBodies *rigid_bodies,
+                                  Vec force)
+{
+    for (size_t i = 0; i < rigid_bodies->count; ++i) {
+        rigid_bodies_apply_force(rigid_bodies, i, force);
+    }
 }
 
 void rigid_bodies_apply_force(RigidBodies * rigid_bodies,
