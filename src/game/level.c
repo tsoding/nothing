@@ -23,6 +23,7 @@
 #include "system/nth_alloc.h"
 
 #define LEVEL_LINE_MAX_LENGTH 512
+#define LEVEL_GRAVITY 1500.0f
 
 struct Level
 {
@@ -152,6 +153,16 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
     if (level->rigid_bodies == NULL) {
         RETURN_LT(lt, NULL);
     }
+    rigid_bodies_add(
+        level->rigid_bodies,
+        rect(0.0, -1000.0, 100.0, 100.0),
+        rgba(1.0f, 0.0f, 0.0f, 1.0f));
+
+    rigid_bodies_add(
+        level->rigid_bodies,
+        rect(150.0, -1000.0, 100.0, 100.0),
+        rgba(0.0f, 1.0f, 0.0f, 1.0f));
+
 
     level->lt = lt;
 
@@ -220,10 +231,14 @@ int level_update(Level *level, float delta_time)
 
     physical_world_apply_gravity(level->physical_world);
     boxes_float_in_lava(level->boxes, level->lava);
+    rigid_bodies_apply_omniforce(level->rigid_bodies, vec(0.0f, LEVEL_GRAVITY));
 
+    rigid_bodies_update(level->rigid_bodies, delta_time);
     boxes_update(level->boxes, delta_time);
     player_update(level->player, delta_time);
 
+    rigid_bodies_collide_with_itself(level->rigid_bodies);
+    rigid_bodies_collide_with_platforms(level->rigid_bodies, level->platforms);
     physical_world_collide_solids(level->physical_world, level->platforms);
 
     player_hide_goals(level->player, level->goals);
