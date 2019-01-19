@@ -109,6 +109,15 @@ void destroy_rigid_bodies(RigidBodies *rigid_bodies)
     RETURN_LT0(rigid_bodies->lt);
 }
 
+int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
+{
+    trace_assert(rigid_bodies);
+
+    /* TODO: rigid_bodies_collide_with_itself is not implemented */
+
+    return 0;
+}
+
 int rigid_bodies_collide_with_platforms(
     RigidBodies *rigid_bodies,
     const Platforms *platforms)
