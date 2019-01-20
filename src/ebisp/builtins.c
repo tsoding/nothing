@@ -122,27 +122,8 @@ bool list_of_symbols_p(struct Expr obj)
 
 bool lambda_p(struct Expr obj)
 {
-    if (!list_p(obj)) {
-        return false;
-    }
-
-    if (length_of_list(obj) < 2) {
-        return false;
-    }
-
-    if (!symbol_p(obj.cons->car)) {
-        return false;
-    }
-
-    if (!is_lambda(obj.cons)) {
-        return false;
-    }
-
-    if (!list_of_symbols_p(obj.cons->cdr.cons->car)) {
-        return false;
-    }
-
-    return true;
+    return obj.type == EXPR_ATOM
+        && obj.atom->type == ATOM_LAMBDA;
 }
 
 long int length_of_list(struct Expr obj)
@@ -168,11 +149,6 @@ struct Expr assoc(struct Expr key, struct Expr alist)
     }
 
     return alist;
-}
-
-bool is_lambda(struct Cons *cons) {
-    return (strcmp(cons->car.atom->sym, "lambda") == 0) ||
-            (strcmp(cons->car.atom->sym, "λ") == 0);
 }
 
 const char *specials[] = {

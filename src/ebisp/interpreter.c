@@ -135,7 +135,7 @@ static struct EvalResult call_lambda(Gc *gc,
                                  args));
     }
 
-    struct Expr vars = lambda.cons->cdr.cons->car;
+    struct Expr vars = lambda.atom->lambda.args_list;
 
     if (length_of_list(args) != length_of_list(vars)) {
         return eval_failure(CONS(gc,
@@ -144,7 +144,7 @@ static struct EvalResult call_lambda(Gc *gc,
     }
 
     push_scope_frame(gc, scope, vars, args);
-    struct Expr body = lambda.cons->cdr.cons->cdr;
+    struct Expr body = lambda.atom->lambda.body;
 
     struct EvalResult result = eval_success(NIL(gc));
 

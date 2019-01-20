@@ -12,9 +12,7 @@
 static struct Expr
 lambda(Gc *gc, struct Expr args, struct Expr body)
 {
-    return CONS(gc,
-                SYMBOL(gc, "lambda"),
-                CONS(gc, args, body));
+    return atom_as_expr(create_lambda_atom(gc, args, body));
 }
 
 static struct EvalResult
