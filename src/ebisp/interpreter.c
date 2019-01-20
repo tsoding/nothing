@@ -120,7 +120,6 @@ static struct EvalResult eval_all_args(Gc *gc, struct Scope *scope, struct Expr 
 }
 
 static struct EvalResult call_lambda(Gc *gc,
-                                     struct Scope *scope,
                                      struct Expr lambda,
                                      struct Expr args) {
     if (!lambda_p(lambda)) {
@@ -143,20 +142,22 @@ static struct EvalResult call_lambda(Gc *gc,
                                  NUMBER(gc, length_of_list(args))));
     }
 
-    push_scope_frame(gc, scope, vars, args);
+    struct Scope scope = {
+        .expr = lambda.atom->lambda.environ
+    };
+    push_scope_frame(gc, &scope, vars, args);
+
     struct Expr body = lambda.atom->lambda.body;
 
     struct EvalResult result = eval_success(NIL(gc));
 
     while (!nil_p(body)) {
-        result = eval(gc, scope, body.cons->car);
+        result = eval(gc, &scope, body.cons->car);
         if (result.is_error) {
             return result;
         }
         body = body.cons->cdr;
     }
-
-    pop_scope_frame(gc, scope);
 
     return result;
 }
@@ -184,7 +185,7 @@ static struct EvalResult eval_funcall(Gc *gc,
             callable_result.expr.atom->native.param, gc, scope, args_result.expr);
     }
 
-    return call_lambda(gc, scope, callable_result.expr, args_result.expr);
+    return call_lambda(gc, callable_result.expr, args_result.expr);
 }
 
 
