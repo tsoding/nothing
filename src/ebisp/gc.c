@@ -154,12 +154,12 @@ static void gc_traverse_expr(Gc *gc, struct Expr root)
         return;
     }
 
+    gc->visited[root_index] = 1;
+
     if (cons_p(root)) {
         gc_traverse_expr(gc, root.cons->car);
         gc_traverse_expr(gc, root.cons->cdr);
     }
-
-    gc->visited[root_index] = 1;
 }
 
 void gc_collect(Gc *gc, struct Expr root)
