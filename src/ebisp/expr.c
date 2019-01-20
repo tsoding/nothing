@@ -55,6 +55,11 @@ void print_atom_as_sexpr(FILE *stream, struct Atom *atom)
         fprintf(stream, "\"%s\"", atom->str);
         break;
 
+    case ATOM_LAMBDA:
+        /* TODO: Print LAMBDAs with arglists (and maybe bodies) */
+        fprintf(stream, "<lambda>");
+        break;
+
     case ATOM_NATIVE:
         fprintf(stream, "<native>");
         break;
@@ -221,6 +226,32 @@ error:
     return NULL;
 }
 
+struct Atom *create_lambda_atom(Gc *gc, struct Expr args_list, struct Expr body)
+{
+    struct Atom *atom = malloc(sizeof(struct Atom));
+
+    if (atom == NULL) {
+        goto error;
+    }
+
+    atom->type = ATOM_LAMBDA;
+    atom->lambda.args_list = args_list;
+    atom->lambda.body = body;
+
+    if (gc_add_expr(gc, atom_as_expr(atom)) < 0) {
+        goto error;
+    }
+
+    return atom;
+
+error:
+    if (atom != NULL) {
+        free(atom);
+    }
+
+    return NULL;
+}
+
 struct Atom *create_native_atom(Gc *gc, NativeFunction fun, void *param)
 {
     struct Atom *atom = malloc(sizeof(struct Atom));
@@ -255,6 +286,7 @@ void destroy_atom(struct Atom *atom)
         free(atom->str);
     } break;
 
+    case ATOM_LAMBDA:
     case ATOM_NATIVE:
     case ATOM_NUMBER: {
         /* Nothing */
@@ -278,6 +310,10 @@ static int atom_as_sexpr(struct Atom *atom, char *output, size_t n)
 
     case ATOM_STRING:
         return snprintf(output, n, "\"%s\"", atom->str);
+
+    case ATOM_LAMBDA:
+        /* TODO: Print LAMBDAs with arglists (and maybe bodies) */
+        return snprintf(output, n, "<lambda>");
 
     case ATOM_NATIVE:
         return snprintf(output, n, "<native>");
@@ -376,6 +412,7 @@ const char *atom_type_as_string(enum AtomType atom_type)
     case ATOM_SYMBOL: return "ATOM_SYMBOL";
     case ATOM_NUMBER: return "ATOM_NUMBER";
     case ATOM_STRING: return "ATOM_STRING";
+    case ATOM_LAMBDA: return "ATOM_LAMBDA";
     case ATOM_NATIVE: return "ATOM_NATIVE";
     }
 

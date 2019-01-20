@@ -65,11 +65,18 @@ struct Native
     void *param;
 };
 
+struct Lambda
+{
+    struct Expr args_list;
+    struct Expr body;
+};
+
 enum AtomType
 {
     ATOM_SYMBOL = 0,
     ATOM_NUMBER,
     ATOM_STRING,
+    ATOM_LAMBDA,
     ATOM_NATIVE
 };
 
@@ -84,6 +91,7 @@ struct Atom
         long int num;           // ATOM_NUMBER
         char *sym;              // ATOM_SYMBOL
         char *str;              // ATOM_STRING
+        struct Lambda lambda;   // ATOM_LAMBDA
         struct Native native;   // ATOM_NATIVE
     };
 };
@@ -91,6 +99,7 @@ struct Atom
 struct Atom *create_number_atom(Gc *gc, long int num);
 struct Atom *create_string_atom(Gc *gc, const char *str, const char *str_end);
 struct Atom *create_symbol_atom(Gc *gc, const char *sym, const char *sym_end);
+struct Atom *create_lambda_atom(Gc *gc, struct Expr args_list, struct Expr body);
 struct Atom *create_native_atom(Gc *gc, NativeFunction fun, void *param);
 void destroy_atom(struct Atom *atom);
 void print_atom_as_sexpr(FILE *stream, struct Atom *atom);

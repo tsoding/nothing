@@ -159,6 +159,10 @@ static void gc_traverse_expr(Gc *gc, struct Expr root)
     if (cons_p(root)) {
         gc_traverse_expr(gc, root.cons->car);
         gc_traverse_expr(gc, root.cons->cdr);
+    } else if (root.type == EXPR_ATOM
+               && root.atom->type == ATOM_LAMBDA) {
+        gc_traverse_expr(gc, root.atom->lambda.args_list);
+        gc_traverse_expr(gc, root.atom->lambda.body);
     }
 }
 
