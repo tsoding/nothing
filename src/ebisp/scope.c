@@ -19,16 +19,29 @@ struct Expr get_scope_value(const struct Scope *scope, struct Expr name)
 static struct Expr set_scope_value_impl(Gc *gc, struct Expr scope, struct Expr name, struct Expr value)
 {
     if (cons_p(scope)) {
-        if (!nil_p(assoc(name, scope.cons->car)) || nil_p(scope.cons->cdr)) {
-            return CONS(gc,
-                        CONS(gc, CONS(gc, name, value), scope.cons->car),
-                        scope.cons->cdr);
+        struct Expr value_cell = assoc(name, scope.cons->car);
+
+        if (!nil_p(value_cell)) {
+            /* A binding already exists, mutate it */
+            value_cell.cons->cdr = value;
+
+            return scope;
+        } else if (nil_p(scope.cons->cdr)) {
+            /* We're at the global scope, add a binding, preserving
+             * the identity of the environment list "spine" so that
+             * closed-over environments see the new value cell */
+            scope.cons->car = CONS(gc, CONS(gc, name, value), scope.cons->car);
+
+            return scope;
         } else {
-            return CONS(gc,
-                        scope.cons->car,
-                        set_scope_value_impl(gc, scope.cons->cdr, name, value));
+            /* We haven't found a value cell yet, and we're not at
+             * global scope, so recurse */
+            set_scope_value_impl(gc, scope.cons->cdr, name, value);
+
+            return scope;
         }
     } else {
+        /* ??? Should never happen? */
         return CONS(gc,
                     CONS(gc, CONS(gc, name, value), NIL(gc)),
                     scope);
