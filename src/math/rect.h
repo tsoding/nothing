@@ -45,4 +45,8 @@ float line_length(Line line);
 
 SDL_Rect rect_for_sdl(Rect rect);
 
+Vec rect_center(Rect rect);
+
+Rect rect_snap(Rect pivot, Rect rect);
+
 #endif  // RECT_H_

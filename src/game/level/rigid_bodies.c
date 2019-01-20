@@ -130,7 +130,9 @@ int rigid_bodies_collide_with_platforms(
     for (size_t i = 0; i < rigid_bodies->count; ++i) {
         memset(sides, 0, sizeof(int) * RECT_SIDE_N);
 
-        platforms_touches_rect_sides(platforms, rigid_bodies_hitbox(rigid_bodies, i), sides);
+        Rect hitbox = rigid_bodies_hitbox(rigid_bodies, i);
+
+        platforms_touches_rect_sides(platforms, hitbox, sides);
 
         if (sides[RECT_SIDE_BOTTOM]) {
             rigid_bodies->grounded[i] = true;
@@ -170,17 +172,9 @@ int rigid_bodies_collide_with_platforms(
             }
         }
 
-        for (int j = 0; j < 1000 && vec_length(opforce_direction) > 1e-6; ++j) {
-            rigid_bodies->positions[i] = vec_sum(
-                rigid_bodies->positions[i],
-                vec_scala_mult(
-                    opforce_direction,
-                    1e-2f));
-
-            memset(sides, 0, sizeof(int) * RECT_SIDE_N);
-            platforms_touches_rect_sides(platforms, rigid_bodies_hitbox(rigid_bodies, i), sides);
-            opforce_direction = opposing_force_by_sides(sides);
-        }
+        hitbox = platforms_snap_rect(platforms, hitbox);
+        rigid_bodies->positions[i].x = hitbox.x;
+        rigid_bodies->positions[i].y = hitbox.y;
     }
 
     return 0;
