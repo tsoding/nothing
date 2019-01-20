@@ -226,7 +226,7 @@ error:
     return NULL;
 }
 
-struct Atom *create_lambda_atom(Gc *gc, struct Expr args_list, struct Expr body)
+struct Atom *create_lambda_atom(Gc *gc, struct Expr args_list, struct Expr body, struct Expr environ)
 {
     struct Atom *atom = malloc(sizeof(struct Atom));
 
@@ -237,6 +237,7 @@ struct Atom *create_lambda_atom(Gc *gc, struct Expr args_list, struct Expr body)
     atom->type = ATOM_LAMBDA;
     atom->lambda.args_list = args_list;
     atom->lambda.body = body;
+    atom->lambda.environ = environ;
 
     if (gc_add_expr(gc, atom_as_expr(atom)) < 0) {
         goto error;

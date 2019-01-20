@@ -69,6 +69,7 @@ struct Lambda
 {
     struct Expr args_list;
     struct Expr body;
+    struct Expr environ;
 };
 
 enum AtomType
@@ -99,7 +100,7 @@ struct Atom
 struct Atom *create_number_atom(Gc *gc, long int num);
 struct Atom *create_string_atom(Gc *gc, const char *str, const char *str_end);
 struct Atom *create_symbol_atom(Gc *gc, const char *sym, const char *sym_end);
-struct Atom *create_lambda_atom(Gc *gc, struct Expr args_list, struct Expr body);
+struct Atom *create_lambda_atom(Gc *gc, struct Expr args_list, struct Expr body, struct Expr environ);
 struct Atom *create_native_atom(Gc *gc, NativeFunction fun, void *param);
 void destroy_atom(struct Atom *atom);
 void print_atom_as_sexpr(FILE *stream, struct Atom *atom);

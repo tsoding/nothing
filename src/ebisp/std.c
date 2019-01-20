@@ -10,9 +10,9 @@
 #include "std.h"
 
 static struct Expr
-lambda(Gc *gc, struct Expr args, struct Expr body)
+lambda(Gc *gc, struct Expr args, struct Expr body, struct Scope *scope)
 {
-    return atom_as_expr(create_lambda_atom(gc, args, body));
+    return atom_as_expr(create_lambda_atom(gc, args, body, scope->expr));
 }
 
 static struct EvalResult
@@ -251,7 +251,7 @@ defun(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 
     return eval(gc, scope,
                 list(gc, "qee", "set", name,
-                            lambda(gc, args_list, body)));
+                            lambda(gc, args_list, body, scope)));
 }
 
 static struct EvalResult
@@ -301,7 +301,7 @@ lambda_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
         return wrong_argument_type(gc, "list-of-symbolsp", args_list);
     }
 
-    return eval_success(lambda(gc, args_list, body));
+    return eval_success(lambda(gc, args_list, body, scope));
 }
 
 static struct EvalResult
