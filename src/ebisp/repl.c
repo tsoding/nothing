@@ -45,9 +45,7 @@ int main(int argc, char *argv[])
     char buffer[REPL_BUFFER_MAX + 1];
 
     Gc *gc = create_gc();
-    struct Scope scope = {
-        .expr = CONS(gc, NIL(gc), NIL(gc))
-    };
+    struct Scope scope = create_scope(gc);
 
     load_std_library(gc, &scope);
     load_repl_runtime(gc, &scope);
