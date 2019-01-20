@@ -66,6 +66,7 @@ static struct EvalResult eval_atom(Gc *gc, struct Scope *scope, struct Atom *ato
     switch (atom->type) {
     case ATOM_NUMBER:
     case ATOM_STRING:
+    case ATOM_LAMBDA:
     case ATOM_NATIVE:
         return eval_success(atom_as_expr(atom));
 
@@ -119,7 +120,6 @@ static struct EvalResult eval_all_args(Gc *gc, struct Scope *scope, struct Expr 
 }
 
 static struct EvalResult call_lambda(Gc *gc,
-                                     struct Scope *scope,
                                      struct Expr lambda,
                                      struct Expr args) {
     if (!lambda_p(lambda)) {
@@ -134,7 +134,7 @@ static struct EvalResult call_lambda(Gc *gc,
                                  args));
     }
 
-    struct Expr vars = lambda.cons->cdr.cons->car;
+    struct Expr vars = lambda.atom->lambda.args_list;
 
     if (length_of_list(args) != length_of_list(vars)) {
         return eval_failure(CONS(gc,
@@ -142,20 +142,22 @@ static struct EvalResult call_lambda(Gc *gc,
                                  NUMBER(gc, length_of_list(args))));
     }
 
-    push_scope_frame(gc, scope, vars, args);
-    struct Expr body = lambda.cons->cdr.cons->cdr;
+    struct Scope scope = {
+        .expr = lambda.atom->lambda.environ
+    };
+    push_scope_frame(gc, &scope, vars, args);
+
+    struct Expr body = lambda.atom->lambda.body;
 
     struct EvalResult result = eval_success(NIL(gc));
 
     while (!nil_p(body)) {
-        result = eval(gc, scope, body.cons->car);
+        result = eval(gc, &scope, body.cons->car);
         if (result.is_error) {
             return result;
         }
         body = body.cons->cdr;
     }
-
-    pop_scope_frame(gc, scope);
 
     return result;
 }
@@ -183,7 +185,7 @@ static struct EvalResult eval_funcall(Gc *gc,
             callable_result.expr.atom->native.param, gc, scope, args_result.expr);
     }
 
-    return call_lambda(gc, scope, callable_result.expr, args_result.expr);
+    return call_lambda(gc, callable_result.expr, args_result.expr);
 }
 
 

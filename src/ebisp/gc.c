@@ -154,12 +154,17 @@ static void gc_traverse_expr(Gc *gc, struct Expr root)
         return;
     }
 
+    gc->visited[root_index] = 1;
+
     if (cons_p(root)) {
         gc_traverse_expr(gc, root.cons->car);
         gc_traverse_expr(gc, root.cons->cdr);
+    } else if (root.type == EXPR_ATOM
+               && root.atom->type == ATOM_LAMBDA) {
+        gc_traverse_expr(gc, root.atom->lambda.args_list);
+        gc_traverse_expr(gc, root.atom->lambda.body);
+        gc_traverse_expr(gc, root.atom->lambda.environ);
     }
-
-    gc->visited[root_index] = 1;
 }
 
 void gc_collect(Gc *gc, struct Expr root)
