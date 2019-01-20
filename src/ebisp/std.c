@@ -247,6 +247,10 @@ defun(void *param, Gc *gc, struct Scope *scope, struct Expr args)
         return result;
     }
 
+    if (!list_of_symbols_p(args_list)) {
+        return wrong_argument_type(gc, "list-of-symbolsp", args_list);
+    }
+
     return eval(gc, scope,
                 list(gc, "qee", "set", name,
                             lambda(gc, args_list, body)));
