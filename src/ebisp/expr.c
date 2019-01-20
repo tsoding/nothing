@@ -56,7 +56,7 @@ void print_atom_as_sexpr(FILE *stream, struct Atom *atom)
         break;
 
     case ATOM_LAMBDA:
-        /* TODO: Print LAMBDAs with arglists (and maybe bodies) in print_atom_as_sexpr and atom_as_sexpr */
+        /* TODO(#649): Print LAMBDAs with arglists (and maybe bodies) in print_atom_as_sexpr and atom_as_sexpr */
         fprintf(stream, "<lambda>");
         break;
 
