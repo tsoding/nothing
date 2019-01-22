@@ -23,6 +23,7 @@ Vec vec_sum(Vec v1, Vec v2);
 Vec vec_neg(Vec v);
 void vec_add(Vec *v1, Vec v2);
 float vec_length(Vec v);
+float vec_sqr_norm(Vec v);
 Vec vec_scala_mult(Vec v, float scalar);
 Vec vec_entry_mult(Vec v1, Vec v2);
 Vec vec_entry_div(Vec v1, Vec v2);

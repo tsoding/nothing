@@ -1,9 +1,9 @@
 #include <SDL2/SDL.h>
-#include "system/stacktrace.h"
 #include <math.h>
 #include <string.h>
 
 #include "rect.h"
+#include "system/stacktrace.h"
 
 Rect rect(float x, float y, float w, float h)
 {
@@ -179,5 +179,31 @@ Rect rect_snap(Rect pivot, Rect r)
         return rect(x, r.y, r.w, r.h);
     } else {
         return rect(r.x, y, r.w, r.h);
+    }
+}
+
+void rect_impulse(Rect *r1, Rect *r2)
+{
+    trace_assert(r1);
+    trace_assert(r2);
+
+    const Vec c1 = rect_center(*r1);
+    const Vec c2 = rect_center(*r2);
+    const float dx = fminf(c1.x, c2.x) + fabsf(c1.x - c2.x) * 0.5f;
+    const float dy = fminf(c1.y, c2.y) + fabsf(c1.y - c2.y) * 0.5f;
+    const float sx = c1.x < c2.x ? 1.0f : -1.0f;
+    const float sy = c1.y < c2.y ? 1.0f : -1.0f;
+    const float cx1 = dx - sx * r1->w * 0.5f;
+    const float cy1 = dy - sy * r1->h * 0.5f;
+    const float cx2 = dx + sx * r2->w * 0.5f;
+    const float cy2 = dy + sy * r2->h * 0.5f;
+
+    if (vec_sqr_norm(vec_sum(vec(cx1, c1.y), vec_neg(vec(cx2, c2.y)))) <
+        vec_sqr_norm(vec_sum(vec(c1.x, cy1), vec_neg(vec(c2.x, cy2))))) {
+        r1->x = cx1 - r1->w * 0.5f;
+        r2->x = cx2 - r2->w * 0.5f;
+    } else {
+        r1->y = cy1 - r1->h * 0.5f;
+        r2->y = cy2 - r2->h * 0.5f;
     }
 }
