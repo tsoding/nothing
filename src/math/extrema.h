@@ -11,8 +11,6 @@
         return a > b ? a : b;                   \
     }
 
-MIN_TEMPLATE(float, min_float)
-MAX_TEMPLATE(float, max_float)
 MIN_TEMPLATE(int64_t, min_int64)
 MAX_TEMPLATE(int64_t, max_int64)
 
