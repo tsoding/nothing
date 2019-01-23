@@ -157,20 +157,6 @@ static int rigid_bodies_collide_with_platforms(
 
         Vec opforce_direction = opposing_force_by_sides(sides);
 
-        /* It's an opposing force that we apply to platforms. But
-         * since platforms are impenetrable, it's not needed
-         * here. Plus we are trying to apply that force to the rigid
-         * body itself, because I'm dumb. */
-        /*
-        rigid_bodies_apply_force(
-            rigid_bodies, i,
-            vec_scala_mult(
-                vec_neg(vec_norm(opforce_direction)),
-                vec_length(
-                    vec_sum(rigid_bodies->velocities[i],
-                            rigid_bodies->movements[i])) * 8.0f));
-        */
-
         if (fabs(opforce_direction.x) > 1e-6 && (opforce_direction.x < 0.0f) != ((rigid_bodies->velocities[i].x + rigid_bodies->movements[i].x) < 0.0f)) {
             rigid_bodies->velocities[i].x = 0.0f;
             rigid_bodies->movements[i].x = 0.0f;
