@@ -125,8 +125,8 @@ Point point_mat3x3_product(Point p, mat3x3 m)
 
 Vec vec_norm(Vec v)
 {
-    // TODO: math/point/vec_norm: calculating the length of vector just to check if it's zero vector is too expensive
-    // It involves multiplication and sqrt. We can just check if its components are close to 0.0f.
+    // TODO: math/point/vec_norm: using vec_length is too expensive
+    //   It involves multiplication and sqrt. We can just check if its components are close to 0.0f.
 
     const float l = vec_length(v);
 
