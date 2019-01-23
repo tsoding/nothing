@@ -113,7 +113,24 @@ int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
 {
     trace_assert(rigid_bodies);
 
-    /* TODO(#647): rigid_bodies_collide_with_itself is not implemented */
+    for (size_t i1 = 0; i1 < rigid_bodies->count - 1; ++i1) {
+        for (size_t i2 = i1 + 1; i2 < rigid_bodies->count; ++i2) {
+            Rect r1 = rect_from_vecs(rigid_bodies->positions[i1], rigid_bodies->sizes[i1]);
+            Rect r2 = rect_from_vecs(rigid_bodies->positions[i2], rigid_bodies->sizes[i2]);
+
+            if (!rects_overlap(r1, r2)) {
+                continue;
+            }
+
+            rect_impulse(&r1, &r2);
+
+            rigid_bodies->positions[i1] = vec(r1.x, r1.y);
+            rigid_bodies->sizes[i1] = vec(r1.w, r1.h);
+
+            rigid_bodies->positions[i2] = vec(r2.x, r2.y);
+            rigid_bodies->sizes[i2] = vec(r2.w, r2.h);
+        }
+    }
 
     return 0;
 }
