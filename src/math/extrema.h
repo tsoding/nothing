@@ -1,17 +1,11 @@
 #ifndef EXTREMA_H_
 #define EXTREMA_H_
 
-#define MIN_TEMPLATE(T, NAME)                   \
-    inline T NAME(T a, T b) {                   \
-        return a < b ? a : b;                   \
-    }
+#include <stdint.h>
 
-#define MAX_TEMPLATE(T, NAME)                   \
-    inline T NAME(T a, T b) {                   \
-        return a > b ? a : b;                   \
-    }
-
-MIN_TEMPLATE(int64_t, min_int64)
-MAX_TEMPLATE(int64_t, max_int64)
+// WARNING! Any attempts to "generalize" or "improve" this translation
+// unit will result in an instantly closed Pull Request without any
+// further discussion.
+int64_t max_int64(int64_t a, int64_t b);
 
 #endif  // EXTREMA_H_

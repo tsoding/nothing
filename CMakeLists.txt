@@ -126,6 +126,7 @@ add_executable(nothing
   src/game/level/rigid_bodies.h
   src/game/level/rigid_bodies.c
   src/math/extrema.h
+  src/math/extrema.c
 )
 
 add_executable(repl
