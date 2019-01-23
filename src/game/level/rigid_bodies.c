@@ -113,6 +113,10 @@ static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
 {
     trace_assert(rigid_bodies);
 
+    if (rigid_bodies->count == 0) {
+        return 0;
+    }
+
     for (size_t i1 = 0; i1 < rigid_bodies->count - 1; ++i1) {
         for (size_t i2 = i1 + 1; i2 < rigid_bodies->count; ++i2) {
             // TODO: Rigid Bodies perform too many conversions between rect and to vecs representation
