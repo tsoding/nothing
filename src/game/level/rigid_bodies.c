@@ -115,6 +115,10 @@ static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
 
     for (size_t i1 = 0; i1 < rigid_bodies->count - 1; ++i1) {
         for (size_t i2 = i1 + 1; i2 < rigid_bodies->count; ++i2) {
+            // TODO: Rigid Bodies perform too many conversions between rect and to vecs representation
+            //   Maybe it's just better to represent the bodies as rects all the time?
+            // TODO: Rigid Bodies don't exchange forces with each other
+
             Rect r1 = rect_from_vecs(rigid_bodies->positions[i1], rigid_bodies->sizes[i1]);
             Rect r2 = rect_from_vecs(rigid_bodies->positions[i2], rigid_bodies->sizes[i2]);
 
@@ -155,6 +159,7 @@ static int rigid_bodies_collide_with_platforms(
             rigid_bodies->grounded[i] = true;
         }
 
+        /* TODO: Opposing force notion in Rigid Bodies seems redundant */
         Vec opforce_direction = opposing_force_by_sides(sides);
 
         if (fabs(opforce_direction.x) > 1e-6 && (opforce_direction.x < 0.0f) != ((rigid_bodies->velocities[i].x + rigid_bodies->movements[i].x) < 0.0f)) {
