@@ -237,8 +237,7 @@ int level_update(Level *level, float delta_time)
     boxes_update(level->boxes, delta_time);
     player_update(level->player, delta_time);
 
-    rigid_bodies_collide_with_itself(level->rigid_bodies);
-    rigid_bodies_collide_with_platforms(level->rigid_bodies, level->platforms);
+    rigid_bodies_collide(level->rigid_bodies, level->platforms);
     physical_world_collide_solids(level->physical_world, level->platforms);
 
     player_hide_goals(level->player, level->goals);

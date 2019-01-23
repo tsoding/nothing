@@ -109,7 +109,7 @@ void destroy_rigid_bodies(RigidBodies *rigid_bodies)
     RETURN_LT0(rigid_bodies->lt);
 }
 
-int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
+static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
 {
     trace_assert(rigid_bodies);
 
@@ -135,7 +135,7 @@ int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
     return 0;
 }
 
-int rigid_bodies_collide_with_platforms(
+static int rigid_bodies_collide_with_platforms(
     RigidBodies *rigid_bodies,
     const Platforms *platforms)
 {
@@ -192,6 +192,20 @@ int rigid_bodies_collide_with_platforms(
         hitbox = platforms_snap_rect(platforms, hitbox);
         rigid_bodies->positions[i].x = hitbox.x;
         rigid_bodies->positions[i].y = hitbox.y;
+    }
+
+    return 0;
+}
+
+int rigid_bodies_collide(RigidBodies *rigid_bodies,
+                         const Platforms *platforms)
+{
+    if (rigid_bodies_collide_with_itself(rigid_bodies) < 0) {
+        return -1;
+    }
+
+    if (rigid_bodies_collide_with_platforms(rigid_bodies, platforms) < 0) {
+        return -1;
     }
 
     return 0;
