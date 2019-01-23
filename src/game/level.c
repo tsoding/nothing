@@ -153,16 +153,6 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
     if (level->rigid_bodies == NULL) {
         RETURN_LT(lt, NULL);
     }
-    rigid_bodies_add(
-        level->rigid_bodies,
-        rect(0.0, -1000.0, 100.0, 100.0),
-        rgba(1.0f, 0.0f, 0.0f, 1.0f));
-
-    rigid_bodies_add(
-        level->rigid_bodies,
-        rect(150.0, -1000.0, 100.0, 100.0),
-        rgba(0.0f, 1.0f, 0.0f, 1.0f));
-
 
     level->lt = lt;
 
