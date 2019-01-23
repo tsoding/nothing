@@ -244,7 +244,7 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
     trace_assert(rigid_bodies);
     trace_assert(camera);
 
-    /* TODO: Rigid Bodies don't render their ids in the debug mode */
+    /* TODO(#656): Rigid Bodies don't render their ids in the debug mode */
 
     for (size_t i = 0; i < rigid_bodies->count; ++i) {
         if (camera_fill_rect(
