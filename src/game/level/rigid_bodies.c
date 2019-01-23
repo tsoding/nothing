@@ -163,7 +163,7 @@ static int rigid_bodies_collide_with_platforms(
             rigid_bodies->grounded[i] = true;
         }
 
-        /* TODO: Opposing force notion in Rigid Bodies seems redundant */
+        /* TODO(#655): Opposing force notion in Rigid Bodies seems redundant */
         Vec opforce_direction = opposing_force_by_sides(sides);
 
         if (fabs(opforce_direction.x) > 1e-6 && (opforce_direction.x < 0.0f) != ((rigid_bodies->velocities[i].x + rigid_bodies->movements[i].x) < 0.0f)) {
