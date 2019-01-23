@@ -100,7 +100,7 @@ int level_picker_input(LevelPicker *level_picker,
 {
     trace_assert(level_picker);
     trace_assert(keyboard_state);
-    trace_assert(the_stick_of_joy);
+    (void) the_stick_of_joy;
     return 0;
 }
 
