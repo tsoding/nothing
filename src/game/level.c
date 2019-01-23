@@ -468,12 +468,13 @@ struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct E
             return res;
         }
 
-        rigid_bodies_add(
-            level->rigid_bodies,
-            rect((float)x, (float)y, (float)w, (float)h),
-            hexstr(color));
-
-        return eval_success(NIL(gc));
+        return eval_success(
+            NUMBER(
+                gc,
+                (long int) rigid_bodies_add(
+                    level->rigid_bodies,
+                    rect((float)x, (float)y, (float)w, (float)h),
+                    hexstr(color))));
     }
 
     return unknown_target(gc, "level", target);
