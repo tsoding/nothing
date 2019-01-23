@@ -450,7 +450,7 @@ struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct E
         return labels_send(level->labels, gc, scope, rest);
     } else if (strcmp(target, "box") == 0) {
         return boxes_send(level->boxes, gc, scope, rest);
-    } else if (strcmp(target, "body") == 0) {
+    } else if (strcmp(target, "body-push") == 0) {
         long int id = 0, x = 0, y = 0;
         res = match_list(gc, "ddd", rest, &id, &x, &y);
         if (res.is_error) {
@@ -458,6 +458,21 @@ struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct E
         }
 
         rigid_bodies_apply_force(level->rigid_bodies, (size_t) id, vec((float) x, (float) y));
+
+        return eval_success(NIL(gc));
+    } else if (strcmp(target, "body-add") == 0) {
+        long int x = 0, y = 0, w = 0, h = 0;
+        const char *color = 0;
+        res = match_list(gc, "dddds", rest, &x, &y, &w, &h, &color);
+        if (res.is_error) {
+            return res;
+        }
+
+        rigid_bodies_add(
+            level->rigid_bodies,
+            rect((float)x, (float)y, (float)w, (float)h),
+            hexstr(color));
+
         return eval_success(NIL(gc));
     }
 
