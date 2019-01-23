@@ -153,16 +153,6 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
     if (level->rigid_bodies == NULL) {
         RETURN_LT(lt, NULL);
     }
-    rigid_bodies_add(
-        level->rigid_bodies,
-        rect(0.0, -1000.0, 100.0, 100.0),
-        rgba(1.0f, 0.0f, 0.0f, 1.0f));
-
-    rigid_bodies_add(
-        level->rigid_bodies,
-        rect(150.0, -1000.0, 100.0, 100.0),
-        rgba(0.0f, 1.0f, 0.0f, 1.0f));
-
 
     level->lt = lt;
 
@@ -237,8 +227,7 @@ int level_update(Level *level, float delta_time)
     boxes_update(level->boxes, delta_time);
     player_update(level->player, delta_time);
 
-    rigid_bodies_collide_with_itself(level->rigid_bodies);
-    rigid_bodies_collide_with_platforms(level->rigid_bodies, level->platforms);
+    rigid_bodies_collide(level->rigid_bodies, level->platforms);
     physical_world_collide_solids(level->physical_world, level->platforms);
 
     player_hide_goals(level->player, level->goals);
@@ -451,6 +440,31 @@ struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct E
         return labels_send(level->labels, gc, scope, rest);
     } else if (strcmp(target, "box") == 0) {
         return boxes_send(level->boxes, gc, scope, rest);
+    } else if (strcmp(target, "body-push") == 0) {
+        long int id = 0, x = 0, y = 0;
+        res = match_list(gc, "ddd", rest, &id, &x, &y);
+        if (res.is_error) {
+            return res;
+        }
+
+        rigid_bodies_apply_force(level->rigid_bodies, (size_t) id, vec((float) x, (float) y));
+
+        return eval_success(NIL(gc));
+    } else if (strcmp(target, "body-add") == 0) {
+        long int x = 0, y = 0, w = 0, h = 0;
+        const char *color = 0;
+        res = match_list(gc, "dddds", rest, &x, &y, &w, &h, &color);
+        if (res.is_error) {
+            return res;
+        }
+
+        return eval_success(
+            NUMBER(
+                gc,
+                (long int) rigid_bodies_add(
+                    level->rigid_bodies,
+                    rect((float)x, (float)y, (float)w, (float)h),
+                    hexstr(color))));
     }
 
     return unknown_target(gc, "level", target);

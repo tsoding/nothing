@@ -109,16 +109,41 @@ void destroy_rigid_bodies(RigidBodies *rigid_bodies)
     RETURN_LT0(rigid_bodies->lt);
 }
 
-int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
+static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
 {
     trace_assert(rigid_bodies);
 
-    /* TODO(#647): rigid_bodies_collide_with_itself is not implemented */
+    if (rigid_bodies->count == 0) {
+        return 0;
+    }
+
+    for (size_t i1 = 0; i1 < rigid_bodies->count - 1; ++i1) {
+        for (size_t i2 = i1 + 1; i2 < rigid_bodies->count; ++i2) {
+            // TODO(#653): Rigid Bodies perform too many conversions between rect and two vecs representation
+            //   Maybe it's just better to represent the bodies as rects all the time?
+            // TODO(#654): Rigid Bodies don't exchange forces with each other
+
+            Rect r1 = rect_from_vecs(rigid_bodies->positions[i1], rigid_bodies->sizes[i1]);
+            Rect r2 = rect_from_vecs(rigid_bodies->positions[i2], rigid_bodies->sizes[i2]);
+
+            if (!rects_overlap(r1, r2)) {
+                continue;
+            }
+
+            rect_impulse(&r1, &r2);
+
+            rigid_bodies->positions[i1] = vec(r1.x, r1.y);
+            rigid_bodies->sizes[i1] = vec(r1.w, r1.h);
+
+            rigid_bodies->positions[i2] = vec(r2.x, r2.y);
+            rigid_bodies->sizes[i2] = vec(r2.w, r2.h);
+        }
+    }
 
     return 0;
 }
 
-int rigid_bodies_collide_with_platforms(
+static int rigid_bodies_collide_with_platforms(
     RigidBodies *rigid_bodies,
     const Platforms *platforms)
 {
@@ -130,27 +155,16 @@ int rigid_bodies_collide_with_platforms(
     for (size_t i = 0; i < rigid_bodies->count; ++i) {
         memset(sides, 0, sizeof(int) * RECT_SIDE_N);
 
-        platforms_touches_rect_sides(platforms, rigid_bodies_hitbox(rigid_bodies, i), sides);
+        Rect hitbox = rigid_bodies_hitbox(rigid_bodies, i);
+
+        platforms_touches_rect_sides(platforms, hitbox, sides);
 
         if (sides[RECT_SIDE_BOTTOM]) {
             rigid_bodies->grounded[i] = true;
         }
 
+        /* TODO(#655): Opposing force notion in Rigid Bodies seems redundant */
         Vec opforce_direction = opposing_force_by_sides(sides);
-
-        /* It's an opposing force that we apply to platforms. But
-         * since platforms are impenetrable, it's not needed
-         * here. Plus we are trying to apply that force to the rigid
-         * body itself, because I'm dumb. */
-        /*
-        rigid_bodies_apply_force(
-            rigid_bodies, i,
-            vec_scala_mult(
-                vec_neg(vec_norm(opforce_direction)),
-                vec_length(
-                    vec_sum(rigid_bodies->velocities[i],
-                            rigid_bodies->movements[i])) * 8.0f));
-        */
 
         if (fabs(opforce_direction.x) > 1e-6 && (opforce_direction.x < 0.0f) != ((rigid_bodies->velocities[i].x + rigid_bodies->movements[i].x) < 0.0f)) {
             rigid_bodies->velocities[i].x = 0.0f;
@@ -170,17 +184,23 @@ int rigid_bodies_collide_with_platforms(
             }
         }
 
-        for (int j = 0; j < 1000 && vec_length(opforce_direction) > 1e-6; ++j) {
-            rigid_bodies->positions[i] = vec_sum(
-                rigid_bodies->positions[i],
-                vec_scala_mult(
-                    opforce_direction,
-                    1e-2f));
+        hitbox = platforms_snap_rect(platforms, hitbox);
+        rigid_bodies->positions[i].x = hitbox.x;
+        rigid_bodies->positions[i].y = hitbox.y;
+    }
 
-            memset(sides, 0, sizeof(int) * RECT_SIDE_N);
-            platforms_touches_rect_sides(platforms, rigid_bodies_hitbox(rigid_bodies, i), sides);
-            opforce_direction = opposing_force_by_sides(sides);
-        }
+    return 0;
+}
+
+int rigid_bodies_collide(RigidBodies *rigid_bodies,
+                         const Platforms *platforms)
+{
+    if (rigid_bodies_collide_with_itself(rigid_bodies) < 0) {
+        return -1;
+    }
+
+    if (rigid_bodies_collide_with_platforms(rigid_bodies, platforms) < 0) {
+        return -1;
     }
 
     return 0;
@@ -223,6 +243,8 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
 {
     trace_assert(rigid_bodies);
     trace_assert(camera);
+
+    /* TODO(#656): Rigid Bodies don't render their ids in the debug mode */
 
     for (size_t i = 0; i < rigid_bodies->count; ++i) {
         if (camera_fill_rect(

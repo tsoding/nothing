@@ -125,6 +125,9 @@ Point point_mat3x3_product(Point p, mat3x3 m)
 
 Vec vec_norm(Vec v)
 {
+    // TODO(#657): math/point/vec_norm: using vec_length is too expensive
+    //   It involves multiplication and sqrt. We can just check if its components are close to 0.0f.
+
     const float l = vec_length(v);
 
     if (l < 1e-6) {
@@ -132,4 +135,9 @@ Vec vec_norm(Vec v)
     }
 
     return vec(v.x / l, v.y / l);
+}
+
+float vec_sqr_norm(Vec v)
+{
+    return v.x * v.x + v.y * v.y;
 }

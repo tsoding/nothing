@@ -11,6 +11,7 @@
 #include "game/level/player.h"
 #include "game/sound_samples.h"
 #include "game/sprite_font.h"
+#include "math/extrema.h"
 #include "math/point.h"
 #include "sdl/renderer.h"
 #include "system/log.h"
@@ -183,9 +184,7 @@ int main(int argc, char *argv[])
         }
 
         const int64_t end_frame_time = (int64_t) SDL_GetTicks();
-#define max_int64(a, b) (a > b ? a : b)
         SDL_Delay((unsigned int) max_int64(10, delta_time - (end_frame_time - begin_frame_time)));
-#undef max_int64
     }
 
     RETURN_LT(lt, 0);

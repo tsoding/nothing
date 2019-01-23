@@ -143,3 +143,17 @@ void platforms_touches_rect_sides(const Platforms *platforms,
         rect_object_impact(object, platforms->rects[i], sides);
     }
 }
+
+Rect platforms_snap_rect(const Platforms *platforms,
+                         Rect object)
+{
+    trace_assert(platforms);
+
+    for (size_t i = 0; i < platforms->rects_size; ++i) {
+        if (rects_overlap(platforms->rects[i], object)) {
+            object = rect_snap(platforms->rects[i], object);
+        }
+    }
+
+    return object;
+}
