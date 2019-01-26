@@ -15,10 +15,9 @@ struct RigidBodies
     size_t capacity;
     size_t count;
 
-    Vec *positions;
+    Rect *bodies;
     Vec *velocities;
     Vec *movements;
-    Vec *sizes;
     Color *colors;
     bool *grounded;
     Vec *forces;
@@ -65,8 +64,8 @@ RigidBodies *create_rigid_bodies(size_t capacity)
     rigid_bodies->capacity = capacity;
     rigid_bodies->count = 0;
 
-    rigid_bodies->positions = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec)), free);
-    if (rigid_bodies->positions == NULL) {
+    rigid_bodies->bodies = PUSH_LT(lt, nth_calloc(capacity, sizeof(Rect)), free);
+    if (rigid_bodies->bodies == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -77,11 +76,6 @@ RigidBodies *create_rigid_bodies(size_t capacity)
 
     rigid_bodies->movements = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec)), free);
     if (rigid_bodies->movements == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    rigid_bodies->sizes = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec)), free);
-    if (rigid_bodies->sizes == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -122,21 +116,11 @@ static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
             // TODO(#653): Rigid Bodies perform too many conversions between rect and two vecs representation
             //   Maybe it's just better to represent the bodies as rects all the time?
             // TODO(#654): Rigid Bodies don't exchange forces with each other
-
-            Rect r1 = rect_from_vecs(rigid_bodies->positions[i1], rigid_bodies->sizes[i1]);
-            Rect r2 = rect_from_vecs(rigid_bodies->positions[i2], rigid_bodies->sizes[i2]);
-
-            if (!rects_overlap(r1, r2)) {
+            if (!rects_overlap(rigid_bodies->bodies[i1], rigid_bodies->bodies[i2])) {
                 continue;
             }
 
-            rect_impulse(&r1, &r2);
-
-            rigid_bodies->positions[i1] = vec(r1.x, r1.y);
-            rigid_bodies->sizes[i1] = vec(r1.w, r1.h);
-
-            rigid_bodies->positions[i2] = vec(r2.x, r2.y);
-            rigid_bodies->sizes[i2] = vec(r2.w, r2.h);
+            rect_impulse(&rigid_bodies->bodies[i1], &rigid_bodies->bodies[i2]);
         }
     }
 
@@ -155,9 +139,7 @@ static int rigid_bodies_collide_with_platforms(
     for (size_t i = 0; i < rigid_bodies->count; ++i) {
         memset(sides, 0, sizeof(int) * RECT_SIDE_N);
 
-        Rect hitbox = rigid_bodies_hitbox(rigid_bodies, i);
-
-        platforms_touches_rect_sides(platforms, hitbox, sides);
+        platforms_touches_rect_sides(platforms, rigid_bodies->bodies[i], sides);
 
         if (sides[RECT_SIDE_BOTTOM]) {
             rigid_bodies->grounded[i] = true;
@@ -184,9 +166,7 @@ static int rigid_bodies_collide_with_platforms(
             }
         }
 
-        hitbox = platforms_snap_rect(platforms, hitbox);
-        rigid_bodies->positions[i].x = hitbox.x;
-        rigid_bodies->positions[i].y = hitbox.y;
+        rigid_bodies->bodies[i] = platforms_snap_rect(platforms, rigid_bodies->bodies[i]);
     }
 
     return 0;
@@ -223,13 +203,19 @@ int rigid_bodies_update(RigidBodies *rigid_bodies,
     }
 
     for (size_t i = 0; i < rigid_bodies->count; ++i) {
-        rigid_bodies->positions[i] = vec_sum(
-            rigid_bodies->positions[i],
+        Vec position = vec(rigid_bodies->bodies[i].x,
+                           rigid_bodies->bodies[i].y);
+
+        position = vec_sum(
+            position,
             vec_scala_mult(
                 vec_sum(
                     rigid_bodies->velocities[i],
                     rigid_bodies->movements[i]),
                 delta_time));
+
+        rigid_bodies->bodies[i].x = position.x;
+        rigid_bodies->bodies[i].y = position.y;
     }
 
     memset(rigid_bodies->forces, 0,
@@ -249,9 +235,7 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
     for (size_t i = 0; i < rigid_bodies->count; ++i) {
         if (camera_fill_rect(
                 camera,
-                rect_from_vecs(
-                    rigid_bodies->positions[i],
-                    rigid_bodies->sizes[i]),
+                rigid_bodies->bodies[i],
                 rigid_bodies->colors[i]) < 0) {
             return -1;
         }
@@ -268,8 +252,7 @@ RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
     trace_assert(rigid_bodies->count < rigid_bodies->capacity);
 
     RigidBodyId id = rigid_bodies->count++;
-    rigid_bodies->positions[id] = vec(rect.x, rect.y);
-    rigid_bodies->sizes[id] = vec(rect.w, rect.h);
+    rigid_bodies->bodies[id] = rect;
     rigid_bodies->colors[id] = color;
 
     return id;
@@ -281,8 +264,7 @@ Rect rigid_bodies_hitbox(const RigidBodies *rigid_bodies,
     trace_assert(rigid_bodies);
     trace_assert(id < rigid_bodies->count);
 
-    return rect_from_vecs(rigid_bodies->positions[id],
-                          rigid_bodies->sizes[id]);
+    return rigid_bodies->bodies[id];
 }
 
 void rigid_bodies_move(RigidBodies *rigid_bodies,
@@ -341,7 +323,8 @@ void rigid_bodies_teleport_to(RigidBodies *rigid_bodies,
     trace_assert(rigid_bodies);
     trace_assert(id < rigid_bodies->count);
 
-    rigid_bodies->positions[id] = position;
+    rigid_bodies->bodies[id].x = position.x;
+    rigid_bodies->bodies[id].y = position.y;
 }
 
 void rigid_bodies_damper(RigidBodies *rigid_bodies,
