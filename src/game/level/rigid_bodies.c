@@ -9,12 +9,15 @@
 
 #include "./rigid_bodies.h"
 
+#define ID_SIZE 100
+
 struct RigidBodies
 {
     Lt *lt;
     size_t capacity;
     size_t count;
 
+    char *id;
     Rect *bodies;
     Vec *velocities;
     Vec *movements;
@@ -63,6 +66,14 @@ RigidBodies *create_rigid_bodies(size_t capacity)
 
     rigid_bodies->capacity = capacity;
     rigid_bodies->count = 0;
+
+    rigid_bodies->id = PUSH_LT(
+        lt,
+        nth_calloc(ID_SIZE, sizeof(char)),
+        free);
+    if (rigid_bodies->id == NULL) {
+        RETURN_LT(lt, NULL);
+    }
 
     rigid_bodies->bodies = PUSH_LT(lt, nth_calloc(capacity, sizeof(Rect)), free);
     if (rigid_bodies->bodies == NULL) {
@@ -230,13 +241,21 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
     trace_assert(rigid_bodies);
     trace_assert(camera);
 
-    /* TODO(#656): Rigid Bodies don't render their ids in the debug mode */
-
     for (size_t i = 0; i < rigid_bodies->count; ++i) {
         if (camera_fill_rect(
                 camera,
                 rigid_bodies->bodies[i],
                 rigid_bodies->colors[i]) < 0) {
+            return -1;
+        }
+
+        snprintf(rigid_bodies->id, ID_SIZE, "%ld", i);
+
+        if (camera_render_debug_text(
+                camera,
+                rigid_bodies->id,
+                vec(rigid_bodies->bodies[i].x,
+                    rigid_bodies->bodies[i].y)) < 0) {
             return -1;
         }
     }
