@@ -20,6 +20,7 @@ float vec_mag(Vec v);
 float rad_to_deg(float a);
 
 Vec vec_sum(Vec v1, Vec v2);
+Vec vec_sub(Vec v1, Vec v2);
 Vec vec_neg(Vec v);
 void vec_add(Vec *v1, Vec v2);
 float vec_length(Vec v);

@@ -10,7 +10,6 @@
 
 #define GC_INITIAL_CAPACITY 256
 
-/* TODO(#603): valgrind shows a lot of invalid reads and writes in the GC */
 struct Gc
 {
     Lt *lt;
@@ -142,7 +141,6 @@ static void gc_traverse_expr(Gc *gc, struct Expr root)
     trace_assert(gc);
     trace_assert(root.type != EXPR_VOID);
     const long int root_index = gc_find_expr(gc, root);
-    /* TODO(#578): gc_traverse_expr just crashes when we try to collect already collected root */
     if (root_index < 0) {
         fprintf(stderr, "GC tried to collect something that was not registered\n");
         print_expr_as_sexpr(stderr, root);

@@ -48,6 +48,6 @@ SDL_Rect rect_for_sdl(Rect rect);
 Vec rect_center(Rect rect);
 
 Rect rect_snap(Rect pivot, Rect rect);
-void rect_impulse(Rect *r1, Rect *r2);
+Vec rect_impulse(Rect *r1, Rect *r2);
 
 #endif  // RECT_H_
