@@ -132,6 +132,8 @@ static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
             }
 
             rect_impulse(&rigid_bodies->bodies[i1], &rigid_bodies->bodies[i2]);
+            rigid_bodies->velocities[i1] = vec(0.0f, 0.0f);
+            rigid_bodies->velocities[i2] = vec(0.0f, 0.0f);
         }
     }
 
