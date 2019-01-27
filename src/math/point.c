@@ -47,6 +47,15 @@ Vec vec_sum(Vec v1, Vec v2)
     return result;
 }
 
+Vec vec_sub(Vec v1, Vec v2)
+{
+    Vec result = {
+        .x = v1.x - v2.x,
+        .y = v1.y - v2.y
+    };
+    return result;
+}
+
 Vec vec_neg(Vec v)
 {
     Vec result = {
