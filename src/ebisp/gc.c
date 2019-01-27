@@ -10,7 +10,6 @@
 
 #define GC_INITIAL_CAPACITY 256
 
-/* TODO(#603): valgrind shows a lot of invalid reads and writes in the GC */
 struct Gc
 {
     Lt *lt;
