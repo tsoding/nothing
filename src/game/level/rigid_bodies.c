@@ -124,8 +124,6 @@ static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
 
     for (size_t i1 = 0; i1 < rigid_bodies->count - 1; ++i1) {
         for (size_t i2 = i1 + 1; i2 < rigid_bodies->count; ++i2) {
-            // TODO(#653): Rigid Bodies perform too many conversions between rect and two vecs representation
-            //   Maybe it's just better to represent the bodies as rects all the time?
             // TODO(#654): Rigid Bodies don't exchange forces with each other
             if (!rects_overlap(rigid_bodies->bodies[i1], rigid_bodies->bodies[i2])) {
                 continue;
