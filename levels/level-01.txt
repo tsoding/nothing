@@ -50,7 +50,7 @@ label_double_jump 950.9303 -279.0629 fffda5
 Double Jump
 3
 659.88593 -301.85339 904.875 333.04886 deaa87
-7
+6
 (set args '("goal1"))
 (defun on-enter ()
   (send `(game level goal ,(car args) hide)))
@@ -65,7 +65,7 @@ Double Jump
 (defun on-leave ())
 
 1033.8625 -862.22498 215.96986 569.73328 d35f5f
-5
+4
 (set args '())
 (defun on-enter ()
   (send `(game level label "label_double_jump" hide)))
