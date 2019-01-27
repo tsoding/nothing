@@ -129,9 +129,11 @@ static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
                 continue;
             }
 
-            rect_impulse(&rigid_bodies->bodies[i1], &rigid_bodies->bodies[i2]);
-            rigid_bodies->velocities[i1] = vec(0.0f, 0.0f);
-            rigid_bodies->velocities[i2] = vec(0.0f, 0.0f);
+            const Vec orient = rect_impulse(&rigid_bodies->bodies[i1], &rigid_bodies->bodies[i2]);
+            const Vec v = vec_sub(vec(1.0f, 1.0f), orient);
+
+            rigid_bodies->velocities[i1] = vec_entry_mult(rigid_bodies->velocities[i1], v);
+            rigid_bodies->velocities[i2] = vec_entry_mult(rigid_bodies->velocities[i2], v);
         }
     }
 
