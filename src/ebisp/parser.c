@@ -14,6 +14,11 @@
 
 #define MAX_BUFFER_LENGTH (5 * 1000 * 1000)
 
+static void fclose_lt(void* file)
+{
+    fclose(file);
+}
+
 static struct ParseResult parse_expr(Gc *gc, struct Token current_token);
 
 static struct ParseResult parse_cdr(Gc *gc, struct Token current_token)

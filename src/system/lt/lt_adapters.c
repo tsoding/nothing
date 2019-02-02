@@ -4,11 +4,6 @@
 
 #include "lt_adapters.h"
 
-void fclose_lt(void* file)
-{
-    fclose(file);
-}
-
 void Mix_CloseAudio_lt(void* ignored)
 {
     (void) ignored;
