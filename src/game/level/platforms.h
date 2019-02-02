@@ -15,9 +15,6 @@ void destroy_platforms(Platforms *platforms);
 
 Solid_ref platforms_as_solid(Platforms *platforms);
 
-int platforms_save_to_file(const Platforms *platforms,
-                           const char *filename);
-
 int platforms_render(const Platforms *platforms,
                      Camera *camera);
 

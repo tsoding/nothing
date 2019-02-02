@@ -77,36 +77,6 @@ void destroy_platforms(Platforms *platforms)
     RETURN_LT0(platforms->lt);
 }
 
-int platforms_save_to_file(const Platforms *platforms,
-                           const char *filename)
-{
-    trace_assert(platforms);
-    trace_assert(filename);
-
-    Lt *const lt = create_lt();
-    if (lt == NULL) {
-        return -1;
-    }
-
-    FILE *platforms_file = PUSH_LT(lt, fopen(filename, "w"), fclose_lt);
-
-    if (platforms_file == NULL) {
-        log_fail("Could not open file '%s': %s\n", filename, strerror(errno));
-        RETURN_LT(lt, -1);
-    }
-
-    for (size_t i = 0; i < platforms->rects_size; ++i) {
-        if (fprintf(platforms_file, "%f %f %f %f\n",
-                    platforms->rects[i].x, platforms->rects[i].y,
-                    platforms->rects[i].w, platforms->rects[i].h) < 0) {
-            log_fail("Could not read %dth platform\n", i);
-            RETURN_LT(lt, -1);
-        }
-    }
-
-    RETURN_LT(lt, 0);
-}
-
 Solid_ref platforms_as_solid(Platforms *platforms)
 {
     Solid_ref ref = {
