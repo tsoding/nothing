@@ -126,7 +126,12 @@ static void print_cons_as_c(FILE *stream, struct Cons *cons)
 {
     trace_assert(stream);
     trace_assert(cons);
-    /* TODO: print_cons_as_c is not implemented */
+
+    fprintf(stream, "CONS(gc, ");
+    print_expr_as_c(stream, cons->car);
+    fprintf(stream, ", ");
+    print_expr_as_c(stream, cons->cdr);
+    fprintf(stream, ")");
 }
 
 void print_expr_as_sexpr(FILE *stream, struct Expr expr)
