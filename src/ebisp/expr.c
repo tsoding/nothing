@@ -70,7 +70,32 @@ static void print_atom_as_c(FILE *stream, struct Atom *atom)
 {
     trace_assert(stream);
     trace_assert(atom);
-    /* TODO: print_atom_as_c is not implemented */
+
+    switch(atom->type) {
+    case ATOM_SYMBOL:
+        fprintf(stream, "SYMBOL(gc, \"%s\")", atom->sym);
+        break;
+
+    case ATOM_NUMBER:
+        fprintf(stream, "NUMBER(gc, %ld)", atom->num);
+        break;
+
+    case ATOM_STRING:
+        fprintf(stream, "STRING(gc, \"%s\")", atom->str);
+        break;
+
+    case ATOM_LAMBDA:
+        fprintf(stream, "CONS(gc, SYMBOL(gc, \"lambda\"), CONS(gc, ");
+        print_expr_as_c(stream, atom->lambda.args_list);
+        fprintf(stream, ", CONS(gc, ");
+        print_expr_as_c(stream, atom->lambda.body);
+        fprintf(stream, ")))");
+        break;
+
+    case ATOM_NATIVE:
+        fprintf(stream, "NIL(gc)");
+        break;
+    }
 }
 
 void print_cons_as_sexpr(FILE *stream, struct Cons *head)
