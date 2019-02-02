@@ -8,6 +8,7 @@
 #include "ebisp/expr.h"
 #include "ebisp/scope.h"
 #include "game.h"
+#include "broadcast_lisp.h"
 
 struct EvalResult
 unknown_target(Gc *gc, const char *source, const char *target)
@@ -83,13 +84,20 @@ broadcast_send(Broadcast *broadcast,
     return unknown_target(gc, "game", target);
 }
 
-void broadcast_load_library(Broadcast *broadcast,
-                            Gc *gc,
-                            struct Scope *scope)
+struct EvalResult broadcast_load_library(Broadcast *broadcast,
+                                         Gc *gc,
+                                         struct Scope *scope)
 {
     trace_assert(gc);
     trace_assert(scope);
     trace_assert(broadcast);
 
-    set_scope_value(gc, scope, SYMBOL(gc, "send"), NATIVE(gc, send, broadcast));
+    set_scope_value(gc, scope, SYMBOL(gc, "send-native"), NATIVE(gc, send, broadcast));
+
+    struct EvalResult result = eval_block(gc, scope, broadcast_lisp_library(gc));
+    if (result.is_error) {
+        return result;
+    }
+
+    return eval_success(NIL(gc));
 }

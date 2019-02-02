@@ -12,6 +12,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 
+include_directories(${CMAKE_BINARY_DIR})
 include_directories(src/)
 
 if(APPLE)
@@ -123,11 +124,17 @@ add_executable(nothing
   src/game/level_picker.c
   src/broadcast.c
   src/broadcast.h
+  broadcast_lisp.h
   src/game/level/rigid_bodies.h
   src/game/level/rigid_bodies.c
   src/math/extrema.h
   src/math/extrema.c
 )
+
+add_custom_command(
+  OUTPUT broadcast_lisp.h
+  COMMAND ${CMAKE_BINARY_DIR}/baker ${CMAKE_SOURCE_DIR}/src/broadcast.lisp broadcast_lisp.h broadcast_lisp_library
+  DEPENDS baker src/broadcast.lisp)
 
 add_executable(repl
   src/ebisp/builtins.c

@@ -46,7 +46,12 @@ Script *create_script_from_line_stream(LineStream *line_stream, Broadcast *broad
 
     load_std_library(script->gc, &script->scope);
     load_log_library(script->gc, &script->scope);
-    broadcast_load_library(broadcast, script->gc, &script->scope);
+    struct EvalResult eval_result = broadcast_load_library(broadcast, script->gc, &script->scope);
+    if (eval_result.is_error) {
+        print_expr_as_sexpr(stderr, eval_result.expr);
+        log_fail("\n");
+        RETURN_LT(lt, NULL);
+    }
 
     size_t n = 0;
     sscanf(line_stream_next(line_stream), "%lu", &n);
@@ -69,7 +74,7 @@ Script *create_script_from_line_stream(LineStream *line_stream, Broadcast *broad
         RETURN_LT(lt, NULL);
     }
 
-    struct EvalResult eval_result = eval(
+    eval_result = eval(
         script->gc,
         &script->scope,
         CONS(script->gc,
