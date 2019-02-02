@@ -80,7 +80,7 @@ Console *create_console(Broadcast *broadcast,
 
     load_std_library(console->gc, &console->scope);
     load_log_library(console->gc, &console->scope);
-    /* TODO: how to report EvalResult error from create_console? */
+    /* TODO(#669): how to report EvalResult error from create_console? */
     broadcast_load_library(broadcast, console->gc, &console->scope);
 
     console->edit_field = PUSH_LT(
