@@ -6,7 +6,7 @@
 #include "ebisp/std.h"
 #include "game/level.h"
 #include "script.h"
-#include "str.h"
+#include "system/str.h"
 #include "system/line_stream.h"
 #include "system/log.h"
 #include "system/log_script.h"

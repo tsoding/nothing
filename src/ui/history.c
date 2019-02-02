@@ -3,7 +3,7 @@
 #include "system/stacktrace.h"
 
 #include "history.h"
-#include "str.h"
+#include "system/str.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 

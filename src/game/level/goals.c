@@ -5,7 +5,7 @@
 #include "goals.h"
 #include "math/pi.h"
 #include "math/triangle.h"
-#include "str.h"
+#include "system/str.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"

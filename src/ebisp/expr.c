@@ -7,7 +7,7 @@
 
 #include "ebisp/expr.h"
 #include "ebisp/gc.h"
-#include "str.h"
+#include "system/str.h"
 
 struct Expr atom_as_expr(struct Atom *atom)
 {
