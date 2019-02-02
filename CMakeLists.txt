@@ -164,6 +164,32 @@ add_executable(repl
   src/system/stacktrace.h
   src/system/stacktrace.c
   )
+add_executable(baker
+  src/ebisp/baker.c
+  src/ebisp/parser.c
+  src/ebisp/parser.h
+  src/ebisp/tokenizer.h
+  src/ebisp/tokenizer.c
+  src/ebisp/builtins.h
+  src/ebisp/builtins.c
+  src/ebisp/expr.c
+  src/ebisp/expr.h
+  src/ebisp/gc.c
+  src/ebisp/gc.h
+  src/system/lt.c
+  src/system/lt.h
+  src/system/lt/lt_slot.c
+  src/system/lt/lt_slot.h
+  src/system/stacktrace.h
+  src/system/stacktrace.c
+  src/system/nth_alloc.h
+  src/system/nth_alloc.c
+  src/system/log.h
+  src/system/log.c
+  src/str.h
+  src/str.c
+  )
+
 add_executable(nothing_test
   src/ebisp/builtins.c
   src/ebisp/builtins.h
