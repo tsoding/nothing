@@ -7,7 +7,7 @@
 #include "game/level/boxes.h"
 #include "game/level/solid.h"
 #include "rigid_rect.h"
-#include "str.h"
+#include "system/str.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"

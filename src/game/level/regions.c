@@ -7,7 +7,7 @@
 #include "player.h"
 #include "regions.h"
 #include "script.h"
-#include "str.h"
+#include "system/str.h"
 #include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"

@@ -6,7 +6,7 @@
 #include "game/sprite_font.h"
 #include "console_log.h"
 #include "math/point.h"
-#include "str.h"
+#include "system/str.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 

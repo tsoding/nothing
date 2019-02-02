@@ -4,7 +4,7 @@
 #include "system/stacktrace.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
-#include "str.h"
+#include "system/str.h"
 #include "game/level/background.h"
 
 /* TODO(#606): LevelPicker doesn't allow to select any levels */

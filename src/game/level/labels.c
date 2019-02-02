@@ -3,7 +3,7 @@
 
 #include "game/camera.h"
 #include "game/level/labels.h"
-#include "str.h"
+#include "system/str.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"

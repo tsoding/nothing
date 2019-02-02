@@ -12,7 +12,7 @@
 #include "system/nth_alloc.h"
 #include "ui/console.h"
 #include "ui/edit_field.h"
-#include "str.h"
+#include "system/str.h"
 #include "ebisp/builtins.h"
 #include "broadcast.h"
 
