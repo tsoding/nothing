@@ -18,6 +18,11 @@ struct LineStream
     size_t capacity;
 };
 
+static void fclose_lt(void* file)
+{
+    fclose(file);
+}
+
 LineStream *create_line_stream(const char *filename,
                                const char *mode,
                                size_t capacity)

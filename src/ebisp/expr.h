@@ -47,6 +47,7 @@ struct Expr void_expr(void);
 
 void destroy_expr(struct Expr expr);
 void print_expr_as_sexpr(FILE *stream, struct Expr expr);
+void print_expr_as_c(FILE *stream, struct Expr expr);
 int expr_as_sexpr(struct Expr expr, char *output, size_t n);
 
 // TODO(#337): EvalResult does not belong to expr unit

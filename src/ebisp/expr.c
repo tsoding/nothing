@@ -66,6 +66,38 @@ void print_atom_as_sexpr(FILE *stream, struct Atom *atom)
     }
 }
 
+static void print_atom_as_c(FILE *stream, struct Atom *atom)
+{
+    trace_assert(stream);
+    trace_assert(atom);
+
+    switch(atom->type) {
+    case ATOM_SYMBOL:
+        fprintf(stream, "SYMBOL(gc, \"%s\")", atom->sym);
+        break;
+
+    case ATOM_NUMBER:
+        fprintf(stream, "NUMBER(gc, %ld)", atom->num);
+        break;
+
+    case ATOM_STRING:
+        fprintf(stream, "STRING(gc, \"%s\")", atom->str);
+        break;
+
+    case ATOM_LAMBDA:
+        fprintf(stream, "CONS(gc, SYMBOL(gc, \"lambda\"), CONS(gc, ");
+        print_expr_as_c(stream, atom->lambda.args_list);
+        fprintf(stream, ", CONS(gc, ");
+        print_expr_as_c(stream, atom->lambda.body);
+        fprintf(stream, ")))");
+        break;
+
+    case ATOM_NATIVE:
+        fprintf(stream, "NIL(gc)");
+        break;
+    }
+}
+
 void print_cons_as_sexpr(FILE *stream, struct Cons *head)
 {
     trace_assert(head);
@@ -90,6 +122,18 @@ void print_cons_as_sexpr(FILE *stream, struct Cons *head)
     fprintf(stream, ")");
 }
 
+static void print_cons_as_c(FILE *stream, struct Cons *cons)
+{
+    trace_assert(stream);
+    trace_assert(cons);
+
+    fprintf(stream, "CONS(gc, ");
+    print_expr_as_c(stream, cons->car);
+    fprintf(stream, ", ");
+    print_expr_as_c(stream, cons->cdr);
+    fprintf(stream, ")");
+}
+
 void print_expr_as_sexpr(FILE *stream, struct Expr expr)
 {
     switch (expr.type) {
@@ -99,6 +143,25 @@ void print_expr_as_sexpr(FILE *stream, struct Expr expr)
 
     case EXPR_CONS:
         print_cons_as_sexpr(stream, expr.cons);
+        break;
+
+    case EXPR_VOID:
+        break;
+    }
+}
+
+void print_expr_as_c(FILE *stream, struct Expr expr)
+{
+    trace_assert(stream);
+    (void) expr;
+
+    switch (expr.type) {
+    case EXPR_ATOM:
+        print_atom_as_c(stream, expr.atom);
+        break;
+
+    case EXPR_CONS:
+        print_cons_as_c(stream, expr.cons);
         break;
 
     case EXPR_VOID:
