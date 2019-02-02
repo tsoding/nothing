@@ -66,6 +66,13 @@ void print_atom_as_sexpr(FILE *stream, struct Atom *atom)
     }
 }
 
+static void print_atom_as_c(FILE *stream, struct Atom *atom)
+{
+    trace_assert(stream);
+    trace_assert(atom);
+    /* TODO: print_atom_as_c is not implemented */
+}
+
 void print_cons_as_sexpr(FILE *stream, struct Cons *head)
 {
     trace_assert(head);
@@ -90,6 +97,13 @@ void print_cons_as_sexpr(FILE *stream, struct Cons *head)
     fprintf(stream, ")");
 }
 
+static void print_cons_as_c(FILE *stream, struct Cons *cons)
+{
+    trace_assert(stream);
+    trace_assert(cons);
+    /* TODO: print_cons_as_c is not implemented */
+}
+
 void print_expr_as_sexpr(FILE *stream, struct Expr expr)
 {
     switch (expr.type) {
@@ -99,6 +113,25 @@ void print_expr_as_sexpr(FILE *stream, struct Expr expr)
 
     case EXPR_CONS:
         print_cons_as_sexpr(stream, expr.cons);
+        break;
+
+    case EXPR_VOID:
+        break;
+    }
+}
+
+void print_expr_as_c(FILE *stream, struct Expr expr)
+{
+    trace_assert(stream);
+    (void) expr;
+
+    switch (expr.type) {
+    case EXPR_ATOM:
+        print_atom_as_c(stream, expr.atom);
+        break;
+
+    case EXPR_CONS:
+        print_cons_as_c(stream, expr.cons);
         break;
 
     case EXPR_VOID:
