@@ -31,5 +31,6 @@ struct ParseResult read_all_exprs_from_file(Gc *gc, const char *filename);
 void print_parse_error(FILE *stream,
                        const char *str,
                        struct ParseResult result);
+// TODO: there is no way to print parse error after parsing a file
 
 #endif  // PARSER_H_
