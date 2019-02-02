@@ -1,6 +1,6 @@
 (set path-prefix nil)
 
-;;; TODO: there is no concat in stdlib of ebisp
+;;; TODO(#667): there is no concat in stdlib of ebisp
 (defun concat (xs ys)
   ys)
 
