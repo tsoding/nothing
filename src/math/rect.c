@@ -165,20 +165,22 @@ Vec rect_center(Rect rect)
                rect.y + rect.h * 0.5f);
 }
 
-Rect rect_snap(Rect pivot, Rect r)
+Vec rect_snap(Rect pivot, Rect *r)
 {
     const Vec pivot_c = rect_center(pivot);
-    const Vec r_c = rect_center(r);
+    const Vec r_c = rect_center(*r);
 
     const float sx = r_c.x < pivot_c.x ? -1.0f : 1.0f;
     const float sy = r_c.y < pivot_c.y ? -1.0f : 1.0f;
-    const float x = pivot_c.x + sx * (pivot.w + r.w) * 0.5f - r.w * 0.5f;
-    const float y = pivot_c.y + sy * (pivot.h + r.h) * 0.5f - r.h * 0.5f;
+    const float x = pivot_c.x + sx * (pivot.w + r->w) * 0.5f - r->w * 0.5f;
+    const float y = pivot_c.y + sy * (pivot.h + r->h) * 0.5f - r->h * 0.5f;
 
     if (fabsf(x - r_c.x) < fabsf(y - r_c.y)) {
-        return rect(x, r.y, r.w, r.h);
+        *r = rect(x, r->y, r->w, r->h);
+        return vec(0.0f, 1.0f);
     } else {
-        return rect(r.x, y, r.w, r.h);
+        *r = rect(r->x, y, r->w, r->h);
+        return vec(1.0f, 0.0f);;
     }
 }
 

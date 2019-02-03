@@ -114,16 +114,17 @@ void platforms_touches_rect_sides(const Platforms *platforms,
     }
 }
 
-Rect platforms_snap_rect(const Platforms *platforms,
-                         Rect object)
+Vec platforms_snap_rect(const Platforms *platforms,
+                         Rect *object)
 {
     trace_assert(platforms);
 
+    Vec result = vec(1.0f, 1.0f);
     for (size_t i = 0; i < platforms->rects_size; ++i) {
-        if (rects_overlap(platforms->rects[i], object)) {
-            object = rect_snap(platforms->rects[i], object);
+        if (rects_overlap(platforms->rects[i], *object)) {
+            result = vec_entry_mult(result, rect_snap(platforms->rects[i], object));
         }
     }
 
-    return object;
+    return result;
 }
