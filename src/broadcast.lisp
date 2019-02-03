@@ -1,11 +1,7 @@
 (set path-prefix nil)
 
-;;; TODO(#667): there is no concat in stdlib of ebisp
-(defun concat (xs ys)
-  ys)
-
 (defun using (prefix)
   (set path-prefix prefix))
 
 (defun send (path)
-  (send-native (concat path-prefix path)))
+  (send-native (append path-prefix path)))
