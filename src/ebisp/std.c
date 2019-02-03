@@ -326,7 +326,7 @@ load(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return eval_block(gc, scope, parse_result.expr);
 }
 
-// TODO: append does not work with arbitrary amount of arguments
+// TODO(#672): append does not work with arbitrary amount of arguments
 // TODO: append is implemented recursively
 //   It's very StackOverflow prone
 static struct EvalResult
