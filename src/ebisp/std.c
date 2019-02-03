@@ -326,6 +326,42 @@ load(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     return eval_block(gc, scope, parse_result.expr);
 }
 
+// TODO: append does not work with arbitrary amount of arguments
+// TODO: append is implemented recursively
+//   It's very StackOverflow prone
+static struct EvalResult
+append(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    (void) param;
+    trace_assert(gc);
+    trace_assert(scope);
+
+    struct Expr xs = void_expr();
+    struct Expr ys = void_expr();
+    struct EvalResult result = match_list(gc, "ee", args, &xs, &ys);
+    if (result.is_error) {
+        return result;
+    }
+
+    if (nil_p(xs)) {
+        return eval_success(ys);
+    }
+
+    struct Expr xs1 = void_expr();
+    struct Expr x = void_expr();
+    result = match_list(gc, "e*", xs, &x, &xs1);
+    if (result.is_error) {
+        return result;
+    }
+
+    result = append(param, gc, scope, list(gc, "ee", xs1, ys));
+    if (result.is_error) {
+        return result;
+    }
+
+    return eval_success(CONS(gc, x, result.expr));
+}
+
 void load_std_library(Gc *gc, struct Scope *scope)
 {
     set_scope_value(gc, scope, SYMBOL(gc, "car"), NATIVE(gc, car, NULL));
@@ -346,4 +382,5 @@ void load_std_library(Gc *gc, struct Scope *scope)
     set_scope_value(gc, scope, SYMBOL(gc, "λ"), NATIVE(gc, lambda_op, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "unquote"), NATIVE(gc, unquote, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "load"), NATIVE(gc, load, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "append"), NATIVE(gc, append, NULL));
 }
