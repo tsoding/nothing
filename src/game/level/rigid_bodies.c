@@ -26,31 +26,6 @@ struct RigidBodies
     Vec *forces;
 };
 
-static const Vec opposing_rect_side_forces[RECT_SIDE_N] = {
-    { .x = 1.0f,  .y =  0.0f  },  /* RECT_SIDE_LEFT = 0, */
-    { .x = -1.0f, .y =  0.0f  },  /* RECT_SIDE_RIGHT, */
-    { .x = 0.0f,  .y =  1.0f, },  /* RECT_SIDE_TOP, */
-    { .x = 0.0f,  .y = -1.0f, }   /* RECT_SIDE_BOTTOM, */
-};
-
-static Vec opposing_force_by_sides(int sides[RECT_SIDE_N])
-{
-    Vec opposing_force = {
-        .x = 0.0f,
-        .y = 0.0f
-    };
-
-    for (Rect_side side = 0; side < RECT_SIDE_N; ++side) {
-        if (sides[side]) {
-            vec_add(
-                &opposing_force,
-                opposing_rect_side_forces[side]);
-        }
-    }
-
-    return opposing_force;
-}
-
 RigidBodies *create_rigid_bodies(size_t capacity)
 {
     Lt *lt = create_lt();
@@ -158,28 +133,10 @@ static int rigid_bodies_collide_with_platforms(
             rigid_bodies->grounded[i] = true;
         }
 
-        /* TODO(#655): Opposing force notion in Rigid Bodies seems redundant */
-        Vec opforce_direction = opposing_force_by_sides(sides);
-
-        if (fabs(opforce_direction.x) > 1e-6 && (opforce_direction.x < 0.0f) != ((rigid_bodies->velocities[i].x + rigid_bodies->movements[i].x) < 0.0f)) {
-            rigid_bodies->velocities[i].x = 0.0f;
-            rigid_bodies->movements[i].x = 0.0f;
-        }
-
-        if (fabs(opforce_direction.y) > 1e-6 && (opforce_direction.y < 0.0f) != ((rigid_bodies->velocities[i].y + rigid_bodies->movements[i].y) < 0.0f)) {
-            rigid_bodies->velocities[i].y = 0.0f;
-            rigid_bodies->movements[i].y = 0.0f;
-
-            if (vec_length(rigid_bodies->velocities[i]) > 1e-6) {
-                rigid_bodies_apply_force(
-                    rigid_bodies, i,
-                    vec_scala_mult(
-                        vec_neg(rigid_bodies->velocities[i]),
-                        16.0f));
-            }
-        }
-
-        rigid_bodies->bodies[i] = platforms_snap_rect(platforms, rigid_bodies->bodies[i]);
+        Vec v = platforms_snap_rect(platforms, &rigid_bodies->bodies[i]);
+        rigid_bodies->velocities[i] = vec_entry_mult(rigid_bodies->velocities[i], v);
+        rigid_bodies->movements[i] = vec_entry_mult(rigid_bodies->movements[i], v);
+        rigid_bodies_damper(rigid_bodies, i, vec_entry_mult(v, vec(-16.0f, 0.0f)));
     }
 
     return 0;
