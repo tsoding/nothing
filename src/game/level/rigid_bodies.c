@@ -200,6 +200,8 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
     trace_assert(rigid_bodies);
     trace_assert(camera);
 
+    char position_text[256];
+
     for (size_t i = 0; i < rigid_bodies->count; ++i) {
         if (camera_fill_rect(
                 camera,
@@ -215,6 +217,17 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
                 rigid_bodies->id,
                 vec(rigid_bodies->bodies[i].x,
                     rigid_bodies->bodies[i].y)) < 0) {
+            return -1;
+        }
+
+        snprintf(position_text, 256, "(%f, %f)",
+                 rigid_bodies->bodies[i].x,
+                 rigid_bodies->bodies[i].y);
+        if (camera_render_debug_text(
+                camera,
+                position_text,
+                vec(rigid_bodies->bodies[i].x,
+                    rigid_bodies->bodies[i].y))) {
             return -1;
         }
     }
