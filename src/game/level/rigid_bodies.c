@@ -218,8 +218,7 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
                 camera,
                 text_buffer,
                 vec(rigid_bodies->bodies[i].x,
-                    // TODO: the size of the debug text is unknown in rigid_bodies_render()
-                    rigid_bodies->bodies[i].y + 25.0f))) {
+                    rigid_bodies->bodies[i].y + FONT_CHAR_HEIGHT * 2.0f))) {
             return -1;
         }
     }
