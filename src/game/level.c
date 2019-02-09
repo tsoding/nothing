@@ -40,6 +40,9 @@ struct Level
     Regions *regions;
     Physical_world *physical_world;
     RigidBodies *rigid_bodies;
+
+    bool flying_mode;
+    Vec flying_camera_position;
 };
 
 Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
@@ -154,6 +157,9 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
+    level->flying_mode = false;
+    level->flying_camera_position = vec(0.0f, 0.0f);
+
     level->lt = lt;
 
     destroy_line_stream(RELEASE_LT(lt, level_stream));
@@ -259,6 +265,13 @@ int level_event(Level *level, const SDL_Event *event)
     case SDL_JOYBUTTONDOWN:
         if (event->jbutton.button == 1) {
             player_jump(level->player);
+        }
+        break;
+
+    case SDL_MOUSEMOTION:
+        if (level->flying_mode) {
+            vec_add(&level->flying_camera_position,
+                    vec((float) event->motion.xrel, (float) event->motion.yrel));
         }
         break;
     }
@@ -394,7 +407,12 @@ void level_toggle_debug_mode(Level *level)
 
 int level_enter_camera_event(Level *level, Camera *camera)
 {
-    player_focus_camera(level->player, camera);
+    if (!level->flying_mode) {
+        player_focus_camera(level->player, camera);
+    } else {
+        camera_center_at(camera, level->flying_camera_position);
+    }
+
     goals_cue(level->goals, camera);
     goals_checkpoint(level->goals, level->player);
     labels_enter_camera_event(level->labels, camera);
@@ -465,6 +483,8 @@ struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct E
                     level->rigid_bodies,
                     rect((float)x, (float)y, (float)w, (float)h),
                     hexstr(color))));
+    } else if (strcmp(target, "fly") == 0) {
+        level->flying_mode = !level->flying_mode;
     }
 
     return unknown_target(gc, "level", target);
