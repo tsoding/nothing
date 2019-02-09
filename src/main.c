@@ -95,6 +95,10 @@ int main(int argc, char *argv[])
         log_fail("Could not set up blending mode for the renderer: %s\n", SDL_GetError());
         RETURN_LT(lt, -1);
     }
+    if (SDL_SetRelativeMouseMode(SDL_TRUE) < 0) {
+        log_fail("Could not set mouse to relative mode: %s\n", SDL_GetError());
+        RETURN_LT(lt, -1);
+    }
 
     SDL_Joystick *the_stick_of_joy = NULL;
 
