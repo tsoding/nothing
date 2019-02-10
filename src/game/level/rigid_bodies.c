@@ -17,7 +17,6 @@ struct RigidBodies
     size_t capacity;
     size_t count;
 
-    char *id;
     Rect *bodies;
     Vec *velocities;
     Vec *movements;
@@ -41,14 +40,6 @@ RigidBodies *create_rigid_bodies(size_t capacity)
 
     rigid_bodies->capacity = capacity;
     rigid_bodies->count = 0;
-
-    rigid_bodies->id = PUSH_LT(
-        lt,
-        nth_calloc(ID_SIZE, sizeof(char)),
-        free);
-    if (rigid_bodies->id == NULL) {
-        RETURN_LT(lt, NULL);
-    }
 
     rigid_bodies->bodies = PUSH_LT(lt, nth_calloc(capacity, sizeof(Rect)), free);
     if (rigid_bodies->bodies == NULL) {
@@ -200,6 +191,8 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
     trace_assert(rigid_bodies);
     trace_assert(camera);
 
+    char text_buffer[256];
+
     for (size_t i = 0; i < rigid_bodies->count; ++i) {
         if (camera_fill_rect(
                 camera,
@@ -208,13 +201,24 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
             return -1;
         }
 
-        snprintf(rigid_bodies->id, ID_SIZE, "%ld", i);
+        snprintf(text_buffer, ID_SIZE, "%ld", i);
 
         if (camera_render_debug_text(
                 camera,
-                rigid_bodies->id,
+                text_buffer,
                 vec(rigid_bodies->bodies[i].x,
                     rigid_bodies->bodies[i].y)) < 0) {
+            return -1;
+        }
+
+        snprintf(text_buffer, 256, "(%f, %f)",
+                 rigid_bodies->bodies[i].x,
+                 rigid_bodies->bodies[i].y);
+        if (camera_render_debug_text(
+                camera,
+                text_buffer,
+                vec(rigid_bodies->bodies[i].x,
+                    rigid_bodies->bodies[i].y + FONT_CHAR_HEIGHT * 2.0f))) {
             return -1;
         }
     }
