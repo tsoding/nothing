@@ -279,7 +279,7 @@ int level_event(Level *level, const SDL_Event *event)
 
     case SDL_MOUSEWHEEL:
         if (level->flying_mode) {
-            // TODO: zooming in flying mode is not smooth enough
+            // TODO(#679): zooming in flying mode is not smooth enough
             if (event->wheel.y > 0) {
                 level->flying_camera_scale += 0.1f;
             } else if (event->wheel.y < 0) {
