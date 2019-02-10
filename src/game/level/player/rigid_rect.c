@@ -137,6 +137,8 @@ void rigid_rect_touches_rect_sides(Rigid_rect *rigid_rect,
 int rigid_rect_render(const Rigid_rect *rigid_rect,
                       Camera *camera)
 {
+    char text_buffer[256];
+
     if (camera_fill_rect(
             camera,
             rigid_rect_hitbox(rigid_rect),
@@ -148,6 +150,18 @@ int rigid_rect_render(const Rigid_rect *rigid_rect,
             camera,
             rigid_rect->id,
             rigid_rect->position) < 0) {
+        return -1;
+    }
+
+    snprintf(text_buffer, 256, "(%f, %f)",
+             rigid_rect->position.x,
+             rigid_rect->position.y);
+
+    if (camera_render_debug_text(
+            camera,
+            text_buffer,
+            vec(rigid_rect->position.x,
+                rigid_rect->position.y + FONT_CHAR_HEIGHT * 2.0f))) {
         return -1;
     }
 
