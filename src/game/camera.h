@@ -47,6 +47,7 @@ int camera_render_debug_rect(Camera *camera,
                              Color color);
 
 void camera_center_at(Camera *camera, Point position);
+void camera_scale(Camera *came, float scale);
 
 void camera_toggle_debug_mode(Camera *camera);
 void camera_disable_debug_mode(Camera *camera);

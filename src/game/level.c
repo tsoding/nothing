@@ -43,6 +43,7 @@ struct Level
 
     bool flying_mode;
     Vec flying_camera_position;
+    float flying_camera_scale;
 };
 
 Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
@@ -159,6 +160,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
 
     level->flying_mode = false;
     level->flying_camera_position = vec(0.0f, 0.0f);
+    level->flying_camera_scale = 1.0f;
 
     level->lt = lt;
 
@@ -272,6 +274,17 @@ int level_event(Level *level, const SDL_Event *event)
         if (level->flying_mode) {
             vec_add(&level->flying_camera_position,
                     vec((float) event->motion.xrel, (float) event->motion.yrel));
+        }
+        break;
+
+    case SDL_MOUSEWHEEL:
+        if (level->flying_mode) {
+            // TODO(#679): zooming in flying mode is not smooth enough
+            if (event->wheel.y > 0) {
+                level->flying_camera_scale += 0.1f;
+            } else if (event->wheel.y < 0) {
+                level->flying_camera_scale = fmaxf(0.1f, level->flying_camera_scale - 0.1f);
+            }
         }
         break;
     }
@@ -409,8 +422,10 @@ int level_enter_camera_event(Level *level, Camera *camera)
 {
     if (!level->flying_mode) {
         player_focus_camera(level->player, camera);
+        camera_scale(camera, 1.0f);
     } else {
         camera_center_at(camera, level->flying_camera_position);
+        camera_scale(camera, level->flying_camera_scale);
     }
 
     goals_cue(level->goals, camera);
@@ -485,6 +500,8 @@ struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct E
                     hexstr(color))));
     } else if (strcmp(target, "fly") == 0) {
         level->flying_mode = !level->flying_mode;
+        SDL_SetRelativeMouseMode(level->flying_mode);
+        return eval_success(NIL(gc));
     }
 
     return unknown_target(gc, "level", target);
