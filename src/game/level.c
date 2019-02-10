@@ -485,6 +485,7 @@ struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct E
                     hexstr(color))));
     } else if (strcmp(target, "fly") == 0) {
         level->flying_mode = !level->flying_mode;
+        SDL_SetRelativeMouseMode(level->flying_mode);
         return eval_success(NIL(gc));
     }
 
