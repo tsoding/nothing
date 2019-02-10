@@ -61,10 +61,10 @@ Rect rects_overlap_area(Rect rect1, Rect rect2)
 
 int rects_overlap(Rect rect1, Rect rect2)
 {
-    return rect1.x + rect1.w >= rect2.x
-        && rect2.x + rect2.w >= rect1.x
-        && rect2.y + rect2.h >= rect1.y
-        && rect1.y + rect1.h >= rect2.y;
+    return rect1.x + rect1.w > rect2.x
+        && rect2.x + rect2.w > rect1.x
+        && rect2.y + rect2.h > rect1.y
+        && rect1.y + rect1.h > rect2.y;
 }
 
 float line_length(Line line)
@@ -202,8 +202,8 @@ Vec rect_impulse(Rect *r1, Rect *r2)
     const Vec c2 = rect_center(*r2);
     const float dx = fminf(c1.x, c2.x) + fabsf(c1.x - c2.x) * 0.5f;
     const float dy = fminf(c1.y, c2.y) + fabsf(c1.y - c2.y) * 0.5f;
-    const float sx = c1.x < c2.x ? 1.01f : -1.01f;
-    const float sy = c1.y < c2.y ? 1.01f : -1.01f;
+    const float sx = c1.x < c2.x ? 1.0f : -1.0f;
+    const float sy = c1.y < c2.y ? 1.0f : -1.0f;
     const float cx1 = dx - sx * r1->w * 0.5f;
     const float cy1 = dy - sy * r1->h * 0.5f;
     const float cx2 = dx + sx * r2->w * 0.5f;
