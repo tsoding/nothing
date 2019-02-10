@@ -25,6 +25,7 @@ typedef struct Line {
 
 Rect rect(float x, float y, float w, float h);
 Rect rect_from_vecs(Point position, Vec size);
+Rect rect_from_points(Point p1, Point p2);
 Rect rect_from_sdl(const SDL_Rect *rect);
 
 Rect rects_overlap_area(Rect rect1, Rect rect2);

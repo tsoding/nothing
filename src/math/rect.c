@@ -22,6 +22,15 @@ Rect rect_from_vecs(Point position, Vec size)
     return rect(position.x, position.y, size.x, size.y);
 }
 
+Rect rect_from_points(Point p1, Point p2)
+{
+    return rect_from_vecs(
+        vec(fminf(p1.x, p2.x),
+            fminf(p1.y, p2.y)),
+        vec(fabsf(p1.x - p2.x),
+            fabsf(p1.y - p2.y)));
+}
+
 Rect rect_from_sdl(const SDL_Rect *rect)
 {
     const Rect result = {

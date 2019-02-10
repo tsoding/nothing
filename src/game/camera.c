@@ -15,6 +15,7 @@ struct Camera {
     bool debug_mode;
     bool blackwhite_mode;
     Point position;
+    float scale;
     SDL_Renderer *renderer;
     Sprite_font *font;
 };
@@ -44,6 +45,7 @@ Camera *create_camera(SDL_Renderer *renderer,
     }
 
     camera->position = vec(0.0f, 0.0f);
+    camera->scale = 1.0f;
     camera->debug_mode = 0;
     camera->blackwhite_mode = 0;
     camera->renderer = renderer;
@@ -190,7 +192,7 @@ int camera_render_text(Camera *camera,
             camera->font,
             camera->renderer,
             screen_position,
-            vec(size.x * scale.x, size.y * scale.y),
+            vec(size.x * scale.x * camera->scale, size.y * scale.y * camera->scale),
             camera->blackwhite_mode ? color_desaturate(c) : c,
             text) < 0) {
         return -1;
@@ -244,6 +246,12 @@ void camera_center_at(Camera *camera, Point position)
 {
     trace_assert(camera);
     camera->position = position;
+}
+
+void camera_scale(Camera *camera, float scale)
+{
+    trace_assert(camera);
+    camera->scale = fmaxf(0.1f, scale);
 }
 
 void camera_toggle_debug_mode(Camera *camera)
@@ -337,9 +345,11 @@ static Vec camera_point(const Camera *camera,
 
 {
     return vec_sum(
-        vec_entry_mult(
-            vec_sum(p, vec_neg(camera->position)),
-            effective_scale(view_port)),
+        vec_scala_mult(
+            vec_entry_mult(
+                vec_sum(p, vec_neg(camera->position)),
+                effective_scale(view_port)),
+            camera->scale),
         vec((float) view_port->w * 0.5f,
             (float) view_port->h * 0.5f));
 }
@@ -358,14 +368,15 @@ static Rect camera_rect(const Camera *camera,
                           const SDL_Rect *view_port,
                           const Rect rect)
 {
-    return rect_from_vecs(
+    return rect_from_points(
         camera_point(
             camera,
             view_port,
             vec(rect.x, rect.y)),
-        vec_entry_mult(
-            effective_scale(view_port),
-            vec(rect.w, rect.h)));
+        camera_point(
+            camera,
+            view_port,
+            vec(rect.x + rect.w, rect.y + rect.h)));
 }
 
 int camera_render_debug_rect(Camera *camera,
