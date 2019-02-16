@@ -136,7 +136,7 @@ static int rigid_bodies_collide_with_platforms(
 int rigid_bodies_collide(RigidBodies *rigid_bodies,
                          const Platforms *platforms)
 {
-    // TODO: RigidBodies should collide only the bodies that were updated on after a previous collision
+    // TODO(#683): RigidBodies should collide only the bodies that were updated on after a previous collision
     memset(rigid_bodies->grounded, 0, sizeof(bool) * rigid_bodies->count);
 
     if (rigid_bodies_collide_with_itself(rigid_bodies) < 0) {
