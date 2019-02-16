@@ -1,7 +1,6 @@
 #include "system/stacktrace.h"
 
 #include "game/level/boxes.h"
-#include "game/level/physical_world.h"
 #include "game/level/player.h"
 #include "game/level/player/rigid_rect.h"
 #include "system/line_stream.h"

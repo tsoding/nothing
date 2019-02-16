@@ -12,7 +12,6 @@
 #include "game/level/goals.h"
 #include "game/level/labels.h"
 #include "game/level/lava.h"
-#include "game/level/physical_world.h"
 #include "game/level/platforms.h"
 #include "game/level/player.h"
 #include "game/level/regions.h"
@@ -39,7 +38,6 @@ struct Level
     Boxes *boxes;
     Labels *labels;
     Regions *regions;
-    Physical_world *physical_world;
 
     bool flying_mode;
     Vec flying_camera_position;
@@ -147,11 +145,6 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
-    level->physical_world = PUSH_LT(lt, create_physical_world(), destroy_physical_world);
-    if (level->physical_world == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
     level->flying_mode = false;
     level->flying_camera_position = vec(0.0f, 0.0f);
     level->flying_camera_scale = 1.0f;
@@ -217,7 +210,6 @@ int level_update(Level *level, float delta_time)
     trace_assert(level);
     trace_assert(delta_time > 0);
 
-    physical_world_apply_gravity(level->physical_world);
     boxes_float_in_lava(level->boxes, level->lava);
     rigid_bodies_apply_omniforce(level->rigid_bodies, vec(0.0f, LEVEL_GRAVITY));
 
@@ -225,7 +217,6 @@ int level_update(Level *level, float delta_time)
     player_update(level->player, delta_time);
 
     rigid_bodies_collide(level->rigid_bodies, level->platforms);
-    physical_world_collide_solids(level->physical_world, level->platforms);
 
     player_hide_goals(level->player, level->goals);
     player_die_from_lava(level->player, level->lava);
@@ -377,8 +368,6 @@ int level_reload_preserve_player(Level *level, const char *file_name, Broadcast 
         RETURN_LT(lt, -1);
     }
     level->regions = RESET_LT(level->lt, level->regions, regions);
-
-    physical_world_clean(level->physical_world);
 
     RETURN_LT(lt, 0);
 }
