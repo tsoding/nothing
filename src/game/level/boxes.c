@@ -12,7 +12,6 @@
 #include "broadcast.h"
 #include "game/level/rigid_bodies.h"
 
-/* TODO(#631): Boxes entity should be implemented in terms of RigidBodies instead of Rigid_rect */
 
 #define BOXES_CAPACITY 100
 
