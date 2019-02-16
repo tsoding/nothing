@@ -7,7 +7,7 @@
 #include "game/camera.h"
 #include "math/rect.h"
 
-// TODO: Dying_rect should be called Explosion
+// TODO(#691): Dying_rect should be called Explosion
 
 typedef struct Dying_rect Dying_rect;
 
