@@ -8,7 +8,6 @@
 #include "math/rect.h"
 
 typedef struct Lava Lava;
-typedef struct Rigid_rect Rigid_rect;
 typedef struct LineStream LineStream;
 
 Lava *create_lava_from_line_stream(LineStream *line_stream);

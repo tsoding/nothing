@@ -2,7 +2,6 @@
 
 #include "game/level/boxes.h"
 #include "game/level/player.h"
-#include "game/level/player/rigid_rect.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"

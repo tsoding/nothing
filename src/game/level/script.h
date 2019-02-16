@@ -1,6 +1,8 @@
 #ifndef SCRIPT_H_
 #define SCRIPT_H_
 
+#include <stdbool.h>
+
 typedef struct Script Script;
 typedef struct LineStream LineStream;
 typedef struct Broadcast Broadcast;

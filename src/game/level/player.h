@@ -11,7 +11,6 @@
 
 typedef struct Player Player;
 typedef struct Goals Goals;
-typedef struct Rigid_rect Rigid_rect;
 typedef struct LineStream LineStream;
 typedef struct Script Script;
 typedef struct Broadcast Broadcast;
@@ -52,7 +51,5 @@ bool player_overlaps_rect(const Player *player,
 /** \brief Implements solid_apply_force
  */
 void player_apply_force(Player *player, Vec force);
-
-Rigid_rect *player_rigid_rect(Player *player, const char *id);
 
 #endif  // PLAYER_H_

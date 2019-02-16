@@ -22,8 +22,6 @@ void boxes_float_in_lava(Boxes *boxes, Lava *lava);
 int boxes_add_to_physical_world(const Boxes *boxes,
                                 Physical_world *Physical_world);
 
-Rigid_rect *boxes_rigid_rect(Boxes *boxes, const char *id);
-
 struct EvalResult
 boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path);
 
