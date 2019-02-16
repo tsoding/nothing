@@ -6,6 +6,7 @@
 #include "game/level/player/dying_rect.h"
 #include "game/level/player/rigid_rect.h"
 #include "game/level/script.h"
+#include "game/level/rigid_bodies.h"
 #include "goals.h"
 #include "math/point.h"
 #include "platforms.h"
@@ -32,7 +33,9 @@ struct Player {
     Lt *lt;
     Player_state state;
 
-    Rigid_rect *alive_body;
+    RigidBodies *rigid_bodies;
+
+    RigidBodyId alive_body_id;
     Dying_rect *dying_body;
     Script *script;
 
@@ -44,7 +47,7 @@ struct Player {
     int play_die_cue;
 };
 
-Player *create_player_from_line_stream(LineStream *line_stream, Broadcast *broadcast)
+Player *create_player_from_line_stream(LineStream *line_stream, RigidBodies *rigid_bodies, Broadcast *broadcast)
 {
     trace_assert(line_stream);
 
@@ -59,6 +62,8 @@ Player *create_player_from_line_stream(LineStream *line_stream, Broadcast *broad
         RETURN_LT(lt, NULL);
     }
     player->lt = lt;
+
+    player->rigid_bodies = rigid_bodies;
 
     float x = 0.0f, y = 0.0f;
     char colorstr[7];
@@ -81,16 +86,10 @@ Player *create_player_from_line_stream(LineStream *line_stream, Broadcast *broad
 
     const Color color = hexstr(colorstr);
 
-    player->alive_body = PUSH_LT(
-        lt,
-        create_rigid_rect(
-            rect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT),
-            color,
-            "player"),
-        destroy_rigid_rect);
-    if (player->alive_body == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    player->alive_body_id = rigid_bodies_add(
+        rigid_bodies,
+        rect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT),
+        color);
 
     player->dying_body = PUSH_LT(
         lt,
@@ -116,25 +115,25 @@ void destroy_player(Player * player)
     RETURN_LT0(player->lt);
 }
 
-Solid_ref player_as_solid(Player *player)
-{
-    Solid_ref ref = {
-        .tag = SOLID_PLAYER,
-        .ptr = (void*) player
-    };
-
-    return ref;
-}
-
 int player_render(const Player * player,
                   Camera *camera)
 {
     trace_assert(player);
     trace_assert(camera);
 
+    char debug_text[256];
+
     switch (player->state) {
-    case PLAYER_STATE_ALIVE:
-        return rigid_rect_render(player->alive_body, camera);
+    case PLAYER_STATE_ALIVE: {
+        snprintf(debug_text, 256, "Jump: %d", player->jump_threshold);
+        Rect hitbox = rigid_bodies_hitbox(player->rigid_bodies, player->alive_body_id);
+
+        if (camera_render_debug_text(camera, debug_text, vec(hitbox.x, hitbox.y - 20.0f)) < 0) {
+            return -1;
+        }
+
+        return rigid_bodies_render(player->rigid_bodies, player->alive_body_id, camera);
+    }
 
     case PLAYER_STATE_DYING:
         return dying_rect_render(player->dying_body, camera);
@@ -152,9 +151,10 @@ void player_update(Player *player,
 
     switch (player->state) {
     case PLAYER_STATE_ALIVE: {
-        rigid_rect_update(player->alive_body, delta_time);
+        rigid_bodies_update(player->rigid_bodies, player->alive_body_id, delta_time);
 
-        const Rect hitbox = rigid_rect_hitbox(player->alive_body);
+        const Rect hitbox = rigid_bodies_hitbox(player->rigid_bodies, player->alive_body_id);
+
 
         if (hitbox.y > 1000.0f) {
             player_die(player);
@@ -165,12 +165,16 @@ void player_update(Player *player,
         dying_rect_update(player->dying_body, delta_time);
 
         if (dying_rect_is_dead(player->dying_body)) {
-            rigid_rect_transform_velocity(
-                player->alive_body,
+            rigid_bodies_transform_velocity(
+                player->rigid_bodies,
+                player->alive_body_id,
                 make_mat3x3(0.0f, 0.0f, 0.0f,
                             0.0f, 0.0f, 0.0f,
                             0.0f, 0.0f, 1.0f));
-            rigid_rect_teleport_to(player->alive_body, player->checkpoint);
+            rigid_bodies_teleport_to(
+                player->rigid_bodies,
+                player->alive_body_id,
+                player->checkpoint);
             player->state = PLAYER_STATE_ALIVE;
         }
     } break;
@@ -179,47 +183,45 @@ void player_update(Player *player,
     }
 }
 
-void player_collide_with_solid(Player *player, Solid_ref solid)
-{
-    if (player->state == PLAYER_STATE_ALIVE) {
-        rigid_rect_collide_with_solid(player->alive_body, solid);
-
-        if (rigid_rect_touches_ground(player->alive_body)) {
-            player->jump_threshold = 0;
-        }
-    }
-}
-
 void player_move_left(Player *player)
 {
     trace_assert(player);
-    rigid_rect_move(player->alive_body, vec(-PLAYER_SPEED, 0.0f));
+    rigid_bodies_move(player->rigid_bodies, player->alive_body_id, vec(-PLAYER_SPEED, 0.0f));
 }
 
 void player_move_right(Player *player)
 {
     trace_assert(player);
 
-    rigid_rect_move(player->alive_body, vec(PLAYER_SPEED, 0.0f));
+    rigid_bodies_move(player->rigid_bodies, player->alive_body_id, vec(PLAYER_SPEED, 0.0f));
 }
 
 void player_stop(Player *player)
 {
     trace_assert(player);
 
-    rigid_rect_move(player->alive_body, vec(0.0f, 0.0f));
+    rigid_bodies_move(player->rigid_bodies, player->alive_body_id, vec(0.0f, 0.0f));
 }
 
 void player_jump(Player *player)
 {
     trace_assert(player);
+
+    if (rigid_bodies_touches_ground(player->rigid_bodies, player->alive_body_id)) {
+        player->jump_threshold = 0;
+    }
+
     if (player->jump_threshold < PLAYER_MAX_JUMP_THRESHOLD) {
-        rigid_rect_transform_velocity(player->alive_body,
-                                      make_mat3x3(1.0f, 0.0f, 0.0f,
-                                                  0.0f, 0.0f, 0.0f,
-                                                  0.0f, 0.0f, 1.0f));
-        rigid_rect_apply_force(player->alive_body,
-                               vec(0.0f, -PLAYER_JUMP));
+        rigid_bodies_transform_velocity(
+            player->rigid_bodies,
+            player->alive_body_id,
+            make_mat3x3(1.0f, 0.0f, 0.0f,
+                        0.0f, 0.0f, 0.0f,
+                        0.0f, 0.0f, 1.0f));
+        rigid_bodies_apply_force(
+            player->rigid_bodies,
+            player->alive_body_id,
+            vec(0.0f, -PLAYER_JUMP));
         player->jump_threshold++;
 
         if (script_has_scope_value(player->script, "on-jump")) {
@@ -234,7 +236,9 @@ void player_die(Player *player)
 
     if (player->state == PLAYER_STATE_ALIVE) {
         const Rect hitbox =
-            rigid_rect_hitbox(player->alive_body);
+            rigid_bodies_hitbox(
+                player->rigid_bodies,
+                player->alive_body_id);
 
         player->play_die_cue = 1;
         dying_rect_start_dying(player->dying_body, vec(hitbox.x, hitbox.y));
@@ -248,7 +252,9 @@ void player_focus_camera(Player *player,
     trace_assert(player);
     trace_assert(camera);
 
-    const Rect player_hitbox = rigid_rect_hitbox(player->alive_body);
+    const Rect player_hitbox = rigid_bodies_hitbox(
+        player->rigid_bodies,
+        player->alive_body_id);
 
     camera_center_at(
         camera,
@@ -262,13 +268,21 @@ void player_hide_goals(const Player *player,
 {
     trace_assert(player);
     trace_assert(goals);
-    goals_hide_from_player(goals, rigid_rect_hitbox(player->alive_body));
+    goals_hide_from_player(
+        goals,
+        rigid_bodies_hitbox(
+            player->rigid_bodies,
+            player->alive_body_id));
 }
 
 void player_die_from_lava(Player *player,
                           const Lava *lava)
 {
-    if (lava_overlaps_rect(lava, rigid_rect_hitbox(player->alive_body))) {
+    if (lava_overlaps_rect(
+            lava,
+            rigid_bodies_hitbox(
+                player->rigid_bodies,
+                player->alive_body_id))) {
         player_die(player);
     }
 }
@@ -292,36 +306,6 @@ int player_sound(Player *player,
     return 0;
 }
 
-void player_touches_rect_sides(Player *player,
-                               Rect object,
-                               int sides[RECT_SIDE_N])
-{
-    if (player->state == PLAYER_STATE_ALIVE) {
-        rigid_rect_touches_rect_sides(player->alive_body, object, sides);
-    }
-}
-
-void player_apply_force(Player *player, Vec force)
-{
-    if (player->state == PLAYER_STATE_ALIVE) {
-        rigid_rect_apply_force(player->alive_body, force);
-    }
-}
-
-Rigid_rect *player_rigid_rect(Player *player, const char *id)
-{
-    trace_assert(player);
-    trace_assert(id);
-
-    if (player->state == PLAYER_STATE_ALIVE) {
-        if (rigid_rect_has_id(player->alive_body, id)) {
-            return player->alive_body;
-        }
-    }
-
-    return NULL;
-}
-
 bool player_overlaps_rect(const Player *player,
                           Rect rect)
 {
@@ -329,6 +313,7 @@ bool player_overlaps_rect(const Player *player,
 
     return player->state == PLAYER_STATE_ALIVE
         && rects_overlap(
-            rect, rigid_rect_hitbox(
-                player->alive_body));
+            rect, rigid_bodies_hitbox(
+                player->rigid_bodies,
+                player->alive_body_id));
 }
