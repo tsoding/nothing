@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "game/level/player/dying_rect.h"
+#include "game/level/explosion.h"
 #include "game/level/script.h"
 #include "game/level/rigid_bodies.h"
 #include "goals.h"
@@ -34,7 +34,7 @@ struct Player {
     RigidBodies *rigid_bodies;
 
     RigidBodyId alive_body_id;
-    Dying_rect *dying_body;
+    Explosion *dying_body;
     Script *script;
 
     int jump_threshold;
@@ -91,10 +91,10 @@ Player *create_player_from_line_stream(LineStream *line_stream, RigidBodies *rig
 
     player->dying_body = PUSH_LT(
         lt,
-        create_dying_rect(
+        create_explosion(
             color,
             PLAYER_DEATH_DURATION),
-        destroy_dying_rect);
+        destroy_explosion);
     if (player->dying_body == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -134,7 +134,7 @@ int player_render(const Player * player,
     }
 
     case PLAYER_STATE_DYING:
-        return dying_rect_render(player->dying_body, camera);
+        return explosion_render(player->dying_body, camera);
 
     default: {}
     }
@@ -160,9 +160,9 @@ void player_update(Player *player,
     } break;
 
     case PLAYER_STATE_DYING: {
-        dying_rect_update(player->dying_body, delta_time);
+        explosion_update(player->dying_body, delta_time);
 
-        if (dying_rect_is_dead(player->dying_body)) {
+        if (explosion_is_done(player->dying_body)) {
             rigid_bodies_transform_velocity(
                 player->rigid_bodies,
                 player->alive_body_id,
@@ -239,7 +239,7 @@ void player_die(Player *player)
                 player->alive_body_id);
 
         player->play_die_cue = 1;
-        dying_rect_start_dying(player->dying_body, vec(hitbox.x, hitbox.y));
+        explosion_start(player->dying_body, vec(hitbox.x, hitbox.y));
         player->state = PLAYER_STATE_DYING;
     }
 }
