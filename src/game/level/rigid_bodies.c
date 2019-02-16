@@ -248,7 +248,7 @@ RigidBodyId rigid_bodies_add_from_line_stream(RigidBodies *rigid_bodies,
 
     char color[7];
     Rect rect;
-    // TODO: id should be part of boxes
+    // TODO(#686): id should be part of boxes
     char id[RIGID_BODIES_MAX_ID_SIZE];
 
     if (sscanf(line_stream_next(line_stream),
