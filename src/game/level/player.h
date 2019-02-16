@@ -20,13 +20,10 @@ typedef struct RigidBodies RigidBodies;
 Player *create_player_from_line_stream(LineStream *line_stream, RigidBodies *rigid_bodies, Broadcast *broadcast);
 void destroy_player(Player * player);
 
-Solid_ref player_as_solid(Player *player);
-
 int player_render(const Player * player,
                   Camera *camera);
 void player_update(Player * player,
                    float delta_time);
-void player_collide_with_solid(Player *player, Solid_ref solid);
 void player_touches_rect_sides(Player *player,
                                Rect object,
                                int sides[RECT_SIDE_N]);

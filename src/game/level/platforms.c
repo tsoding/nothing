@@ -77,16 +77,6 @@ void destroy_platforms(Platforms *platforms)
     RETURN_LT0(platforms->lt);
 }
 
-Solid_ref platforms_as_solid(Platforms *platforms)
-{
-    Solid_ref ref = {
-        .tag = SOLID_PLATFORMS,
-        .ptr = (void*)platforms
-    };
-
-    return ref;
-}
-
 /* TODO(#450): platforms do not render their ids in debug mode */
 int platforms_render(const Platforms *platforms,
                      Camera *camera)

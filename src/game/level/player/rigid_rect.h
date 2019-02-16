@@ -5,7 +5,6 @@
 #include "game/camera.h"
 #include "game/level/lava.h"
 #include "game/level/platforms.h"
-#include "game/level/solid.h"
 #include "math/mat3x3.h"
 #include "math/rect.h"
 #include "ebisp/expr.h"
@@ -20,8 +19,6 @@ Rigid_rect *create_rigid_rect(Rect rect, Color color, const char *id);
 Rigid_rect *create_rigid_rect_from_line_stream(LineStream *line_stream);
 void destroy_rigid_rect(Rigid_rect *rigid_rect);
 
-Solid_ref rigid_rect_as_solid(Rigid_rect *rigid_rect);
-
 int rigid_rect_render(const Rigid_rect *rigid_rect,
                       Camera *camera);
 int rigid_rect_update(Rigid_rect * rigid_rect,
@@ -30,9 +27,6 @@ int rigid_rect_update(Rigid_rect * rigid_rect,
 void rigid_rect_touches_rect_sides(Rigid_rect *rigid_rect,
                                    Rect object,
                                    int sides[RECT_SIDE_N]);
-
-void rigid_rect_collide_with_solid(Rigid_rect * rigid_rect,
-                                   Solid_ref solid);
 
 Rect rigid_rect_hitbox(const Rigid_rect *rigid_rect);
 
