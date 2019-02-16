@@ -5,7 +5,6 @@
 
 #include "color.h"
 #include "game/level/boxes.h"
-#include "game/level/solid.h"
 #include "rigid_rect.h"
 #include "system/str.h"
 #include "system/line_stream.h"
@@ -28,31 +27,6 @@ struct Rigid_rect {
     int touches_ground;
     Vec forces;
 };
-
-static const Vec opposing_rect_side_forces[RECT_SIDE_N] = {
-    { .x = 1.0f,  .y =  0.0f  },  /* RECT_SIDE_LEFT = 0, */
-    { .x = -1.0f, .y =  0.0f  },  /* RECT_SIDE_RIGHT, */
-    { .x = 0.0f,  .y =  1.0f, },  /* RECT_SIDE_TOP, */
-    { .x = 0.0f,  .y = -1.0f, }   /* RECT_SIDE_BOTTOM, */
-};
-
-static Vec opposing_force_by_sides(int sides[RECT_SIDE_N])
-{
-    Vec opposing_force = {
-        .x = 0.0f,
-        .y = 0.0f
-    };
-
-    for (Rect_side side = 0; side < RECT_SIDE_N; ++side) {
-        if (sides[side]) {
-            vec_add(
-                &opposing_force,
-                opposing_rect_side_forces[side]);
-        }
-    }
-
-    return opposing_force;
-}
 
 Rigid_rect *create_rigid_rect(Rect rect, Color color, const char *id)
 {
@@ -115,16 +89,6 @@ Rigid_rect *create_rigid_rect_from_line_stream(LineStream *line_stream)
 void destroy_rigid_rect(Rigid_rect *rigid_rect)
 {
     RETURN_LT0(rigid_rect->lt);
-}
-
-Solid_ref rigid_rect_as_solid(Rigid_rect *rigid_rect)
-{
-    const Solid_ref ref = {
-        .tag = SOLID_RIGID_RECT,
-        .ptr = rigid_rect
-    };
-
-    return ref;
 }
 
 void rigid_rect_touches_rect_sides(Rigid_rect *rigid_rect,
@@ -192,66 +156,6 @@ int rigid_rect_update(Rigid_rect * rigid_rect,
     rigid_rect->forces = vec(0.0f, 0.0f);
 
     return 0;
-}
-
-void rigid_rect_collide_with_solid(Rigid_rect * rigid_rect,
-                                   Solid_ref solid)
-{
-    trace_assert(rigid_rect);
-    trace_assert(rigid_rect != solid.ptr);
-
-    int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
-
-    solid_touches_rect_sides(solid, rigid_rect_hitbox(rigid_rect), sides);
-
-    if (sides[RECT_SIDE_BOTTOM]) {
-        rigid_rect->touches_ground = 1;
-    }
-
-    Vec opforce_direction = opposing_force_by_sides(sides);
-
-    solid_apply_force(
-        solid,
-        vec_scala_mult(
-            vec_neg(vec_norm(opforce_direction)),
-            vec_length(
-                vec_sum(
-                    rigid_rect->velocity,
-                    rigid_rect->movement)) * 8.0f));
-
-    if (fabs(opforce_direction.x) > 1e-6 && (opforce_direction.x < 0.0f) != ((rigid_rect->velocity.x + rigid_rect->movement.x) < 0.0f)) {
-        rigid_rect->velocity.x = 0.0f;
-        rigid_rect->movement.x = 0.0f;
-    }
-
-    if (fabs(opforce_direction.y) > 1e-6 && (opforce_direction.y < 0.0f) != ((rigid_rect->velocity.y + rigid_rect->movement.y) < 0.0f)) {
-        rigid_rect->velocity.y = 0.0f;
-        rigid_rect->movement.y = 0.0f;
-
-        if (vec_length(rigid_rect->velocity) > 1e-6) {
-            rigid_rect_apply_force(
-                rigid_rect,
-                vec_scala_mult(
-                    vec_neg(rigid_rect->velocity),
-                    16.0f));
-        }
-    }
-
-
-    for (int i = 0; i < 1000 && vec_length(opforce_direction) > 1e-6; ++i) {
-        rigid_rect->position = vec_sum(
-            rigid_rect->position,
-            vec_scala_mult(
-                opforce_direction,
-                1e-2f));
-
-        memset(sides, 0, sizeof(int) * RECT_SIDE_N);
-        solid_touches_rect_sides(
-            solid,
-            rigid_rect_hitbox(rigid_rect),
-            sides);
-        opforce_direction = opposing_force_by_sides(sides);
-    }
 }
 
 Rect rigid_rect_hitbox(const Rigid_rect *rigid_rect)

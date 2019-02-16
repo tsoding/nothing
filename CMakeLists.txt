@@ -101,8 +101,6 @@ add_executable(nothing
   src/game/level/rigid_bodies.h
   src/game/level/script.c
   src/game/level/script.h
-  src/game/level/solid.c
-  src/game/level/solid.h
   src/game/level_picker.c
   src/game/level_picker.h
   src/game/sound_samples.c

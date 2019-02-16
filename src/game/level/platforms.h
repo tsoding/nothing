@@ -5,15 +5,12 @@
 
 #include "game/camera.h"
 #include "math/rect.h"
-#include "solid.h"
 
 typedef struct Platforms Platforms;
 typedef struct LineStream LineStream;
 
 Platforms *create_platforms_from_line_stream(LineStream *line_stream);
 void destroy_platforms(Platforms *platforms);
-
-Solid_ref platforms_as_solid(Platforms *platforms);
 
 int platforms_render(const Platforms *platforms,
                      Camera *camera);
