@@ -258,7 +258,7 @@ RigidBodyId rigid_bodies_add_from_line_stream(RigidBodies *rigid_bodies,
                &rect.w, &rect.h,
                color) < 0) {
         log_fail("Could not read rigid rect\n");
-        // TODO: rigid_bodies_add_from_line_stream cannot indicate an error properly
+        // TODO(#687): rigid_bodies_add_from_line_stream cannot indicate an error properly
         return 0;
     }
 
