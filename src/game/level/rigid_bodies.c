@@ -12,7 +12,6 @@
 
 #include "./rigid_bodies.h"
 
-#define ID_SIZE 100
 #define RIGID_BODIES_MAX_ID_SIZE 36
 
 struct RigidBodies
@@ -202,7 +201,7 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
         return -1;
     }
 
-    snprintf(text_buffer, ID_SIZE, "id: %ld", id);
+    snprintf(text_buffer, 256, "id: %ld", id);
 
     if (camera_render_debug_text(
             camera,
