@@ -1,7 +1,6 @@
 #include "system/stacktrace.h"
 
 #include "game/level/boxes.h"
-#include "game/level/physical_world.h"
 #include "game/level/player.h"
 #include "game/level/player/rigid_rect.h"
 #include "system/line_stream.h"
@@ -13,7 +12,6 @@
 #include "broadcast.h"
 #include "game/level/rigid_bodies.h"
 
-/* TODO(#631): Boxes entity should be implemented in terms of RigidBodies instead of Rigid_rect */
 
 #define BOXES_CAPACITY 100
 

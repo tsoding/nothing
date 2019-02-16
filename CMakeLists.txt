@@ -87,8 +87,6 @@ add_executable(nothing
   src/game/level/lava.h
   src/game/level/lava/wavy_rect.c
   src/game/level/lava/wavy_rect.h
-  src/game/level/physical_world.c
-  src/game/level/physical_world.c
   src/game/level/platforms.c
   src/game/level/platforms.h
   src/game/level/player.c
