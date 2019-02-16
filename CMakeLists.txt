@@ -93,8 +93,6 @@ add_executable(nothing
   src/game/level/player.h
   src/game/level/player/dying_rect.c
   src/game/level/player/dying_rect.h
-  src/game/level/player/rigid_rect.c
-  src/game/level/player/rigid_rect.h
   src/game/level/regions.c
   src/game/level/regions.h
   src/game/level/rigid_bodies.c

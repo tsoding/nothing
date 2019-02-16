@@ -4,7 +4,6 @@
 
 #include "color.h"
 #include "game/level/lava/wavy_rect.h"
-#include "game/level/player/rigid_rect.h"
 #include "lava.h"
 #include "math/rect.h"
 #include "system/lt.h"

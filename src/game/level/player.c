@@ -4,7 +4,6 @@
 #include <stdlib.h>
 
 #include "game/level/player/dying_rect.h"
-#include "game/level/player/rigid_rect.h"
 #include "game/level/script.h"
 #include "game/level/rigid_bodies.h"
 #include "goals.h"
