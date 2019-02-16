@@ -18,7 +18,7 @@
 struct RigidBodies
 {
     Lt *lt;
-    // TODO: capacity is not needed in RigidBodies
+    // TODO(#685): capacity is not needed in RigidBodies
     size_t capacity;
     size_t count;
 
