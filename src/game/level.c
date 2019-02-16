@@ -30,6 +30,7 @@ struct Level
     Lt *lt;
 
     Background *background;
+    RigidBodies *rigid_bodies;
     Player *player;
     Platforms *platforms;
     Goals *goals;
@@ -39,7 +40,6 @@ struct Level
     Labels *labels;
     Regions *regions;
     Physical_world *physical_world;
-    RigidBodies *rigid_bodies;
 
     bool flying_mode;
     Vec flying_camera_position;
@@ -78,9 +78,14 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
+    level->rigid_bodies = PUSH_LT(lt, create_rigid_bodies(1024), destroy_rigid_bodies);
+    if (level->rigid_bodies == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->player = PUSH_LT(
         lt,
-        create_player_from_line_stream(level_stream, broadcast),
+        create_player_from_line_stream(level_stream, level->rigid_bodies, broadcast),
         destroy_player);
     if (level->player == NULL) {
         RETURN_LT(lt, NULL);
@@ -146,17 +151,9 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
     if (level->physical_world == NULL) {
         RETURN_LT(lt, NULL);
     }
-    if (physical_world_add_solid(
-            level->physical_world,
-            player_as_solid(level->player)) < 0) { RETURN_LT(lt, NULL); }
     if (boxes_add_to_physical_world(
             level->boxes,
             level->physical_world) < 0) { RETURN_LT(lt, NULL); }
-
-    level->rigid_bodies = PUSH_LT(lt, create_rigid_bodies(1024), destroy_rigid_bodies);
-    if (level->rigid_bodies == NULL) {
-        RETURN_LT(lt, NULL);
-    }
 
     level->flying_mode = false;
     level->flying_camera_position = vec(0.0f, 0.0f);
@@ -215,10 +212,6 @@ int level_render(const Level *level, Camera *camera)
         return -1;
     }
 
-    if (rigid_bodies_render(level->rigid_bodies, camera) < 0) {
-        return -1;
-    }
-
     return 0;
 }
 
@@ -231,7 +224,6 @@ int level_update(Level *level, float delta_time)
     boxes_float_in_lava(level->boxes, level->lava);
     rigid_bodies_apply_omniforce(level->rigid_bodies, vec(0.0f, LEVEL_GRAVITY));
 
-    rigid_bodies_update(level->rigid_bodies, delta_time);
     boxes_update(level->boxes, delta_time);
     player_update(level->player, delta_time);
 
@@ -341,7 +333,7 @@ int level_reload_preserve_player(Level *level, const char *file_name, Broadcast 
     }
     level->background = RESET_LT(level->lt, level->background, background);
 
-    Player * const skipped_player = create_player_from_line_stream(level_stream, broadcast);
+    Player * const skipped_player = create_player_from_line_stream(level_stream, level->rigid_bodies, broadcast);
     if (skipped_player == NULL) {
         RETURN_LT(lt, -1);
     }
@@ -390,9 +382,6 @@ int level_reload_preserve_player(Level *level, const char *file_name, Broadcast 
     level->regions = RESET_LT(level->lt, level->regions, regions);
 
     physical_world_clean(level->physical_world);
-    if (physical_world_add_solid(
-            level->physical_world,
-            player_as_solid(level->player)) < 0) { RETURN_LT(lt, -1); }
     if (boxes_add_to_physical_world(
             level->boxes,
             level->physical_world) < 0) { RETURN_LT(lt, -1); }
@@ -440,13 +429,7 @@ Rigid_rect *level_rigid_rect(Level *level,
     trace_assert(level);
     trace_assert(rigid_rect_id);
 
-    Rigid_rect *rigid_rect = player_rigid_rect(level->player,
-                                               rigid_rect_id);
-    if (rigid_rect != NULL) {
-        return rigid_rect;
-    }
-
-    rigid_rect = boxes_rigid_rect(level->boxes, rigid_rect_id);
+    Rigid_rect *rigid_rect = boxes_rigid_rect(level->boxes, rigid_rect_id);
     if (rigid_rect != NULL) {
         return rigid_rect;
     }

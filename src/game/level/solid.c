@@ -16,10 +16,6 @@ void solid_touches_rect_sides(Solid_ref solid,
     case SOLID_RIGID_RECT:
         rigid_rect_touches_rect_sides((Rigid_rect *) solid.ptr, object, sides);
         break;
-
-    case SOLID_PLAYER:
-        player_touches_rect_sides((Player *) solid.ptr, object, sides);
-        break;
     }
 }
 
@@ -33,10 +29,6 @@ void solid_apply_force(Solid_ref solid,
 
     case SOLID_RIGID_RECT:
         rigid_rect_apply_force((Rigid_rect *) solid.ptr, force);
-        break;
-
-    case SOLID_PLAYER:
-        player_apply_force((Player *) solid.ptr, force);
         break;
 
     default: {}
@@ -53,10 +45,6 @@ void solid_collide_with_solid(Solid_ref solid,
 
     case SOLID_RIGID_RECT:
         rigid_rect_collide_with_solid((Rigid_rect *) solid.ptr, other_solid);
-        break;
-
-    case SOLID_PLAYER:
-        player_collide_with_solid((Player *) solid.ptr, other_solid);
         break;
 
     default: {}

@@ -14,9 +14,11 @@ int rigid_bodies_collide(RigidBodies *rigid_bodies,
                          const Platforms *platforms);
 
 int rigid_bodies_update(RigidBodies *rigid_bodies,
+                        RigidBodyId id,
                         float delta_time);
 
 int rigid_bodies_render(RigidBodies *rigid_bodies,
+                        RigidBodyId id,
                         Camera *camera);
 RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
                              Rect rect,

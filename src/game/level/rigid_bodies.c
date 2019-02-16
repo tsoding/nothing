@@ -136,6 +136,9 @@ static int rigid_bodies_collide_with_platforms(
 int rigid_bodies_collide(RigidBodies *rigid_bodies,
                          const Platforms *platforms)
 {
+    // TODO(#683): RigidBodies should collide only the bodies that were updated on after a previous collision
+    memset(rigid_bodies->grounded, 0, sizeof(bool) * rigid_bodies->count);
+
     if (rigid_bodies_collide_with_itself(rigid_bodies) < 0) {
         return -1;
     }
@@ -148,44 +151,38 @@ int rigid_bodies_collide(RigidBodies *rigid_bodies,
 }
 
 int rigid_bodies_update(RigidBodies *rigid_bodies,
+                        RigidBodyId id,
                         float delta_time)
 {
     trace_assert(rigid_bodies);
 
-    memset(rigid_bodies->grounded, 0,
-           sizeof(bool) * rigid_bodies->count);
-
-    for (size_t i = 0; i < rigid_bodies->count; ++i) {
-        rigid_bodies->velocities[i] = vec_sum(
-            rigid_bodies->velocities[i],
+    rigid_bodies->velocities[id] = vec_sum(
+            rigid_bodies->velocities[id],
             vec_scala_mult(
-                rigid_bodies->forces[i],
-                delta_time));
-    }
-
-    for (size_t i = 0; i < rigid_bodies->count; ++i) {
-        Vec position = vec(rigid_bodies->bodies[i].x,
-                           rigid_bodies->bodies[i].y);
-
-        position = vec_sum(
-            position,
-            vec_scala_mult(
-                vec_sum(
-                    rigid_bodies->velocities[i],
-                    rigid_bodies->movements[i]),
+                rigid_bodies->forces[id],
                 delta_time));
 
-        rigid_bodies->bodies[i].x = position.x;
-        rigid_bodies->bodies[i].y = position.y;
-    }
+    Vec position = vec(rigid_bodies->bodies[id].x,
+                       rigid_bodies->bodies[id].y);
 
-    memset(rigid_bodies->forces, 0,
-           sizeof(Vec) * rigid_bodies->count);
+    position = vec_sum(
+        position,
+        vec_scala_mult(
+            vec_sum(
+                rigid_bodies->velocities[id],
+                rigid_bodies->movements[id]),
+            delta_time));
+
+    rigid_bodies->bodies[id].x = position.x;
+    rigid_bodies->bodies[id].y = position.y;
+
+    rigid_bodies->forces[id] = vec(0.0f, 0.0f);
 
     return 0;
 }
 
 int rigid_bodies_render(RigidBodies *rigid_bodies,
+                        RigidBodyId id,
                         Camera *camera)
 {
     trace_assert(rigid_bodies);
@@ -193,34 +190,32 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
 
     char text_buffer[256];
 
-    for (size_t i = 0; i < rigid_bodies->count; ++i) {
-        if (camera_fill_rect(
-                camera,
-                rigid_bodies->bodies[i],
-                rigid_bodies->colors[i]) < 0) {
-            return -1;
-        }
+    if (camera_fill_rect(
+            camera,
+            rigid_bodies->bodies[id],
+            rigid_bodies->colors[id]) < 0) {
+        return -1;
+    }
 
-        snprintf(text_buffer, ID_SIZE, "%ld", i);
+    snprintf(text_buffer, ID_SIZE, "id: %ld", id);
 
-        if (camera_render_debug_text(
-                camera,
-                text_buffer,
-                vec(rigid_bodies->bodies[i].x,
-                    rigid_bodies->bodies[i].y)) < 0) {
-            return -1;
-        }
+    if (camera_render_debug_text(
+            camera,
+            text_buffer,
+            vec(rigid_bodies->bodies[id].x,
+                rigid_bodies->bodies[id].y)) < 0) {
+        return -1;
+    }
 
-        snprintf(text_buffer, 256, "(%f, %f)",
-                 rigid_bodies->bodies[i].x,
-                 rigid_bodies->bodies[i].y);
-        if (camera_render_debug_text(
-                camera,
-                text_buffer,
-                vec(rigid_bodies->bodies[i].x,
-                    rigid_bodies->bodies[i].y + FONT_CHAR_HEIGHT * 2.0f))) {
-            return -1;
-        }
+    snprintf(text_buffer, 256, "pos:(%f, %f)",
+             rigid_bodies->bodies[id].x,
+             rigid_bodies->bodies[id].y);
+    if (camera_render_debug_text(
+            camera,
+            text_buffer,
+            vec(rigid_bodies->bodies[id].x,
+                rigid_bodies->bodies[id].y + FONT_CHAR_HEIGHT * 2.0f))) {
+        return -1;
     }
 
     return 0;

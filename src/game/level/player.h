@@ -15,8 +15,9 @@ typedef struct Rigid_rect Rigid_rect;
 typedef struct LineStream LineStream;
 typedef struct Script Script;
 typedef struct Broadcast Broadcast;
+typedef struct RigidBodies RigidBodies;
 
-Player *create_player_from_line_stream(LineStream *line_stream, Broadcast *broadcast);
+Player *create_player_from_line_stream(LineStream *line_stream, RigidBodies *rigid_bodies, Broadcast *broadcast);
 void destroy_player(Player * player);
 
 Solid_ref player_as_solid(Player *player);
