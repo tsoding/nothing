@@ -108,20 +108,21 @@ bool lava_overlaps_rect(const Lava *lava,
     return 0;
 }
 
-void lava_float_rigid_rect(Lava *lava, Rigid_rect *object)
+void lava_float_rigid_body(Lava *lava, RigidBodies *rigid_bodies, RigidBodyId id)
 {
     trace_assert(lava);
 
-    const Rect object_hitbox = rigid_rect_hitbox(object);
+    const Rect object_hitbox = rigid_bodies_hitbox(rigid_bodies, id);
     for (size_t i = 0; i < lava->rects_count; ++i) {
         const Rect lava_hitbox = wavy_rect_hitbox(lava->rects[i]);
         if (rects_overlap(object_hitbox, lava_hitbox)) {
             const Rect overlap_area = rects_overlap_area(object_hitbox, lava_hitbox);
             const float k = overlap_area.w * overlap_area.h / (object_hitbox.w * object_hitbox.h);
-            rigid_rect_apply_force(
-                object,
+            rigid_bodies_apply_force(
+                rigid_bodies,
+                id,
                 vec(0.0f, -k * LAVA_BOINGNESS));
-            rigid_rect_damper(object, vec(0.0f, -0.9f));
+            rigid_bodies_damper(rigid_bodies, id, vec(0.0f, -0.9f));
         }
     }
 }

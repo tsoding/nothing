@@ -125,7 +125,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
 
     level->boxes = PUSH_LT(
         lt,
-        create_boxes_from_line_stream(level_stream),
+        create_boxes_from_line_stream(level_stream, level->rigid_bodies),
         destroy_boxes);
     if (level->boxes == NULL) {
         RETURN_LT(lt, NULL);
@@ -151,9 +151,6 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
     if (level->physical_world == NULL) {
         RETURN_LT(lt, NULL);
     }
-    if (boxes_add_to_physical_world(
-            level->boxes,
-            level->physical_world) < 0) { RETURN_LT(lt, NULL); }
 
     level->flying_mode = false;
     level->flying_camera_position = vec(0.0f, 0.0f);
@@ -363,7 +360,7 @@ int level_reload_preserve_player(Level *level, const char *file_name, Broadcast 
     }
     level->back_platforms = RESET_LT(level->lt, level->back_platforms, back_platforms);
 
-    Boxes * const boxes = create_boxes_from_line_stream(level_stream);
+    Boxes * const boxes = create_boxes_from_line_stream(level_stream, level->rigid_bodies);
     if (boxes == NULL) {
         RETURN_LT(lt, -1);
     }
@@ -382,9 +379,6 @@ int level_reload_preserve_player(Level *level, const char *file_name, Broadcast 
     level->regions = RESET_LT(level->lt, level->regions, regions);
 
     physical_world_clean(level->physical_world);
-    if (boxes_add_to_physical_world(
-            level->boxes,
-            level->physical_world) < 0) { RETURN_LT(lt, -1); }
 
     RETURN_LT(lt, 0);
 }
@@ -421,20 +415,6 @@ int level_enter_camera_event(Level *level, Camera *camera)
     goals_checkpoint(level->goals, level->player);
     labels_enter_camera_event(level->labels, camera);
     return 0;
-}
-
-Rigid_rect *level_rigid_rect(Level *level,
-                             const char *rigid_rect_id)
-{
-    trace_assert(level);
-    trace_assert(rigid_rect_id);
-
-    Rigid_rect *rigid_rect = boxes_rigid_rect(level->boxes, rigid_rect_id);
-    if (rigid_rect != NULL) {
-        return rigid_rect;
-    }
-
-    return NULL;
 }
 
 struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct Expr path)

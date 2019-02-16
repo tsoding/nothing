@@ -6,14 +6,19 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/stacktrace.h"
+#include "system/line_stream.h"
+#include "system/str.h"
+#include "system/log.h"
 
 #include "./rigid_bodies.h"
 
 #define ID_SIZE 100
+#define RIGID_BODIES_MAX_ID_SIZE 36
 
 struct RigidBodies
 {
     Lt *lt;
+    // TODO(#685): capacity is not needed in RigidBodies
     size_t capacity;
     size_t count;
 
@@ -233,6 +238,31 @@ RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
     rigid_bodies->colors[id] = color;
 
     return id;
+}
+
+RigidBodyId rigid_bodies_add_from_line_stream(RigidBodies *rigid_bodies,
+                                              LineStream *line_stream)
+{
+    trace_assert(rigid_bodies);
+    trace_assert(line_stream);
+
+    char color[7];
+    Rect rect;
+    // TODO(#686): id should be part of boxes
+    char id[RIGID_BODIES_MAX_ID_SIZE];
+
+    if (sscanf(line_stream_next(line_stream),
+               "%" STRINGIFY(RIGID_BODIES_MAX_ID_SIZE) "s%f%f%f%f%6s\n",
+               id,
+               &rect.x, &rect.y,
+               &rect.w, &rect.h,
+               color) < 0) {
+        log_fail("Could not read rigid rect\n");
+        // TODO(#687): rigid_bodies_add_from_line_stream cannot indicate an error properly
+        return 0;
+    }
+
+    return rigid_bodies_add(rigid_bodies, rect, hexstr(color));
 }
 
 Rect rigid_bodies_hitbox(const RigidBodies *rigid_bodies,
