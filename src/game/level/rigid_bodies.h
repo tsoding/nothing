@@ -4,6 +4,7 @@
 typedef struct RigidBodies RigidBodies;
 typedef struct Camera Camera;
 typedef struct Platforms Platforms;
+typedef struct LineStream LineStream;
 
 typedef size_t RigidBodyId;
 
@@ -23,6 +24,8 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
 RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
                              Rect rect,
                              Color color);
+RigidBodyId rigid_bodies_add_from_line_stream(RigidBodies *rigid_bodies,
+                                              LineStream *line_stream);
 
 Rect rigid_bodies_hitbox(const RigidBodies *rigid_bodies,
                          RigidBodyId id);

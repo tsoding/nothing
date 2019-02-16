@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "game/camera.h"
+#include "game/level/rigid_bodies.h"
 #include "math/rect.h"
 
 typedef struct Lava Lava;
@@ -19,6 +20,6 @@ int lava_update(Lava *lava, float delta_time);
 
 bool lava_overlaps_rect(const Lava *lava, Rect rect);
 
-void lava_float_rigid_rect(Lava *lava, Rigid_rect *rigid_rect);
+void lava_float_rigid_body(Lava *lava, RigidBodies *rigid_bodies, RigidBodyId id);
 
 #endif  // LAVA_H_
