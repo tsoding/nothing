@@ -200,8 +200,10 @@ Vec rect_impulse(Rect *r1, Rect *r2)
 
     const Vec c1 = rect_center(*r1);
     const Vec c2 = rect_center(*r2);
-    const float dx = fminf(c1.x, c2.x) + fabsf(c1.x - c2.x) * 0.5f;
-    const float dy = fminf(c1.y, c2.y) + fabsf(c1.y - c2.y) * 0.5f;
+    const Rect overlap = rects_overlap_area(*r1, *r2);
+    const Vec overlap_center = rect_center(overlap);
+    const float dx = overlap_center.x;
+    const float dy = overlap_center.y;
     const float sx = c1.x < c2.x ? 1.0f : -1.0f;
     const float sy = c1.y < c2.y ? 1.0f : -1.0f;
     const float cx1 = dx - sx * r1->w * 0.5f;
@@ -213,10 +215,10 @@ Vec rect_impulse(Rect *r1, Rect *r2)
         vec_sqr_norm(vec_sum(vec(c1.x, cy1), vec_neg(vec(c2.x, cy2))))) {
         r1->x = cx1 - r1->w * 0.5f;
         r2->x = cx2 - r2->w * 0.5f;
-        return vec(1.0f, 0.0f);
+        return vec(0.0f, 1.0f);
     } else {
         r1->y = cy1 - r1->h * 0.5f;
         r2->y = cy2 - r2->h * 0.5f;
-        return vec(0.0f, 1.0f);
+        return vec(1.0f, 0.0f);
     }
 }
