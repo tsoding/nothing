@@ -26,6 +26,7 @@ struct RigidBodies
     Color *colors;
     bool *grounded;
     Vec *forces;
+    bool *deleted;
 };
 
 RigidBodies *create_rigid_bodies(size_t capacity)
@@ -74,6 +75,11 @@ RigidBodies *create_rigid_bodies(size_t capacity)
         RETURN_LT(lt, NULL);
     }
 
+    rigid_bodies->deleted = PUSH_LT(lt, nth_calloc(capacity, sizeof(bool)), free);
+    if (rigid_bodies->deleted == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     return rigid_bodies;
 }
 
@@ -92,7 +98,15 @@ static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
     }
 
     for (size_t i1 = 0; i1 < rigid_bodies->count - 1; ++i1) {
+        if (rigid_bodies->deleted[i1]) {
+            continue;
+        }
+
         for (size_t i2 = i1 + 1; i2 < rigid_bodies->count; ++i2) {
+            if (rigid_bodies->deleted[i2]) {
+                continue;
+            }
+
             if (!rects_overlap(rigid_bodies->bodies[i1], rigid_bodies->bodies[i2])) {
                 continue;
             }
@@ -119,6 +133,10 @@ static int rigid_bodies_collide_with_platforms(
     int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
 
     for (size_t i = 0; i < rigid_bodies->count; ++i) {
+        if (rigid_bodies->deleted[i]) {
+            continue;
+        }
+
         memset(sides, 0, sizeof(int) * RECT_SIDE_N);
 
         platforms_touches_rect_sides(platforms, rigid_bodies->bodies[i], sides);
@@ -236,6 +254,15 @@ RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
     rigid_bodies->colors[id] = color;
 
     return id;
+}
+
+void rigid_bodies_remove(RigidBodies *rigid_bodies,
+                         RigidBodyId id)
+{
+    trace_assert(rigid_bodies);
+    trace_assert(id < rigid_bodies->capacity);
+
+    rigid_bodies->deleted[id] = true;
 }
 
 RigidBodyId rigid_bodies_add_from_line_stream(RigidBodies *rigid_bodies,
