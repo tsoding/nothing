@@ -63,6 +63,11 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid
 void destroy_boxes(Boxes *boxes)
 {
     trace_assert(boxes);
+
+    for (size_t i = 0; i < boxes->count; ++i) {
+        rigid_bodies_remove(boxes->rigid_bodies, boxes->body_ids[i]);
+    }
+
     RETURN_LT0(boxes->lt);
 }
 
