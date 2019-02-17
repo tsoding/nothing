@@ -111,12 +111,17 @@ static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
                 continue;
             }
 
-            rect_impulse(&rigid_bodies->bodies[i1], &rigid_bodies->bodies[i2]);
+            Vec orient = rect_impulse(&rigid_bodies->bodies[i1], &rigid_bodies->bodies[i2]);
 
-            const Vec v1 = rigid_bodies->velocities[i1];
-            const Vec v2 = rigid_bodies->velocities[i2];
-            rigid_bodies->velocities[i1] = v2;
-            rigid_bodies->velocities[i2] = v1;
+            rigid_bodies_apply_force(
+                rigid_bodies, i1, vec_sum(rigid_bodies->velocities[i2], rigid_bodies->movements[i2]));
+            rigid_bodies_apply_force(
+                rigid_bodies, i2, vec_sum(rigid_bodies->velocities[i1], rigid_bodies->movements[i1]));
+
+            rigid_bodies->velocities[i1] = vec(rigid_bodies->velocities[i1].x * orient.x, rigid_bodies->velocities[i1].y * orient.y);
+            rigid_bodies->velocities[i2] = vec(rigid_bodies->velocities[i2].x * orient.x, rigid_bodies->velocities[i2].y * orient.y);
+            rigid_bodies->movements[i1] = vec(rigid_bodies->movements[i1].x * orient.x, rigid_bodies->movements[i1].y * orient.y);
+            rigid_bodies->movements[i2] = vec(rigid_bodies->movements[i2].x * orient.x, rigid_bodies->movements[i2].y * orient.y);
         }
     }
 
