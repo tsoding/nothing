@@ -97,7 +97,7 @@ static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
         return 0;
     }
 
-    // TODO: rigid_bodies_collide_with_itself doesn't implement backpropagation
+    // TODO(#709): rigid_bodies_collide_with_itself doesn't implement backpropagation
     //   https://github.com/tsoding/nothing/issues/704#issuecomment-466673040
 
     for (size_t i1 = 0; i1 < rigid_bodies->count - 1; ++i1) {
