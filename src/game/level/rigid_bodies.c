@@ -113,6 +113,14 @@ static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
 
             Vec orient = rect_impulse(&rigid_bodies->bodies[i1], &rigid_bodies->bodies[i2]);
 
+            if (orient.x > orient.y) {
+                if (rigid_bodies->bodies[i1].y < rigid_bodies->bodies[i2].y) {
+                    rigid_bodies->grounded[i1] = true;
+                } else {
+                    rigid_bodies->grounded[i2] = true;
+                }
+            }
+
             rigid_bodies_apply_force(
                 rigid_bodies, i1, vec_sum(rigid_bodies->velocities[i2], rigid_bodies->movements[i2]));
             rigid_bodies_apply_force(
