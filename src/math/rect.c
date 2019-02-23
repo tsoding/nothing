@@ -181,14 +181,14 @@ Vec rect_snap(Rect pivot, Rect *r)
 
     const float sx = r_c.x < pivot_c.x ? -1.0f : 1.0f;
     const float sy = r_c.y < pivot_c.y ? -1.0f : 1.0f;
-    const float x = pivot_c.x + sx * (pivot.w + r->w) * 0.5f - r->w * 0.5f;
-    const float y = pivot_c.y + sy * (pivot.h + r->h) * 0.5f - r->h * 0.5f;
+    const float cx = pivot_c.x + sx * (pivot.w + r->w) * 0.5f;
+    const float cy = pivot_c.y + sy * (pivot.h + r->h) * 0.5f;
 
-    if (fabsf(x - r_c.x) < fabsf(y - r_c.y)) {
-        *r = rect(x, r->y, r->w, r->h);
+    if (fabsf(cx - r_c.x) < fabsf(cy - r_c.y)) {
+        *r = rect(cx - r->w * 0.5f, r->y, r->w, r->h);
         return vec(0.0f, 1.0f);
     } else {
-        *r = rect(r->x, y, r->w, r->h);
+        *r = rect(r->x, cy - r->h * 0.5f, r->w, r->h);
         return vec(1.0f, 0.0f);;
     }
 }
