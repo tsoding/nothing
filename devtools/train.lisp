@@ -1,0 +1,5 @@
+(send '(game level box new 0 0 100 100 "ff0000"))
+(send '(game level box new 100 0 100 100 "ff0000"))
+(send '(game level box new 200 0 100 100 "ff0000"))
+(send '(game level box new 300 0 100 100 "ff0000"))
+(send '(game level box new 400 0 100 100 "ff0000"))
