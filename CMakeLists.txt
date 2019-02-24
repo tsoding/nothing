@@ -42,6 +42,8 @@ add_library(system STATIC
   src/system/stacktrace.h
   src/system/str.c
   src/system/str.h
+  src/dynarray.h
+  src/dynarray.c
   )
 
 add_library(ebisp STATIC
