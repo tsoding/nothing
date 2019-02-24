@@ -1,16 +1,16 @@
 #include "system/stacktrace.h"
 
+#include "broadcast.h"
+#include "ebisp/builtins.h"
+#include "ebisp/interpreter.h"
 #include "game/level/boxes.h"
 #include "game/level/player.h"
+#include "game/level/rigid_bodies.h"
+#include "math/rand.h"
 #include "system/line_stream.h"
+#include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
-#include "system/log.h"
-#include "ebisp/interpreter.h"
-#include "ebisp/builtins.h"
-#include "broadcast.h"
-#include "game/level/rigid_bodies.h"
-
 
 #define BOXES_CAPACITY 1000
 
@@ -142,14 +142,21 @@ boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path)
         const char *action = target.atom->str;
 
         if (strcmp(action, "new") == 0) {
-            const char *color = NULL;
+            struct Expr optional_args = void_expr();
             long int x, y, w, h;
-            res = match_list(gc, "dddds", rest, &x, &y, &w, &h, &color);
+            res = match_list(gc, "dddd*", rest, &x, &y, &w, &h, &optional_args);
             if (res.is_error) {
                 return res;
             }
 
-            boxes_add_box(boxes, rect((float) x, (float) y, (float) w, (float) h), hexstr(color));
+            Color color = rgba(rand_float(1.0f), rand_float(1.0f), rand_float(1.0f), 1.0f);
+            if (!nil_p(optional_args)) {
+                const char *color_hex = NULL;
+                res = match_list(gc, "s*", optional_args, &color_hex, NULL);
+                color = hexstr(color_hex);
+            }
+
+            boxes_add_box(boxes, rect((float) x, (float) y, (float) w, (float) h), color);
 
             return eval_success(NIL(gc));
         }
