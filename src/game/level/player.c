@@ -315,3 +315,10 @@ bool player_overlaps_rect(const Player *player,
                 player->rigid_bodies,
                 player->alive_body_id));
 }
+
+Rect player_hitbox(const Player *player)
+{
+    return rigid_bodies_hitbox(
+        player->rigid_bodies,
+        player->alive_body_id);
+}

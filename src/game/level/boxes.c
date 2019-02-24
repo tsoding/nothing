@@ -19,10 +19,11 @@ struct Boxes
     Lt *lt;
     RigidBodies *rigid_bodies;
     RigidBodyId *body_ids;
+    const Player *player;
     size_t count;
 };
 
-Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid_bodies)
+Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid_bodies, const Player *player)
 {
     trace_assert(line_stream);
 
@@ -59,6 +60,8 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid
     for (size_t i = 0; i < boxes->count; ++i) {
         boxes->body_ids[i] = rigid_bodies_add_from_line_stream(boxes->rigid_bodies, line_stream);
     }
+
+    boxes->player = player;
 
     return boxes;
 }
@@ -174,11 +177,8 @@ boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path)
                 color = hexstr(color_hex);
             }
 
-            // TODO: it's impossible to get the position of the player from here
-            long int x = 0;
-            long int y = 0;
-
-            boxes_add_box(boxes, rect((float) x, (float) y, (float) w, (float) h), color);
+            const Rect hitbox = player_hitbox(boxes->player);
+            boxes_add_box(boxes, rect(hitbox.x, hitbox.y, (float) w, (float) h), color);
 
             return eval_success(NIL(gc));
         }
