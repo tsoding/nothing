@@ -159,6 +159,28 @@ boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path)
             boxes_add_box(boxes, rect((float) x, (float) y, (float) w, (float) h), color);
 
             return eval_success(NIL(gc));
+        } else if (strcmp(action, "new-here") == 0) {
+            struct Expr optional_args = void_expr();
+            long int w, h;
+            res = match_list(gc, "dd*", rest, &w, &h, &optional_args);
+            if (res.is_error) {
+                return res;
+            }
+
+            Color color = rgba(rand_float(1.0f), rand_float(1.0f), rand_float(1.0f), 1.0f);
+            if (!nil_p(optional_args)) {
+                const char *color_hex = NULL;
+                res = match_list(gc, "s*", optional_args, &color_hex, NULL);
+                color = hexstr(color_hex);
+            }
+
+            // TODO: it's impossible to get the position of the player from here
+            long int x = 0;
+            long int y = 0;
+
+            boxes_add_box(boxes, rect((float) x, (float) y, (float) w, (float) h), color);
+
+            return eval_success(NIL(gc));
         }
 
         return unknown_target(gc, "box", action);
