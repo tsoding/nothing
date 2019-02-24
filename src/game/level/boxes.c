@@ -12,7 +12,7 @@
 #include "game/level/rigid_bodies.h"
 
 
-#define BOXES_CAPACITY 100
+#define BOXES_CAPACITY 1000
 
 struct Boxes
 {
@@ -47,8 +47,11 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid
         log_fail("Could not read amount of boxes\n");
         RETURN_LT(lt, NULL);
     }
+    log_info("Boxes count: %d\n", boxes->count);
 
-    boxes->body_ids = PUSH_LT(lt, nth_alloc(sizeof(RigidBodyId) * boxes->count), free);
+    trace_assert(boxes->count < BOXES_CAPACITY);
+
+    boxes->body_ids = PUSH_LT(lt, nth_alloc(sizeof(RigidBodyId) * BOXES_CAPACITY), free);
     if (boxes->body_ids == NULL) {
         RETURN_LT(lt, NULL);
     }
