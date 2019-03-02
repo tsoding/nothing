@@ -86,6 +86,16 @@ int hashset_remove(HashSet *hashset, void *element)
 {
     trace_assert(hashset);
     trace_assert(element);
+
+    const uint64_t hash = fnv1(element, hashset->element_size);
+    const size_t i = hash % hashset->n;
+
+    NodeLL *node = linked_list_find(hashset->buckets[i], element);
+
+    if (node != NULL) {
+        linked_list_remove(hashset->buckets[i], node);
+    }
+
     return 0;
 }
 
