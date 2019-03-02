@@ -9,6 +9,8 @@ void destroy_linked_list(LinkedList *linked_list);
 
 void linked_list_push_back(LinkedList *linked_list,
                            void *element);
+void linked_list_pop_back(LinkedList *linked_list);
+bool linked_list_empty(const LinkedList *linked_list);
 NodeLL *linked_list_find(const LinkedList *linked_list,
                                void *element);
 void linked_list_remove(LinkedList *linked_list,
