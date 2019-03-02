@@ -104,4 +104,14 @@ void linked_list_remove(LinkedList *linked_list,
 {
     trace_assert(linked_list);
     trace_assert(noodle);
+
+    if (noodle->prev != NULL) {
+        noodle->prev->next = noodle->next;
+    }
+
+    if (noodle->next != NULL) {
+        noodle->next->prev = noodle->prev;
+    }
+
+    free(noodle);
 }
