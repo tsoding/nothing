@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "system/lt.h"
 #include "system/stacktrace.h"
@@ -13,6 +14,18 @@ struct HashSet
     size_t element_size;
     LinkedList **buckets;
 };
+
+static uint64_t fnv1(char *data, size_t size)
+{
+    uint64_t hash = 0xcbf29ce484222325;
+
+    for (size_t i = 0; i < size; ++i) {
+        hash = hash * 0x100000001b3;
+        hash = hash ^ (uint64_t) data[i];
+    }
+
+    return hash;
+}
 
 HashSet *create_hashset(size_t element_size, size_t n)
 {
@@ -58,6 +71,14 @@ int hashset_insert(HashSet *hashset, void *element)
 {
     trace_assert(hashset);
     trace_assert(element);
+
+    const uint64_t hash = fnv1(element, hashset->element_size);
+    const size_t i = hash % hashset->n;
+
+    if (linked_list_find(hashset->buckets[i], element) == NULL) {
+        linked_list_push_back(hashset->buckets[i], element);
+    }
+
     return 0;
 }
 
