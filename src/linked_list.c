@@ -3,19 +3,13 @@
 #include <string.h>
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
+
 #include "linked_list.h"
 
 struct LinkedList
 {
     size_t element_size;
     NodeLL *last;
-};
-
-struct NodeLL
-{
-    NodeLL *next;
-    NodeLL *prev;
-    char data[];
 };
 
 LinkedList *create_linked_list(size_t element_size)
@@ -114,4 +108,9 @@ void linked_list_remove(LinkedList *linked_list,
     }
 
     free(noodle);
+}
+
+NodeLL *linked_list_last(const LinkedList *linked_list)
+{
+    return linked_list->last;
 }
