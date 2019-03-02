@@ -46,6 +46,8 @@ add_library(system STATIC
   src/dynarray.c
   src/linked_list.h
   src/linked_list.c
+  src/hashset.h
+  src/hashset.c
   )
 
 add_library(ebisp STATIC
