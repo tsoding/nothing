@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
 #include "linked_list.h"
@@ -7,13 +8,13 @@
 struct LinkedList
 {
     size_t element_size;
-    NodeLL *head;
+    NodeLL *last;
 };
 
 struct NodeLL
 {
-    void *data;
-    NodeLL *next;
+    NodeLL *prev;
+    char data[];
 };
 
 LinkedList *create_linked_list(size_t element_size)
@@ -24,7 +25,7 @@ LinkedList *create_linked_list(size_t element_size)
     }
 
     linked_list->element_size = element_size;
-    linked_list->head = NULL;
+    linked_list->last = NULL;
 
     return linked_list;
 }
@@ -40,21 +41,45 @@ void destroy_linked_list(LinkedList *linked_list)
     free(linked_list);
 }
 
-void linked_list_push_back(LinkedList *linked_list,
-                           void *element)
+NodeLL *linked_list_push_back(LinkedList *linked_list,
+                              void *element)
 {
     trace_assert(linked_list);
     trace_assert(element);
+
+    NodeLL *noodle = nth_alloc(sizeof(NodeLL) + linked_list->element_size);
+    if (noodle == NULL) {
+        return NULL;
+    }
+
+    memcpy(noodle->data, element, linked_list->element_size);
+
+    if (linked_list->last == NULL) {
+        linked_list->last = noodle;
+    } else {
+        noodle->prev = linked_list->last;
+        linked_list->last = noodle;
+    }
+
+    return noodle;
 }
 
 void linked_list_pop_back(LinkedList *linked_list)
 {
     trace_assert(linked_list);
+
+    if (linked_list->last == NULL) {
+        return;
+    }
+
+    NodeLL *noodle = linked_list->last;
+    linked_list->last = noodle->prev;
+    free(noodle);
 }
 
 bool linked_list_empty(const LinkedList *linked_list)
 {
-    return linked_list->head == NULL;
+    return linked_list->last == NULL;
 }
 
 NodeLL *linked_list_find(const LinkedList *linked_list,
