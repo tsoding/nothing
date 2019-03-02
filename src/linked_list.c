@@ -37,7 +37,7 @@ void destroy_linked_list(LinkedList *linked_list)
 }
 
 NodeLL *linked_list_push_back(LinkedList *linked_list,
-                              void *element)
+                              const void *element)
 {
     trace_assert(linked_list);
     trace_assert(element);
@@ -48,6 +48,7 @@ NodeLL *linked_list_push_back(LinkedList *linked_list,
     }
 
     memcpy(noodle->data, element, linked_list->element_size);
+    noodle->prev = NULL;
     noodle->next = NULL;
 
     if (linked_list->last == NULL) {
@@ -80,13 +81,13 @@ bool linked_list_empty(const LinkedList *linked_list)
 }
 
 NodeLL *linked_list_find(const LinkedList *linked_list,
-                         void *element)
+                         const void *element)
 {
     trace_assert(linked_list);
     trace_assert(element);
 
     NodeLL *node = linked_list->last;
-    while (node != NULL || memcmp(element, node->data, linked_list->element_size) != 0) {
+    while (node != NULL && memcmp(element, node->data, linked_list->element_size) != 0) {
         node = node->prev;
     }
 
@@ -98,6 +99,10 @@ void linked_list_remove(LinkedList *linked_list,
 {
     trace_assert(linked_list);
     trace_assert(noodle);
+
+    if (linked_list->last == noodle) {
+        linked_list->last = linked_list->last->prev;
+    }
 
     if (noodle->prev != NULL) {
         noodle->prev->next = noodle->next;
