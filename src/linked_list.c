@@ -13,6 +13,7 @@ struct LinkedList
 
 struct NodeLL
 {
+    NodeLL *next;
     NodeLL *prev;
     char data[];
 };
@@ -53,10 +54,12 @@ NodeLL *linked_list_push_back(LinkedList *linked_list,
     }
 
     memcpy(noodle->data, element, linked_list->element_size);
+    noodle->next = NULL;
 
     if (linked_list->last == NULL) {
         linked_list->last = noodle;
     } else {
+        linked_list->last->next = noodle;
         noodle->prev = linked_list->last;
         linked_list->last = noodle;
     }
@@ -88,7 +91,12 @@ NodeLL *linked_list_find(const LinkedList *linked_list,
     trace_assert(linked_list);
     trace_assert(element);
 
-    return NULL;
+    NodeLL *node = linked_list->last;
+    while (node != NULL || memcmp(element, node->data, linked_list->element_size) != 0) {
+        node = node->prev;
+    }
+
+    return node;
 }
 
 void linked_list_remove(LinkedList *linked_list,
