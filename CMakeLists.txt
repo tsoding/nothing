@@ -44,8 +44,6 @@ add_library(system STATIC
   src/system/str.h
   src/dynarray.h
   src/dynarray.c
-  src/linked_list.h
-  src/linked_list.c
   src/hashset.h
   src/hashset.c
   )
