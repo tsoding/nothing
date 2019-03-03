@@ -113,4 +113,9 @@ bool hashset_contains(HashSet *hashset, void *element)
 void hashset_clear(HashSet *hashset)
 {
     trace_assert(hashset);
+
+    for (size_t i = 0; i < hashset->n; ++i) {
+        linked_list_clear(hashset->buckets[i]);
+    }
+}
 }
