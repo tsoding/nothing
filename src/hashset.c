@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "system/lt.h"
 #include "system/stacktrace.h"
@@ -118,4 +119,22 @@ void hashset_clear(HashSet *hashset)
         linked_list_clear(hashset->buckets[i]);
     }
 }
+
+size_t hashset_count(HashSet *hashset)
+{
+    trace_assert(hashset);
+    return 0;
+}
+
+HashSetIterator *hashset_begin(HashSet *hashset)
+{
+    trace_assert(hashset);
+    return NULL;
+}
+
+HashSetIterator *hashset_next(HashSet *hashset, HashSetIterator *iter)
+{
+    trace_assert(hashset);
+    trace_assert(iter);
+    return NULL;
 }
