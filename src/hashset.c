@@ -19,7 +19,7 @@ struct HashSet
     Dynarray *view;
 };
 
-static uint64_t fnv1(char *data, size_t size)
+static uint64_t fnv1(const char *data, size_t size)
 {
     uint64_t hash = 0xcbf29ce484222325;
 
@@ -77,7 +77,7 @@ void destroy_hashset(HashSet *hashset)
     RETURN_LT0(hashset->lt);
 }
 
-int hashset_insert(HashSet *hashset, void *element)
+int hashset_insert(HashSet *hashset, const void *element)
 {
     trace_assert(hashset);
     trace_assert(element);
@@ -93,7 +93,7 @@ int hashset_insert(HashSet *hashset, void *element)
     return 0;
 }
 
-int hashset_remove(HashSet *hashset, void *element)
+int hashset_remove(HashSet *hashset, const void *element)
 {
     trace_assert(hashset);
     trace_assert(element);
@@ -111,7 +111,7 @@ int hashset_remove(HashSet *hashset, void *element)
     return 0;
 }
 
-bool hashset_contains(HashSet *hashset, void *element)
+bool hashset_contains(HashSet *hashset, const void *element)
 {
     trace_assert(hashset);
     trace_assert(element);
