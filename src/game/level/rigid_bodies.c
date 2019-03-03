@@ -9,6 +9,7 @@
 #include "system/line_stream.h"
 #include "system/str.h"
 #include "system/log.h"
+#include "hashset.h"
 
 #include "./rigid_bodies.h"
 
@@ -27,6 +28,7 @@ struct RigidBodies
     bool *grounded;
     Vec *forces;
     bool *deleted;
+    HashSet *collided;
 };
 
 RigidBodies *create_rigid_bodies(size_t capacity)
@@ -80,6 +82,14 @@ RigidBodies *create_rigid_bodies(size_t capacity)
         RETURN_LT(lt, NULL);
     }
 
+    rigid_bodies->collided = PUSH_LT(
+        lt,
+        create_hashset(sizeof(size_t) * 2, capacity * 2),
+        destroy_hashset);
+    if (rigid_bodies->collided == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     return rigid_bodies;
 }
 
@@ -97,43 +107,62 @@ static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
         return 0;
     }
 
-    // TODO(#709): rigid_bodies_collide_with_itself doesn't implement backpropagation
-    //   https://github.com/tsoding/nothing/issues/704#issuecomment-466673040
+    size_t pair[2];
+    hashset_clear(rigid_bodies->collided);
 
-    for (size_t i1 = 0; i1 < rigid_bodies->count - 1; ++i1) {
-        if (rigid_bodies->deleted[i1]) {
-            continue;
-        }
+    bool the_variable_that_gets_set_when_a_collision_happens_xd = true;
 
-        for (size_t i2 = i1 + 1; i2 < rigid_bodies->count; ++i2) {
-            if (rigid_bodies->deleted[i2]) {
+    for (size_t i = 0; i < 1000 && the_variable_that_gets_set_when_a_collision_happens_xd; ++i) {
+        the_variable_that_gets_set_when_a_collision_happens_xd = false;
+        for (size_t i1 = 0; i1 < rigid_bodies->count - 1; ++i1) {
+            if (rigid_bodies->deleted[i1]) {
                 continue;
             }
 
-            if (!rects_overlap(rigid_bodies->bodies[i1], rigid_bodies->bodies[i2])) {
-                continue;
-            }
-
-            Vec orient = rect_impulse(&rigid_bodies->bodies[i1], &rigid_bodies->bodies[i2]);
-
-            if (orient.x > orient.y) {
-                if (rigid_bodies->bodies[i1].y < rigid_bodies->bodies[i2].y) {
-                    rigid_bodies->grounded[i1] = true;
-                } else {
-                    rigid_bodies->grounded[i2] = true;
+            for (size_t i2 = i1 + 1; i2 < rigid_bodies->count; ++i2) {
+                if (rigid_bodies->deleted[i2]) {
+                    continue;
                 }
+
+                if (!rects_overlap(rigid_bodies->bodies[i1], rigid_bodies->bodies[i2])) {
+                    continue;
+                }
+
+                the_variable_that_gets_set_when_a_collision_happens_xd = true;
+
+                pair[0] = i1;
+                pair[1] = i2;
+                hashset_insert(rigid_bodies->collided, pair);
+
+                Vec orient = rect_impulse(&rigid_bodies->bodies[i1], &rigid_bodies->bodies[i2]);
+
+                if (orient.x > orient.y) {
+                    if (rigid_bodies->bodies[i1].y < rigid_bodies->bodies[i2].y) {
+                        rigid_bodies->grounded[i1] = true;
+                    } else {
+                        rigid_bodies->grounded[i2] = true;
+                    }
+                }
+
+                rigid_bodies->velocities[i1] = vec(rigid_bodies->velocities[i1].x * orient.x, rigid_bodies->velocities[i1].y * orient.y);
+                rigid_bodies->velocities[i2] = vec(rigid_bodies->velocities[i2].x * orient.x, rigid_bodies->velocities[i2].y * orient.y);
+                rigid_bodies->movements[i1] = vec(rigid_bodies->movements[i1].x * orient.x, rigid_bodies->movements[i1].y * orient.y);
+                rigid_bodies->movements[i2] = vec(rigid_bodies->movements[i2].x * orient.x, rigid_bodies->movements[i2].y * orient.y);
+
             }
-
-            rigid_bodies_apply_force(
-                rigid_bodies, i1, vec_sum(rigid_bodies->velocities[i2], rigid_bodies->movements[i2]));
-            rigid_bodies_apply_force(
-                rigid_bodies, i2, vec_sum(rigid_bodies->velocities[i1], rigid_bodies->movements[i1]));
-
-            rigid_bodies->velocities[i1] = vec(rigid_bodies->velocities[i1].x * orient.x, rigid_bodies->velocities[i1].y * orient.y);
-            rigid_bodies->velocities[i2] = vec(rigid_bodies->velocities[i2].x * orient.x, rigid_bodies->velocities[i2].y * orient.y);
-            rigid_bodies->movements[i1] = vec(rigid_bodies->movements[i1].x * orient.x, rigid_bodies->movements[i1].y * orient.y);
-            rigid_bodies->movements[i2] = vec(rigid_bodies->movements[i2].x * orient.x, rigid_bodies->movements[i2].y * orient.y);
         }
+    }
+
+    size_t *collided = hashset_values(rigid_bodies->collided);
+    const size_t n = hashset_count(rigid_bodies->collided);
+    for (size_t i = 0; i < n; ++i) {
+        const size_t i1 = *(collided + i * 2);
+        const size_t i2 = *(collided + i * 2 + 1);
+
+        rigid_bodies_apply_force(
+            rigid_bodies, i1, vec_sum(rigid_bodies->velocities[i2], rigid_bodies->movements[i2]));
+        rigid_bodies_apply_force(
+            rigid_bodies, i2, vec_sum(rigid_bodies->velocities[i1], rigid_bodies->movements[i1]));
     }
 
     return 0;
