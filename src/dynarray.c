@@ -67,7 +67,7 @@ void dynarray_clear(Dynarray *dynarray)
     dynarray->count = 0;
 }
 
-int dynarray_push(Dynarray *dynarray, void *element)
+int dynarray_push(Dynarray *dynarray, const void *element)
 {
     trace_assert(dynarray);
     trace_assert(element);
@@ -98,10 +98,19 @@ int dynarray_push(Dynarray *dynarray, void *element)
     return 0;
 }
 
-void dynarray_inspect(Dynarray *dynarray)
+bool dynarray_contains(const Dynarray *dynarray,
+                       const void *element)
 {
     trace_assert(dynarray);
+    trace_assert(element);
 
-    printf("count:    %ld\n", dynarray->count);
-    printf("capacity: %ld\n", dynarray->capacity);
+    for (size_t i = 0; i < dynarray->count; ++i) {
+        if (memcmp((const char*)dynarray->data + i * dynarray->element_size,
+                   (const char*)element,
+                   dynarray->element_size) == 0) {
+            return true;
+        }
+    }
+
+    return false;
 }
