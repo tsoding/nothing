@@ -13,6 +13,7 @@ struct HashSet
     Lt *lt;
     size_t n;
     size_t element_size;
+    size_t count;
     LinkedList **buckets;
 };
 
@@ -42,6 +43,7 @@ HashSet *create_hashset(size_t element_size, size_t n)
     hash_set->lt = lt;
 
     hash_set->n = n;
+    hash_set->count = 0;
     hash_set->element_size = element_size;
 
     hash_set->buckets = PUSH_LT(lt, nth_calloc(n, sizeof(LinkedList*)), free);
@@ -78,6 +80,7 @@ int hashset_insert(HashSet *hashset, void *element)
 
     if (linked_list_find(hashset->buckets[i], element) == NULL) {
         linked_list_push_back(hashset->buckets[i], element);
+        hashset->count++;
     }
 
     return 0;
@@ -95,6 +98,7 @@ int hashset_remove(HashSet *hashset, void *element)
 
     if (node != NULL) {
         linked_list_remove(hashset->buckets[i], node);
+        hashset->count--;
     }
 
     return 0;
@@ -123,7 +127,7 @@ void hashset_clear(HashSet *hashset)
 size_t hashset_count(HashSet *hashset)
 {
     trace_assert(hashset);
-    return 0;
+    return hashset->count;
 }
 
 HashSetIterator *hashset_begin(HashSet *hashset)
