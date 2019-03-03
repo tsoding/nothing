@@ -8,7 +8,7 @@ void destroy_hashset(HashSet *hashset);
 
 int hashset_insert(HashSet *hashset, void *element);
 int hashset_remove(HashSet *hashset, void *element);
-int hashset_contains(HashSet *hashset, void *element);
+bool hashset_contains(HashSet *hashset, void *element);
 void hashset_clear(HashSet *hashset);
 
 #endif  // HASHSET_H_

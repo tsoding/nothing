@@ -99,11 +99,15 @@ int hashset_remove(HashSet *hashset, void *element)
     return 0;
 }
 
-int hashset_contains(HashSet *hashset, void *element)
+bool hashset_contains(HashSet *hashset, void *element)
 {
     trace_assert(hashset);
     trace_assert(element);
-    return 0;
+
+    const uint64_t hash = fnv1(element, hashset->element_size);
+    const size_t i = hash % hashset->n;
+
+    return linked_list_find(hashset->buckets[i], element) != NULL;
 }
 
 void hashset_clear(HashSet *hashset)
