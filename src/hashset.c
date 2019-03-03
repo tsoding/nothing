@@ -15,7 +15,7 @@ struct HashSet
     size_t n;
     size_t element_size;
     size_t count;
-    LinkedList **buckets;
+    Dynarray **buckets;
     Dynarray *view;
 };
 
@@ -48,7 +48,7 @@ HashSet *create_hashset(size_t element_size, size_t n)
     hash_set->count = 0;
     hash_set->element_size = element_size;
 
-    hash_set->buckets = PUSH_LT(lt, nth_calloc(n, sizeof(LinkedList*)), free);
+    hash_set->buckets = PUSH_LT(lt, nth_calloc(n, sizeof(Dynarray*)), free);
     if (hash_set->buckets == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -56,8 +56,8 @@ HashSet *create_hashset(size_t element_size, size_t n)
     for (size_t i = 0; i < n; ++i) {
         hash_set->buckets[i] = PUSH_LT(
             lt,
-            create_linked_list(element_size),
-            destroy_linked_list);
+            create_dynarray(element_size),
+            destroy_dynarray);
         if (hash_set->buckets[i] == NULL) {
             RETURN_LT(lt, NULL);
         }
@@ -85,27 +85,9 @@ int hashset_insert(HashSet *hashset, const void *element)
     const uint64_t hash = fnv1(element, hashset->element_size);
     const size_t i = hash % hashset->n;
 
-    if (linked_list_find(hashset->buckets[i], element) == NULL) {
-        linked_list_push_back(hashset->buckets[i], element);
+    if (!dynarray_contains(hashset->buckets[i], element)) {
+        dynarray_push(hashset->buckets[i], element);
         hashset->count++;
-    }
-
-    return 0;
-}
-
-int hashset_remove(HashSet *hashset, const void *element)
-{
-    trace_assert(hashset);
-    trace_assert(element);
-
-    const uint64_t hash = fnv1(element, hashset->element_size);
-    const size_t i = hash % hashset->n;
-
-    NodeLL *node = linked_list_find(hashset->buckets[i], element);
-
-    if (node != NULL) {
-        linked_list_remove(hashset->buckets[i], node);
-        hashset->count--;
     }
 
     return 0;
@@ -119,7 +101,7 @@ bool hashset_contains(HashSet *hashset, const void *element)
     const uint64_t hash = fnv1(element, hashset->element_size);
     const size_t i = hash % hashset->n;
 
-    return linked_list_find(hashset->buckets[i], element) != NULL;
+    return dynarray_contains(hashset->buckets[i], element);
 }
 
 void hashset_clear(HashSet *hashset)
@@ -127,11 +109,13 @@ void hashset_clear(HashSet *hashset)
     trace_assert(hashset);
 
     for (size_t i = 0; i < hashset->n; ++i) {
-        linked_list_clear(hashset->buckets[i]);
+        dynarray_clear(hashset->buckets[i]);
     }
-}
 
+    hashset->count = 0;
+}
 size_t hashset_count(HashSet *hashset)
+
 {
     trace_assert(hashset);
     return hashset->count;
@@ -142,10 +126,11 @@ void *hashset_values(HashSet *hashset)
     dynarray_clear(hashset->view);
 
     for (size_t i = 0; i < hashset->n; ++i) {
-        NodeLL *node = linked_list_last(hashset->buckets[i]);
-        while (node != NULL) {
-            dynarray_push(hashset->view, node->data);
-            node = node->prev;
+        size_t n = dynarray_count(hashset->buckets[i]);
+        char *bucket = dynarray_data(hashset->buckets[i]);
+
+        for (size_t j = 0; j < n; ++j) {
+            dynarray_push(hashset->view, bucket + j * hashset->element_size);
         }
     }
 
