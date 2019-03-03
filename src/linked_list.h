@@ -25,5 +25,6 @@ NodeLL *linked_list_find(const LinkedList *linked_list,
 void linked_list_remove(LinkedList *linked_list,
                         NodeLL *noodle);
 NodeLL *linked_list_last(const LinkedList *linked_list);
+void linked_list_clear(LinkedList *linked_list);
 
 #endif  // LINKED_LIST_H_

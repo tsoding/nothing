@@ -29,10 +29,7 @@ void destroy_linked_list(LinkedList *linked_list)
 {
     trace_assert(linked_list);
 
-    while (!linked_list_empty(linked_list)) {
-        linked_list_pop_back(linked_list);;
-    }
-
+    linked_list_clear(linked_list);
     free(linked_list);
 }
 
@@ -118,4 +115,11 @@ void linked_list_remove(LinkedList *linked_list,
 NodeLL *linked_list_last(const LinkedList *linked_list)
 {
     return linked_list->last;
+}
+
+void linked_list_clear(LinkedList *linked_list)
+{
+    while (!linked_list_empty(linked_list)) {
+        linked_list_pop_back(linked_list);;
+    }
 }
