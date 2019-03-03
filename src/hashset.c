@@ -7,6 +7,7 @@
 #include "system/nth_alloc.h"
 #include "linked_list.h"
 #include "hashset.h"
+#include "dynarray.h"
 
 struct HashSet
 {
@@ -15,6 +16,7 @@ struct HashSet
     size_t element_size;
     size_t count;
     LinkedList **buckets;
+    Dynarray *view;
 };
 
 static uint64_t fnv1(char *data, size_t size)
@@ -59,6 +61,11 @@ HashSet *create_hashset(size_t element_size, size_t n)
         if (hash_set->buckets[i] == NULL) {
             RETURN_LT(lt, NULL);
         }
+    }
+
+    hash_set->view = PUSH_LT(lt, create_dynarray(element_size), destroy_dynarray);
+    if (hash_set->view == NULL) {
+        RETURN_LT(lt, NULL);
     }
 
     return hash_set;
@@ -130,15 +137,17 @@ size_t hashset_count(HashSet *hashset)
     return hashset->count;
 }
 
-HashSetIterator *hashset_begin(HashSet *hashset)
+void *hashset_values(HashSet *hashset)
 {
-    trace_assert(hashset);
-    return NULL;
-}
+    dynarray_clear(hashset->view);
 
-HashSetIterator *hashset_next(HashSet *hashset, HashSetIterator *iter)
-{
-    trace_assert(hashset);
-    trace_assert(iter);
-    return NULL;
+    for (size_t i = 0; i < hashset->n; ++i) {
+        NodeLL *node = linked_list_last(hashset->buckets[i]);
+        while (node != NULL) {
+            dynarray_push(hashset->view, node->data);
+            node = node->prev;
+        }
+    }
+
+    return dynarray_data(hashset->view);
 }

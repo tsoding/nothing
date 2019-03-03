@@ -13,7 +13,6 @@ bool hashset_contains(HashSet *hashset, void *element);
 void hashset_clear(HashSet *hashset);
 size_t hashset_count(HashSet *hashset);
 
-HashSetIterator *hashset_begin(HashSet *hashset);
-HashSetIterator *hashset_next(HashSet *hashset, HashSetIterator *iter);
+void *hashset_values(HashSet *hashset);
 
 #endif  // HASHSET_H_
