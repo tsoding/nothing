@@ -55,7 +55,7 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
 
     level_picker->camera_position = vec(0.0f, 0.0f);
 
-    // TODO: Levels in LevelPicker are hardcoded
+    // TODO(#718): Levels in LevelPicker are hardcoded
     const char *items[] = {
         "./levels/level-01.txt",
         "./levels/platforms.txt"
