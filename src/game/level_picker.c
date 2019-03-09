@@ -9,13 +9,14 @@
 #include "system/str.h"
 #include "ui/list_selector.h"
 #include "system/log.h"
+#include "game/level_folder.h"
 
 struct LevelPicker
 {
     Lt *lt;
-    const char *dirpath;
     Background *background;
     Vec camera_position;
+    LevelFolder *level_folder;
     ListSelector *list_selector;
 };
 
@@ -37,14 +38,6 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
     }
     level_picker->lt = lt;
 
-    level_picker->dirpath = PUSH_LT(
-        lt,
-        string_duplicate(dirpath, NULL),
-        free);
-    if (level_picker->dirpath == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
     level_picker->background = PUSH_LT(
         lt,
         create_background(hexstr("073642")),
@@ -55,19 +48,20 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
 
     level_picker->camera_position = vec(0.0f, 0.0f);
 
-    // TODO(#718): Levels in LevelPicker are hardcoded
-    const char *items[] = {
-        "./levels/level-01.txt",
-        "./levels/platforms.txt"
-    };
-    const size_t items_count = sizeof(items) / sizeof(const char *);
+    level_picker->level_folder = PUSH_LT(
+        lt,
+        create_level_folder(dirpath),
+        destroy_level_folder);
+    if (level_picker->level_folder == NULL) {
+        RETURN_LT(lt, NULL);
+    }
 
     level_picker->list_selector = PUSH_LT(
         lt,
         create_list_selector(
             sprite_font,
-            items,
-            items_count),
+            level_folder_files(level_picker->level_folder),
+            level_folder_count(level_picker->level_folder)),
         destroy_list_selector);
     if (level_picker->list_selector == NULL) {
         RETURN_LT(lt, NULL);
