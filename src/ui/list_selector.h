@@ -4,7 +4,7 @@
 typedef struct ListSelector ListSelector;
 
 ListSelector *create_list_selector(const Sprite_font *sprite_font,
-                                   const char **items,
+                                   const char *items[],
                                    size_t count,
                                    Vec position,
                                    float width);

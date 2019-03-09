@@ -7,7 +7,6 @@
 typedef struct Console Console;
 typedef struct Broadcast Broadcast;
 typedef struct Sprite_font Sprite_font;
-typedef struct Camera Camera;
 
 Console *create_console(Broadcast *broadcast,
                         const Sprite_font *font);

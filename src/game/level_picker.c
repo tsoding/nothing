@@ -1,11 +1,14 @@
 #include <stdio.h>
 
 #include "./level_picker.h"
-#include "system/stacktrace.h"
+#include "game/level/background.h"
+#include "game/sprite_font.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "system/stacktrace.h"
 #include "system/str.h"
-#include "game/level/background.h"
+#include "ui/list_selector.h"
+#include "system/log.h"
 
 /* TODO(#606): LevelPicker doesn't allow to select any levels */
 
@@ -15,9 +18,10 @@ struct LevelPicker
     const char *dirpath;
     Background *background;
     Vec camera_position;
+    ListSelector *list_selector;
 };
 
-LevelPicker *create_level_picker(const char *dirpath)
+LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dirpath)
 {
     trace_assert(dirpath);
 
@@ -53,6 +57,27 @@ LevelPicker *create_level_picker(const char *dirpath)
 
     level_picker->camera_position = vec(0.0f, 0.0f);
 
+    const char *items[] = {
+        "Hello",
+        "World",
+        "Khooy"
+    };
+    const size_t items_count = sizeof(items) / sizeof(const char *);
+
+    // TODO: ListSelector is not centered in LevelPicker
+    level_picker->list_selector = PUSH_LT(
+        lt,
+        create_list_selector(
+            sprite_font,
+            items,
+            items_count,
+            vec(50.0f, 50.0f),
+            100.0f),
+        destroy_list_selector);
+    if (level_picker->list_selector == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     return level_picker;
 }
 
@@ -70,6 +95,10 @@ int level_picker_render(const LevelPicker *level_picker,
     trace_assert(renderer);
 
     if (background_render(level_picker->background, camera) < 0) {
+        return -1;
+    }
+
+    if (list_selector_render(level_picker->list_selector, renderer)) {
         return -1;
     }
 
@@ -107,7 +136,7 @@ int level_picker_input(LevelPicker *level_picker,
 const char *level_picker_selected_level(const LevelPicker *level_picker)
 {
     trace_assert(level_picker);
-    return level_picker->dirpath;
+    return NULL; //level_picker->dirpath;
 }
 
 void level_picker_clean_selection(LevelPicker *level_picker)

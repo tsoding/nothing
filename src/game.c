@@ -29,11 +29,11 @@ typedef struct Game {
 
     Game_state state;
     Broadcast *broadcast;
+    Sprite_font *font;
     LevelPicker *level_picker;
     Level *level;
     char *level_file_path;
     Sound_samples *sound_samples;
-    Sprite_font *font;
     Camera *camera;
     Console *console;
     SDL_Renderer *renderer;
@@ -67,9 +67,21 @@ Game *create_game(const char *level_file_path,
         RETURN_LT(lt, NULL);
     }
 
+    game->font = PUSH_LT(
+        lt,
+        create_sprite_font_from_file(
+            "fonts/charmap-oldschool.bmp",
+            renderer),
+        destroy_sprite_font);
+    if (game->font == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     game->level_picker = PUSH_LT(
         lt,
-        create_level_picker(level_file_path),
+        create_level_picker(
+            game->font,
+            level_file_path),
         destroy_level_picker);
     if (game->level_picker == NULL) {
         RETURN_LT(lt, NULL);
@@ -92,16 +104,6 @@ Game *create_game(const char *level_file_path,
             sound_sample_files_count),
         destroy_sound_samples);
     if (game->sound_samples == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    game->font = PUSH_LT(
-        lt,
-        create_sprite_font_from_file(
-            "fonts/charmap-oldschool.bmp",
-            renderer),
-        destroy_sprite_font);
-    if (game->font == NULL) {
         RETURN_LT(lt, NULL);
     }
 
