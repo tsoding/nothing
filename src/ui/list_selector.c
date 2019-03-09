@@ -39,19 +39,7 @@ ListSelector *create_list_selector(const Sprite_font *sprite_font,
     list_selector->lt = lt;
 
     list_selector->sprite_font = sprite_font;
-
-    list_selector->items = PUSH_LT(lt, nth_calloc(count, sizeof(const char*)), free);
-    if (list_selector->items == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    for (size_t i = 0; i < count; ++i) {
-        list_selector->items[i] = PUSH_LT(lt, string_duplicate(items[i], NULL), free);
-        if (list_selector->items[i] == NULL) {
-            RETURN_LT(lt, NULL);
-        }
-    }
-
+    list_selector->items = items;
     list_selector->count = count;
     list_selector->cursor = 0;
     list_selector->selected_item = NULL;
