@@ -5,8 +5,9 @@
 
 typedef struct LevelPicker LevelPicker;
 typedef struct Camera Camera;
+typedef struct Sprite_font Sprite_font;
 
-LevelPicker *create_level_picker(const char *dirpath);
+LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dirpath);
 void destroy_level_picker(LevelPicker *level_picker);
 
 int level_picker_render(const LevelPicker *level_picker,

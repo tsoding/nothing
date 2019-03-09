@@ -133,6 +133,8 @@ add_executable(nothing
   src/ui/edit_field.h
   src/ui/history.c
   src/ui/history.h
+  src/ui/list_selector.h
+  src/ui/list_selector.c
 )
 
 add_custom_command(

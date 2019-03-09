@@ -1,13 +1,14 @@
 #include <stdio.h>
 
 #include "./level_picker.h"
-#include "system/stacktrace.h"
+#include "game/level/background.h"
+#include "game/sprite_font.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "system/stacktrace.h"
 #include "system/str.h"
-#include "game/level/background.h"
-
-/* TODO(#606): LevelPicker doesn't allow to select any levels */
+#include "ui/list_selector.h"
+#include "system/log.h"
 
 struct LevelPicker
 {
@@ -15,9 +16,10 @@ struct LevelPicker
     const char *dirpath;
     Background *background;
     Vec camera_position;
+    ListSelector *list_selector;
 };
 
-LevelPicker *create_level_picker(const char *dirpath)
+LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dirpath)
 {
     trace_assert(dirpath);
 
@@ -53,6 +55,24 @@ LevelPicker *create_level_picker(const char *dirpath)
 
     level_picker->camera_position = vec(0.0f, 0.0f);
 
+    // TODO(#718): Levels in LevelPicker are hardcoded
+    const char *items[] = {
+        "./levels/level-01.txt",
+        "./levels/platforms.txt"
+    };
+    const size_t items_count = sizeof(items) / sizeof(const char *);
+
+    level_picker->list_selector = PUSH_LT(
+        lt,
+        create_list_selector(
+            sprite_font,
+            items,
+            items_count),
+        destroy_list_selector);
+    if (level_picker->list_selector == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     return level_picker;
 }
 
@@ -69,7 +89,29 @@ int level_picker_render(const LevelPicker *level_picker,
     trace_assert(level_picker);
     trace_assert(renderer);
 
+    // TODO(#719): LevelPicker does not have a "Select Level" title
+
     if (background_render(level_picker->background, camera) < 0) {
+        return -1;
+    }
+
+    const Vec font_scale = vec(5.0f, 5.0f);
+    const float padding_bottom = 50.0f;
+
+    Vec selector_size = list_selector_size(
+        level_picker->list_selector,
+        font_scale,
+        padding_bottom);
+
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(renderer, &view_port);
+
+    if (list_selector_render(
+            level_picker->list_selector,
+            renderer,
+            vec((float) view_port.w * 0.5f - selector_size.x * 0.5f, 100.0f),
+            font_scale,
+            padding_bottom) < 0) {
         return -1;
     }
 
@@ -91,6 +133,7 @@ int level_picker_event(LevelPicker *level_picker, const SDL_Event *event)
 {
     trace_assert(level_picker);
     trace_assert(event);
+    list_selector_event(level_picker->list_selector, event);
     return 0;
 }
 
@@ -107,7 +150,7 @@ int level_picker_input(LevelPicker *level_picker,
 const char *level_picker_selected_level(const LevelPicker *level_picker)
 {
     trace_assert(level_picker);
-    return level_picker->dirpath;
+    return list_selector_selected(level_picker->list_selector);
 }
 
 void level_picker_clean_selection(LevelPicker *level_picker)
