@@ -64,7 +64,6 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
     };
     const size_t items_count = sizeof(items) / sizeof(const char *);
 
-    // TODO: ListSelector is not centered in LevelPicker
     level_picker->list_selector = PUSH_LT(
         lt,
         create_list_selector(
@@ -96,11 +95,23 @@ int level_picker_render(const LevelPicker *level_picker,
         return -1;
     }
 
+    const Vec font_scale = vec(10.0f, 10.0f);
+    const float padding_bottom = 50.0f;
+
+    Vec selector_size = list_selector_size(
+        level_picker->list_selector,
+        font_scale,
+        padding_bottom);
+
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(renderer, &view_port);
+
     if (list_selector_render(
             level_picker->list_selector,
             renderer,
-            vec(50.0f, 50.0f),
-            100.0f) < 0) {
+            vec((float) view_port.w * 0.5f - selector_size.x * 0.5f, 100.0f),
+            font_scale,
+            padding_bottom) < 0) {
         return -1;
     }
 

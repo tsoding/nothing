@@ -11,7 +11,10 @@ void destroy_list_selector(ListSelector *list_selector);
 int list_selector_render(const ListSelector *list_selector,
                          SDL_Renderer *renderer,
                          Vec position,
-                         float width);
+                         Vec font_scale,
+                         float padding_bottom);
+Vec list_selector_size(const ListSelector *list_selector, Vec font_scale, float padding_bottom);
+
 int list_selector_update(ListSelector *list_selector, float delta_time);
 int list_selector_event(ListSelector *list_selector, const SDL_Event *event);
 

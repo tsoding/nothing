@@ -64,13 +64,11 @@ void destroy_list_selector(ListSelector *list_selector)
 int list_selector_render(const ListSelector *list_selector,
                          SDL_Renderer *renderer,
                          Vec position,
-                         float width)
+                         Vec font_scale,
+                         float padding_bottom)
 {
     trace_assert(list_selector);
     trace_assert(renderer);
-    (void) width;
-
-    // TODO: ListSelector.width is ignored in rendering
 
     for (size_t i = 0; i < list_selector->count; ++i) {
         if (sprite_font_render_text(
@@ -78,8 +76,8 @@ int list_selector_render(const ListSelector *list_selector,
                 renderer,
                 vec_sum(
                     position,
-                    vec(0.0f, (float) (i * FONT_CHAR_HEIGHT))),
-                vec(1.0f, 1.0f),
+                    vec(0.0f, (float) i * ((float) FONT_CHAR_HEIGHT * font_scale.y + padding_bottom))),
+                font_scale,
                 rgba(1.0f, 1.0f, 1.0f, 1.0f),
                 list_selector->items[i]) < 0) {
             return -1;
@@ -87,6 +85,28 @@ int list_selector_render(const ListSelector *list_selector,
     }
 
     return 0;
+}
+
+Vec list_selector_size(const ListSelector *list_selector,
+                       Vec font_scale,
+                       float padding_bottom)
+{
+    trace_assert(list_selector);
+
+    Vec result = vec(0.0f, 0.0f);
+
+    for (size_t i = 0; i < list_selector->count; ++i) {
+        Rect boundary_box = sprite_font_boundary_box(
+            list_selector->sprite_font,
+            vec(0.0f, 0.0f),
+            font_scale,
+            list_selector->items[i]);
+
+        result.x = fmaxf(result.x, boundary_box.w);
+        result.y += boundary_box.y + padding_bottom;
+    }
+
+    return result;
 }
 
 int list_selector_update(ListSelector *list_selector, float delta_time)
