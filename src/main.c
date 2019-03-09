@@ -23,7 +23,7 @@
 
 static void print_usage(FILE *stream)
 {
-    fprintf(stream, "Usage: nothing [--fps <fps>] <level-file>\n");
+    fprintf(stream, "Usage: nothing [--fps <fps>] <level-folder>\n");
 }
 
 int main(int argc, char *argv[])
