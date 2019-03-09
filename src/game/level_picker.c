@@ -93,7 +93,7 @@ int level_picker_render(const LevelPicker *level_picker,
         return -1;
     }
 
-    const Vec font_scale = vec(10.0f, 10.0f);
+    const Vec font_scale = vec(5.0f, 5.0f);
     const float padding_bottom = 50.0f;
 
     Vec selector_size = list_selector_size(
