@@ -89,7 +89,7 @@ int level_picker_render(const LevelPicker *level_picker,
     trace_assert(level_picker);
     trace_assert(renderer);
 
-    // TODO: LevelPicker does not have a "Select Level" title
+    // TODO(#719): LevelPicker does not have a "Select Level" title
 
     if (background_render(level_picker->background, camera) < 0) {
         return -1;
