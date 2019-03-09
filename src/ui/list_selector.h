@@ -5,7 +5,8 @@ typedef struct ListSelector ListSelector;
 
 ListSelector *create_list_selector(const char **items,
                                    size_t count,
-                                   Vec positiion);
+                                   Vec positiion,
+                                   float width);
 void destroy_list_selector(ListSelector *list_selector);
 
 int list_selector_render(const ListSelector *list_selector, SDL_Renderer *renderer);
