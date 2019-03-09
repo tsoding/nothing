@@ -17,6 +17,8 @@ struct ListSelector
     const Sprite_font *sprite_font;
     const char **items;
     size_t count;
+    size_t cursor;
+    const char *selected_item;
 };
 
 ListSelector *create_list_selector(const Sprite_font *sprite_font,
@@ -51,6 +53,8 @@ ListSelector *create_list_selector(const Sprite_font *sprite_font,
     }
 
     list_selector->count = count;
+    list_selector->cursor = 0;
+    list_selector->selected_item = NULL;
 
     return list_selector;
 }
@@ -71,16 +75,34 @@ int list_selector_render(const ListSelector *list_selector,
     trace_assert(renderer);
 
     for (size_t i = 0; i < list_selector->count; ++i) {
+        const Vec current_position = vec_sum(
+            position,
+            vec(0.0f, (float) i * ((float) FONT_CHAR_HEIGHT * font_scale.y + padding_bottom)));
+
         if (sprite_font_render_text(
                 list_selector->sprite_font,
                 renderer,
-                vec_sum(
-                    position,
-                    vec(0.0f, (float) i * ((float) FONT_CHAR_HEIGHT * font_scale.y + padding_bottom))),
+                current_position,
                 font_scale,
                 rgba(1.0f, 1.0f, 1.0f, 1.0f),
                 list_selector->items[i]) < 0) {
             return -1;
+        }
+
+        if (i == list_selector->cursor) {
+            SDL_Rect boundary_box = rect_for_sdl(
+                sprite_font_boundary_box(
+                    list_selector->sprite_font,
+                    current_position,
+                    font_scale,
+                    list_selector->items[i]));
+            if (SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255) < 0) {
+                return -1;
+            }
+
+            if (SDL_RenderDrawRect(renderer, &boundary_box) < 0) {
+                return -1;
+            }
         }
     }
 
@@ -121,11 +143,32 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event)
 {
     trace_assert(list_selector);
     trace_assert(event);
+
+    switch (event->type) {
+    case SDL_KEYDOWN:
+        switch (event->key.keysym.sym) {
+        case SDLK_UP:
+            if (list_selector->cursor > 0) {
+                list_selector->cursor--;
+            }
+            break;
+        case SDLK_DOWN:
+            if (list_selector->cursor < list_selector->count - 1) {
+                list_selector->cursor++;
+            }
+            break;
+        case SDLK_RETURN:
+            list_selector->selected_item = list_selector->items[list_selector->cursor];
+            break;
+        }
+        break;
+    }
+
     return 0;
 }
 
 const char *list_selector_selected(const ListSelector *list_selector)
 {
     trace_assert(list_selector);
-    return NULL;
+    return list_selector->selected_item;
 }

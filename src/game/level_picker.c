@@ -10,8 +10,6 @@
 #include "ui/list_selector.h"
 #include "system/log.h"
 
-/* TODO(#606): LevelPicker doesn't allow to select any levels */
-
 struct LevelPicker
 {
     Lt *lt;
@@ -57,10 +55,10 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
 
     level_picker->camera_position = vec(0.0f, 0.0f);
 
+    // TODO: Levels in LevelPicker are hardcoded
     const char *items[] = {
-        "Hello",
-        "World",
-        "Khooy"
+        "./levels/level-01.txt",
+        "./levels/platforms.txt"
     };
     const size_t items_count = sizeof(items) / sizeof(const char *);
 
@@ -133,6 +131,7 @@ int level_picker_event(LevelPicker *level_picker, const SDL_Event *event)
 {
     trace_assert(level_picker);
     trace_assert(event);
+    list_selector_event(level_picker->list_selector, event);
     return 0;
 }
 
@@ -149,7 +148,7 @@ int level_picker_input(LevelPicker *level_picker,
 const char *level_picker_selected_level(const LevelPicker *level_picker)
 {
     trace_assert(level_picker);
-    return NULL; //level_picker->dirpath;
+    return list_selector_selected(level_picker->list_selector);
 }
 
 void level_picker_clean_selection(LevelPicker *level_picker)
