@@ -7,21 +7,24 @@
 #include "system/nth_alloc.h"
 #include "system/str.h"
 #include "math/point.h"
+#include "game/sprite_font.h"
 
 #include "./list_selector.h"
 
 struct ListSelector
 {
     Lt *lt;
+    const Sprite_font *sprite_font;
     const char **items;
     size_t count;
-    Vec positiion;
+    Vec position;
     float width;
 };
 
-ListSelector *create_list_selector(const char **items,
+ListSelector *create_list_selector(const Sprite_font *sprite_font,
+                                   const char **items,
                                    size_t count,
-                                   Vec positiion,
+                                   Vec position,
                                    float width)
 {
     trace_assert(items);
@@ -37,6 +40,8 @@ ListSelector *create_list_selector(const char **items,
     }
     list_selector->lt = lt;
 
+    list_selector->sprite_font = sprite_font;
+
     list_selector->items = PUSH_LT(lt, nth_calloc(count, sizeof(const char*)), free);
     if (list_selector->items == NULL) {
         RETURN_LT(lt, NULL);
@@ -50,7 +55,7 @@ ListSelector *create_list_selector(const char **items,
     }
 
     list_selector->count = count;
-    list_selector->positiion = positiion;
+    list_selector->position = position;
     list_selector->width = width;
 
     return list_selector;
@@ -66,6 +71,21 @@ int list_selector_render(const ListSelector *list_selector, SDL_Renderer *render
 {
     trace_assert(list_selector);
     trace_assert(renderer);
+
+    for (size_t i = 0; i < list_selector->count; ++i) {
+        if (sprite_font_render_text(
+                list_selector->sprite_font,
+                renderer,
+                vec_sum(
+                    list_selector->position,
+                    vec(0.0f, (float) (i * FONT_CHAR_HEIGHT))),
+                vec(1.0f, 1.0f),
+                rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                list_selector->items[i]) < 0) {
+            return -1;
+        }
+    }
+
     return 0;
 }
 
