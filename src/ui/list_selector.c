@@ -17,15 +17,11 @@ struct ListSelector
     const Sprite_font *sprite_font;
     const char **items;
     size_t count;
-    Vec position;
-    float width;
 };
 
 ListSelector *create_list_selector(const Sprite_font *sprite_font,
                                    const char *items[],
-                                   size_t count,
-                                   Vec position,
-                                   float width)
+                                   size_t count)
 {
     trace_assert(items);
 
@@ -55,8 +51,6 @@ ListSelector *create_list_selector(const Sprite_font *sprite_font,
     }
 
     list_selector->count = count;
-    list_selector->position = position;
-    list_selector->width = width;
 
     return list_selector;
 }
@@ -67,10 +61,14 @@ void destroy_list_selector(ListSelector *list_selector)
     RETURN_LT0(list_selector->lt);
 }
 
-int list_selector_render(const ListSelector *list_selector, SDL_Renderer *renderer)
+int list_selector_render(const ListSelector *list_selector,
+                         SDL_Renderer *renderer,
+                         Vec position,
+                         float width)
 {
     trace_assert(list_selector);
     trace_assert(renderer);
+    (void) width;
 
     // TODO: ListSelector.width is ignored in rendering
 
@@ -79,7 +77,7 @@ int list_selector_render(const ListSelector *list_selector, SDL_Renderer *render
                 list_selector->sprite_font,
                 renderer,
                 vec_sum(
-                    list_selector->position,
+                    position,
                     vec(0.0f, (float) (i * FONT_CHAR_HEIGHT))),
                 vec(1.0f, 1.0f),
                 rgba(1.0f, 1.0f, 1.0f, 1.0f),

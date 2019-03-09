@@ -70,9 +70,7 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
         create_list_selector(
             sprite_font,
             items,
-            items_count,
-            vec(50.0f, 50.0f),
-            100.0f),
+            items_count),
         destroy_list_selector);
     if (level_picker->list_selector == NULL) {
         RETURN_LT(lt, NULL);
@@ -98,7 +96,11 @@ int level_picker_render(const LevelPicker *level_picker,
         return -1;
     }
 
-    if (list_selector_render(level_picker->list_selector, renderer)) {
+    if (list_selector_render(
+            level_picker->list_selector,
+            renderer,
+            vec(50.0f, 50.0f),
+            100.0f) < 0) {
         return -1;
     }
 
