@@ -223,6 +223,7 @@ int game_update(Game *game, float delta_time)
             return -1;
         }
 
+        // TODO: There is no way to go back to LevelPicker when the level is loaded
         const char *level_file_path = level_picker_selected_level(game->level_picker);
 
         trace_assert(game->level == NULL);
