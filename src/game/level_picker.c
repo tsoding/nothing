@@ -60,7 +60,7 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
 
     level_picker->menu_title = PUSH_LT(
         lt,
-        create_menu_title("Pepega", sprite_font),
+        create_menu_title("Select Level", vec(10.0f, 10.0f), sprite_font),
         destroy_menu_title);
     if (level_picker->menu_title == NULL) {
         RETURN_LT(lt, NULL);
@@ -96,6 +96,9 @@ int level_picker_render(const LevelPicker *level_picker,
     SDL_Rect view_port;
     SDL_RenderGetViewport(renderer, &view_port);
 
+    const float title_margin_top = 100.0f;
+    const float title_margin_bottom = 100.0f;
+
     // Background //////////////////////////////
 
     if (background_render(level_picker->background, camera) < 0) {
@@ -104,12 +107,12 @@ int level_picker_render(const LevelPicker *level_picker,
 
     // Title //////////////////////////////
 
-    const Vec menu_size = menu_title_size(level_picker->menu_title);
+    const Vec title_size = menu_title_size(level_picker->menu_title);
 
     if (menu_title_render(
             level_picker->menu_title,
             renderer,
-            vec((float) view_port.w * 0.5f - menu_size.x * 0.5f, 0.0f)) < 0) {
+            vec((float) view_port.w * 0.5f - title_size.x * 0.5f, title_margin_top)) < 0) {
         return -1;
     }
 
@@ -126,7 +129,9 @@ int level_picker_render(const LevelPicker *level_picker,
     if (list_selector_render(
             level_picker->list_selector,
             renderer,
-            vec((float) view_port.w * 0.5f - selector_size.x * 0.5f, 100.0f),
+            vec(
+                (float) view_port.w * 0.5f - selector_size.x * 0.5f,
+                title_margin_top + title_size.y + title_margin_bottom),
             font_scale,
             padding_bottom) < 0) {
         return -1;

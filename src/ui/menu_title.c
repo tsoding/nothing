@@ -13,10 +13,12 @@ struct MenuTitle
 {
     Lt *lt;
     const char *text;
+    Vec font_scale;
     const Sprite_font *sprite_font;
 };
 
 MenuTitle *create_menu_title(const char *text,
+                             Vec font_scale,
                              const Sprite_font *sprite_font)
 {
     trace_assert(text);
@@ -43,6 +45,7 @@ MenuTitle *create_menu_title(const char *text,
         RETURN_LT(lt, NULL);
     }
 
+    menu_title->font_scale = font_scale;
     menu_title->sprite_font = sprite_font;
 
     return menu_title;
@@ -65,7 +68,7 @@ int menu_title_render(const MenuTitle *menu_title,
             menu_title->sprite_font,
             renderer,
             position,
-            vec(5.0f, 5.0f),
+            menu_title->font_scale,
             rgba(1.0f, 1.0f, 1.0f, 1.0f),
             menu_title->text) < 0) {
         return -1;
@@ -88,7 +91,7 @@ Vec menu_title_size(const MenuTitle *menu_title)
     Rect boundary = sprite_font_boundary_box(
         menu_title->sprite_font,
         vec(0.0f, 0.0f),
-        vec(5.0f, 5.0f),
+        menu_title->font_scale,
         menu_title->text);
 
     return vec(boundary.w, boundary.h);

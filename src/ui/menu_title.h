@@ -5,6 +5,7 @@ typedef struct MenuTitle MenuTitle;
 typedef struct Sprite_font Sprite_font;
 
 MenuTitle *create_menu_title(const char *text,
+                             Vec font_scale,
                              const Sprite_font *sprite_font);
 void destroy_menu_title(MenuTitle *menu_title);
 
