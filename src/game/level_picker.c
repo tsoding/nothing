@@ -58,6 +58,14 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
         RETURN_LT(lt, NULL);
     }
 
+    level_picker->menu_title = PUSH_LT(
+        lt,
+        create_menu_title("Pepega", sprite_font),
+        destroy_menu_title);
+    if (level_picker->menu_title == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level_picker->list_selector = PUSH_LT(
         lt,
         create_list_selector(
@@ -85,11 +93,27 @@ int level_picker_render(const LevelPicker *level_picker,
     trace_assert(level_picker);
     trace_assert(renderer);
 
-    // TODO(#719): LevelPicker does not have a "Select Level" title
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(renderer, &view_port);
+
+    // Background //////////////////////////////
 
     if (background_render(level_picker->background, camera) < 0) {
         return -1;
     }
+
+    // Title //////////////////////////////
+
+    const Vec menu_size = menu_title_size(level_picker->menu_title);
+
+    if (menu_title_render(
+            level_picker->menu_title,
+            renderer,
+            vec((float) view_port.w * 0.5f - menu_size.x * 0.5f, 0.0f)) < 0) {
+        return -1;
+    }
+
+    // List //////////////////////////////
 
     const Vec font_scale = vec(5.0f, 5.0f);
     const float padding_bottom = 50.0f;
@@ -98,9 +122,6 @@ int level_picker_render(const LevelPicker *level_picker,
         level_picker->list_selector,
         font_scale,
         padding_bottom);
-
-    SDL_Rect view_port;
-    SDL_RenderGetViewport(renderer, &view_port);
 
     if (list_selector_render(
             level_picker->list_selector,
@@ -121,6 +142,10 @@ int level_picker_update(LevelPicker *level_picker,
 
     vec_add(&level_picker->camera_position,
             vec(50.0f * delta_time, 0.0f));
+
+    if (menu_title_update(level_picker->menu_title, delta_time) < 0) {
+        return -1;
+    }
 
     return 0;
 }
