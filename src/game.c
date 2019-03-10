@@ -311,7 +311,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
 
         case SDLK_q:
             log_info("Reloading the level's platforms from '%s'...\n", game->level_file_path);
-            if (level_reload_preserve_player(game->level, game->level_file_path, game->broadcast) < 0) {
+            if (level_reload_preserve_player(game->level, game->broadcast) < 0) {
                 log_fail("Could not reload level %s\n", game->level_file_path);
                 game->state = GAME_STATE_QUIT;
                 return -1;
