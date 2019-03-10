@@ -32,7 +32,6 @@ typedef struct Game {
     Sprite_font *font;
     LevelPicker *level_picker;
     Level *level;
-    char *level_folder;
     Sound_samples *sound_samples;
     Camera *camera;
     Console *console;
@@ -88,14 +87,6 @@ Game *create_game(const char *level_folder,
     }
 
     game->level = NULL;
-
-    game->level_folder = PUSH_LT(
-        lt,
-        string_duplicate(level_folder, NULL),
-        free);
-    if (game->level_folder == NULL) {
-        RETURN_LT(lt, NULL);
-    }
 
     game->sound_samples = PUSH_LT(
         lt,
@@ -290,29 +281,30 @@ static int game_event_running(Game *game, const SDL_Event *event)
 
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
-        case SDLK_r:
-            log_info("Reloading the level from '%s'...\n", game->level_folder);
+        case SDLK_r: {
+            const char *level_filename = level_picker_selected_level(game->level_picker);
+
+            log_info("Reloading the level from '%s'...\n", level_filename);
 
             game->level = RESET_LT(
                 game->lt,
                 game->level,
                 create_level_from_file(
-                    game->level_folder, game->broadcast));
+                    level_filename,
+                    game->broadcast));
 
             if (game->level == NULL) {
-                log_fail("Could not reload level %s\n", game->level_folder);
+                log_fail("Could not reload level %s\n", level_filename);
                 game->state = GAME_STATE_QUIT;
                 return -1;
             }
 
             camera_disable_debug_mode(game->camera);
-
-            break;
+        } break;
 
         case SDLK_q:
-            log_info("Reloading the level's platforms from '%s'...\n", game->level_folder);
             if (level_reload_preserve_player(game->level, game->broadcast) < 0) {
-                log_fail("Could not reload level %s\n", game->level_folder);
+                log_fail("Could not reload level\n");
                 game->state = GAME_STATE_QUIT;
                 return -1;
             }

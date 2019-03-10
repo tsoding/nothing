@@ -21,6 +21,7 @@
 #include "system/lt/lt_adapters.h"
 #include "system/nth_alloc.h"
 #include "system/str.h"
+#include "system/log.h"
 
 #define LEVEL_LINE_MAX_LENGTH 512
 #define LEVEL_GRAVITY 1500.0f
@@ -307,6 +308,8 @@ int level_reload_preserve_player(Level *level, Broadcast *broadcast)
     if (lt == NULL) {
         return -1;
     }
+
+    log_info("Soft-reloading the level from '%s'...\n", level->file_name);
 
     /* TODO(#104): duplicate code in create_level_from_file and level_reload_preserve_player */
 
