@@ -19,5 +19,6 @@ int list_selector_update(ListSelector *list_selector, float delta_time);
 int list_selector_event(ListSelector *list_selector, const SDL_Event *event);
 
 const char *list_selector_selected(const ListSelector *list_selector);
+void list_selector_clean_selection(ListSelector *list_selector);
 
 #endif  // LIST_SELECTOR_H_
