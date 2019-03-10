@@ -32,19 +32,18 @@ typedef struct Game {
     Sprite_font *font;
     LevelPicker *level_picker;
     Level *level;
-    char *level_file_path;
     Sound_samples *sound_samples;
     Camera *camera;
     Console *console;
     SDL_Renderer *renderer;
 } Game;
 
-Game *create_game(const char *level_file_path,
+Game *create_game(const char *level_folder,
                   const char *sound_sample_files[],
                   size_t sound_sample_files_count,
                   SDL_Renderer *renderer)
 {
-    trace_assert(level_file_path);
+    trace_assert(level_folder);
 
     Lt *const lt = create_lt();
     if (lt == NULL) {
@@ -81,21 +80,13 @@ Game *create_game(const char *level_file_path,
         lt,
         create_level_picker(
             game->font,
-            level_file_path),
+            level_folder),
         destroy_level_picker);
     if (game->level_picker == NULL) {
         RETURN_LT(lt, NULL);
     }
 
     game->level = NULL;
-
-    game->level_file_path = PUSH_LT(
-        lt,
-        string_duplicate(level_file_path, NULL),
-        free);
-    if (game->level_file_path == NULL) {
-        RETURN_LT(lt, NULL);
-    }
 
     game->sound_samples = PUSH_LT(
         lt,
@@ -224,14 +215,14 @@ int game_update(Game *game, float delta_time)
         }
 
         // TODO(#717): There is no way to go back to LevelPicker when the level is loaded
-        const char *level_file_path = level_picker_selected_level(game->level_picker);
+        const char *level_folder = level_picker_selected_level(game->level_picker);
 
         trace_assert(game->level == NULL);
 
-        if (level_file_path != NULL) {
+        if (level_folder != NULL) {
             game->level = PUSH_LT(
                 game->lt,
-                create_level_from_file(level_file_path, game->broadcast),
+                create_level_from_file(level_folder, game->broadcast),
                 destroy_level);
             if (game->level == NULL) {
                 return -1;
@@ -290,29 +281,30 @@ static int game_event_running(Game *game, const SDL_Event *event)
 
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
-        case SDLK_r:
-            log_info("Reloading the level from '%s'...\n", game->level_file_path);
+        case SDLK_r: {
+            const char *level_filename = level_picker_selected_level(game->level_picker);
+
+            log_info("Reloading the level from '%s'...\n", level_filename);
 
             game->level = RESET_LT(
                 game->lt,
                 game->level,
                 create_level_from_file(
-                    game->level_file_path, game->broadcast));
+                    level_filename,
+                    game->broadcast));
 
             if (game->level == NULL) {
-                log_fail("Could not reload level %s\n", game->level_file_path);
+                log_fail("Could not reload level %s\n", level_filename);
                 game->state = GAME_STATE_QUIT;
                 return -1;
             }
 
             camera_disable_debug_mode(game->camera);
-
-            break;
+        } break;
 
         case SDLK_q:
-            log_info("Reloading the level's platforms from '%s'...\n", game->level_file_path);
-            if (level_reload_preserve_player(game->level, game->level_file_path, game->broadcast) < 0) {
-                log_fail("Could not reload level %s\n", game->level_file_path);
+            if (level_reload_preserve_player(game->level, game->broadcast) < 0) {
+                log_fail("Could not reload level\n");
                 game->state = GAME_STATE_QUIT;
                 return -1;
             }

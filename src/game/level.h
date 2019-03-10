@@ -28,7 +28,6 @@ int level_input(Level *level,
 int level_enter_camera_event(Level *level, Camera *camera);
 
 int level_reload_preserve_player(Level *level,
-                                 const char *file_name,
                                  Broadcast *broadcast);
 
 void level_toggle_debug_mode(Level *level);

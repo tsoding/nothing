@@ -20,6 +20,8 @@
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
 #include "system/nth_alloc.h"
+#include "system/str.h"
+#include "system/log.h"
 
 #define LEVEL_LINE_MAX_LENGTH 512
 #define LEVEL_GRAVITY 1500.0f
@@ -28,6 +30,7 @@ struct Level
 {
     Lt *lt;
 
+    const char *file_name;
     Background *background;
     RigidBodies *rigid_bodies;
     Player *player;
@@ -55,6 +58,12 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
 
     Level *const level = PUSH_LT(lt, nth_alloc(sizeof(Level)), free);
     if (level == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    level->lt = lt;
+
+    level->file_name = PUSH_LT(lt, string_duplicate(file_name, NULL), free);
+    if (level->file_name == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -148,8 +157,6 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
     level->flying_mode = false;
     level->flying_camera_position = vec(0.0f, 0.0f);
     level->flying_camera_scale = 1.0f;
-
-    level->lt = lt;
 
     destroy_line_stream(RELEASE_LT(lt, level_stream));
 
@@ -295,19 +302,21 @@ int level_input(Level *level,
     return 0;
 }
 
-int level_reload_preserve_player(Level *level, const char *file_name, Broadcast *broadcast)
+int level_reload_preserve_player(Level *level, Broadcast *broadcast)
 {
     Lt * const lt = create_lt();
     if (lt == NULL) {
         return -1;
     }
 
+    log_info("Soft-reloading the level from '%s'...\n", level->file_name);
+
     /* TODO(#104): duplicate code in create_level_from_file and level_reload_preserve_player */
 
     LineStream * const level_stream = PUSH_LT(
         lt,
         create_line_stream(
-            file_name,
+            level->file_name,
             "r",
             LEVEL_LINE_MAX_LENGTH),
         destroy_line_stream);
