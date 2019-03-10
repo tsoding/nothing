@@ -10,6 +10,7 @@
 #include "ui/list_selector.h"
 #include "system/log.h"
 #include "game/level_folder.h"
+#include "ui/menu_title.h"
 
 struct LevelPicker
 {
@@ -17,6 +18,7 @@ struct LevelPicker
     Background *background;
     Vec camera_position;
     LevelFolder *level_folder;
+    MenuTitle *menu_title;
     ListSelector *list_selector;
 };
 
@@ -56,6 +58,14 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
         RETURN_LT(lt, NULL);
     }
 
+    level_picker->menu_title = PUSH_LT(
+        lt,
+        create_menu_title("Select Level", vec(10.0f, 10.0f), sprite_font),
+        destroy_menu_title);
+    if (level_picker->menu_title == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level_picker->list_selector = PUSH_LT(
         lt,
         create_list_selector(
@@ -83,11 +93,30 @@ int level_picker_render(const LevelPicker *level_picker,
     trace_assert(level_picker);
     trace_assert(renderer);
 
-    // TODO(#719): LevelPicker does not have a "Select Level" title
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(renderer, &view_port);
+
+    const float title_margin_top = 100.0f;
+    const float title_margin_bottom = 100.0f;
+
+    // Background //////////////////////////////
 
     if (background_render(level_picker->background, camera) < 0) {
         return -1;
     }
+
+    // Title //////////////////////////////
+
+    const Vec title_size = menu_title_size(level_picker->menu_title);
+
+    if (menu_title_render(
+            level_picker->menu_title,
+            renderer,
+            vec((float) view_port.w * 0.5f - title_size.x * 0.5f, title_margin_top)) < 0) {
+        return -1;
+    }
+
+    // List //////////////////////////////
 
     const Vec font_scale = vec(5.0f, 5.0f);
     const float padding_bottom = 50.0f;
@@ -97,13 +126,12 @@ int level_picker_render(const LevelPicker *level_picker,
         font_scale,
         padding_bottom);
 
-    SDL_Rect view_port;
-    SDL_RenderGetViewport(renderer, &view_port);
-
     if (list_selector_render(
             level_picker->list_selector,
             renderer,
-            vec((float) view_port.w * 0.5f - selector_size.x * 0.5f, 100.0f),
+            vec(
+                (float) view_port.w * 0.5f - selector_size.x * 0.5f,
+                title_margin_top + title_size.y + title_margin_bottom),
             font_scale,
             padding_bottom) < 0) {
         return -1;
@@ -119,6 +147,10 @@ int level_picker_update(LevelPicker *level_picker,
 
     vec_add(&level_picker->camera_position,
             vec(50.0f * delta_time, 0.0f));
+
+    if (menu_title_update(level_picker->menu_title, delta_time) < 0) {
+        return -1;
+    }
 
     return 0;
 }
