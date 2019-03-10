@@ -160,3 +160,9 @@ const char *list_selector_selected(const ListSelector *list_selector)
     trace_assert(list_selector);
     return list_selector->selected_item;
 }
+
+void list_selector_clean_selection(ListSelector *list_selector)
+{
+    trace_assert(list_selector);
+    list_selector->selected_item = NULL;
+}

@@ -214,22 +214,28 @@ int game_update(Game *game, float delta_time)
             return -1;
         }
 
-        // TODO(#717): There is no way to go back to LevelPicker when the level is loaded
         const char *level_folder = level_picker_selected_level(game->level_picker);
 
-        trace_assert(game->level == NULL);
-
         if (level_folder != NULL) {
-            game->level = PUSH_LT(
-                game->lt,
-                create_level_from_file(level_folder, game->broadcast),
-                destroy_level);
+            if (game->level == NULL) {
+                game->level = PUSH_LT(
+                    game->lt,
+                    create_level_from_file(level_folder, game->broadcast),
+                    destroy_level);
+            } else {
+                game->level = RESET_LT(
+                    game->lt,
+                    game->level,
+                    create_level_from_file(level_folder, game->broadcast));
+            }
+
             if (game->level == NULL) {
                 return -1;
             }
 
             game->state = GAME_STATE_RUNNING;
         }
+
     } break;
 
     case GAME_STATE_PAUSE:
@@ -446,6 +452,10 @@ game_send(Game *game, Gc *gc, struct Scope *scope,
 
     if (strcmp(target, "level") == 0) {
         return level_send(game->level, gc, scope, rest);
+    } else if (strcmp(target, "menu") == 0) {
+        level_picker_clean_selection(game->level_picker);
+        game->state = GAME_STATE_LEVEL_PICKER;
+        return eval_success(NIL(gc));
     }
 
     return unknown_target(gc, "game", target);

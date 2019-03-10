@@ -150,6 +150,7 @@ const char *level_picker_selected_level(const LevelPicker *level_picker)
 void level_picker_clean_selection(LevelPicker *level_picker)
 {
     trace_assert(level_picker);
+    list_selector_clean_selection(level_picker->list_selector);
 }
 
 int level_picker_enter_camera_event(LevelPicker *level_picker,
