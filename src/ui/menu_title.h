@@ -2,8 +2,10 @@
 #define MENU_TITLE_H_
 
 typedef struct MenuTitle MenuTitle;
+typedef struct Sprite_font Sprite_font;
 
-MenuTitle *create_menu_title(const char *text);
+MenuTitle *create_menu_title(const char *text,
+                             const Sprite_font *sprite_font);
 void destroy_menu_title(MenuTitle *menu_title);
 
 int menu_title_render(const MenuTitle *menu_title,
