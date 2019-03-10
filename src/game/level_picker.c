@@ -10,6 +10,7 @@
 #include "ui/list_selector.h"
 #include "system/log.h"
 #include "game/level_folder.h"
+#include "ui/menu_title.h"
 
 struct LevelPicker
 {
@@ -17,6 +18,7 @@ struct LevelPicker
     Background *background;
     Vec camera_position;
     LevelFolder *level_folder;
+    MenuTitle *menu_title;
     ListSelector *list_selector;
 };
 

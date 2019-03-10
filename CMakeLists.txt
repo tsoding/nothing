@@ -137,6 +137,8 @@ add_executable(nothing
   src/ui/history.h
   src/ui/list_selector.h
   src/ui/list_selector.c
+  src/ui/menu_title.h
+  src/ui/menu_title.c
 )
 
 add_custom_command(
