@@ -15,6 +15,7 @@ struct MenuTitle
     const char *text;
     Vec font_scale;
     const Sprite_font *sprite_font;
+    float angle;
 };
 
 MenuTitle *create_menu_title(const char *text,
@@ -47,6 +48,7 @@ MenuTitle *create_menu_title(const char *text,
 
     menu_title->font_scale = font_scale;
     menu_title->sprite_font = sprite_font;
+    menu_title->angle = 0.0f;
 
     return menu_title;
 }
@@ -64,14 +66,26 @@ int menu_title_render(const MenuTitle *menu_title,
     trace_assert(menu_title);
     trace_assert(renderer);
 
-    if (sprite_font_render_text(
-            menu_title->sprite_font,
-            renderer,
-            position,
-            menu_title->font_scale,
-            rgba(1.0f, 1.0f, 1.0f, 1.0f),
-            menu_title->text) < 0) {
-        return -1;
+
+    const size_t n = strlen(menu_title->text);
+    char buf[2] = {0, 0};
+
+    for (size_t i = 0; i < n; ++i) {
+        buf[0] = menu_title->text[i];
+
+        if (sprite_font_render_text(
+                menu_title->sprite_font,
+                renderer,
+                vec_sum(
+                    position,
+                    vec(
+                        (float) (i * FONT_CHAR_WIDTH) * menu_title->font_scale.x,
+                        sinf(menu_title->angle + (float) i / (float) n * 10.0f) * 20.0f)),
+                menu_title->font_scale,
+                rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                buf) < 0) {
+            return -1;
+        }
     }
 
     return 0;
@@ -80,7 +94,7 @@ int menu_title_render(const MenuTitle *menu_title,
 int menu_title_update(MenuTitle *menu_title, float delta_time)
 {
     trace_assert(menu_title);
-    (void) delta_time;
+    menu_title->angle = fmodf(menu_title->angle + 10.0f * delta_time, 2 * PI);
     return 0;
 }
 
