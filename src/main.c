@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
     Lt *const lt = create_lt();
 
-    char *level_filename = NULL;
+    char *level_folder = NULL;
     int fps = 30;
 
     for (int i = 1; i < argc;) {
@@ -50,12 +50,12 @@ int main(int argc, char *argv[])
                 RETURN_LT(lt, -1);
             }
         } else {
-            level_filename = argv[i];
+            level_folder = argv[i];
             i++;
         }
     }
 
-    if (level_filename == NULL) {
+    if (level_folder == NULL) {
         log_fail("Path to level file is not provided\n");
         print_usage(stderr);
         RETURN_LT(lt, -1);
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
     Game *const game = PUSH_LT(
         lt,
         create_game(
-            level_filename,
+            level_folder,
             sound_sample_files,
             sound_sample_files_count,
             renderer),
