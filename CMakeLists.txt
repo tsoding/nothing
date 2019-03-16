@@ -139,6 +139,8 @@ add_executable(nothing
   src/ui/list_selector.c
   src/ui/menu_title.h
   src/ui/menu_title.c
+  src/game/level_metadata.h
+  src/game/level_metadata.c
 )
 
 add_custom_command(

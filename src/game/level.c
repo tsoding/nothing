@@ -16,6 +16,7 @@
 #include "game/level/player.h"
 #include "game/level/regions.h"
 #include "game/level/rigid_bodies.h"
+#include "game/level_metadata.h"
 #include "system/line_stream.h"
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
@@ -31,6 +32,7 @@ struct Level
     Lt *lt;
 
     const char *file_name;
+    LevelMetadata *metadata;
     Background *background;
     RigidBodies *rigid_bodies;
     Player *player;
@@ -77,6 +79,15 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
     if (level_stream == NULL) {
         RETURN_LT(lt, NULL);
     }
+
+    level->metadata = PUSH_LT(
+        lt,
+        create_level_metadata_from_line_stream(level_stream),
+        destroy_level_metadata);
+    if (level->metadata == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->background = PUSH_LT(
         lt,
         create_background_from_line_stream(level_stream),

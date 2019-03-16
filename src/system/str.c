@@ -10,6 +10,8 @@
 char *string_duplicate(const char *str,
                        const char *str_end)
 {
+    trace_assert(str);
+
     if (str_end != NULL && str > str_end) {
         return NULL;
     }

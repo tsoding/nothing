@@ -18,7 +18,7 @@ struct ListSelector
     const char **items;
     size_t count;
     size_t cursor;
-    const char *selected_item;
+    int selected_item;
 };
 
 ListSelector *create_list_selector(const Sprite_font *sprite_font,
@@ -42,7 +42,7 @@ ListSelector *create_list_selector(const Sprite_font *sprite_font,
     list_selector->items = items;
     list_selector->count = count;
     list_selector->cursor = 0;
-    list_selector->selected_item = NULL;
+    list_selector->selected_item = -1;
 
     return list_selector;
 }
@@ -146,7 +146,7 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event)
             }
             break;
         case SDLK_RETURN:
-            list_selector->selected_item = list_selector->items[list_selector->cursor];
+            list_selector->selected_item = (int) list_selector->cursor;
             break;
         }
         break;
@@ -155,7 +155,7 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event)
     return 0;
 }
 
-const char *list_selector_selected(const ListSelector *list_selector)
+int list_selector_selected(const ListSelector *list_selector)
 {
     trace_assert(list_selector);
     return list_selector->selected_item;
@@ -164,5 +164,5 @@ const char *list_selector_selected(const ListSelector *list_selector)
 void list_selector_clean_selection(ListSelector *list_selector)
 {
     trace_assert(list_selector);
-    list_selector->selected_item = NULL;
+    list_selector->selected_item = -1;
 }

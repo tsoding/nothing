@@ -152,11 +152,19 @@ def save_script_regions(svg_root, output_file):
         save_script(script, output_file)
 
 
+def save_title(svg_root, output_file):
+    [tspans] = [text
+                for text in svg_texts(svg_root)
+                if text.attrib['id'] == 'title']
+    output_file.write("%s\n" % " ".join([tspan.text for tspan in tspans]))
+
+
 def svg2rects(svg_file_name, output_file_name):
     svg_tree = ET.parse(svg_file_name)
     svg_root = svg_tree.getroot()
 
     with open(output_file_name, "w") as output_file:
+        save_title(svg_root, output_file)
         save_background(svg_root, output_file)
         save_player(svg_root, output_file)
         save_platforms(svg_root, output_file)
