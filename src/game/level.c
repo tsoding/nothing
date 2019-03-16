@@ -335,6 +335,12 @@ int level_reload_preserve_player(Level *level, Broadcast *broadcast)
         RETURN_LT(lt, -1);
     }
 
+    LevelMetadata *const metadata = create_level_metadata_from_line_stream(level_stream);
+    if (metadata == NULL) {
+        RETURN_LT(lt, -1);
+    }
+    level->metadata = RESET_LT(level->lt, level->metadata, metadata);
+
     Background * const background = create_background_from_line_stream(level_stream);
     if (background == NULL) {
         RETURN_LT(lt, -1);
