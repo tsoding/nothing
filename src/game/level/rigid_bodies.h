@@ -58,5 +58,8 @@ void rigid_bodies_damper(RigidBodies *rigid_bodies,
                          RigidBodyId id,
                          Vec v);
 
+void rigid_bodies_disable(RigidBodies *rigid_bodies,
+                          RigidBodyId id,
+                          bool disabled);
 
 #endif  // RIGID_BODIES_H_

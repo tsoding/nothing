@@ -29,6 +29,7 @@ struct RigidBodies
     Vec *forces;
     bool *deleted;
     HashSet *collided;
+    bool *disabled;
 };
 
 RigidBodies *create_rigid_bodies(size_t capacity)
@@ -90,6 +91,14 @@ RigidBodies *create_rigid_bodies(size_t capacity)
         RETURN_LT(lt, NULL);
     }
 
+    rigid_bodies->disabled = PUSH_LT(
+        lt,
+        nth_calloc(capacity, sizeof(bool)),
+        free);
+    if (rigid_bodies->disabled == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     return rigid_bodies;
 }
 
@@ -115,12 +124,12 @@ static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
     for (size_t i = 0; i < 1000 && the_variable_that_gets_set_when_a_collision_happens_xd; ++i) {
         the_variable_that_gets_set_when_a_collision_happens_xd = false;
         for (size_t i1 = 0; i1 < rigid_bodies->count - 1; ++i1) {
-            if (rigid_bodies->deleted[i1]) {
+            if (rigid_bodies->deleted[i1] || rigid_bodies->disabled[i1]) {
                 continue;
             }
 
             for (size_t i2 = i1 + 1; i2 < rigid_bodies->count; ++i2) {
-                if (rigid_bodies->deleted[i2]) {
+                if (rigid_bodies->deleted[i2] || rigid_bodies->disabled[i1]) {
                     continue;
                 }
 
@@ -178,7 +187,7 @@ static int rigid_bodies_collide_with_platforms(
     int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
 
     for (size_t i = 0; i < rigid_bodies->count; ++i) {
-        if (rigid_bodies->deleted[i]) {
+        if (rigid_bodies->deleted[i] || rigid_bodies->disabled[i]) {
             continue;
         }
 
@@ -222,6 +231,10 @@ int rigid_bodies_update(RigidBodies *rigid_bodies,
 {
     trace_assert(rigid_bodies);
 
+    if (rigid_bodies->deleted[id] || rigid_bodies->disabled[id]) {
+        return 0;
+    }
+
     rigid_bodies->velocities[id] = vec_sum(
             rigid_bodies->velocities[id],
             vec_scala_mult(
@@ -253,6 +266,10 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
 {
     trace_assert(rigid_bodies);
     trace_assert(camera);
+
+    if (rigid_bodies->deleted[id] || rigid_bodies->disabled[id]) {
+        return 0;
+    }
 
     char text_buffer[256];
 
@@ -373,6 +390,10 @@ void rigid_bodies_move(RigidBodies *rigid_bodies,
     trace_assert(rigid_bodies);
     trace_assert(id < rigid_bodies->count);
 
+    if (rigid_bodies->deleted[id] || rigid_bodies->disabled[id]) {
+        return;
+    }
+
     rigid_bodies->movements[id] = movement;
 }
 
@@ -400,6 +421,10 @@ void rigid_bodies_apply_force(RigidBodies * rigid_bodies,
     trace_assert(rigid_bodies);
     trace_assert(id < rigid_bodies->count);
 
+    if (rigid_bodies->deleted[id] || rigid_bodies->disabled[id]) {
+        return;
+    }
+
     rigid_bodies->forces[id] = vec_sum(rigid_bodies->forces[id], force);
 }
 
@@ -409,6 +434,10 @@ void rigid_bodies_transform_velocity(RigidBodies *rigid_bodies,
 {
     trace_assert(rigid_bodies);
     trace_assert(id < rigid_bodies->count);
+
+    if (rigid_bodies->deleted[id] || rigid_bodies->disabled[id]) {
+        return;
+    }
 
     rigid_bodies->velocities[id] = point_mat3x3_product(
         rigid_bodies->velocities[id],
@@ -422,6 +451,10 @@ void rigid_bodies_teleport_to(RigidBodies *rigid_bodies,
     trace_assert(rigid_bodies);
     trace_assert(id < rigid_bodies->count);
 
+    if (rigid_bodies->deleted[id] || rigid_bodies->disabled[id]) {
+        return;
+    }
+
     rigid_bodies->bodies[id].x = position.x;
     rigid_bodies->bodies[id].y = position.y;
 }
@@ -433,9 +466,23 @@ void rigid_bodies_damper(RigidBodies *rigid_bodies,
     trace_assert(rigid_bodies);
     trace_assert(id < rigid_bodies->count);
 
+    if (rigid_bodies->deleted[id] || rigid_bodies->disabled[id]) {
+        return;
+    }
+
     rigid_bodies_apply_force(
         rigid_bodies, id,
         vec(
             rigid_bodies->velocities[id].x * v.x,
             rigid_bodies->velocities[id].y * v.y));
+}
+
+void rigid_bodies_disable(RigidBodies *rigid_bodies,
+                          RigidBodyId id,
+                          bool disabled)
+{
+    trace_assert(rigid_bodies);
+    trace_assert(id < rigid_bodies->count);
+
+    rigid_bodies->disabled[id] = disabled;
 }
