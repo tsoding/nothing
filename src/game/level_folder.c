@@ -7,6 +7,7 @@
 #include "system/line_stream.h"
 #include "system/str.h"
 #include "dynarray.h"
+#include "game/level_metadata.h"
 
 #include "./level_folder.h"
 
@@ -16,6 +17,7 @@ struct LevelFolder
 {
     Lt *lt;
     Dynarray *filenames;
+    Dynarray *titles;
 };
 
 LevelFolder *create_level_folder(const char *dirpath)
@@ -44,6 +46,14 @@ LevelFolder *create_level_folder(const char *dirpath)
         RETURN_LT(lt, NULL);
     }
 
+    level_folder->titles = PUSH_LT(
+        lt,
+        create_dynarray(sizeof(const char*)),
+        destroy_dynarray);
+    if (level_folder->titles == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     char path[LEVEL_FOLDER_MAX_LENGTH];
     snprintf(path, LEVEL_FOLDER_MAX_LENGTH, "%s/meta.txt", dirpath);
 
@@ -66,6 +76,17 @@ LevelFolder *create_level_folder(const char *dirpath)
             RETURN_LT(lt, NULL);
         }
 
+        LevelMetadata *level_metadata = create_level_metadata_from_file(line);
+        if (level_metadata == NULL) {
+            RETURN_LT(lt, NULL);
+        }
+        const char *title = PUSH_LT(
+            lt,
+            string_duplicate(level_metadata_title(level_metadata), NULL),
+            free);
+        destroy_level_metadata(level_metadata);
+
+        dynarray_push(level_folder->titles, &title);
         dynarray_push(level_folder->filenames, &line);
 
         line = line_stream_next(meta);
@@ -86,6 +107,12 @@ const char **level_folder_filenames(const LevelFolder *level_folder)
 {
     trace_assert(level_folder);
     return dynarray_data(level_folder->filenames);
+}
+
+const char **level_folder_titles(const LevelFolder *level_folder)
+{
+    trace_assert(level_folder);
+    return dynarray_data(level_folder->titles);
 }
 
 size_t level_folder_count(const LevelFolder *level_folder)

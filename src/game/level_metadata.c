@@ -18,7 +18,7 @@ LevelMetadata *create_level_metadata_from_file(const char *filename)
 {
     trace_assert(filename);
 
-    LineStream *line_stream = create_line_stream(filename, "w", 256);
+    LineStream *line_stream = create_line_stream(filename, "r", 256);
     if (line_stream == NULL) {
         return NULL;
     }
