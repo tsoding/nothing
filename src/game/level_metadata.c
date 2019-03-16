@@ -45,9 +45,10 @@ LevelMetadata *create_level_metadata_from_line_stream(LineStream *line_stream)
     }
     level_metadata->lt = lt;
 
+
     level_metadata->title = PUSH_LT(
         lt,
-        string_duplicate(line_stream_next(line_stream), NULL),
+        trim_endline(string_duplicate(line_stream_next(line_stream), NULL)),
         free);
     if (level_metadata->title == NULL) {
         RETURN_LT(lt, NULL);

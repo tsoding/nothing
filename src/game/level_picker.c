@@ -70,7 +70,7 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
         lt,
         create_list_selector(
             sprite_font,
-            level_folder_filenames(level_picker->level_folder),
+            level_folder_titles(level_picker->level_folder),
             level_folder_count(level_picker->level_folder)),
         destroy_list_selector);
     if (level_picker->list_selector == NULL) {
@@ -176,7 +176,15 @@ int level_picker_input(LevelPicker *level_picker,
 const char *level_picker_selected_level(const LevelPicker *level_picker)
 {
     trace_assert(level_picker);
-    return list_selector_selected(level_picker->list_selector);
+
+    const int selected_index = list_selector_selected(level_picker->list_selector);
+    if (selected_index < 0) {
+        return NULL;
+    }
+
+    const char **filenames = level_folder_filenames(level_picker->level_folder);
+
+    return filenames[selected_index];
 }
 
 void level_picker_clean_selection(LevelPicker *level_picker)
