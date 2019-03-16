@@ -163,6 +163,7 @@ void player_update(Player *player,
         explosion_update(player->dying_body, delta_time);
 
         if (explosion_is_done(player->dying_body)) {
+            rigid_bodies_disable(player->rigid_bodies, player->alive_body_id, false);
             rigid_bodies_transform_velocity(
                 player->rigid_bodies,
                 player->alive_body_id,
@@ -241,6 +242,7 @@ void player_die(Player *player)
         player->play_die_cue = 1;
         explosion_start(player->dying_body, vec(hitbox.x, hitbox.y));
         player->state = PLAYER_STATE_DYING;
+        rigid_bodies_disable(player->rigid_bodies, player->alive_body_id, true);
     }
 }
 
