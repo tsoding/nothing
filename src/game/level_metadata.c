@@ -18,6 +18,21 @@ LevelMetadata *create_level_metadata_from_file(const char *filename)
 {
     trace_assert(filename);
 
+    LineStream *line_stream = create_line_stream(filename, "w", 256);
+    if (line_stream == NULL) {
+        return NULL;
+    }
+
+    LevelMetadata *level_metadata = create_level_metadata_from_line_stream(line_stream);
+    destroy_line_stream(line_stream);
+
+    return level_metadata;
+}
+
+LevelMetadata *create_level_metadata_from_line_stream(LineStream *line_stream)
+{
+    trace_assert(line_stream);
+
     Lt *lt = create_lt();
     if (lt == NULL) {
         return NULL;
@@ -30,14 +45,6 @@ LevelMetadata *create_level_metadata_from_file(const char *filename)
     }
     level_metadata->lt = lt;
 
-    LineStream *line_stream = PUSH_LT(
-        lt,
-        create_line_stream(filename, "w", 256),
-        destroy_line_stream);
-    if (line_stream == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
     level_metadata->title = PUSH_LT(
         lt,
         string_duplicate(line_stream_next(line_stream), NULL),
@@ -45,8 +52,6 @@ LevelMetadata *create_level_metadata_from_file(const char *filename)
     if (level_metadata->title == NULL) {
         RETURN_LT(lt, NULL);
     }
-
-    fclose(RELEASE_LT(lt, line_stream));
 
     return level_metadata;
 }
