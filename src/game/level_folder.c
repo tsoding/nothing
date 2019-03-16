@@ -15,7 +15,7 @@
 struct LevelFolder
 {
     Lt *lt;
-    Dynarray *items;
+    Dynarray *filenames;
 };
 
 LevelFolder *create_level_folder(const char *dirpath)
@@ -36,11 +36,11 @@ LevelFolder *create_level_folder(const char *dirpath)
     }
     level_folder->lt = lt;
 
-    level_folder->items = PUSH_LT(
+    level_folder->filenames = PUSH_LT(
         lt,
         create_dynarray(sizeof(const char*)),
         destroy_dynarray);
-    if (level_folder->items == NULL) {
+    if (level_folder->filenames == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -66,7 +66,7 @@ LevelFolder *create_level_folder(const char *dirpath)
             RETURN_LT(lt, NULL);
         }
 
-        dynarray_push(level_folder->items, &line);
+        dynarray_push(level_folder->filenames, &line);
 
         line = line_stream_next(meta);
     }
@@ -82,14 +82,14 @@ void destroy_level_folder(LevelFolder *level_folder)
     RETURN_LT0(level_folder->lt);
 }
 
-const char **level_folder_files(const LevelFolder *level_folder)
+const char **level_folder_filenames(const LevelFolder *level_folder)
 {
     trace_assert(level_folder);
-    return dynarray_data(level_folder->items);
+    return dynarray_data(level_folder->filenames);
 }
 
 size_t level_folder_count(const LevelFolder *level_folder)
 {
     trace_assert(level_folder);
-    return dynarray_count(level_folder->items);
+    return dynarray_count(level_folder->filenames);
 }

@@ -70,7 +70,7 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
         lt,
         create_list_selector(
             sprite_font,
-            level_folder_files(level_picker->level_folder),
+            level_folder_filenames(level_picker->level_folder),
             level_folder_count(level_picker->level_folder)),
         destroy_list_selector);
     if (level_picker->list_selector == NULL) {
