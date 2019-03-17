@@ -19,3 +19,5 @@ watch:
 	while read -r filename event; do \
 		make; \
 	done
+
+# TODO: integrate svg2level written in C with the level building process

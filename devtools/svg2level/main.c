@@ -68,35 +68,41 @@ static void save_title(Context *context, FILE *output_file)
 
 static void save_background(Context *context, FILE *output_file)
 {
+    // TODO: save_background is not implemented
     (void) context;
     (void) output_file;
 }
 
 static void save_player(Context *context, FILE *output_file)
 {
+    // TODO: save_player is not implemented
     (void) context;
     (void) output_file;
 }
 
 static void save_platforms(Context *context, FILE *output_file)
 {
+    // TODO: save_platforms is not implemented
     (void) context;
     (void) output_file;
 }
 
 static void save_goals(Context *context, FILE *output_file)
 {
+    // TODO: save_goals is not implemented
     (void) context;
     (void) output_file;
 }
 
 static void save_lavas(Context *context, FILE *output_file)
 {
+    // TODO: save_lavas is not implemented
     (void) context;
     (void) output_file;
 }
 
 static void save_backplatforms(Context *context, FILE *output_file)
+// TODO: save_backplatforms is not implemented
 {
     (void) context;
     (void) output_file;
@@ -104,18 +110,21 @@ static void save_backplatforms(Context *context, FILE *output_file)
 
 static void save_boxes(Context *context, FILE *output_file)
 {
+    // TODO: save_boxes is not implemented
     (void) context;
     (void) output_file;
 }
 
 static void save_labels(Context *context, FILE *output_file)
 {
+    // TODO: save_labels is not implemented
     (void) context;
     (void) output_file;
 }
 
 static void save_script_regions(Context *context, FILE *output_file)
 {
+    // TODO: save_script_regions is not implemented
     (void) context;
     (void) output_file;
 }

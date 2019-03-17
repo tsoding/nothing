@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# TODO: remove svg2rects.py when it's not used anymore
+
 import xml.etree.ElementTree as ET
 import sys
 import re
