@@ -88,7 +88,7 @@ static void save_level(xmlNode *root, FILE *output_file)
     save_script_regions(root, output_file);
 }
 
-static size_t svg_nodes(xmlNode *root, const xmlChar *node_name, xmlNode **rects, size_t n)
+static size_t xml_nodes(xmlNode *root, const xmlChar *node_name, xmlNode **rects, size_t n)
 {
     (void) node_name;
 
@@ -106,7 +106,7 @@ static size_t svg_nodes(xmlNode *root, const xmlChar *node_name, xmlNode **rects
 
         }
 
-        const size_t m = svg_nodes(iter->children, node_name, rects, n);
+        const size_t m = xml_nodes(iter->children, node_name, rects, n);
 
         n -= m;
         rects += m;
@@ -142,10 +142,10 @@ int main(int argc, char *argv[])
     }
 
     xmlNode **rects = calloc(RECTS_COUNT, sizeof(xmlNode*));
-    const size_t rects_count = svg_nodes(root, (const xmlChar*)"rect", rects, RECTS_COUNT);
+    const size_t rects_count = xml_nodes(root, (const xmlChar*)"rect", rects, RECTS_COUNT);
 
     xmlNode **texts = calloc(TEXTS_COUNT, sizeof(xmlNode*));
-    const size_t texts_count = svg_nodes(root, (const xmlChar*)"text", texts, TEXTS_COUNT);
+    const size_t texts_count = xml_nodes(root, (const xmlChar*)"text", texts, TEXTS_COUNT);
 
     save_level(root, output_file);
 
