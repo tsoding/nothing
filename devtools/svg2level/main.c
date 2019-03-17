@@ -82,7 +82,7 @@ static void save_player(Context *context, FILE *output_file)
 
 static void save_platforms(Context *context, FILE *output_file)
 {
-    // TODO: save_platforms is not implemented
+    // TODO(#737): save_platforms is not implemented
     (void) context;
     (void) output_file;
 }
