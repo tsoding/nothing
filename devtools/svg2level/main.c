@@ -68,7 +68,7 @@ static void save_title(Context *context, FILE *output_file)
 
 static void save_background(Context *context, FILE *output_file)
 {
-    // TODO: save_background is not implemented
+    // TODO(#735): save_background is not implemented
     (void) context;
     (void) output_file;
 }
