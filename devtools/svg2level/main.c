@@ -110,7 +110,7 @@ static void save_backplatforms(Context *context, FILE *output_file)
 
 static void save_boxes(Context *context, FILE *output_file)
 {
-    // TODO: save_boxes is not implemented
+    // TODO(#741): save_boxes is not implemented
     (void) context;
     (void) output_file;
 }
