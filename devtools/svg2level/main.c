@@ -117,7 +117,7 @@ static void save_boxes(Context *context, FILE *output_file)
 
 static void save_labels(Context *context, FILE *output_file)
 {
-    // TODO: save_labels is not implemented
+    // TODO(#742): save_labels is not implemented
     (void) context;
     (void) output_file;
 }
