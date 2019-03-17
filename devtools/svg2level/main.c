@@ -89,7 +89,7 @@ static void save_platforms(Context *context, FILE *output_file)
 
 static void save_goals(Context *context, FILE *output_file)
 {
-    // TODO: save_goals is not implemented
+    // TODO(#738): save_goals is not implemented
     (void) context;
     (void) output_file;
 }
