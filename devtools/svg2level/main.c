@@ -9,83 +9,16 @@
 
 #ifdef LIBXML_TREE_ENABLED
 
+typedef struct {
+    xmlNode **rects;
+    size_t rects_count;
+    xmlNode **texts;
+    size_t texts_count;
+} Context;
+
 static void print_usage(FILE *stream)
 {
     fprintf(stream, "Usage: ./svg2level <input.svg> <output.txt>");
-}
-
-static void save_title(xmlNode *root, FILE *output_file)
-{
-    (void) root;
-    (void) output_file;
-}
-
-static void save_background(xmlNode *root, FILE *output_file)
-{
-    (void) root;
-    (void) output_file;
-}
-
-static void save_player(xmlNode *root, FILE *output_file)
-{
-    (void) root;
-    (void) output_file;
-}
-
-static void save_platforms(xmlNode *root, FILE *output_file)
-{
-    (void) root;
-    (void) output_file;
-}
-
-static void save_goals(xmlNode *root, FILE *output_file)
-{
-    (void) root;
-    (void) output_file;
-}
-
-static void save_lavas(xmlNode *root, FILE *output_file)
-{
-    (void) root;
-    (void) output_file;
-}
-
-static void save_backplatforms(xmlNode *root, FILE *output_file)
-{
-    (void) root;
-    (void) output_file;
-}
-
-static void save_boxes(xmlNode *root, FILE *output_file)
-{
-    (void) root;
-    (void) output_file;
-}
-
-static void save_labels(xmlNode *root, FILE *output_file)
-{
-    (void) root;
-    (void) output_file;
-}
-
-static void save_script_regions(xmlNode *root, FILE *output_file)
-{
-    (void) root;
-    (void) output_file;
-}
-
-static void save_level(xmlNode *root, FILE *output_file)
-{
-    save_title(root, output_file);
-    save_background(root, output_file);
-    save_player(root, output_file);
-    save_platforms(root, output_file);
-    save_goals(root, output_file);
-    save_lavas(root, output_file);
-    save_backplatforms(root, output_file);
-    save_boxes(root, output_file);
-    save_labels(root, output_file);
-    save_script_regions(root, output_file);
 }
 
 static size_t xml_nodes(xmlNode *root, const xmlChar *node_name, xmlNode **rects, size_t n)
@@ -115,6 +48,92 @@ static size_t xml_nodes(xmlNode *root, const xmlChar *node_name, xmlNode **rects
     return old_n - n;
 }
 
+static void save_title(Context *context, FILE *output_file)
+{
+    for (size_t i = 0; i < context->texts_count; ++i) {
+        xmlNode *node = context->texts[i];
+        for (xmlAttr *attr = node->properties; attr; attr = attr->next) {
+            if (xmlStrEqual(attr->name, (const xmlChar*)"id")) {
+                if (xmlStrEqual(attr->children->content, (const xmlChar*)"title")) {
+                    for (xmlNode *iter = node->children; iter; iter = iter->next) {
+                        fprintf(output_file, "%s", iter->children->content);
+                    }
+                    fprintf(output_file, "\n");
+                    return;
+                }
+            }
+        }
+    }
+}
+
+static void save_background(Context *context, FILE *output_file)
+{
+    (void) context;
+    (void) output_file;
+}
+
+static void save_player(Context *context, FILE *output_file)
+{
+    (void) context;
+    (void) output_file;
+}
+
+static void save_platforms(Context *context, FILE *output_file)
+{
+    (void) context;
+    (void) output_file;
+}
+
+static void save_goals(Context *context, FILE *output_file)
+{
+    (void) context;
+    (void) output_file;
+}
+
+static void save_lavas(Context *context, FILE *output_file)
+{
+    (void) context;
+    (void) output_file;
+}
+
+static void save_backplatforms(Context *context, FILE *output_file)
+{
+    (void) context;
+    (void) output_file;
+}
+
+static void save_boxes(Context *context, FILE *output_file)
+{
+    (void) context;
+    (void) output_file;
+}
+
+static void save_labels(Context *context, FILE *output_file)
+{
+    (void) context;
+    (void) output_file;
+}
+
+static void save_script_regions(Context *context, FILE *output_file)
+{
+    (void) context;
+    (void) output_file;
+}
+
+static void save_level(Context *context, FILE *output_file)
+{
+    save_title(context, output_file);
+    save_background(context, output_file);
+    save_player(context, output_file);
+    save_platforms(context, output_file);
+    save_goals(context, output_file);
+    save_lavas(context, output_file);
+    save_backplatforms(context, output_file);
+    save_boxes(context, output_file);
+    save_labels(context, output_file);
+    save_script_regions(context, output_file);
+}
+
 int main(int argc, char *argv[])
 {
     if (argc < 3) {
@@ -141,13 +160,13 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    xmlNode **rects = calloc(RECTS_COUNT, sizeof(xmlNode*));
-    const size_t rects_count = xml_nodes(root, (const xmlChar*)"rect", rects, RECTS_COUNT);
+    Context context;
+    context.rects = calloc(RECTS_COUNT, sizeof(xmlNode*));
+    context.rects_count = xml_nodes(root, (const xmlChar*)"rect", context.rects, RECTS_COUNT);
+    context.texts = calloc(TEXTS_COUNT, sizeof(xmlNode*));
+    context.texts_count = xml_nodes(root, (const xmlChar*)"text", context.texts, TEXTS_COUNT);
 
-    xmlNode **texts = calloc(TEXTS_COUNT, sizeof(xmlNode*));
-    const size_t texts_count = xml_nodes(root, (const xmlChar*)"text", texts, TEXTS_COUNT);
-
-    save_level(root, output_file);
+    save_level(&context, output_file);
 
     fclose(output_file);
     xmlFreeDoc(doc);
