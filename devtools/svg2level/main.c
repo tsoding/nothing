@@ -124,7 +124,7 @@ static void save_labels(Context *context, FILE *output_file)
 
 static void save_script_regions(Context *context, FILE *output_file)
 {
-    // TODO: save_script_regions is not implemented
+    // TODO(#743): save_script_regions is not implemented
     (void) context;
     (void) output_file;
 }
