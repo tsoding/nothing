@@ -96,7 +96,7 @@ static void save_goals(Context *context, FILE *output_file)
 
 static void save_lavas(Context *context, FILE *output_file)
 {
-    // TODO: save_lavas is not implemented
+    // TODO(#739): save_lavas is not implemented
     (void) context;
     (void) output_file;
 }
