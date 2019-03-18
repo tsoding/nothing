@@ -4,6 +4,7 @@ addons:
   apt:
     packages:
       - cmake
+      - extra-cmake-modules
       - cmake-data
       - libsdl2-dev
       - libsdl2-mixer-dev
