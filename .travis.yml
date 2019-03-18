@@ -4,7 +4,6 @@ addons:
   apt:
     packages:
       - cmake
-      - cmake-extras
       - extra-cmake-modules
       - cmake-data
       - libsdl2-dev
