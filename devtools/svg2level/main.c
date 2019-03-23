@@ -38,7 +38,7 @@ static void fail_node(xmlNode *node, const char *format, ...)
     exit(-1);
 }
 
-static size_t xml_nodes(xmlNode *root, const xmlChar *node_name, xmlNode **rects, size_t n)
+static size_t extract_nodes_by_name(xmlNode *root, const xmlChar *node_name, xmlNode **rects, size_t n)
 {
     (void) node_name;
 
@@ -56,7 +56,7 @@ static size_t xml_nodes(xmlNode *root, const xmlChar *node_name, xmlNode **rects
 
         }
 
-        const size_t m = xml_nodes(iter->children, node_name, rects, n);
+        const size_t m = extract_nodes_by_name(iter->children, node_name, rects, n);
 
         n -= m;
         rects += m;
@@ -291,9 +291,9 @@ int main(int argc, char *argv[])
 
     Context context;
     context.rects = calloc(RECTS_CAPACITY, sizeof(xmlNode*));
-    context.rects_count = xml_nodes(root, (const xmlChar*)"rect", context.rects, RECTS_CAPACITY);
+    context.rects_count = extract_nodes_by_name(root, (const xmlChar*)"rect", context.rects, RECTS_CAPACITY);
     context.texts = calloc(TEXTS_CAPACITY, sizeof(xmlNode*));
-    context.texts_count = xml_nodes(root, (const xmlChar*)"text", context.texts, TEXTS_CAPACITY);
+    context.texts_count = extract_nodes_by_name(root, (const xmlChar*)"text", context.texts, TEXTS_CAPACITY);
     context.buffer = calloc(BUFFER_CAPACITY, sizeof(xmlNode*));
 
     save_level(&context, output_file);
