@@ -105,24 +105,23 @@ static void save_title(Context *context, FILE *output_file)
 
 static void save_background(Context *context, FILE *output_file)
 {
-    for (size_t i = 0; i < context->rects_count; ++i) {
-        xmlNode *node = context->rects[i];
-        xmlNode *idAttr = find_attr_by_name(node, (const xmlChar*)"id");
-        if (idAttr != NULL && xmlStrEqual(idAttr->content, (const xmlChar*)"background")) {
-            xmlNode *styleAttr = find_attr_by_name(node, (const xmlChar*)"style");
-            if (styleAttr == NULL) {
-                fail_node(node, "Background doesn't have 'style' attr");
-            }
-
-            const xmlChar *color = color_of_style(styleAttr->content);
-            if (color == NULL) {
-                fail_node(node, "`style` attr does not define the `fill` of the rectangle");
-            }
-
-            fprintf(output_file, "%.6s\n", color);
-            return;
-        }
+    xmlNode *node = find_node_by_id(context->rects, context->rects_count, (const xmlChar*)"background");
+    if (node == NULL) {
+        fprintf(stderr, "Could find rect node with `background` id\n");
+        exit(-1);
     }
+
+    xmlNode *styleAttr = find_attr_by_name(node, (const xmlChar*)"style");
+    if (styleAttr == NULL) {
+        fail_node(node, "Background doesn't have 'style' attr");
+    }
+
+    const xmlChar *color = color_of_style(styleAttr->content);
+    if (color == NULL) {
+        fail_node(node, "`style` attr does not define the `fill` of the rectangle");
+    }
+
+    fprintf(output_file, "%.6s\n", color);
 }
 
 static void save_player(Context *context, FILE *output_file)
