@@ -105,56 +105,6 @@ static const xmlChar *require_color_of_node(xmlNode *node)
     return color;
 }
 
-static xmlNode *find_node_by_id(xmlNode **nodes, size_t n, const xmlChar *id)
-{
-    for (size_t i = 0; i < n; ++i) {
-        xmlNode *idAttr = find_attr_by_name(nodes[i], (const xmlChar*)"id");
-        if (idAttr != NULL && xmlStrEqual(idAttr->content, id)) {
-            return nodes[i];
-        }
-    }
-
-    return NULL;
-}
-
-static void save_title(Context *context, FILE *output_file)
-{
-    xmlNode *node = find_node_by_id(context->texts, context->texts_count, (const xmlChar*)"title");
-    if (node == NULL) {
-        fprintf(stderr, "Could find text node with `title` id\n");
-        exit(-1);
-    }
-
-    for (xmlNode *iter = node->children; iter; iter = iter->next) {
-        fprintf(output_file, "%s", iter->children->content);
-    }
-    fprintf(output_file, "\n");
-}
-
-static void save_background(Context *context, FILE *output_file)
-{
-    xmlNode *node = find_node_by_id(context->rects, context->rects_count, (const xmlChar*)"background");
-    if (node == NULL) {
-        fprintf(stderr, "Could not find rect node with `background` id\n");
-        exit(-1);
-    }
-
-    fprintf(output_file, "%.6s\n", require_color_of_node(node));
-}
-
-static void save_player(Context *context, FILE *output_file)
-{
-    xmlNode *node = find_node_by_id(context->rects, context->rects_count, (const xmlChar*)"player");
-    if (node == NULL) {
-        fprintf(stderr, "Could not find rect with `player` id\n");
-    }
-
-    const xmlChar *color = require_color_of_node(node);
-    xmlNode *xAttr = require_attr_by_name(node, (const xmlChar*)"x");
-    xmlNode *yAttr = require_attr_by_name(node, (const xmlChar*)"y");
-    fprintf(output_file, "%s %s %.6s\n", xAttr->content, yAttr->content, color);
-}
-
 static size_t filter_nodes_by_id_prefix(xmlNode **input, size_t input_count,
                                         const xmlChar* id_prefix,
                                         xmlNode **output, size_t output_capacity)
@@ -169,6 +119,56 @@ static size_t filter_nodes_by_id_prefix(xmlNode **input, size_t input_count,
     }
 
     return output_count;
+}
+
+static xmlNode *find_node_by_id(xmlNode **nodes, size_t n, const xmlChar *id)
+{
+    for (size_t i = 0; i < n; ++i) {
+        xmlNode *idAttr = find_attr_by_name(nodes[i], (const xmlChar*)"id");
+        if (idAttr != NULL && xmlStrEqual(idAttr->content, id)) {
+            return nodes[i];
+        }
+    }
+
+    return NULL;
+}
+
+static xmlNode *require_node_by_id(xmlNode **nodes, size_t n, const xmlChar *id)
+{
+    xmlNode *node = find_node_by_id(nodes, n, id);
+    if (node == NULL) {
+        fail_node(node, "Could find node with id `%s`\n", id);
+    }
+    return node;
+}
+
+////////////////////////////////////////////////////////////
+
+static void save_title(Context *context, FILE *output_file)
+{
+    xmlNode *node = require_node_by_id(context->texts, context->texts_count, (const xmlChar*)"title");
+    for (xmlNode *iter = node->children; iter; iter = iter->next) {
+        fprintf(output_file, "%s", iter->children->content);
+    }
+    fprintf(output_file, "\n");
+}
+
+static void save_background(Context *context, FILE *output_file)
+{
+    fprintf(output_file, "%.6s\n",
+            require_color_of_node(
+                require_node_by_id(
+                    context->rects, context->rects_count,
+                    (const xmlChar*)"background")));
+}
+
+static void save_player(Context *context, FILE *output_file)
+{
+    xmlNode *node = require_node_by_id(context->rects, context->rects_count, (const xmlChar*)"player");
+    const xmlChar *color = require_color_of_node(node);
+    xmlNode *xAttr = require_attr_by_name(node, (const xmlChar*)"x");
+    xmlNode *yAttr = require_attr_by_name(node, (const xmlChar*)"y");
+    fprintf(output_file, "%s %s %.6s\n", xAttr->content, yAttr->content, color);
 }
 
 static void save_platforms(Context *context, FILE *output_file)
