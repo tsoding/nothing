@@ -139,11 +139,21 @@ static void save_background(Context *context, FILE *output_file)
 
 static void save_player(Context *context, FILE *output_file)
 {
-    // TODO(#736): save_player is not implemented
-    (void) context;
-    (void) output_file;
+    xmlNode *node = find_node_by_id(context->rects, context->rects_count, (const xmlChar*)"player");
+    if (node == NULL) {
+        fprintf(stderr, "Could not find rect with `player` id\n");
+    }
 
+    xmlNode *styleAttr = require_attr_by_name(node, (const xmlChar*)"style");
+    xmlNode *xAttr = require_attr_by_name(node, (const xmlChar*)"x");
+    xmlNode *yAttr = require_attr_by_name(node, (const xmlChar*)"y");
 
+    const xmlChar *color = color_of_style(styleAttr->content);
+    if (color == NULL) {
+        fail_node(node, "`style` attr does not define the `fill` of the rectangle\n");
+    }
+
+    fprintf(output_file, "%s %s %.6s\n", xAttr->content, yAttr->content, color);
 }
 
 static void save_platforms(Context *context, FILE *output_file)
