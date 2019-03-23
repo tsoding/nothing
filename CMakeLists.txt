@@ -11,7 +11,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
-find_package(libxml2 REQUIRED)
+find_package(PkgConfig REQUIRED)
+
+pkg_check_modules(LIBXML2 REQUIRED libxml-2.0)
 
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(src/)
@@ -23,7 +25,6 @@ else()
 endif()
 
 include_directories(${SDL2_MIXER_INCLUDE_DIR})
-include_directories(${LIBXML2_INCLUDE_DIR})
 include_directories(${LIBXML2_INCLUDE_DIRS})
 
 add_library(system STATIC
