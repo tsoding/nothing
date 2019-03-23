@@ -84,6 +84,15 @@ static xmlNode *find_attr_by_name(xmlNode *node, const xmlChar *attr_name)
     return NULL;
 }
 
+static xmlNode *require_attr_by_name(xmlNode *node, const xmlChar *attr_name)
+{
+    xmlNode *attr = find_attr_by_name(node, attr_name);
+    if (attr == NULL) {
+        fail_node(node, "Required attribute `%s`\n", attr_name);
+    }
+    return attr;
+}
+
 static xmlNode *find_node_by_id(xmlNode **nodes, size_t n, const xmlChar *id)
 {
     for (size_t i = 0; i < n; ++i) {
@@ -114,18 +123,15 @@ static void save_background(Context *context, FILE *output_file)
 {
     xmlNode *node = find_node_by_id(context->rects, context->rects_count, (const xmlChar*)"background");
     if (node == NULL) {
-        fprintf(stderr, "Could find rect node with `background` id\n");
+        fprintf(stderr, "Could not find rect node with `background` id\n");
         exit(-1);
     }
 
-    xmlNode *styleAttr = find_attr_by_name(node, (const xmlChar*)"style");
-    if (styleAttr == NULL) {
-        fail_node(node, "Background doesn't have 'style' attr");
-    }
+    xmlNode *styleAttr = require_attr_by_name(node, (const xmlChar*)"style");
 
     const xmlChar *color = color_of_style(styleAttr->content);
     if (color == NULL) {
-        fail_node(node, "`style` attr does not define the `fill` of the rectangle");
+        fail_node(node, "`style` attr does not define the `fill` of the rectangle\n");
     }
 
     fprintf(output_file, "%.6s\n", color);
