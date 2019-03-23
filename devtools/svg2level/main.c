@@ -95,6 +95,16 @@ static xmlNode *require_attr_by_name(xmlNode *node, const xmlChar *attr_name)
     return attr;
 }
 
+static const xmlChar *require_color_of_node(xmlNode *node)
+{
+    xmlNode *style_attr = require_attr_by_name(node, (const xmlChar*)"style");
+    const xmlChar *color = color_of_style(style_attr->content);
+    if (color == NULL) {
+        fail_node(node, "`style` attr does not define the `fill` of the rectangle\n");
+    }
+    return color;
+}
+
 static xmlNode *find_node_by_id(xmlNode **nodes, size_t n, const xmlChar *id)
 {
     for (size_t i = 0; i < n; ++i) {
@@ -129,14 +139,7 @@ static void save_background(Context *context, FILE *output_file)
         exit(-1);
     }
 
-    xmlNode *styleAttr = require_attr_by_name(node, (const xmlChar*)"style");
-
-    const xmlChar *color = color_of_style(styleAttr->content);
-    if (color == NULL) {
-        fail_node(node, "`style` attr does not define the `fill` of the rectangle\n");
-    }
-
-    fprintf(output_file, "%.6s\n", color);
+    fprintf(output_file, "%.6s\n", require_color_of_node(node));
 }
 
 static void save_player(Context *context, FILE *output_file)
@@ -146,15 +149,9 @@ static void save_player(Context *context, FILE *output_file)
         fprintf(stderr, "Could not find rect with `player` id\n");
     }
 
-    xmlNode *styleAttr = require_attr_by_name(node, (const xmlChar*)"style");
+    const xmlChar *color = require_color_of_node(node);
     xmlNode *xAttr = require_attr_by_name(node, (const xmlChar*)"x");
     xmlNode *yAttr = require_attr_by_name(node, (const xmlChar*)"y");
-
-    const xmlChar *color = color_of_style(styleAttr->content);
-    if (color == NULL) {
-        fail_node(node, "`style` attr does not define the `fill` of the rectangle\n");
-    }
-
     fprintf(output_file, "%s %s %.6s\n", xAttr->content, yAttr->content, color);
 }
 
@@ -189,11 +186,7 @@ static void save_platforms(Context *context, FILE *output_file)
         xmlNode *y = require_attr_by_name(node, (const xmlChar*)"y");
         xmlNode *width = require_attr_by_name(node, (const xmlChar*)"width");
         xmlNode *height = require_attr_by_name(node, (const xmlChar*)"height");
-        xmlNode *style = require_attr_by_name(node, (const xmlChar*)"style");
-        const xmlChar *color = color_of_style(style->content);
-        if (color == NULL) {
-            fail_node(node, "`style` attr does not define the `fill` of the rectangle\n");
-        }
+        const xmlChar *color = require_color_of_node(node);
         fprintf(output_file, "%s %s %s %s %.6s\n",
                 x->content, y->content,
                 width->content, height->content,
@@ -215,12 +208,7 @@ static void save_goals(Context *context, FILE *output_file)
         xmlNode *id = require_attr_by_name(goals[i], (const xmlChar*)"id");
         xmlNode *x = require_attr_by_name(goals[i], (const xmlChar*)"x");
         xmlNode *y = require_attr_by_name(goals[i], (const xmlChar*)"y");
-        xmlNode *style = require_attr_by_name(goals[i], (const xmlChar*)"style");
-        const xmlChar *color = color_of_style(style->content);
-        if (color == NULL) {
-            fail_node(goals[i], "`style` attr does not define the `fill` of the rectangle\n");
-        }
-
+        const xmlChar *color = require_color_of_node(goals[i]);
         fprintf(output_file, "%s %s %s %.6s\n",
                 id->content, x->content, y->content, color);
     }
