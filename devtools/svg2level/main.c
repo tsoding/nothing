@@ -203,9 +203,27 @@ static void save_platforms(Context *context, FILE *output_file)
 
 static void save_goals(Context *context, FILE *output_file)
 {
-    // TODO(#738): save_goals is not implemented
-    (void) context;
-    (void) output_file;
+    xmlNode **goals = context->buffer;
+    size_t goals_count = filter_nodes_by_id_prefix(
+        context->rects, context->rects_count,
+        (const xmlChar*)"goal",
+        goals, BUFFER_CAPACITY);
+
+    fprintf(output_file, "%ld\n", goals_count);
+
+    for (size_t i = 0; i < goals_count; ++i) {
+        xmlNode *id = require_attr_by_name(goals[i], (const xmlChar*)"id");
+        xmlNode *x = require_attr_by_name(goals[i], (const xmlChar*)"x");
+        xmlNode *y = require_attr_by_name(goals[i], (const xmlChar*)"y");
+        xmlNode *style = require_attr_by_name(goals[i], (const xmlChar*)"style");
+        const xmlChar *color = color_of_style(style->content);
+        if (color == NULL) {
+            fail_node(goals[i], "`style` attr does not define the `fill` of the rectangle\n");
+        }
+
+        fprintf(output_file, "%s %s %s %.6s\n",
+                id->content, x->content, y->content, color);
+    }
 }
 
 static void save_lavas(Context *context, FILE *output_file)
