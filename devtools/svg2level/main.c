@@ -70,6 +70,18 @@ static xmlNode *find_attr_by_name(xmlNode *node, const xmlChar *attr_name)
     return NULL;
 }
 
+static xmlNode *find_node_by_id(xmlNode **nodes, size_t n, const xmlChar *id)
+{
+    for (size_t i = 0; i < n; ++i) {
+        xmlNode *idAttr = find_attr_by_name(nodes[i], (const xmlChar*)"id");
+        if (idAttr != NULL && xmlStrEqual(idAttr->content, id)) {
+            return nodes[i];
+        }
+    }
+
+    return NULL;
+}
+
 static void fail_node(xmlNode *node, const char *message)
 {
     fprintf(stderr, "%s\n", message);
