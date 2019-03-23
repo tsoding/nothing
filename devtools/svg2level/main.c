@@ -91,17 +91,16 @@ static void fail_node(xmlNode *node, const char *message)
 
 static void save_title(Context *context, FILE *output_file)
 {
-    for (size_t i = 0; i < context->texts_count; ++i) {
-        xmlNode *node = context->texts[i];
-        xmlNode *idAttr = find_attr_by_name(node, (const xmlChar*)"id");
-        if (idAttr != NULL && xmlStrEqual(idAttr->content, (const xmlChar*)"title")) {
-            for (xmlNode *iter = node->children; iter; iter = iter->next) {
-                fprintf(output_file, "%s", iter->children->content);
-            }
-            fprintf(output_file, "\n");
-            return;
-        }
+    xmlNode *node = find_node_by_id(context->texts, context->texts_count, (const xmlChar*)"title");
+    if (node == NULL) {
+        fprintf(stderr, "Could find text node with `title` id\n");
+        exit(-1);
     }
+
+    for (xmlNode *iter = node->children; iter; iter = iter->next) {
+        fprintf(output_file, "%s", iter->children->content);
+    }
+    fprintf(output_file, "\n");
 }
 
 static void save_background(Context *context, FILE *output_file)
