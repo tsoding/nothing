@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
+
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xmlstring.h>
@@ -20,6 +22,18 @@ typedef struct {
 static void print_usage(FILE *stream)
 {
     fprintf(stream, "Usage: ./svg2level <input.svg> <output.txt>");
+}
+
+static void fail_node(xmlNode *node, const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+
+    vfprintf(stderr, format, args);
+    xmlDebugDumpNode(stderr, node, 0);
+
+    va_end(args);
+    exit(-1);
 }
 
 static size_t xml_nodes(xmlNode *root, const xmlChar *node_name, xmlNode **rects, size_t n)
@@ -80,13 +94,6 @@ static xmlNode *find_node_by_id(xmlNode **nodes, size_t n, const xmlChar *id)
     }
 
     return NULL;
-}
-
-static void fail_node(xmlNode *node, const char *message)
-{
-    fprintf(stderr, "%s\n", message);
-    xmlDebugDumpNode(stderr, node, 0);
-    exit(-1);
 }
 
 static void save_title(Context *context, FILE *output_file)
