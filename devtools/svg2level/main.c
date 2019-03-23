@@ -3,6 +3,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xmlstring.h>
+#include <libxml/debugXML.h>
 
 #define RECTS_COUNT 1024
 #define TEXTS_COUNT 1024
@@ -48,29 +49,64 @@ static size_t xml_nodes(xmlNode *root, const xmlChar *node_name, xmlNode **rects
     return old_n - n;
 }
 
+static const xmlChar *color_of_style(const xmlChar *style)
+{
+    const char *prefix = "fill:#";
+    const char *fill = strstr((const char*)style, prefix);
+    if (fill == NULL) {
+        return NULL;
+    }
+    return (const xmlChar*)(fill + strlen(prefix));
+}
+
+static xmlNode *get_attr_by_name(xmlNode *node, const xmlChar *attr_name)
+{
+    for (xmlAttr *attr = node->properties; attr; attr = attr->next) {
+        if (xmlStrEqual(attr->name, attr_name)) {
+            return attr->children;
+        }
+    }
+
+    return NULL;
+}
+
+static void fail_node(xmlNode *node, const char *message)
+{
+    fprintf(stderr, "%s\n", message);
+    xmlDebugDumpNode(stderr, node, 0);
+    exit(-1);
+}
+
 static void save_title(Context *context, FILE *output_file)
 {
     for (size_t i = 0; i < context->texts_count; ++i) {
         xmlNode *node = context->texts[i];
-        for (xmlAttr *attr = node->properties; attr; attr = attr->next) {
-            if (xmlStrEqual(attr->name, (const xmlChar*)"id")) {
-                if (xmlStrEqual(attr->children->content, (const xmlChar*)"title")) {
-                    for (xmlNode *iter = node->children; iter; iter = iter->next) {
-                        fprintf(output_file, "%s", iter->children->content);
-                    }
-                    fprintf(output_file, "\n");
-                    return;
-                }
+        xmlNode *idAttr = get_attr_by_name(node, (const xmlChar*)"id");
+        if (idAttr != NULL && xmlStrEqual(idAttr->content, (const xmlChar*)"title")) {
+            for (xmlNode *iter = node->children; iter; iter = iter->next) {
+                fprintf(output_file, "%s", iter->children->content);
             }
+            fprintf(output_file, "\n");
+            return;
         }
     }
 }
 
 static void save_background(Context *context, FILE *output_file)
 {
-    // TODO(#735): save_background is not implemented
-    (void) context;
-    (void) output_file;
+    for (size_t i = 0; i < context->rects_count; ++i) {
+        xmlNode *node = context->rects[i];
+        xmlNode *idAttr = get_attr_by_name(node, (const xmlChar*)"id");
+        if (idAttr != NULL && xmlStrEqual(idAttr->content, (const xmlChar*)"background")) {
+            xmlNode *styleAttr = get_attr_by_name(node, (const xmlChar*)"style");
+            if (styleAttr == NULL) {
+                fail_node(node, "Background doesn't have 'style' attr\n");
+            }
+
+            fprintf(output_file, "%.6s\n", color_of_style(styleAttr->content));
+            return;
+        }
+    }
 }
 
 static void save_player(Context *context, FILE *output_file)
