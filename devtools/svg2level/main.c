@@ -100,10 +100,15 @@ static void save_background(Context *context, FILE *output_file)
         if (idAttr != NULL && xmlStrEqual(idAttr->content, (const xmlChar*)"background")) {
             xmlNode *styleAttr = get_attr_by_name(node, (const xmlChar*)"style");
             if (styleAttr == NULL) {
-                fail_node(node, "Background doesn't have 'style' attr\n");
+                fail_node(node, "Background doesn't have 'style' attr");
             }
 
-            fprintf(output_file, "%.6s\n", color_of_style(styleAttr->content));
+            const xmlChar *color = color_of_style(styleAttr->content);
+            if (color == NULL) {
+                fail_node(node, "`style` attr does not define the `fill` of the rectangle");
+            }
+
+            fprintf(output_file, "%.6s\n", color);
             return;
         }
     }
