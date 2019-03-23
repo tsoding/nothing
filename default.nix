@@ -11,6 +11,7 @@ with import <nixpkgs> {}; {
                         racket
                         inotifyTools
                         python3
+                        libxml2
                       ];
     };
 }
