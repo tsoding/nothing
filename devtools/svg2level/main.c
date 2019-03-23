@@ -59,7 +59,7 @@ static const xmlChar *color_of_style(const xmlChar *style)
     return (const xmlChar*)(fill + strlen(prefix));
 }
 
-static xmlNode *get_attr_by_name(xmlNode *node, const xmlChar *attr_name)
+static xmlNode *find_attr_by_name(xmlNode *node, const xmlChar *attr_name)
 {
     for (xmlAttr *attr = node->properties; attr; attr = attr->next) {
         if (xmlStrEqual(attr->name, attr_name)) {
@@ -81,7 +81,7 @@ static void save_title(Context *context, FILE *output_file)
 {
     for (size_t i = 0; i < context->texts_count; ++i) {
         xmlNode *node = context->texts[i];
-        xmlNode *idAttr = get_attr_by_name(node, (const xmlChar*)"id");
+        xmlNode *idAttr = find_attr_by_name(node, (const xmlChar*)"id");
         if (idAttr != NULL && xmlStrEqual(idAttr->content, (const xmlChar*)"title")) {
             for (xmlNode *iter = node->children; iter; iter = iter->next) {
                 fprintf(output_file, "%s", iter->children->content);
@@ -96,9 +96,9 @@ static void save_background(Context *context, FILE *output_file)
 {
     for (size_t i = 0; i < context->rects_count; ++i) {
         xmlNode *node = context->rects[i];
-        xmlNode *idAttr = get_attr_by_name(node, (const xmlChar*)"id");
+        xmlNode *idAttr = find_attr_by_name(node, (const xmlChar*)"id");
         if (idAttr != NULL && xmlStrEqual(idAttr->content, (const xmlChar*)"background")) {
-            xmlNode *styleAttr = get_attr_by_name(node, (const xmlChar*)"style");
+            xmlNode *styleAttr = find_attr_by_name(node, (const xmlChar*)"style");
             if (styleAttr == NULL) {
                 fail_node(node, "Background doesn't have 'style' attr");
             }
@@ -119,6 +119,8 @@ static void save_player(Context *context, FILE *output_file)
     // TODO(#736): save_player is not implemented
     (void) context;
     (void) output_file;
+
+
 }
 
 static void save_platforms(Context *context, FILE *output_file)
