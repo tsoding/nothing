@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
+
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xmlstring.h>
@@ -20,6 +22,18 @@ typedef struct {
 static void print_usage(FILE *stream)
 {
     fprintf(stream, "Usage: ./svg2level <input.svg> <output.txt>");
+}
+
+static void fail_node(xmlNode *node, const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+
+    vfprintf(stderr, format, args);
+    xmlDebugDumpNode(stderr, node, 0);
+
+    va_end(args);
+    exit(-1);
 }
 
 static size_t xml_nodes(xmlNode *root, const xmlChar *node_name, xmlNode **rects, size_t n)
@@ -59,7 +73,7 @@ static const xmlChar *color_of_style(const xmlChar *style)
     return (const xmlChar*)(fill + strlen(prefix));
 }
 
-static xmlNode *get_attr_by_name(xmlNode *node, const xmlChar *attr_name)
+static xmlNode *find_attr_by_name(xmlNode *node, const xmlChar *attr_name)
 {
     for (xmlAttr *attr = node->properties; attr; attr = attr->next) {
         if (xmlStrEqual(attr->name, attr_name)) {
@@ -70,55 +84,76 @@ static xmlNode *get_attr_by_name(xmlNode *node, const xmlChar *attr_name)
     return NULL;
 }
 
-static void fail_node(xmlNode *node, const char *message)
+static xmlNode *require_attr_by_name(xmlNode *node, const xmlChar *attr_name)
 {
-    fprintf(stderr, "%s\n", message);
-    xmlDebugDumpNode(stderr, node, 0);
-    exit(-1);
+    xmlNode *attr = find_attr_by_name(node, attr_name);
+    if (attr == NULL) {
+        fail_node(node, "Required attribute `%s`\n", attr_name);
+    }
+    return attr;
+}
+
+static xmlNode *find_node_by_id(xmlNode **nodes, size_t n, const xmlChar *id)
+{
+    for (size_t i = 0; i < n; ++i) {
+        xmlNode *idAttr = find_attr_by_name(nodes[i], (const xmlChar*)"id");
+        if (idAttr != NULL && xmlStrEqual(idAttr->content, id)) {
+            return nodes[i];
+        }
+    }
+
+    return NULL;
 }
 
 static void save_title(Context *context, FILE *output_file)
 {
-    for (size_t i = 0; i < context->texts_count; ++i) {
-        xmlNode *node = context->texts[i];
-        xmlNode *idAttr = get_attr_by_name(node, (const xmlChar*)"id");
-        if (idAttr != NULL && xmlStrEqual(idAttr->content, (const xmlChar*)"title")) {
-            for (xmlNode *iter = node->children; iter; iter = iter->next) {
-                fprintf(output_file, "%s", iter->children->content);
-            }
-            fprintf(output_file, "\n");
-            return;
-        }
+    xmlNode *node = find_node_by_id(context->texts, context->texts_count, (const xmlChar*)"title");
+    if (node == NULL) {
+        fprintf(stderr, "Could find text node with `title` id\n");
+        exit(-1);
     }
+
+    for (xmlNode *iter = node->children; iter; iter = iter->next) {
+        fprintf(output_file, "%s", iter->children->content);
+    }
+    fprintf(output_file, "\n");
 }
 
 static void save_background(Context *context, FILE *output_file)
 {
-    for (size_t i = 0; i < context->rects_count; ++i) {
-        xmlNode *node = context->rects[i];
-        xmlNode *idAttr = get_attr_by_name(node, (const xmlChar*)"id");
-        if (idAttr != NULL && xmlStrEqual(idAttr->content, (const xmlChar*)"background")) {
-            xmlNode *styleAttr = get_attr_by_name(node, (const xmlChar*)"style");
-            if (styleAttr == NULL) {
-                fail_node(node, "Background doesn't have 'style' attr");
-            }
-
-            const xmlChar *color = color_of_style(styleAttr->content);
-            if (color == NULL) {
-                fail_node(node, "`style` attr does not define the `fill` of the rectangle");
-            }
-
-            fprintf(output_file, "%.6s\n", color);
-            return;
-        }
+    xmlNode *node = find_node_by_id(context->rects, context->rects_count, (const xmlChar*)"background");
+    if (node == NULL) {
+        fprintf(stderr, "Could not find rect node with `background` id\n");
+        exit(-1);
     }
+
+    xmlNode *styleAttr = require_attr_by_name(node, (const xmlChar*)"style");
+
+    const xmlChar *color = color_of_style(styleAttr->content);
+    if (color == NULL) {
+        fail_node(node, "`style` attr does not define the `fill` of the rectangle\n");
+    }
+
+    fprintf(output_file, "%.6s\n", color);
 }
 
 static void save_player(Context *context, FILE *output_file)
 {
-    // TODO(#736): save_player is not implemented
-    (void) context;
-    (void) output_file;
+    xmlNode *node = find_node_by_id(context->rects, context->rects_count, (const xmlChar*)"player");
+    if (node == NULL) {
+        fprintf(stderr, "Could not find rect with `player` id\n");
+    }
+
+    xmlNode *styleAttr = require_attr_by_name(node, (const xmlChar*)"style");
+    xmlNode *xAttr = require_attr_by_name(node, (const xmlChar*)"x");
+    xmlNode *yAttr = require_attr_by_name(node, (const xmlChar*)"y");
+
+    const xmlChar *color = color_of_style(styleAttr->content);
+    if (color == NULL) {
+        fail_node(node, "`style` attr does not define the `fill` of the rectangle\n");
+    }
+
+    fprintf(output_file, "%s %s %.6s\n", xAttr->content, yAttr->content, color);
 }
 
 static void save_platforms(Context *context, FILE *output_file)
