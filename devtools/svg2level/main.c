@@ -7,8 +7,9 @@
 #include <libxml/xmlstring.h>
 #include <libxml/debugXML.h>
 
-#define RECTS_COUNT 1024
-#define TEXTS_COUNT 1024
+#define RECTS_CAPACITY 1024
+#define TEXTS_CAPACITY 1024
+#define BUFFER_CAPACITY 1024
 
 #ifdef LIBXML_TREE_ENABLED
 
@@ -17,6 +18,7 @@ typedef struct {
     size_t rects_count;
     xmlNode **texts;
     size_t texts_count;
+    xmlNode **buffer;
 } Context;
 
 static void print_usage(FILE *stream)
@@ -156,11 +158,47 @@ static void save_player(Context *context, FILE *output_file)
     fprintf(output_file, "%s %s %.6s\n", xAttr->content, yAttr->content, color);
 }
 
+static size_t filter_nodes_by_id_prefix(xmlNode **input, size_t input_count,
+                                        const xmlChar* id_prefix,
+                                        xmlNode **output, size_t output_capacity)
+{
+    size_t output_count = 0;
+
+    for (size_t i = 0; i < input_count && output_count < output_capacity; ++i) {
+        xmlNode *id_attr = require_attr_by_name(input[i], (const xmlChar*)"id");
+        if (xmlStrstr(id_attr->content, id_prefix) == id_attr->content) {
+            output[output_count++] = input[i];
+        }
+    }
+
+    return output_count;
+}
+
 static void save_platforms(Context *context, FILE *output_file)
 {
-    // TODO(#737): save_platforms is not implemented
-    (void) context;
-    (void) output_file;
+    xmlNode **platforms = context->buffer;
+    size_t platforms_count = filter_nodes_by_id_prefix(
+        context->rects, context->rects_count,
+        (const xmlChar*)"rect",
+        platforms, BUFFER_CAPACITY);
+
+    fprintf(output_file, "%ld\n", platforms_count);
+    for (size_t i = 0; i < platforms_count; ++i) {
+        xmlNode *node = platforms[i];
+        xmlNode *x = require_attr_by_name(node, (const xmlChar*)"x");
+        xmlNode *y = require_attr_by_name(node, (const xmlChar*)"y");
+        xmlNode *width = require_attr_by_name(node, (const xmlChar*)"width");
+        xmlNode *height = require_attr_by_name(node, (const xmlChar*)"height");
+        xmlNode *style = require_attr_by_name(node, (const xmlChar*)"style");
+        const xmlChar *color = color_of_style(style->content);
+        if (color == NULL) {
+            fail_node(node, "`style` attr does not define the `fill` of the rectangle\n");
+        }
+        fprintf(output_file, "%s %s %s %s %.6s\n",
+                x->content, y->content,
+                width->content, height->content,
+                color);
+    }
 }
 
 static void save_goals(Context *context, FILE *output_file)
@@ -246,10 +284,11 @@ int main(int argc, char *argv[])
     }
 
     Context context;
-    context.rects = calloc(RECTS_COUNT, sizeof(xmlNode*));
-    context.rects_count = xml_nodes(root, (const xmlChar*)"rect", context.rects, RECTS_COUNT);
-    context.texts = calloc(TEXTS_COUNT, sizeof(xmlNode*));
-    context.texts_count = xml_nodes(root, (const xmlChar*)"text", context.texts, TEXTS_COUNT);
+    context.rects = calloc(RECTS_CAPACITY, sizeof(xmlNode*));
+    context.rects_count = xml_nodes(root, (const xmlChar*)"rect", context.rects, RECTS_CAPACITY);
+    context.texts = calloc(TEXTS_CAPACITY, sizeof(xmlNode*));
+    context.texts_count = xml_nodes(root, (const xmlChar*)"text", context.texts, TEXTS_CAPACITY);
+    context.buffer = calloc(BUFFER_CAPACITY, sizeof(xmlNode*));
 
     save_level(&context, output_file);
 
