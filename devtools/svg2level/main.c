@@ -271,9 +271,9 @@ static void save_backplatforms(Context *context, FILE *output_file)
 
 static void save_boxes(Context *context, FILE *output_file)
 {
-    // TODO(#741): save_boxes is not implemented
-    (void) context;
-    (void) output_file;
+    STATIC_ARRAY(const char*, attrs,
+                 "id", "x", "y", "width", "height", "#color");
+    save_pack_by_id_prefix(context, output_file, "box", attrs, attrs_count);
 }
 
 static void save_labels(Context *context, FILE *output_file)
