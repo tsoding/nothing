@@ -189,32 +189,44 @@ static void save_background(Context *context, FILE *output_file)
                     "background")));
 }
 
-static size_t read_file_to_buffer(const char *filename, char *buffer, size_t buffer_count)
+static size_t read_file_to_buffer(const char *filename,
+                                  char *buffer, size_t buffer_capacity)
 {
-    (void) filename;
-    (void) buffer;
-    (void) buffer_count;
-    // TODO: read_file_to_buffer is not implemented
-    return 0;
+    FILE *file = fopen(filename, "rb");
+    if (file == NULL) {
+        fprintf(stderr, "Could not open file `%s`\n", filename);
+        exit(-1);
+    }
+    size_t buffer_count = fread(buffer, sizeof(char), buffer_capacity, file);
+    fclose(file);
+    return buffer_count;
 }
 
 static size_t count_lines(char *buffer, size_t buffer_count)
 {
-    (void) buffer;
-    (void) buffer_count;
-    // TODO: count_line is not implemented
-    return 0;
+    size_t count = 0;
+    for (size_t i = 0; i < buffer_count; ++i) {
+        if (buffer[i] == '\n') {
+            count++;
+        }
+    }
+    return count;
 }
 
 static void save_script(FILE *output_file, xmlNode *scripted,
                         char *buffer, size_t buffer_capacity)
 {
     for (xmlNode *iter = scripted->children; iter; iter = iter->next) {
-        const char *filename = (const char*)iter->content;
+        if (!xmlStrEqual(iter->name, (const xmlChar*)"title")) {
+            continue;
+        }
+        // TODO: save_script does not support script arguments
+        const char *filename = (const char*)iter->children->content;
         const size_t buffer_count = read_file_to_buffer(
             filename, buffer, buffer_capacity);
         const size_t lines_count = count_lines(buffer, buffer_count);
-        fprintf(output_file, "%ld\n", lines_count);
+        fprintf(output_file, "%ld\n", lines_count + 1);
+        fprintf(output_file, "(set args '())\n");
         fwrite(buffer, sizeof(char), buffer_count, output_file);
     }
 }
