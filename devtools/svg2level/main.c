@@ -38,7 +38,7 @@ static void fail_node(xmlNode *node, const char *format, ...)
     exit(-1);
 }
 
-static size_t extract_nodes_by_name(xmlNode *root, const xmlChar *node_name, xmlNode **rects, size_t n)
+static size_t extract_nodes_by_name(xmlNode *root, const char *node_name, xmlNode **rects, size_t n)
 {
     (void) node_name;
 
@@ -49,7 +49,7 @@ static size_t extract_nodes_by_name(xmlNode *root, const xmlChar *node_name, xml
     const size_t old_n = n;
 
     for (xmlNode *iter = root; n > 0 && iter; iter = iter->next) {
-        if (iter->type == XML_ELEMENT_NODE && xmlStrEqual(iter->name, node_name)) {
+        if (iter->type == XML_ELEMENT_NODE && xmlStrEqual(iter->name, (const xmlChar*)node_name)) {
             rects[0] = iter;
             n--;
             rects++;
@@ -65,20 +65,20 @@ static size_t extract_nodes_by_name(xmlNode *root, const xmlChar *node_name, xml
     return old_n - n;
 }
 
-static const xmlChar *color_of_style(const xmlChar *style)
+static const char *color_of_style(const char *style)
 {
     const char *prefix = "fill:#";
-    const char *fill = strstr((const char*)style, prefix);
+    const char *fill = strstr(style, prefix);
     if (fill == NULL) {
         return NULL;
     }
-    return (const xmlChar*)(fill + strlen(prefix));
+    return fill + strlen(prefix);
 }
 
-static xmlNode *find_attr_by_name(xmlNode *node, const xmlChar *attr_name)
+static xmlNode *find_attr_by_name(xmlNode *node, const char *attr_name)
 {
     for (xmlAttr *attr = node->properties; attr; attr = attr->next) {
-        if (xmlStrEqual(attr->name, attr_name)) {
+        if (xmlStrEqual(attr->name, (const xmlChar *)attr_name)) {
             return attr->children;
         }
     }
@@ -86,7 +86,7 @@ static xmlNode *find_attr_by_name(xmlNode *node, const xmlChar *attr_name)
     return NULL;
 }
 
-static xmlNode *require_attr_by_name(xmlNode *node, const xmlChar *attr_name)
+static xmlNode *require_attr_by_name(xmlNode *node, const char *attr_name)
 {
     xmlNode *attr = find_attr_by_name(node, attr_name);
     if (attr == NULL) {
@@ -95,10 +95,10 @@ static xmlNode *require_attr_by_name(xmlNode *node, const xmlChar *attr_name)
     return attr;
 }
 
-static const xmlChar *require_color_of_node(xmlNode *node)
+static const char *require_color_of_node(xmlNode *node)
 {
-    xmlNode *style_attr = require_attr_by_name(node, (const xmlChar*)"style");
-    const xmlChar *color = color_of_style(style_attr->content);
+    xmlNode *style_attr = require_attr_by_name(node, "style");
+    const char *color = color_of_style((const char*)style_attr->content);
     if (color == NULL) {
         fail_node(node, "`style` attr does not define the `fill` of the rectangle\n");
     }
@@ -106,14 +106,14 @@ static const xmlChar *require_color_of_node(xmlNode *node)
 }
 
 static size_t filter_nodes_by_id_prefix(xmlNode **input, size_t input_count,
-                                        const xmlChar* id_prefix,
+                                        const char* id_prefix,
                                         xmlNode **output, size_t output_capacity)
 {
     size_t output_count = 0;
 
     for (size_t i = 0; i < input_count && output_count < output_capacity; ++i) {
-        xmlNode *id_attr = require_attr_by_name(input[i], (const xmlChar*)"id");
-        if (xmlStrstr(id_attr->content, id_prefix) == id_attr->content) {
+        xmlNode *id_attr = require_attr_by_name(input[i], "id");
+        if (xmlStrstr(id_attr->content, (const xmlChar*)id_prefix) == id_attr->content) {
             output[output_count++] = input[i];
         }
     }
@@ -121,11 +121,11 @@ static size_t filter_nodes_by_id_prefix(xmlNode **input, size_t input_count,
     return output_count;
 }
 
-static xmlNode *find_node_by_id(xmlNode **nodes, size_t n, const xmlChar *id)
+static xmlNode *find_node_by_id(xmlNode **nodes, size_t n, const char *id)
 {
     for (size_t i = 0; i < n; ++i) {
-        xmlNode *idAttr = find_attr_by_name(nodes[i], (const xmlChar*)"id");
-        if (idAttr != NULL && xmlStrEqual(idAttr->content, id)) {
+        xmlNode *idAttr = find_attr_by_name(nodes[i], "id");
+        if (idAttr != NULL && xmlStrEqual(idAttr->content, (const xmlChar*)id)) {
             return nodes[i];
         }
     }
@@ -133,7 +133,7 @@ static xmlNode *find_node_by_id(xmlNode **nodes, size_t n, const xmlChar *id)
     return NULL;
 }
 
-static xmlNode *require_node_by_id(xmlNode **nodes, size_t n, const xmlChar *id)
+static xmlNode *require_node_by_id(xmlNode **nodes, size_t n, const char *id)
 {
     xmlNode *node = find_node_by_id(nodes, n, id);
     if (node == NULL) {
@@ -146,7 +146,7 @@ static xmlNode *require_node_by_id(xmlNode **nodes, size_t n, const xmlChar *id)
 
 static void save_title(Context *context, FILE *output_file)
 {
-    xmlNode *node = require_node_by_id(context->texts, context->texts_count, (const xmlChar*)"title");
+    xmlNode *node = require_node_by_id(context->texts, context->texts_count, "title");
     for (xmlNode *iter = node->children; iter; iter = iter->next) {
         fprintf(output_file, "%s", iter->children->content);
     }
@@ -159,15 +159,15 @@ static void save_background(Context *context, FILE *output_file)
             require_color_of_node(
                 require_node_by_id(
                     context->rects, context->rects_count,
-                    (const xmlChar*)"background")));
+                    "background")));
 }
 
 static void save_player(Context *context, FILE *output_file)
 {
-    xmlNode *node = require_node_by_id(context->rects, context->rects_count, (const xmlChar*)"player");
-    const xmlChar *color = require_color_of_node(node);
-    xmlNode *xAttr = require_attr_by_name(node, (const xmlChar*)"x");
-    xmlNode *yAttr = require_attr_by_name(node, (const xmlChar*)"y");
+    xmlNode *node = require_node_by_id(context->rects, context->rects_count, "player");
+    const char *color = require_color_of_node(node);
+    xmlNode *xAttr = require_attr_by_name(node, "x");
+    xmlNode *yAttr = require_attr_by_name(node, "y");
     fprintf(output_file, "%s %s %.6s\n", xAttr->content, yAttr->content, color);
 }
 
@@ -175,18 +175,17 @@ static void save_platforms(Context *context, FILE *output_file)
 {
     xmlNode **platforms = context->buffer;
     size_t platforms_count = filter_nodes_by_id_prefix(
-        context->rects, context->rects_count,
-        (const xmlChar*)"rect",
+        context->rects, context->rects_count, "rect",
         platforms, BUFFER_CAPACITY);
 
     fprintf(output_file, "%ld\n", platforms_count);
     for (size_t i = 0; i < platforms_count; ++i) {
         xmlNode *node = platforms[i];
-        xmlNode *x = require_attr_by_name(node, (const xmlChar*)"x");
-        xmlNode *y = require_attr_by_name(node, (const xmlChar*)"y");
-        xmlNode *width = require_attr_by_name(node, (const xmlChar*)"width");
-        xmlNode *height = require_attr_by_name(node, (const xmlChar*)"height");
-        const xmlChar *color = require_color_of_node(node);
+        xmlNode *x = require_attr_by_name(node, "x");
+        xmlNode *y = require_attr_by_name(node, "y");
+        xmlNode *width = require_attr_by_name(node, "width");
+        xmlNode *height = require_attr_by_name(node, "height");
+        const char *color = require_color_of_node(node);
         fprintf(output_file, "%s %s %s %s %.6s\n",
                 x->content, y->content,
                 width->content, height->content,
@@ -198,17 +197,16 @@ static void save_goals(Context *context, FILE *output_file)
 {
     xmlNode **goals = context->buffer;
     size_t goals_count = filter_nodes_by_id_prefix(
-        context->rects, context->rects_count,
-        (const xmlChar*)"goal",
+        context->rects, context->rects_count, "goal",
         goals, BUFFER_CAPACITY);
 
     fprintf(output_file, "%ld\n", goals_count);
 
     for (size_t i = 0; i < goals_count; ++i) {
-        xmlNode *id = require_attr_by_name(goals[i], (const xmlChar*)"id");
-        xmlNode *x = require_attr_by_name(goals[i], (const xmlChar*)"x");
-        xmlNode *y = require_attr_by_name(goals[i], (const xmlChar*)"y");
-        const xmlChar *color = require_color_of_node(goals[i]);
+        xmlNode *id = require_attr_by_name(goals[i], "id");
+        xmlNode *x = require_attr_by_name(goals[i], "x");
+        xmlNode *y = require_attr_by_name(goals[i], "y");
+        const char *color = require_color_of_node(goals[i]);
         fprintf(output_file, "%s %s %s %.6s\n",
                 id->content, x->content, y->content, color);
     }
@@ -216,9 +214,24 @@ static void save_goals(Context *context, FILE *output_file)
 
 static void save_lavas(Context *context, FILE *output_file)
 {
-    // TODO(#739): save_lavas is not implemented
-    (void) context;
-    (void) output_file;
+    xmlNode **lavas = context->buffer;
+    size_t lava_count = filter_nodes_by_id_prefix(
+        context->rects, context->rects_count,
+        "lava",
+        lavas, BUFFER_CAPACITY);
+
+    fprintf(output_file, "%ld\n", lava_count);
+    for (size_t i = 0; i < lava_count; ++i) {
+        xmlNode *x = require_attr_by_name(lavas[i], "x");
+        xmlNode *y = require_attr_by_name(lavas[i], "y");
+        xmlNode *width = require_attr_by_name(lavas[i], "width");
+        xmlNode *height = require_attr_by_name(lavas[i], "height");
+        const char *color = require_color_of_node(lavas[i]);
+        fprintf(output_file, "%s %s %s %s %.6s\n",
+                x->content, y->content,
+                width->content, height->content,
+                color);
+    }
 }
 
 static void save_backplatforms(Context *context, FILE *output_file)
@@ -291,9 +304,9 @@ int main(int argc, char *argv[])
 
     Context context;
     context.rects = calloc(RECTS_CAPACITY, sizeof(xmlNode*));
-    context.rects_count = extract_nodes_by_name(root, (const xmlChar*)"rect", context.rects, RECTS_CAPACITY);
+    context.rects_count = extract_nodes_by_name(root, "rect", context.rects, RECTS_CAPACITY);
     context.texts = calloc(TEXTS_CAPACITY, sizeof(xmlNode*));
-    context.texts_count = extract_nodes_by_name(root, (const xmlChar*)"text", context.texts, TEXTS_CAPACITY);
+    context.texts_count = extract_nodes_by_name(root, "text", context.texts, TEXTS_CAPACITY);
     context.buffer = calloc(BUFFER_CAPACITY, sizeof(xmlNode*));
 
     save_level(&context, output_file);
