@@ -221,10 +221,10 @@ static void save_lavas(Context *context, FILE *output_file)
 }
 
 static void save_backplatforms(Context *context, FILE *output_file)
-// TODO(#740): save_backplatforms is not implemented
 {
-    (void) context;
-    (void) output_file;
+    const char *attrs[] = {"x", "y", "width", "height", "#color"};
+    const size_t attrs_count = sizeof(attrs) / sizeof(const char*);
+    save_pack_by_id_prefix(context, output_file, "backrect", attrs, attrs_count);
 }
 
 static void save_boxes(Context *context, FILE *output_file)
