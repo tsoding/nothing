@@ -220,7 +220,7 @@ static void save_script(FILE *output_file, xmlNode *scripted,
         if (!xmlStrEqual(iter->name, (const xmlChar*)"title")) {
             continue;
         }
-        // TODO: save_script does not support script arguments
+        // TODO(#753): save_script does not support script arguments
         const char *filename = (const char*)iter->children->content;
         const size_t buffer_count = read_file_to_buffer(
             filename, buffer, buffer_capacity);
