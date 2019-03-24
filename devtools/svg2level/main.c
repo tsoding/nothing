@@ -302,9 +302,27 @@ static void save_labels(Context *context, FILE *output_file)
 
 static void save_script_regions(Context *context, FILE *output_file)
 {
-    // TODO(#743): save_script_regions is not implemented
-    (void) context;
-    (void) output_file;
+    xmlNode **regions = (xmlNode**)context->buffer;
+    size_t regions_count = filter_nodes_by_id_prefix(
+        context->rects, context->rects_count,
+        "script",
+        regions, BUFFER_CAPACITY / sizeof(xmlNode*));
+
+    fprintf(output_file, "%ld\n", regions_count);
+    for (size_t i = 0; i < regions_count; ++i) {
+        xmlNode *x = require_attr_by_name(regions[i], "x");
+        xmlNode *y = require_attr_by_name(regions[i], "y");
+        xmlNode *width = require_attr_by_name(regions[i], "width");
+        xmlNode *height = require_attr_by_name(regions[i], "height");
+        const char *color = require_color_of_node(regions[i]);
+        fprintf(output_file, "%s %s %s %s %.6s",
+                x->content, y->content,
+                width->content, height->content,
+                color);
+        save_script(output_file, regions[i],
+                    context->buffer + regions_count * sizeof(xmlNode*),
+                    BUFFER_CAPACITY - regions_count);
+    }
 }
 
 static void save_level(Context *context, FILE *output_file)
