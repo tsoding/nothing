@@ -142,6 +142,33 @@ static xmlNode *require_node_by_id(xmlNode **nodes, size_t n, const char *id)
     return node;
 }
 
+static void save_pack_by_id_prefix(Context *context, FILE *output_file,
+                                   const char *id_prefix,
+                                   const char **attrs, size_t attrs_count)
+{
+    xmlNode **pack = context->buffer;
+    size_t pack_count = filter_nodes_by_id_prefix(
+        context->rects, context->rects_count, id_prefix,
+        pack, BUFFER_CAPACITY);
+    pack_count += filter_nodes_by_id_prefix(
+        context->texts, context->texts_count, id_prefix,
+        pack + pack_count, BUFFER_CAPACITY - pack_count);
+
+    fprintf(output_file, "%ld\n", pack_count);
+    for (size_t i = 0; i < pack_count; ++i) {
+        for (size_t j = 0; j < attrs_count; ++j) {
+            if (strcmp(attrs[j], "#color") == 0) {
+                const char *color = require_color_of_node(pack[i]);
+                fprintf(output_file, "%.6s ", color);
+            } else {
+                xmlNode *attr = require_attr_by_name(pack[i], attrs[j]);
+                fprintf(output_file, "%s ", attr->content);
+            }
+        }
+        fprintf(output_file, "\n");
+    }
+}
+
 ////////////////////////////////////////////////////////////
 
 static void save_title(Context *context, FILE *output_file)
@@ -169,69 +196,28 @@ static void save_player(Context *context, FILE *output_file)
     xmlNode *xAttr = require_attr_by_name(node, "x");
     xmlNode *yAttr = require_attr_by_name(node, "y");
     fprintf(output_file, "%s %s %.6s\n", xAttr->content, yAttr->content, color);
+    // TODO: save_player does not support the player's script
 }
 
 static void save_platforms(Context *context, FILE *output_file)
 {
-    xmlNode **platforms = context->buffer;
-    size_t platforms_count = filter_nodes_by_id_prefix(
-        context->rects, context->rects_count, "rect",
-        platforms, BUFFER_CAPACITY);
-
-    fprintf(output_file, "%ld\n", platforms_count);
-    for (size_t i = 0; i < platforms_count; ++i) {
-        xmlNode *node = platforms[i];
-        xmlNode *x = require_attr_by_name(node, "x");
-        xmlNode *y = require_attr_by_name(node, "y");
-        xmlNode *width = require_attr_by_name(node, "width");
-        xmlNode *height = require_attr_by_name(node, "height");
-        const char *color = require_color_of_node(node);
-        fprintf(output_file, "%s %s %s %s %.6s\n",
-                x->content, y->content,
-                width->content, height->content,
-                color);
-    }
+    const char *attrs[] = {"x", "y", "width", "height", "#color"};
+    const size_t attrs_count = sizeof(attrs) / sizeof(const char*);
+    save_pack_by_id_prefix(context, output_file, "rect", attrs, attrs_count);
 }
 
 static void save_goals(Context *context, FILE *output_file)
 {
-    xmlNode **goals = context->buffer;
-    size_t goals_count = filter_nodes_by_id_prefix(
-        context->rects, context->rects_count, "goal",
-        goals, BUFFER_CAPACITY);
-
-    fprintf(output_file, "%ld\n", goals_count);
-
-    for (size_t i = 0; i < goals_count; ++i) {
-        xmlNode *id = require_attr_by_name(goals[i], "id");
-        xmlNode *x = require_attr_by_name(goals[i], "x");
-        xmlNode *y = require_attr_by_name(goals[i], "y");
-        const char *color = require_color_of_node(goals[i]);
-        fprintf(output_file, "%s %s %s %.6s\n",
-                id->content, x->content, y->content, color);
-    }
+    const char *attrs[] = {"id", "x", "y", "#color"};
+    const size_t attrs_count = sizeof(attrs) / sizeof(const char*);
+    save_pack_by_id_prefix(context, output_file, "goal", attrs, attrs_count);
 }
 
 static void save_lavas(Context *context, FILE *output_file)
 {
-    xmlNode **lavas = context->buffer;
-    size_t lava_count = filter_nodes_by_id_prefix(
-        context->rects, context->rects_count,
-        "lava",
-        lavas, BUFFER_CAPACITY);
-
-    fprintf(output_file, "%ld\n", lava_count);
-    for (size_t i = 0; i < lava_count; ++i) {
-        xmlNode *x = require_attr_by_name(lavas[i], "x");
-        xmlNode *y = require_attr_by_name(lavas[i], "y");
-        xmlNode *width = require_attr_by_name(lavas[i], "width");
-        xmlNode *height = require_attr_by_name(lavas[i], "height");
-        const char *color = require_color_of_node(lavas[i]);
-        fprintf(output_file, "%s %s %s %s %.6s\n",
-                x->content, y->content,
-                width->content, height->content,
-                color);
-    }
+    const char *attrs[] = {"x", "y", "width", "height", "#color"};
+    const size_t attrs_count = sizeof(attrs) / sizeof(const char*);
+    save_pack_by_id_prefix(context, output_file, "lava", attrs, attrs_count);
 }
 
 static void save_backplatforms(Context *context, FILE *output_file)
