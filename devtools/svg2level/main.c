@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -217,6 +218,28 @@ static size_t count_lines(char *buffer, size_t buffer_count)
     return count;
 }
 
+static size_t tokcpy(const char *src, char *dest, size_t dest_capacity)
+{
+    assert(src);
+    assert(dest);
+
+    size_t dest_count = 0;
+    while(*src != ' ' && *src != '\0' && (dest_capacity - dest_count) > 0) {
+        *dest++ = *src++;
+        dest_count++;
+    }
+
+    if(dest_capacity - dest_count > 0) {
+        *dest++ = '\0';
+        dest_count++;
+    } else {
+        fprintf(stderr, "tokcpy() ran out of memory\n");
+        exit(-1);
+    }
+
+    return dest_count;
+}
+
 static void save_script(FILE *output_file, xmlNode *scripted,
                         char *buffer, size_t buffer_capacity)
 {
@@ -225,7 +248,12 @@ static void save_script(FILE *output_file, xmlNode *scripted,
             continue;
         }
         // TODO(#753): save_script does not support script arguments
-        const char *filename = (const char*)iter->children->content;
+        size_t filename_count = tokcpy((const char*)iter->children->content, buffer, buffer_capacity);
+        const char *filename = buffer;
+
+        buffer += filename_count;
+        buffer_capacity -= filename_count;
+
         const size_t buffer_count = read_file_to_buffer(
             filename, buffer, buffer_capacity);
         const size_t lines_count = count_lines(buffer, buffer_count);
@@ -315,7 +343,7 @@ static void save_script_regions(Context *context, FILE *output_file)
         xmlNode *width = require_attr_by_name(regions[i], "width");
         xmlNode *height = require_attr_by_name(regions[i], "height");
         const char *color = require_color_of_node(regions[i]);
-        fprintf(output_file, "%s %s %s %s %.6s",
+        fprintf(output_file, "%s %s %s %s %.6s\n",
                 x->content, y->content,
                 width->content, height->content,
                 color);
