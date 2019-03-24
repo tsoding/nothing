@@ -278,9 +278,26 @@ static void save_boxes(Context *context, FILE *output_file)
 
 static void save_labels(Context *context, FILE *output_file)
 {
-    // TODO(#742): save_labels is not implemented
-    (void) context;
-    (void) output_file;
+    xmlNode **labels = (xmlNode**)context->buffer;
+    size_t labels_count = filter_nodes_by_id_prefix(
+        context->texts, context->texts_count,
+        "label",
+        labels, BUFFER_CAPACITY / sizeof(xmlNode*));
+
+    fprintf(output_file, "%ld\n", labels_count);
+    for (size_t i = 0; i < labels_count; ++i) {
+        xmlNode *id = require_attr_by_name(labels[i], "id");
+        xmlNode *x = require_attr_by_name(labels[i], "x");
+        xmlNode *y = require_attr_by_name(labels[i], "y");
+        const char *color = require_color_of_node(labels[i]);
+        fprintf(output_file, "%s %s %s %.6s\n",
+                id->content, x->content, y->content, color);
+        // TODO(#432): svg2rects doesn't handle newlines in labels
+        for (xmlNode *iter = labels[i]->children; iter; iter = iter->next) {
+            fprintf(output_file, "%s", iter->children->content);
+        }
+        fprintf(output_file, "\n");
+    }
 }
 
 static void save_script_regions(Context *context, FILE *output_file)
