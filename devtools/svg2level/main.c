@@ -9,7 +9,7 @@
 
 #define RECTS_CAPACITY 1024
 #define TEXTS_CAPACITY 1024
-#define BUFFER_CAPACITY 1024
+#define BUFFER_CAPACITY (640 * 1024)
 
 #ifdef LIBXML_TREE_ENABLED
 
@@ -18,7 +18,7 @@ typedef struct {
     size_t rects_count;
     xmlNode **texts;
     size_t texts_count;
-    xmlNode **buffer;
+    char *buffer;
 } Context;
 
 static void print_usage(FILE *stream)
@@ -146,10 +146,10 @@ static void save_pack_by_id_prefix(Context *context, FILE *output_file,
                                    const char *id_prefix,
                                    const char **attrs, size_t attrs_count)
 {
-    xmlNode **pack = context->buffer;
+    xmlNode **pack = (xmlNode**)context->buffer;
     size_t pack_count = filter_nodes_by_id_prefix(
         context->rects, context->rects_count, id_prefix,
-        pack, BUFFER_CAPACITY);
+        pack, BUFFER_CAPACITY / sizeof(xmlNode*));
     pack_count += filter_nodes_by_id_prefix(
         context->texts, context->texts_count, id_prefix,
         pack + pack_count, BUFFER_CAPACITY - pack_count);
@@ -293,7 +293,7 @@ int main(int argc, char *argv[])
     context.rects_count = extract_nodes_by_name(root, "rect", context.rects, RECTS_CAPACITY);
     context.texts = calloc(TEXTS_CAPACITY, sizeof(xmlNode*));
     context.texts_count = extract_nodes_by_name(root, "text", context.texts, TEXTS_CAPACITY);
-    context.buffer = calloc(BUFFER_CAPACITY, sizeof(xmlNode*));
+    context.buffer = calloc(BUFFER_CAPACITY, sizeof(char));
 
     save_level(&context, output_file);
 
