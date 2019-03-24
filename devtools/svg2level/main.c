@@ -189,6 +189,36 @@ static void save_background(Context *context, FILE *output_file)
                     "background")));
 }
 
+static size_t read_file_to_buffer(const char *filename, char *buffer, size_t buffer_count)
+{
+    (void) filename;
+    (void) buffer;
+    (void) buffer_count;
+    // TODO: read_file_to_buffer is not implemented
+    return 0;
+}
+
+static size_t count_lines(char *buffer, size_t buffer_count)
+{
+    (void) buffer;
+    (void) buffer_count;
+    // TODO: count_line is not implemented
+    return 0;
+}
+
+static void save_script(FILE *output_file, xmlNode *scripted,
+                        char *buffer, size_t buffer_capacity)
+{
+    for (xmlNode *iter = scripted->children; iter; iter = iter->next) {
+        const char *filename = (const char*)iter->content;
+        const size_t buffer_count = read_file_to_buffer(
+            filename, buffer, buffer_capacity);
+        const size_t lines_count = count_lines(buffer, buffer_count);
+        fprintf(output_file, "%ld\n", lines_count);
+        fwrite(buffer, sizeof(char), buffer_count, output_file);
+    }
+}
+
 static void save_player(Context *context, FILE *output_file)
 {
     xmlNode *node = require_node_by_id(context->rects, context->rects_count, "player");
@@ -196,7 +226,7 @@ static void save_player(Context *context, FILE *output_file)
     xmlNode *xAttr = require_attr_by_name(node, "x");
     xmlNode *yAttr = require_attr_by_name(node, "y");
     fprintf(output_file, "%s %s %.6s\n", xAttr->content, yAttr->content, color);
-    // TODO(#751): save_player does not support the player's script
+    save_script(output_file, node, context->buffer, BUFFER_CAPACITY);
 }
 
 static void save_platforms(Context *context, FILE *output_file)
