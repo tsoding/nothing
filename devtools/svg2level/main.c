@@ -9,7 +9,7 @@
 
 #define RECTS_CAPACITY 1024
 #define TEXTS_CAPACITY 1024
-#define BUFFER_CAPACITY 1024
+#define BUFFER_CAPACITY (640 * 1024)
 
 #ifdef LIBXML_TREE_ENABLED
 
@@ -18,7 +18,7 @@ typedef struct {
     size_t rects_count;
     xmlNode **texts;
     size_t texts_count;
-    xmlNode **buffer;
+    char *buffer;
 } Context;
 
 static void print_usage(FILE *stream)
@@ -146,10 +146,10 @@ static void save_pack_by_id_prefix(Context *context, FILE *output_file,
                                    const char *id_prefix,
                                    const char **attrs, size_t attrs_count)
 {
-    xmlNode **pack = context->buffer;
+    xmlNode **pack = (xmlNode**)context->buffer;
     size_t pack_count = filter_nodes_by_id_prefix(
         context->rects, context->rects_count, id_prefix,
-        pack, BUFFER_CAPACITY);
+        pack, BUFFER_CAPACITY / sizeof(xmlNode*));
     pack_count += filter_nodes_by_id_prefix(
         context->texts, context->texts_count, id_prefix,
         pack + pack_count, BUFFER_CAPACITY - pack_count);
@@ -189,6 +189,48 @@ static void save_background(Context *context, FILE *output_file)
                     "background")));
 }
 
+static size_t read_file_to_buffer(const char *filename,
+                                  char *buffer, size_t buffer_capacity)
+{
+    FILE *file = fopen(filename, "rb");
+    if (file == NULL) {
+        fprintf(stderr, "Could not open file `%s`\n", filename);
+        exit(-1);
+    }
+    size_t buffer_count = fread(buffer, sizeof(char), buffer_capacity, file);
+    fclose(file);
+    return buffer_count;
+}
+
+static size_t count_lines(char *buffer, size_t buffer_count)
+{
+    size_t count = 0;
+    for (size_t i = 0; i < buffer_count; ++i) {
+        if (buffer[i] == '\n') {
+            count++;
+        }
+    }
+    return count;
+}
+
+static void save_script(FILE *output_file, xmlNode *scripted,
+                        char *buffer, size_t buffer_capacity)
+{
+    for (xmlNode *iter = scripted->children; iter; iter = iter->next) {
+        if (!xmlStrEqual(iter->name, (const xmlChar*)"title")) {
+            continue;
+        }
+        // TODO(#753): save_script does not support script arguments
+        const char *filename = (const char*)iter->children->content;
+        const size_t buffer_count = read_file_to_buffer(
+            filename, buffer, buffer_capacity);
+        const size_t lines_count = count_lines(buffer, buffer_count);
+        fprintf(output_file, "%ld\n", lines_count + 1);
+        fprintf(output_file, "(set args '())\n");
+        fwrite(buffer, sizeof(char), buffer_count, output_file);
+    }
+}
+
 static void save_player(Context *context, FILE *output_file)
 {
     xmlNode *node = require_node_by_id(context->rects, context->rects_count, "player");
@@ -196,7 +238,7 @@ static void save_player(Context *context, FILE *output_file)
     xmlNode *xAttr = require_attr_by_name(node, "x");
     xmlNode *yAttr = require_attr_by_name(node, "y");
     fprintf(output_file, "%s %s %.6s\n", xAttr->content, yAttr->content, color);
-    // TODO(#751): save_player does not support the player's script
+    save_script(output_file, node, context->buffer, BUFFER_CAPACITY);
 }
 
 static void save_platforms(Context *context, FILE *output_file)
@@ -293,7 +335,7 @@ int main(int argc, char *argv[])
     context.rects_count = extract_nodes_by_name(root, "rect", context.rects, RECTS_CAPACITY);
     context.texts = calloc(TEXTS_CAPACITY, sizeof(xmlNode*));
     context.texts_count = extract_nodes_by_name(root, "text", context.texts, TEXTS_CAPACITY);
-    context.buffer = calloc(BUFFER_CAPACITY, sizeof(xmlNode*));
+    context.buffer = calloc(BUFFER_CAPACITY, sizeof(char));
 
     save_level(&context, output_file);
 
