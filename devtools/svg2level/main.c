@@ -11,6 +11,10 @@
 #define TEXTS_CAPACITY 1024
 #define BUFFER_CAPACITY (640 * 1024)
 
+#define STATIC_ARRAY(type, name, ...)                           \
+    type name[] = {__VA_ARGS__};                                \
+    const size_t name##_count = sizeof(name) / sizeof(type);
+
 #ifdef LIBXML_TREE_ENABLED
 
 typedef struct {
@@ -243,37 +247,33 @@ static void save_player(Context *context, FILE *output_file)
 
 static void save_platforms(Context *context, FILE *output_file)
 {
-    const char *attrs[] = {"x", "y", "width", "height", "#color"};
-    const size_t attrs_count = sizeof(attrs) / sizeof(const char*);
+    STATIC_ARRAY(const char *, attrs, "x", "y", "width", "height", "#color");
     save_pack_by_id_prefix(context, output_file, "rect", attrs, attrs_count);
 }
 
 static void save_goals(Context *context, FILE *output_file)
 {
-    const char *attrs[] = {"id", "x", "y", "#color"};
-    const size_t attrs_count = sizeof(attrs) / sizeof(const char*);
+    STATIC_ARRAY(const char *, attrs, "id", "x", "y", "#color");
     save_pack_by_id_prefix(context, output_file, "goal", attrs, attrs_count);
 }
 
 static void save_lavas(Context *context, FILE *output_file)
 {
-    const char *attrs[] = {"x", "y", "width", "height", "#color"};
-    const size_t attrs_count = sizeof(attrs) / sizeof(const char*);
+    STATIC_ARRAY(const char *, attrs, "x", "y", "width", "height", "#color");
     save_pack_by_id_prefix(context, output_file, "lava", attrs, attrs_count);
 }
 
 static void save_backplatforms(Context *context, FILE *output_file)
 {
-    const char *attrs[] = {"x", "y", "width", "height", "#color"};
-    const size_t attrs_count = sizeof(attrs) / sizeof(const char*);
+    STATIC_ARRAY(const char *, attrs, "x", "y", "width", "height", "#color");
     save_pack_by_id_prefix(context, output_file, "backrect", attrs, attrs_count);
 }
 
 static void save_boxes(Context *context, FILE *output_file)
 {
-    // TODO(#741): save_boxes is not implemented
-    (void) context;
-    (void) output_file;
+    STATIC_ARRAY(const char*, attrs,
+                 "id", "x", "y", "width", "height", "#color");
+    save_pack_by_id_prefix(context, output_file, "box", attrs, attrs_count);
 }
 
 static void save_labels(Context *context, FILE *output_file)
