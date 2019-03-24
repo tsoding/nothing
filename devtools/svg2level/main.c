@@ -214,7 +214,6 @@ static void save_goals(Context *context, FILE *output_file)
 
 static void save_lavas(Context *context, FILE *output_file)
 {
-    (void) output_file;
     xmlNode **lavas = context->buffer;
     size_t lava_count = filter_nodes_by_id_prefix(
         context->rects, context->rects_count,
