@@ -214,9 +214,25 @@ static void save_goals(Context *context, FILE *output_file)
 
 static void save_lavas(Context *context, FILE *output_file)
 {
-    // TODO(#739): save_lavas is not implemented
-    (void) context;
     (void) output_file;
+    xmlNode **lavas = context->buffer;
+    size_t lava_count = filter_nodes_by_id_prefix(
+        context->rects, context->rects_count,
+        "lava",
+        lavas, BUFFER_CAPACITY);
+
+    fprintf(output_file, "%ld\n", lava_count);
+    for (size_t i = 0; i < lava_count; ++i) {
+        xmlNode *x = require_attr_by_name(lavas[i], "x");
+        xmlNode *y = require_attr_by_name(lavas[i], "y");
+        xmlNode *width = require_attr_by_name(lavas[i], "width");
+        xmlNode *height = require_attr_by_name(lavas[i], "height");
+        const char *color = require_color_of_node(lavas[i]);
+        fprintf(output_file, "%s %s %s %s %.6s\n",
+                x->content, y->content,
+                width->content, height->content,
+                color);
+    }
 }
 
 static void save_backplatforms(Context *context, FILE *output_file)
