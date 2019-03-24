@@ -196,7 +196,7 @@ static void save_player(Context *context, FILE *output_file)
     xmlNode *xAttr = require_attr_by_name(node, "x");
     xmlNode *yAttr = require_attr_by_name(node, "y");
     fprintf(output_file, "%s %s %.6s\n", xAttr->content, yAttr->content, color);
-    // TODO: save_player does not support the player's script
+    // TODO(#751): save_player does not support the player's script
 }
 
 static void save_platforms(Context *context, FILE *output_file)
