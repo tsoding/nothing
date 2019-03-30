@@ -45,8 +45,6 @@ static void fail_node(xmlNode *node, const char *format, ...)
 
 static size_t extract_nodes_by_name(xmlNode *root, const char *node_name, xmlNode **rects, size_t n)
 {
-    (void) node_name;
-
     if (n == 0) {
         return 0;
     }
@@ -240,6 +238,40 @@ static size_t tokcpy(const char *src, char *dest, size_t dest_capacity)
     return dest_count;
 }
 
+static void skip_ws(const char **s)
+{
+    while (**s == ' ' && **s != '\0') {
+        (*s)++;
+    }
+}
+
+static int next_token(const char **s, size_t *n)
+{
+    skip_ws(s);
+
+    *n = 0;
+    while (*(*s + *n) != '\0' && *(*s + *n) != ' ') {
+        (*n)++;
+    }
+
+    return *n > 0;
+}
+
+static void print_args(FILE *output_file, const char *s)
+{
+    fprintf(output_file, "(set args '(");
+
+    size_t n = 0;
+    while (next_token(&s, &n)) {
+        fprintf(output_file, "\"");
+        fwrite(s, sizeof(char), n, output_file);
+        fprintf(output_file, "\"");
+        s += n;
+    }
+
+    fprintf(output_file, "))\n");
+}
+
 static void save_script(FILE *output_file, xmlNode *scripted,
                         char *buffer, size_t buffer_capacity)
 {
@@ -247,7 +279,6 @@ static void save_script(FILE *output_file, xmlNode *scripted,
         if (!xmlStrEqual(iter->name, (const xmlChar*)"title")) {
             continue;
         }
-        // TODO(#753): save_script does not support script arguments
         size_t filename_count = tokcpy((const char*)iter->children->content, buffer, buffer_capacity);
         const char *filename = buffer;
 
@@ -258,7 +289,7 @@ static void save_script(FILE *output_file, xmlNode *scripted,
             filename, buffer, buffer_capacity);
         const size_t lines_count = count_lines(buffer, buffer_count);
         fprintf(output_file, "%ld\n", lines_count + 1);
-        fprintf(output_file, "(set args '())\n");
+        print_args(output_file, (const char*)iter->children->content + filename_count - 1);
         fwrite(buffer, sizeof(char), buffer_count, output_file);
     }
 }
