@@ -157,7 +157,8 @@ static void save_pack_by_id_prefix(Context *context, FILE *output_file,
         pack, BUFFER_CAPACITY / sizeof(xmlNode*));
     pack_count += filter_nodes_by_id_prefix(
         context->texts, context->texts_count, id_prefix,
-        pack + pack_count, BUFFER_CAPACITY - pack_count);
+        pack + pack_count,
+        BUFFER_CAPACITY / sizeof(xmlNode*) - pack_count);
 
     fprintf(output_file, "%ld\n", pack_count);
     for (size_t i = 0; i < pack_count; ++i) {
@@ -432,6 +433,57 @@ static int compile_subcommand(const char *input_filename, const char *output_fil
     return 0;
 }
 
+static int deps_subcommand(const char *input_filename)
+{
+    xmlDoc *doc = xmlReadFile(input_filename, NULL, 0);
+    if (doc == NULL) {
+        fprintf(stderr, "Could not parse file `%s`\n", input_filename);
+        return -1;
+    }
+
+    xmlNode *root = xmlDocGetRootElement(doc);
+
+    Context context;
+    context.rects = calloc(RECTS_CAPACITY, sizeof(xmlNode*));
+    context.rects_count = extract_nodes_by_name(root, "rect", context.rects, RECTS_CAPACITY);
+    context.texts = calloc(TEXTS_CAPACITY, sizeof(xmlNode*));
+    context.texts_count = extract_nodes_by_name(root, "text", context.texts, TEXTS_CAPACITY);
+    context.buffer = calloc(BUFFER_CAPACITY, sizeof(char));
+
+    xmlNode** scripts = (xmlNode**)context.buffer;
+    size_t scripts_count =
+        filter_nodes_by_id_prefix(
+            context.rects, context.rects_count,
+            "script",
+            scripts, BUFFER_CAPACITY / sizeof(xmlNode*));
+    scripts_count +=
+        filter_nodes_by_id_prefix(
+            context.rects, context.rects_count,
+            "player",
+            scripts + scripts_count,
+            BUFFER_CAPACITY / sizeof(xmlNode*) - scripts_count);
+
+    for (size_t i = 0; i < scripts_count; ++i) {
+        for (xmlNode *iter = scripts[i]->children; iter; iter = iter->next) {
+            if (!xmlStrEqual(iter->name, (const xmlChar*)"title")) {
+                continue;
+            }
+
+            size_t n = 0;
+            const char *s = (const char *)iter->children->content;
+            next_token(&s, &n);
+            fwrite(s, sizeof(char), n, stdout);
+            printf(" ");
+        }
+    }
+    printf("\n");
+
+    xmlFreeDoc(doc);
+    xmlCleanupParser();
+
+    return 0;
+}
+
 int main(int argc, char *argv[])
 {
     LIBXML_TEST_VERSION
@@ -442,14 +494,19 @@ int main(int argc, char *argv[])
     }
 
     if (strcmp(argv[1], "compile") == 0) {
-        if (argc < 3) {
+        if (argc < 4) {
             print_usage(stderr);
             return -1;
         }
 
         return compile_subcommand(argv[2], argv[3]);
     } else if (strcmp(argv[1], "deps") == 0) {
+        if (argc < 3) {
+            print_usage(stderr);
+            return -1;
+        }
 
+        return deps_subcommand(argv[2]);
     } else {
         fprintf(stderr, "Unrecognized subcommand `%s'\n", argv[1]);
         print_usage(stderr);
