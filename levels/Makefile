@@ -5,8 +5,9 @@ all: $(TXTS)
 
 .SECONDEXPANSION:
 
+# TODO: devtools/scripts_of_svg.py must be rewritten in C
 %.txt: %.svg $$(shell python3 ../devtools/scripts_of_svg.py $$*.svg)
-	python3 ../devtools/svg2rects.py $< $@
+	../build/svg2level $< $@
 
 .PHONY: clean watch
 
