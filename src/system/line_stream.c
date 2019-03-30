@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "line_stream.h"
 #include "lt.h"
@@ -16,6 +17,7 @@ struct LineStream
     FILE *stream;
     char *buffer;
     size_t capacity;
+    bool unfinished;
 };
 
 static void fclose_lt(void* file)
@@ -62,6 +64,7 @@ LineStream *create_line_stream(const char *filename,
     }
 
     line_stream->capacity = capacity;
+    line_stream->unfinished = false;
 
     return line_stream;
 }
@@ -73,10 +76,30 @@ void destroy_line_stream(LineStream *line_stream)
     RETURN_LT0(line_stream->lt);
 }
 
+
+const char *line_stream_next_chunk(LineStream *line_stream)
+{
+    trace_assert(line_stream);
+
+    const char *s = fgets(line_stream->buffer,
+                          (int) line_stream->capacity,
+                          line_stream->stream);
+    if (s == NULL) {
+        return NULL;
+    }
+    size_t n = strlen(s);
+    line_stream->unfinished = s[n - 1] != '\n';
+
+    return s;
+}
+
 const char *line_stream_next(LineStream *line_stream)
 {
     trace_assert(line_stream);
-    return fgets(line_stream->buffer,
-                 (int) line_stream->capacity,
-                 line_stream->stream);
+
+    while (line_stream->unfinished) {
+        line_stream_next_chunk(line_stream);
+    }
+
+    return line_stream_next_chunk(line_stream);
 }
