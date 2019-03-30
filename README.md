@@ -9,7 +9,6 @@
 
 - [gcc]
 - [cmake]
-- [python3]
 - [libsdl2-dev]
 - [libsdl2-mixer-dev]
 - [inotify-tools]
@@ -17,13 +16,13 @@
 ### Ubuntu
 
 ```console
-$ sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev python3 inotify-tools
+$ sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev inotify-tools
 ```
 
 ### MacOS
 
 ```console
-$ brew install gcc cmake sdl2 sdl2_mixer python3
+$ brew install gcc cmake sdl2 sdl2_mixer
 ```
 
 ### NixOS
@@ -39,7 +38,7 @@ $ nix-shell
 ### Arch Linux
 
 ```console
-$ sudo pacman -S gcc cmake sdl2 sdl2_mixer python inotify-tools
+$ sudo pacman -S gcc cmake sdl2 sdl2_mixer inotify-tools
 ```
 
 ### Windows
@@ -97,10 +96,10 @@ Generally creating a level looks like:
 SVG File -> Custom Level File -> Game
 ```
 
-To convert SVG to the level file and run [svg2rects.py] script:
+To convert SVG to the level file and run svg2level program:
 
 ```console
-$ python3 ./devtools/svg2rects.py -i <svg-file> -o <level-file>
+$ ./build/svg2level <svg-file> <level-file>
 ```
 
 All of the levels reside in the [./levels/] folder. Use
@@ -182,7 +181,6 @@ You can support my work via
 [cmake]: https://cmake.org/
 [libsdl2-dev]: https://www.libsdl.org/
 [libsdl2-mixer-dev]: https://www.libsdl.org/projects/SDL_mixer/
-[python3]: https://www.python.org/
 [NixOS]: https://nixos.org/
 [default.nix]: ./default.nix
 [build-on-windows]: #build-on-windows
