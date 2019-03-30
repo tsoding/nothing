@@ -240,12 +240,27 @@ static size_t tokcpy(const char *src, char *dest, size_t dest_capacity)
     return dest_count;
 }
 
+static void skip_ws(const char **s)
+{
+    (void) s;
+    while (**s == ' ' && **s != '\0') {
+        (*s)++;
+    }
+}
+
 static int next_token(const char **s, size_t *n)
 {
     (void) s;
     (void) n;
-    /* TODO: next_token is not implemented */
-    return 0;
+
+    skip_ws(s);
+
+    *n = 0;
+    while (*(*s + *n) != '\0' && *(*s + *n) != ' ') {
+        (*n)++;
+    }
+
+    return *n > 0;
 }
 
 static void print_args(FILE *output_file, const char *s)
@@ -257,6 +272,7 @@ static void print_args(FILE *output_file, const char *s)
         fprintf(output_file, "\"");
         fwrite(s, sizeof(char), n, output_file);
         fprintf(output_file, "\"");
+        s += n;
     }
 
     fprintf(output_file, "))\n");
