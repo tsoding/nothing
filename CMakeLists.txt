@@ -131,6 +131,8 @@ add_executable(nothing
   src/math/triangle.h
   src/sdl/renderer.c
   src/sdl/renderer.h
+  src/sdl/texture.h
+  src/sdl/texture.c
   src/ui/console.c
   src/ui/console.h
   src/ui/console_log.c
