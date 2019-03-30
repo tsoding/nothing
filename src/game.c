@@ -69,7 +69,7 @@ Game *create_game(const char *level_folder,
     game->font = PUSH_LT(
         lt,
         create_sprite_font_from_file(
-            "fonts/charmap-oldschool.bmp",
+            "images/charmap-oldschool.bmp",
             renderer),
         destroy_sprite_font);
     if (game->font == NULL) {
