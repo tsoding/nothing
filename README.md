@@ -99,7 +99,7 @@ SVG File -> Custom Level File -> Game
 To convert SVG to the level file and run svg2level program:
 
 ```console
-$ ./build/svg2level <svg-file> <level-file>
+$ ./build/svg2level compile <svg-file> <level-file>
 ```
 
 All of the levels reside in the [./levels/] folder. Use
