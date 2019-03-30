@@ -10,7 +10,6 @@ with import <nixpkgs> {}; {
                         valgrind
                         racket
                         inotifyTools
-                        python3
                         libxml2
                       ];
     };
