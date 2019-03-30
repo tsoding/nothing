@@ -45,8 +45,6 @@ static void fail_node(xmlNode *node, const char *format, ...)
 
 static size_t extract_nodes_by_name(xmlNode *root, const char *node_name, xmlNode **rects, size_t n)
 {
-    (void) node_name;
-
     if (n == 0) {
         return 0;
     }
@@ -242,7 +240,6 @@ static size_t tokcpy(const char *src, char *dest, size_t dest_capacity)
 
 static void skip_ws(const char **s)
 {
-    (void) s;
     while (**s == ' ' && **s != '\0') {
         (*s)++;
     }
@@ -250,9 +247,6 @@ static void skip_ws(const char **s)
 
 static int next_token(const char **s, size_t *n)
 {
-    (void) s;
-    (void) n;
-
     skip_ws(s);
 
     *n = 0;
