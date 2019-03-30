@@ -10,6 +10,7 @@ LineStream *create_line_stream(const char *filename,
                                size_t capacity);
 void destroy_line_stream(LineStream *line_stream);
 
+const char *line_stream_next_chunk(LineStream *line_stream);
 const char *line_stream_next(LineStream *line_stream);
 
 #endif  // LINE_STREAM_H_
