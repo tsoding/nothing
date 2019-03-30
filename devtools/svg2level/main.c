@@ -28,7 +28,9 @@ typedef struct {
 
 static void print_usage(FILE *stream)
 {
-    fprintf(stream, "Usage: ./svg2level <input.svg> <output.txt>");
+    fprintf(stream, "Usage: ./svg2level <compile|deps>\n");
+    fprintf(stream, "  ./svg2level compile <input.svg> <output.txt>\n");
+    fprintf(stream, "  ./svg2level deps    <input.svg>\n");
 }
 
 static void fail_node(xmlNode *node, const char *format, ...)
@@ -398,18 +400,8 @@ static void save_level(Context *context, FILE *output_file)
     save_script_regions(context, output_file);
 }
 
-int main(int argc, char *argv[])
+static int compile_subcommand(const char *input_filename, const char *output_filename)
 {
-    if (argc < 3) {
-        print_usage(stderr);
-        return -1;
-    }
-
-    LIBXML_TEST_VERSION
-
-    const char *input_filename = argv[1];
-    const char *output_filename = argv[2];
-
     xmlDoc *doc = xmlReadFile(input_filename, NULL, 0);
     if (doc == NULL) {
         fprintf(stderr, "Could not parse file `%s`\n", input_filename);
@@ -436,6 +428,34 @@ int main(int argc, char *argv[])
     fclose(output_file);
     xmlFreeDoc(doc);
     xmlCleanupParser();
+
+    return 0;
+}
+
+int main(int argc, char *argv[])
+{
+    LIBXML_TEST_VERSION
+
+    if (argc < 2) {
+        print_usage(stderr);
+        return -1;
+    }
+
+    if (strcmp(argv[1], "compile") == 0) {
+        if (argc < 3) {
+            print_usage(stderr);
+            return -1;
+        }
+
+        return compile_subcommand(argv[2], argv[3]);
+    } else if (strcmp(argv[1], "deps") == 0) {
+
+    } else {
+        fprintf(stderr, "Unrecognized subcommand `%s'\n", argv[1]);
+        print_usage(stderr);
+        return -1;
+    }
+
 
     return 0;
 }
