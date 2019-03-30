@@ -1,14 +1,8 @@
 Platforms
 073642
 117.10616 417.59192 b58900
-7
+1
 (set args '())
-(set jump-count 0)
-
-(defun on-jump ()
-  (set jump-count (+ jump-count 1))
-  (when (> jump-count 3)
-    (send `(game level label "label_space_to_jump" hide))))
 22
 0 658.81897 1617.7523 1014.819 657b83 
 -1609.375 0 1659.375 1673.6379 657b83 
