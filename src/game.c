@@ -148,7 +148,9 @@ int game_render(const Game *game)
 
         SDL_Rect src = {0, 0, 32, 32};
         SDL_Rect dest = {game->cursor_x, game->cursor_y, 32, 32};
-        SDL_RenderCopy(game->renderer, game->texture_cursor, &src, &dest);
+        if (SDL_RenderCopy(game->renderer, game->texture_cursor, &src, &dest) < 0) {
+            return -1;
+        }
     } break;
 
     case GAME_STATE_CONSOLE: {
