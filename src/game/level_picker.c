@@ -93,45 +93,20 @@ int level_picker_render(const LevelPicker *level_picker,
     trace_assert(level_picker);
     trace_assert(renderer);
 
-    SDL_Rect view_port;
-    SDL_RenderGetViewport(renderer, &view_port);
-
-    const float title_margin_top = 100.0f;
-    const float title_margin_bottom = 100.0f;
-
-    // Background //////////////////////////////
-
     if (background_render(level_picker->background, camera) < 0) {
         return -1;
     }
 
-    // Title //////////////////////////////
-
-    const Vec title_size = menu_title_size(level_picker->menu_title);
-
-    if (menu_title_render(
-            level_picker->menu_title,
-            renderer,
-            vec((float) view_port.w * 0.5f - title_size.x * 0.5f, title_margin_top)) < 0) {
+    if (menu_title_render(level_picker->menu_title, renderer) < 0) {
         return -1;
     }
-
-    // List //////////////////////////////
 
     const Vec font_scale = vec(5.0f, 5.0f);
     const float padding_bottom = 50.0f;
 
-    Vec selector_size = list_selector_size(
-        level_picker->list_selector,
-        font_scale,
-        padding_bottom);
-
     if (list_selector_render(
             level_picker->list_selector,
             renderer,
-            vec(
-                (float) view_port.w * 0.5f - selector_size.x * 0.5f,
-                title_margin_top + title_size.y + title_margin_bottom),
             font_scale,
             padding_bottom) < 0) {
         return -1;
@@ -159,8 +134,39 @@ int level_picker_event(LevelPicker *level_picker, const SDL_Event *event)
 {
     trace_assert(level_picker);
     trace_assert(event);
-    list_selector_event(level_picker->list_selector, event);
-    return 0;
+
+    switch (event->type) {
+    case SDL_WINDOWEVENT: {
+        switch (event->window.event) {
+        case SDL_WINDOWEVENT_RESIZED: {
+            const Vec font_scale = vec(5.0f, 5.0f);
+            const float padding_bottom = 50.0f;
+
+            const float width = (float) event->window.data1;
+
+            const Vec title_size = menu_title_size(level_picker->menu_title);
+            const float title_margin_top = 100.0f;
+            const float title_margin_bottom = 100.0f;
+
+            menu_title_move(
+                level_picker->menu_title,
+                vec(width * 0.5f - title_size.x * 0.5f, title_margin_top));
+
+            const Vec selector_size = list_selector_size(
+                level_picker->list_selector,
+                font_scale,
+                padding_bottom);
+
+            list_selector_move(
+                level_picker->list_selector,
+                vec(width * 0.5f - selector_size.x * 0.5f,
+                    title_margin_top + title_size.y + title_margin_bottom));
+        } break;
+        }
+    } break;
+    }
+
+    return list_selector_event(level_picker->list_selector, event);
 }
 
 int level_picker_input(LevelPicker *level_picker,

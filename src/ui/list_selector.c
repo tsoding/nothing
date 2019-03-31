@@ -19,6 +19,7 @@ struct ListSelector
     size_t count;
     size_t cursor;
     int selected_item;
+    Vec position;
 };
 
 ListSelector *create_list_selector(const Sprite_font *sprite_font,
@@ -43,6 +44,7 @@ ListSelector *create_list_selector(const Sprite_font *sprite_font,
     list_selector->count = count;
     list_selector->cursor = 0;
     list_selector->selected_item = -1;
+    list_selector->position = vec(0.0f, 0.0f);
 
     return list_selector;
 }
@@ -55,7 +57,6 @@ void destroy_list_selector(ListSelector *list_selector)
 
 int list_selector_render(const ListSelector *list_selector,
                          SDL_Renderer *renderer,
-                         Vec position,
                          Vec font_scale,
                          float padding_bottom)
 {
@@ -64,7 +65,7 @@ int list_selector_render(const ListSelector *list_selector,
 
     for (size_t i = 0; i < list_selector->count; ++i) {
         const Vec current_position = vec_sum(
-            position,
+            list_selector->position,
             vec(0.0f, (float) i * ((float) FONT_CHAR_HEIGHT * font_scale.y + padding_bottom)));
 
         if (sprite_font_render_text(
@@ -150,6 +151,16 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event)
             break;
         }
         break;
+    // case SDL_MOUSEMOTION: {
+    //     const Vec mouse_pos = vec((float)event->motion.x, (float)event->motion.y);
+    //     for (size_t i = 0; i < list_selector->count; ++i) {
+    //         Rect boundary_box = sprite_font_boundary_box(
+    //             list_selector->sprite_font,
+    //             vec(0.0f, 0.0f),
+    //             font_scale,
+    //             list_selector->items[i]);
+    //     }
+    // } break;
     }
 
     return 0;
@@ -165,4 +176,9 @@ void list_selector_clean_selection(ListSelector *list_selector)
 {
     trace_assert(list_selector);
     list_selector->selected_item = -1;
+}
+
+void list_selector_move(ListSelector *list_selector, Vec position)
+{
+    list_selector->position = position;
 }

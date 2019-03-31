@@ -10,10 +10,12 @@ MenuTitle *create_menu_title(const char *text,
 void destroy_menu_title(MenuTitle *menu_title);
 
 int menu_title_render(const MenuTitle *menu_title,
-                      SDL_Renderer *renderer,
-                      Vec position);
+                      SDL_Renderer *renderer);
 int menu_title_update(MenuTitle *menu_title, float delta_time);
 
 Vec menu_title_size(const MenuTitle *menu_title);
+
+void menu_title_move(MenuTitle *menu_title,
+                     Vec position);
 
 #endif  // MENU_TITLE_H_

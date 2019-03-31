@@ -10,7 +10,6 @@ void destroy_list_selector(ListSelector *list_selector);
 
 int list_selector_render(const ListSelector *list_selector,
                          SDL_Renderer *renderer,
-                         Vec position,
                          Vec font_scale,
                          float padding_bottom);
 Vec list_selector_size(const ListSelector *list_selector, Vec font_scale, float padding_bottom);
@@ -20,5 +19,7 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event);
 
 int list_selector_selected(const ListSelector *list_selector);
 void list_selector_clean_selection(ListSelector *list_selector);
+
+void list_selector_move(ListSelector *list_selector, Vec position);
 
 #endif  // LIST_SELECTOR_H_
