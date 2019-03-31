@@ -167,6 +167,12 @@ int game_render(const Game *game)
         if (level_picker_render(game->level_picker, game->camera, game->renderer) < 0) {
             return -1;
         }
+
+        SDL_Rect src = {0, 0, 32, 32};
+        SDL_Rect dest = {game->cursor_x, game->cursor_y, 32, 32};
+        if (SDL_RenderCopy(game->renderer, game->texture_cursor, &src, &dest) < 0) {
+            return -1;
+        }
     } break;
 
     case GAME_STATE_QUIT: break;
@@ -394,6 +400,11 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
     switch (event->type) {
     case SDL_QUIT:
         game->state = GAME_STATE_QUIT;
+        return 0;
+
+    case SDL_MOUSEMOTION:
+        game->cursor_x = event->motion.x;
+        game->cursor_y = event->motion.y;
         return 0;
 
     default:
