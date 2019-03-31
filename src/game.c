@@ -405,11 +405,12 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
     case SDL_MOUSEMOTION:
         game->cursor_x = event->motion.x;
         game->cursor_y = event->motion.y;
-        return 0;
+        break;
 
-    default:
-        return level_picker_event(game->level_picker, event);
+    default: {}
     }
+
+    return level_picker_event(game->level_picker, event);
 }
 
 int game_event(Game *game, const SDL_Event *event)

@@ -8,6 +8,7 @@
 #include "system/str.h"
 #include "math/point.h"
 #include "game/sprite_font.h"
+#include "system/log.h"
 
 #include "./list_selector.h"
 
@@ -20,11 +21,15 @@ struct ListSelector
     size_t cursor;
     int selected_item;
     Vec position;
+    Vec font_scale;
+    float padding_bottom;
 };
 
 ListSelector *create_list_selector(const Sprite_font *sprite_font,
                                    const char *items[],
-                                   size_t count)
+                                   size_t count,
+                                   Vec font_scale,
+                                   float padding_bottom)
 {
     trace_assert(items);
 
@@ -45,6 +50,8 @@ ListSelector *create_list_selector(const Sprite_font *sprite_font,
     list_selector->cursor = 0;
     list_selector->selected_item = -1;
     list_selector->position = vec(0.0f, 0.0f);
+    list_selector->font_scale = font_scale;
+    list_selector->padding_bottom = padding_bottom;
 
     return list_selector;
 }
@@ -56,9 +63,7 @@ void destroy_list_selector(ListSelector *list_selector)
 }
 
 int list_selector_render(const ListSelector *list_selector,
-                         SDL_Renderer *renderer,
-                         Vec font_scale,
-                         float padding_bottom)
+                         SDL_Renderer *renderer)
 {
     trace_assert(list_selector);
     trace_assert(renderer);
@@ -66,13 +71,13 @@ int list_selector_render(const ListSelector *list_selector,
     for (size_t i = 0; i < list_selector->count; ++i) {
         const Vec current_position = vec_sum(
             list_selector->position,
-            vec(0.0f, (float) i * ((float) FONT_CHAR_HEIGHT * font_scale.y + padding_bottom)));
+            vec(0.0f, (float) i * ((float) FONT_CHAR_HEIGHT * list_selector->font_scale.y + list_selector->padding_bottom)));
 
         if (sprite_font_render_text(
                 list_selector->sprite_font,
                 renderer,
                 current_position,
-                font_scale,
+                list_selector->font_scale,
                 rgba(1.0f, 1.0f, 1.0f, 1.0f),
                 list_selector->items[i]) < 0) {
             return -1;
@@ -83,7 +88,7 @@ int list_selector_render(const ListSelector *list_selector,
                 sprite_font_boundary_box(
                     list_selector->sprite_font,
                     current_position,
-                    font_scale,
+                    list_selector->font_scale,
                     list_selector->items[i]));
             if (SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255) < 0) {
                 return -1;
@@ -151,16 +156,27 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event)
             break;
         }
         break;
-    // case SDL_MOUSEMOTION: {
-    //     const Vec mouse_pos = vec((float)event->motion.x, (float)event->motion.y);
-    //     for (size_t i = 0; i < list_selector->count; ++i) {
-    //         Rect boundary_box = sprite_font_boundary_box(
-    //             list_selector->sprite_font,
-    //             vec(0.0f, 0.0f),
-    //             font_scale,
-    //             list_selector->items[i]);
-    //     }
-    // } break;
+
+    case SDL_MOUSEMOTION: {
+        log_info("Mouse motion inside of list selector: %d %d\n",
+                 event->motion.x, event->motion.y);
+        const Vec mouse_pos = vec((float)event->motion.x, (float)event->motion.y);
+        Vec position = list_selector->position;
+
+        for (size_t i = 0; i < list_selector->count; ++i) {
+            Rect boundary_box = sprite_font_boundary_box(
+                list_selector->sprite_font,
+                position,
+                list_selector->font_scale,
+                list_selector->items[i]);
+
+            if (rect_contains_point(boundary_box, mouse_pos)) {
+                list_selector->cursor = i;
+            }
+
+            position.y += boundary_box.h + list_selector->padding_bottom;
+        }
+    } break;
     }
 
     return 0;

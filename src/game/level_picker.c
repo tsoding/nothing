@@ -71,7 +71,9 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
         create_list_selector(
             sprite_font,
             level_folder_titles(level_picker->level_folder),
-            level_folder_count(level_picker->level_folder)),
+            level_folder_count(level_picker->level_folder),
+            vec(5.0f, 5.0f),
+            50.0f),
         destroy_list_selector);
     if (level_picker->list_selector == NULL) {
         RETURN_LT(lt, NULL);
@@ -101,14 +103,7 @@ int level_picker_render(const LevelPicker *level_picker,
         return -1;
     }
 
-    const Vec font_scale = vec(5.0f, 5.0f);
-    const float padding_bottom = 50.0f;
-
-    if (list_selector_render(
-            level_picker->list_selector,
-            renderer,
-            font_scale,
-            padding_bottom) < 0) {
+    if (list_selector_render(level_picker->list_selector, renderer) < 0) {
         return -1;
     }
 
