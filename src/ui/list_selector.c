@@ -158,8 +158,6 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event)
         break;
 
     case SDL_MOUSEMOTION: {
-        log_info("Mouse motion inside of list selector: %d %d\n",
-                 event->motion.x, event->motion.y);
         const Vec mouse_pos = vec((float)event->motion.x, (float)event->motion.y);
         Vec position = list_selector->position;
 
@@ -175,6 +173,14 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event)
             }
 
             position.y += boundary_box.h + list_selector->padding_bottom;
+        }
+    } break;
+
+    case SDL_MOUSEBUTTONDOWN: {
+        switch (event->button.button) {
+        case SDL_BUTTON_LEFT: {
+            list_selector->selected_item = (int) list_selector->cursor;
+        } break;
         }
     } break;
     }
