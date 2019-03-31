@@ -15,6 +15,7 @@
 #include "system/str.h"
 #include "ebisp/builtins.h"
 #include "broadcast.h"
+#include "sdl/texture.h"
 
 typedef enum Game_state {
     GAME_STATE_RUNNING = 0,
@@ -36,6 +37,9 @@ typedef struct Game {
     Camera *camera;
     Console *console;
     SDL_Renderer *renderer;
+    SDL_Texture *texture_cursor;
+    int cursor_x;
+    int cursor_y;
 } Game;
 
 Game *create_game(const char *level_folder,
@@ -69,7 +73,7 @@ Game *create_game(const char *level_folder,
     game->font = PUSH_LT(
         lt,
         create_sprite_font_from_file(
-            "fonts/charmap-oldschool.bmp",
+            "images/charmap-oldschool.bmp",
             renderer),
         destroy_sprite_font);
     if (game->font == NULL) {
@@ -115,6 +119,12 @@ Game *create_game(const char *level_folder,
     }
 
     game->renderer = renderer;
+    game->texture_cursor = PUSH_LT(
+        lt,
+        texture_from_bmp("images/cursor.bmp", renderer),
+        SDL_DestroyTexture);
+    game->cursor_x = 0;
+    game->cursor_y = 0;
 
     return game;
 }
@@ -135,6 +145,10 @@ int game_render(const Game *game)
         if (level_render(game->level, game->camera) < 0) {
             return -1;
         }
+
+        SDL_Rect src = {0, 0, 32, 32};
+        SDL_Rect dest = {game->cursor_x, game->cursor_y, 32, 32};
+        SDL_RenderCopy(game->renderer, game->texture_cursor, &src, &dest);
     } break;
 
     case GAME_STATE_CONSOLE: {
@@ -338,7 +352,10 @@ static int game_event_running(Game *game, const SDL_Event *event)
             break;
         }
         break;
-
+    case SDL_MOUSEMOTION:
+        game->cursor_x = event->motion.x;
+        game->cursor_y = event->motion.y;
+        break;
     }
 
     return level_event(game->level, event);

@@ -131,6 +131,8 @@ add_executable(nothing
   src/math/triangle.h
   src/sdl/renderer.c
   src/sdl/renderer.h
+  src/sdl/texture.h
+  src/sdl/texture.c
   src/ui/console.c
   src/ui/console.h
   src/ui/console_log.c
@@ -214,5 +216,5 @@ if(WIN32)
 endif()
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/sounds DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/fonts DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/images DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/test-data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
