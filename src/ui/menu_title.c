@@ -16,6 +16,7 @@ struct MenuTitle
     Vec font_scale;
     const Sprite_font *sprite_font;
     float angle;
+    Vec position;
 };
 
 MenuTitle *create_menu_title(const char *text,
@@ -49,6 +50,7 @@ MenuTitle *create_menu_title(const char *text,
     menu_title->font_scale = font_scale;
     menu_title->sprite_font = sprite_font;
     menu_title->angle = 0.0f;
+    menu_title->position = vec(0.0f, 0.0f);
 
     return menu_title;
 }
@@ -60,8 +62,7 @@ void destroy_menu_title(MenuTitle *menu_title)
 }
 
 int menu_title_render(const MenuTitle *menu_title,
-                      SDL_Renderer *renderer,
-                      Vec position)
+                      SDL_Renderer *renderer)
 {
     trace_assert(menu_title);
     trace_assert(renderer);
@@ -77,7 +78,7 @@ int menu_title_render(const MenuTitle *menu_title,
                 menu_title->sprite_font,
                 renderer,
                 vec_sum(
-                    position,
+                    menu_title->position,
                     vec(
                         (float) (i * FONT_CHAR_WIDTH) * menu_title->font_scale.x,
                         sinf(menu_title->angle + (float) i / (float) n * 10.0f) * 20.0f)),
@@ -109,4 +110,10 @@ Vec menu_title_size(const MenuTitle *menu_title)
         menu_title->text);
 
     return vec(boundary.w, boundary.h);
+}
+
+void menu_title_move(MenuTitle *menu_title,
+                     Vec position)
+{
+    menu_title->position = position;
 }
