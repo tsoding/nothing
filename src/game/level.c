@@ -270,8 +270,9 @@ int level_event(Level *level, const SDL_Event *event)
 
     case SDL_MOUSEMOTION:
         if (level->flying_mode) {
+            const float sens = 1.0f / level->flying_camera_scale * 0.25f;
             vec_add(&level->flying_camera_position,
-                    vec((float) event->motion.xrel, (float) event->motion.yrel));
+                    vec((float) event->motion.xrel * sens, (float) event->motion.yrel * sens));
         }
         break;
 
