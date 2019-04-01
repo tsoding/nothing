@@ -123,7 +123,7 @@ Game *create_game(const char *level_folder,
         lt,
         texture_from_bmp("images/cursor.bmp", renderer),
         SDL_DestroyTexture);
-    /* TODO(#773): If a specific building is not supported that should not crash the entire game */
+    /* TODO(#773): If a specific blending is not supported that should not crash the entire game */
     if (SDL_SetTextureBlendMode(
             game->texture_cursor,
             SDL_ComposeCustomBlendMode(
