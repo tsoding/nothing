@@ -303,7 +303,7 @@ static int game_event_pause(Game *game, const SDL_Event *event)
         break;
     }
 
-    return level_event(game->level, event);
+    return level_event(game->level, event, game->camera);
 }
 
 static int game_event_running(Game *game, const SDL_Event *event)
@@ -375,7 +375,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
         break;
     }
 
-    return level_event(game->level, event);
+    return level_event(game->level, event, game->camera);
 }
 
 static int game_event_console(Game *game, const SDL_Event *event)

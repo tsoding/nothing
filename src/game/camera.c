@@ -395,3 +395,13 @@ int camera_render_debug_rect(Camera *camera,
 
     return 0;
 }
+
+Vec camera_map_screen(const Camera *camera,
+                      Sint32 x, Sint32 y)
+{
+    trace_assert(camera);
+    (void) x;
+    (void) y;
+    // TODO: camera_map_screen is not implemented
+    return vec(0.0f, 0.0f);
+}

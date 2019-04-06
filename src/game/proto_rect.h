@@ -1,16 +1,19 @@
 #ifndef PROTO_RECT_H_
 #define PROTO_RECT_H_
 
-typedef struct ProtoRect ProtoRect;
-
-ProtoRect *create_proto_rect(void);
-void destroy_proto_rect(ProtoRect *proto_rect);
+typedef struct {
+    bool active;
+    Sint32 x, y;
+    Vec begin, end;
+    Color color;
+} ProtoRect;
 
 int proto_rect_render(const ProtoRect *proto_rect,
-                       Camera *camera);
+                      Camera *camera);
 int proto_rect_update(ProtoRect *proto_rect,
-                       float delta_time);
-int proto_rect_events(ProtoRect *proto_rect,
-                       SDL_Event *event);
+                      float delta_time);
+int proto_rect_event(ProtoRect *proto_rect,
+                     const SDL_Event *event,
+                     const Camera *camera);
 
 #endif  // PROTO_RECT_H_

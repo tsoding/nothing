@@ -17,12 +17,13 @@
 #include "game/level/regions.h"
 #include "game/level/rigid_bodies.h"
 #include "game/level_metadata.h"
+#include "game/proto_rect.h"
 #include "system/line_stream.h"
+#include "system/log.h"
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
 #include "system/nth_alloc.h"
 #include "system/str.h"
-#include "system/log.h"
 
 #define LEVEL_LINE_MAX_LENGTH 512
 #define LEVEL_GRAVITY 1500.0f
@@ -47,6 +48,7 @@ struct Level
     bool flying_mode;
     Vec flying_camera_position;
     float flying_camera_scale;
+    ProtoRect proto_rect;
 };
 
 Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
@@ -169,6 +171,9 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
     level->flying_camera_position = vec(0.0f, 0.0f);
     level->flying_camera_scale = 1.0f;
 
+    memset(&level->proto_rect, 0, sizeof(ProtoRect));
+    level->proto_rect.color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
+
     destroy_line_stream(RELEASE_LT(lt, level_stream));
 
     return level;
@@ -220,6 +225,12 @@ int level_render(const Level *level, Camera *camera)
         return -1;
     }
 
+    if (level->flying_mode) {
+        if (proto_rect_render(&level->proto_rect, camera) < 0) {
+            return -1;
+        }
+    }
+
     return 0;
 }
 
@@ -245,10 +256,14 @@ int level_update(Level *level, float delta_time)
     lava_update(level->lava, delta_time);
     labels_update(level->labels, delta_time);
 
+    if (level->flying_mode) {
+        proto_rect_update(&level->proto_rect, delta_time);
+    }
+
     return 0;
 }
 
-int level_event(Level *level, const SDL_Event *event)
+int level_event(Level *level, const SDL_Event *event, const Camera *camera)
 {
     trace_assert(level);
     trace_assert(event);
@@ -286,6 +301,10 @@ int level_event(Level *level, const SDL_Event *event)
             }
         }
         break;
+    }
+
+    if (level->flying_mode) {
+        proto_rect_event(&level->proto_rect, event, camera);
     }
 
     return 0;
