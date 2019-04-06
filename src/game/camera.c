@@ -400,8 +400,24 @@ Vec camera_map_screen(const Camera *camera,
                       Sint32 x, Sint32 y)
 {
     trace_assert(camera);
-    (void) x;
-    (void) y;
-    // TODO: camera_map_screen is not implemented
-    return vec(0.0f, 0.0f);
+
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(camera->renderer, &view_port);
+
+    Vec es = effective_scale(&view_port);
+    es.x = 1.0f / es.x;
+    es.y = 1.0f / es.y;
+
+    const Vec p = vec((float) x, (float) y);
+
+    return vec_sum(
+        vec_entry_mult(
+            vec_scala_mult(
+                vec_sum(
+                    p,
+                    vec((float) view_port.w * -0.5f,
+                        (float) view_port.h * -0.5f)),
+                1.0f / camera->scale),
+            es),
+        camera->position);
 }

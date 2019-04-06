@@ -53,6 +53,13 @@ int proto_rect_event(ProtoRect *proto_rect,
             } break;
             }
         } break;
+
+        case SDL_MOUSEMOTION: {
+            proto_rect->end = camera_map_screen(
+                camera,
+                event->motion.x,
+                event->motion.y);
+        } break;
         }
     } else {
         // Inactive
