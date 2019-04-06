@@ -62,4 +62,7 @@ int camera_is_text_visible(const Camera *camera,
 
 Rect camera_view_port(const Camera *camera);
 
+Vec camera_map_screen(const Camera *camera,
+                      Sint32 x, Sint32 y);
+
 #endif  // CAMERA_H_

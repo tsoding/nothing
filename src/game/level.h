@@ -21,7 +21,7 @@ int level_render(const Level *level, Camera *camera);
 int level_sound(Level *level, Sound_samples *sound_samples);
 int level_update(Level *level, float delta_time);
 
-int level_event(Level *level, const SDL_Event *event);
+int level_event(Level *level, const SDL_Event *event, const Camera *camera);
 int level_input(Level *level,
                 const Uint8 *const keyboard_state,
                 SDL_Joystick *the_stick_of_joy);

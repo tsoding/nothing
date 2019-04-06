@@ -303,7 +303,7 @@ static int game_event_pause(Game *game, const SDL_Event *event)
         break;
     }
 
-    return level_event(game->level, event);
+    return level_event(game->level, event, game->camera);
 }
 
 static int game_event_running(Game *game, const SDL_Event *event)
@@ -375,7 +375,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
         break;
     }
 
-    return level_event(game->level, event);
+    return level_event(game->level, event, game->camera);
 }
 
 static int game_event_console(Game *game, const SDL_Event *event)
@@ -508,7 +508,7 @@ static int game_render_cursor(const Game *game)
     trace_assert(game);
 
     SDL_Rect src = {0, 0, 32, 32};
-    SDL_Rect dest = {game->cursor_x, game->cursor_y, 32, 32};
+    SDL_Rect dest = {game->cursor_x, game->cursor_y, 128, 128};
     if (SDL_RenderCopy(game->renderer, game->texture_cursor, &src, &dest) < 0) {
         return -1;
     }
