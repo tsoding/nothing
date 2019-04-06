@@ -17,6 +17,8 @@
 #include "broadcast.h"
 #include "sdl/texture.h"
 
+static int game_render_cursor(const Game *game);
+
 typedef enum Game_state {
     GAME_STATE_RUNNING = 0,
     GAME_STATE_PAUSE,
@@ -123,7 +125,6 @@ Game *create_game(const char *level_folder,
         lt,
         texture_from_bmp("images/cursor.bmp", renderer),
         SDL_DestroyTexture);
-    /* TODO(#773): If a specific blending is not supported that should not crash the entire game */
     if (SDL_SetTextureBlendMode(
             game->texture_cursor,
             SDL_ComposeCustomBlendMode(
@@ -133,8 +134,7 @@ Game *create_game(const char *level_folder,
                 SDL_BLENDFACTOR_ONE,
                 SDL_BLENDFACTOR_ZERO,
                 SDL_BLENDOPERATION_ADD)) < 0) {
-        log_fail("SDL error: %s\n", SDL_GetError());
-        RETURN_LT(lt, NULL);
+        log_warn("SDL error: %s\n", SDL_GetError());
     }
     game->cursor_x = 0;
     game->cursor_y = 0;
@@ -159,9 +159,7 @@ int game_render(const Game *game)
             return -1;
         }
 
-        SDL_Rect src = {0, 0, 32, 32};
-        SDL_Rect dest = {game->cursor_x, game->cursor_y, 32, 32};
-        if (SDL_RenderCopy(game->renderer, game->texture_cursor, &src, &dest) < 0) {
+        if (game_render_cursor(game) < 0) {
             return -1;
         }
     } break;
@@ -181,9 +179,7 @@ int game_render(const Game *game)
             return -1;
         }
 
-        SDL_Rect src = {0, 0, 32, 32};
-        SDL_Rect dest = {game->cursor_x, game->cursor_y, 32, 32};
-        if (SDL_RenderCopy(game->renderer, game->texture_cursor, &src, &dest) < 0) {
+        if (game_render_cursor(game) < 0) {
             return -1;
         }
     } break;
@@ -503,4 +499,19 @@ game_send(Game *game, Gc *gc, struct Scope *scope,
     }
 
     return unknown_target(gc, "game", target);
+}
+
+// Private Functions
+
+static int game_render_cursor(const Game *game)
+{
+    trace_assert(game);
+
+    SDL_Rect src = {0, 0, 32, 32};
+    SDL_Rect dest = {game->cursor_x, game->cursor_y, 32, 32};
+    if (SDL_RenderCopy(game->renderer, game->texture_cursor, &src, &dest) < 0) {
+        return -1;
+    }
+
+    return 0;
 }
