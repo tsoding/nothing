@@ -49,6 +49,7 @@ int proto_rect_event(ProtoRect *proto_rect,
         case SDL_MOUSEBUTTONUP: {
             switch (event->button.button) {
             case SDL_BUTTON_LEFT: {
+                // TODO(#778): the result of ProtoRect is not used for creating Boxes
                 proto_rect->active = false;
             } break;
             }
