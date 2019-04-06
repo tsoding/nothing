@@ -5,6 +5,7 @@ typedef struct {
     bool active;
     Sint32 x, y;
     Vec begin, end;
+    // TODO(#779): ProtoRect's color is not customizable
     Color color;
 } ProtoRect;
 
