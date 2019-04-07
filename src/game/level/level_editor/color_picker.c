@@ -10,7 +10,7 @@
 #define COLOR_CELL_WIDTH 50.0f
 #define COLOR_CELL_HEIGHT 50.0f
 
-// TODO: Colors of ColorPicker are poor
+// TODO(#788): Colors of ColorPicker are poor
 static Color colors[] = {
     {1.0f, 0.0f, 0.0f, 1.0f},
     {0.0f, 1.0f, 0.0f, 1.0f},
