@@ -17,13 +17,14 @@
 #include "game/level/regions.h"
 #include "game/level/rigid_bodies.h"
 #include "game/level_metadata.h"
-#include "game/proto_rect.h"
+#include "game/level/proto_rect.h"
 #include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
 #include "system/nth_alloc.h"
 #include "system/str.h"
+#include "game/level/level_editor.h"
 
 #define LEVEL_LINE_MAX_LENGTH 512
 #define LEVEL_GRAVITY 1500.0f
@@ -45,10 +46,8 @@ struct Level
     Labels *labels;
     Regions *regions;
 
-    bool flying_mode;
-    Vec flying_camera_position;
-    float flying_camera_scale;
-    ProtoRect proto_rect;
+    bool edit_mode;
+    LevelEditor *level_editor;
 };
 
 Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
@@ -167,12 +166,14 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
-    level->flying_mode = false;
-    level->flying_camera_position = vec(0.0f, 0.0f);
-    level->flying_camera_scale = 1.0f;
-
-    memset(&level->proto_rect, 0, sizeof(ProtoRect));
-    level->proto_rect.color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
+    level->edit_mode = false;
+    level->level_editor = PUSH_LT(
+        lt,
+        create_level_editor(level->boxes),
+        destroy_level_editor);
+    if (level->level_editor == NULL) {
+        RETURN_LT(lt, NULL);
+    }
 
     destroy_line_stream(RELEASE_LT(lt, level_stream));
 
@@ -225,8 +226,8 @@ int level_render(const Level *level, Camera *camera)
         return -1;
     }
 
-    if (level->flying_mode) {
-        if (proto_rect_render(&level->proto_rect, camera) < 0) {
+    if (level->edit_mode) {
+        if (level_editor_render(level->level_editor, camera) < 0) {
             return -1;
         }
     }
@@ -256,8 +257,8 @@ int level_update(Level *level, float delta_time)
     lava_update(level->lava, delta_time);
     labels_update(level->labels, delta_time);
 
-    if (level->flying_mode) {
-        proto_rect_update(&level->proto_rect, delta_time);
+    if (level->edit_mode) {
+        level_editor_update(level->level_editor, delta_time);
     }
 
     return 0;
@@ -282,29 +283,10 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
             player_jump(level->player);
         }
         break;
-
-    case SDL_MOUSEMOTION:
-        if (level->flying_mode) {
-            const float sens = 1.0f / level->flying_camera_scale * 0.25f;
-            vec_add(&level->flying_camera_position,
-                    vec((float) event->motion.xrel * sens, (float) event->motion.yrel * sens));
-        }
-        break;
-
-    case SDL_MOUSEWHEEL:
-        if (level->flying_mode) {
-            // TODO(#679): zooming in flying mode is not smooth enough
-            if (event->wheel.y > 0) {
-                level->flying_camera_scale += 0.1f;
-            } else if (event->wheel.y < 0) {
-                level->flying_camera_scale = fmaxf(0.1f, level->flying_camera_scale - 0.1f);
-            }
-        }
-        break;
     }
 
-    if (level->flying_mode) {
-        proto_rect_event(&level->proto_rect, event, camera, level->boxes);
+    if (level->edit_mode) {
+        level_editor_event(level->level_editor, event, camera);
     }
 
     return 0;
@@ -438,12 +420,13 @@ void level_toggle_debug_mode(Level *level)
 
 int level_enter_camera_event(Level *level, Camera *camera)
 {
-    if (!level->flying_mode) {
+    if (!level->edit_mode) {
         player_focus_camera(level->player, camera);
         camera_scale(camera, 1.0f);
     } else {
-        camera_center_at(camera, level->flying_camera_position);
-        camera_scale(camera, level->flying_camera_scale);
+        level_editor_focus_camera(
+            level->level_editor,
+            camera);
     }
 
     goals_cue(level->goals, camera);
@@ -496,9 +479,9 @@ struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct E
                     level->rigid_bodies,
                     rect((float)x, (float)y, (float)w, (float)h),
                     hexstr(color))));
-    } else if (strcmp(target, "fly") == 0) {
-        level->flying_mode = !level->flying_mode;
-        SDL_SetRelativeMouseMode(level->flying_mode);
+    } else if (strcmp(target, "edit") == 0) {
+        level->edit_mode = !level->edit_mode;
+        SDL_SetRelativeMouseMode(level->edit_mode);
         return eval_success(NIL(gc));
     }
 

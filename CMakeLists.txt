@@ -147,8 +147,10 @@ add_executable(nothing
   src/ui/menu_title.c
   src/game/level_metadata.h
   src/game/level_metadata.c
-  src/game/proto_rect.h
-  src/game/proto_rect.c
+  src/game/level/proto_rect.h
+  src/game/level/proto_rect.c
+  src/game/level/level_editor.h
+  src/game/level/level_editor.c
 )
 
 add_executable(svg2level
