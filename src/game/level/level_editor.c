@@ -2,7 +2,7 @@
 
 #include "game/camera.h"
 #include "game/level/boxes.h"
-#include "game/level/proto_rect.h"
+#include "game/level/level_editor/proto_rect.h"
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
 
