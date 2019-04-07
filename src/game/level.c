@@ -17,13 +17,14 @@
 #include "game/level/regions.h"
 #include "game/level/rigid_bodies.h"
 #include "game/level_metadata.h"
-#include "game/proto_rect.h"
+#include "game/level/proto_rect.h"
 #include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/lt/lt_adapters.h"
 #include "system/nth_alloc.h"
 #include "system/str.h"
+#include "game/level/level_editor.h"
 
 #define LEVEL_LINE_MAX_LENGTH 512
 #define LEVEL_GRAVITY 1500.0f
@@ -46,9 +47,7 @@ struct Level
     Regions *regions;
 
     bool edit_mode;
-    Vec edit_camera_position;
-    float edit_camera_scale;
-    ProtoRect proto_rect;
+    LevelEditor *level_editor;
 };
 
 Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
@@ -168,11 +167,13 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
     }
 
     level->edit_mode = false;
-    level->edit_camera_position = vec(0.0f, 0.0f);
-    level->edit_camera_scale = 1.0f;
-
-    memset(&level->proto_rect, 0, sizeof(ProtoRect));
-    level->proto_rect.color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
+    level->level_editor = PUSH_LT(
+        lt,
+        create_level_editor(level->boxes),
+        destroy_level_editor);
+    if (level->level_editor == NULL) {
+        RETURN_LT(lt, NULL);
+    }
 
     destroy_line_stream(RELEASE_LT(lt, level_stream));
 
@@ -226,7 +227,7 @@ int level_render(const Level *level, Camera *camera)
     }
 
     if (level->edit_mode) {
-        if (proto_rect_render(&level->proto_rect, camera) < 0) {
+        if (level_editor_render(level->level_editor, camera) < 0) {
             return -1;
         }
     }
@@ -257,7 +258,7 @@ int level_update(Level *level, float delta_time)
     labels_update(level->labels, delta_time);
 
     if (level->edit_mode) {
-        proto_rect_update(&level->proto_rect, delta_time);
+        level_editor_update(level->level_editor, delta_time);
     }
 
     return 0;
@@ -282,29 +283,10 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
             player_jump(level->player);
         }
         break;
-
-    case SDL_MOUSEMOTION:
-        if (level->edit_mode) {
-            const float sens = 1.0f / level->edit_camera_scale * 0.25f;
-            vec_add(&level->edit_camera_position,
-                    vec((float) event->motion.xrel * sens, (float) event->motion.yrel * sens));
-        }
-        break;
-
-    case SDL_MOUSEWHEEL:
-        if (level->edit_mode) {
-            // TODO(#679): zooming in edit mode is not smooth enough
-            if (event->wheel.y > 0) {
-                level->edit_camera_scale += 0.1f;
-            } else if (event->wheel.y < 0) {
-                level->edit_camera_scale = fmaxf(0.1f, level->edit_camera_scale - 0.1f);
-            }
-        }
-        break;
     }
 
     if (level->edit_mode) {
-        proto_rect_event(&level->proto_rect, event, camera, level->boxes);
+        level_editor_event(level->level_editor, event, camera);
     }
 
     return 0;
@@ -442,8 +424,9 @@ int level_enter_camera_event(Level *level, Camera *camera)
         player_focus_camera(level->player, camera);
         camera_scale(camera, 1.0f);
     } else {
-        camera_center_at(camera, level->edit_camera_position);
-        camera_scale(camera, level->edit_camera_scale);
+        level_editor_focus_camera(
+            level->level_editor,
+            camera);
     }
 
     goals_cue(level->goals, camera);
