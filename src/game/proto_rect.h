@@ -15,6 +15,7 @@ int proto_rect_update(ProtoRect *proto_rect,
                       float delta_time);
 int proto_rect_event(ProtoRect *proto_rect,
                      const SDL_Event *event,
-                     const Camera *camera);
+                     const Camera *camera,
+                     Boxes *boxes);
 
 #endif  // PROTO_RECT_H_

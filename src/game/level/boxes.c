@@ -116,7 +116,6 @@ void boxes_float_in_lava(Boxes *boxes, Lava *lava)
     }
 }
 
-static
 int boxes_add_box(Boxes *boxes, Rect rect, Color color)
 {
     trace_assert(boxes);

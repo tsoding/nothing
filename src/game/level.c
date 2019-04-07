@@ -304,7 +304,7 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
     }
 
     if (level->flying_mode) {
-        proto_rect_event(&level->proto_rect, event, camera);
+        proto_rect_event(&level->proto_rect, event, camera, level->boxes);
     }
 
     return 0;

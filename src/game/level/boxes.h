@@ -20,8 +20,7 @@ int boxes_update(Boxes *boxes, float delta_time);
 
 void boxes_float_in_lava(Boxes *boxes, Lava *lava);
 
-int boxes_add_to_physical_world(const Boxes *boxes,
-                                Physical_world *Physical_world);
+int boxes_add_box(Boxes *boxes, Rect rect, Color color);
 
 struct EvalResult
 boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path);
