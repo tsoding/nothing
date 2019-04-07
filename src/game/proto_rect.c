@@ -4,6 +4,7 @@
 
 #include "system/stacktrace.h"
 #include "system/log.h"
+#include "game/level/boxes.h"
 #include "game/camera.h"
 
 #include "./proto_rect.h"
@@ -38,10 +39,13 @@ int proto_rect_update(ProtoRect *proto_rect,
 
 int proto_rect_event(ProtoRect *proto_rect,
                      const SDL_Event *event,
-                     const Camera *camera)
+                     const Camera *camera,
+                     Boxes *boxes)
 {
     trace_assert(proto_rect);
     trace_assert(event);
+    trace_assert(camera);
+    trace_assert(boxes);
 
     if (proto_rect->active) {
         // Active
@@ -49,7 +53,12 @@ int proto_rect_event(ProtoRect *proto_rect,
         case SDL_MOUSEBUTTONUP: {
             switch (event->button.button) {
             case SDL_BUTTON_LEFT: {
-                // TODO(#778): the result of ProtoRect is not used for creating Boxes
+                boxes_add_box(
+                    boxes,
+                    rect_from_points(
+                        proto_rect->begin,
+                        proto_rect->end),
+                    proto_rect->color);
                 proto_rect->active = false;
             } break;
             }
