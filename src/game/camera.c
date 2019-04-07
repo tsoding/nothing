@@ -421,3 +421,33 @@ Vec camera_map_screen(const Camera *camera,
             es),
         camera->position);
 }
+
+int camera_fill_rect_screen(Camera *camera,
+                            Rect rect,
+                            Color color)
+{
+    trace_assert(camera);
+
+    const SDL_Rect sdl_rect = rect_for_sdl(rect);
+    const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
+
+    if (camera->debug_mode) {
+        if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a / 2) < 0) {
+            log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());
+            return -1;
+        }
+    } else {
+        if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
+            log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());
+            return -1;
+        }
+    }
+
+    if (SDL_RenderFillRect(camera->renderer, &sdl_rect) < 0) {
+        log_fail("SDL_RenderFillRect: %s\n", SDL_GetError());
+        return -1;
+    }
+
+    return 0;
+
+}

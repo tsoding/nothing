@@ -2,7 +2,8 @@
 
 #include "game/camera.h"
 #include "game/level/boxes.h"
-#include "game/level/proto_rect.h"
+#include "game/level/level_editor/proto_rect.h"
+#include "game/level/level_editor/color_picker.h"
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
 
@@ -13,16 +14,23 @@ struct LevelEditor
     Vec camera_position;
     float camera_scale;
     ProtoRect proto_rect;
+    ColorPicker color_picker;
     Boxes *boxes;
 };
 
 LevelEditor *create_level_editor(Boxes *boxes)
 {
     LevelEditor *level_editor = nth_calloc(1, sizeof(LevelEditor));
+    if (level_editor == NULL) {
+        return NULL;
+    }
+
     level_editor->camera_position = vec(0.0f, 0.0f);
     level_editor->camera_scale = 1.0f;
     level_editor->boxes = boxes;
     level_editor->proto_rect.color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
+    level_editor->color_picker.position = vec(0.0f, 0.0f);
+    level_editor->color_picker.proto_rect = &level_editor->proto_rect;
 
     return level_editor;
 }
@@ -40,6 +48,10 @@ int level_editor_render(const LevelEditor *level_editor,
     trace_assert(camera);
 
     if (proto_rect_render(&level_editor->proto_rect, camera) < 0) {
+        return -1;
+    }
+
+    if (color_picker_render(&level_editor->color_picker, camera) < 0) {
         return -1;
     }
 
@@ -87,6 +99,10 @@ int level_editor_event(LevelEditor *level_editor,
             event,
             camera,
             level_editor->boxes) < 0) {
+        return -1;
+    }
+
+    if (color_picker_event(&level_editor->color_picker, event) < 0) {
         return -1;
     }
 
