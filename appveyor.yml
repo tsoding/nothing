@@ -1,0 +1,13 @@
+image: ubuntu1804
+install:
+  - sh: sudo apt-get update -qq
+  - sh: sudo apt-get install -qq cmake cmake-data libsdl2-dev libsdl2-mixer-dev libxml2-dev
+build_script:
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+  - ./nothing_test
+  - cd ../levels/
+  - make clean
+  - make -k
