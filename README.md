@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/tsoding/nothing.svg?branch=master)](https://travis-ci.org/tsoding/nothing)
+[![Build status](https://ci.appveyor.com/api/projects/status/gxfgojq4ko98e0g0/branch/master?svg=true)](https://ci.appveyor.com/project/rexim/nothing/branch/master)
 
 # Nothing
 
