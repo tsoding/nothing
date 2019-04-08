@@ -1,18 +1,10 @@
-dist: xenial
 language: c
 addons:
-  apt:
-    packages:
-      - cmake
-      - cmake-data
-      - libsdl2-dev
-      - libsdl2-mixer-dev
   homebrew:
     packages:
       - sdl2
       - sdl2_mixer
 os:
-  - linux
   - osx
 compiler:
   - clang
