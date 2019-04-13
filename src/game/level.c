@@ -487,3 +487,9 @@ struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct E
 
     return unknown_target(gc, "level", target);
 }
+
+bool level_edit_mode(const Level *level)
+{
+    trace_assert(level);
+    return level->edit_mode;
+}
