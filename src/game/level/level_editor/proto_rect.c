@@ -9,6 +9,8 @@
 
 #include "./proto_rect.h"
 
+#define PROTO_AREA_THRESHOLD 10.0
+
 int proto_rect_render(const ProtoRect *proto_rect,
                       Camera *camera)
 {
@@ -53,12 +55,17 @@ int proto_rect_event(ProtoRect *proto_rect,
         case SDL_MOUSEBUTTONUP: {
             switch (event->button.button) {
             case SDL_BUTTON_LEFT: {
-                boxes_add_box(
-                    boxes,
+                const Rect real_rect =
                     rect_from_points(
                         proto_rect->begin,
-                        proto_rect->end),
-                    proto_rect->color);
+                        proto_rect->end);
+                const float area = real_rect.w * real_rect.h;
+
+                if (area >= PROTO_AREA_THRESHOLD) {
+                    boxes_add_box(boxes, real_rect, proto_rect->color);
+                } else {
+                    log_info("The area is too small %f. Such small box won't be created.\n", area);
+                }
                 proto_rect->active = false;
             } break;
             }
