@@ -109,11 +109,11 @@ int level_editor_event(LevelEditor *level_editor,
             return -1;
         }
 
-        if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_RIGHT) {
+        if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_MIDDLE) {
             level_editor->drag = true;
         }
 
-        if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_RIGHT) {
+        if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_MIDDLE) {
             level_editor->drag = false;
         }
     } break;

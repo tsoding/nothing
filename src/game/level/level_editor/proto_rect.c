@@ -128,6 +128,10 @@ int proto_rect_mouse_button(ProtoRect *proto_rect,
                 }
                 proto_rect->active = false;
             } break;
+
+            case SDL_BUTTON_RIGHT: {
+                proto_rect->active = false;
+            } break;
             }
         } break;
         }
