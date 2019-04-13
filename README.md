@@ -53,7 +53,7 @@ $ mkdir build
 $ cd build/
 $ cmake ..
 $ make
-$ ./nothing ../levels/level-01.txt
+$ ./nothing ../levels/
 $ ./nothing_test
 ```
 
