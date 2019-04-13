@@ -77,13 +77,9 @@ int level_editor_event(LevelEditor *level_editor,
     trace_assert(level_editor);
     trace_assert(event);
 
-    switch (event->type) {
-    case SDL_MOUSEMOTION: {
-        const float sens = 1.0f / level_editor->camera_scale * 0.25f;
-        vec_add(&level_editor->camera_position,
-                vec((float) event->motion.xrel * sens, (float) event->motion.yrel * sens));
-    } break;
+    (void) camera;
 
+    switch (event->type) {
     case SDL_MOUSEWHEEL: {
         // TODO(#679): zooming in edit mode is not smooth enough
         if (event->wheel.y > 0) {
@@ -92,18 +88,35 @@ int level_editor_event(LevelEditor *level_editor,
             level_editor->camera_scale = fmaxf(0.1f, level_editor->camera_scale - 0.1f);
         }
     } break;
-    }
 
-    if (proto_rect_event(
-            &level_editor->proto_rect,
-            event,
-            camera,
-            level_editor->boxes) < 0) {
-        return -1;
-    }
+    case SDL_MOUSEBUTTONUP:
+    case SDL_MOUSEBUTTONDOWN: {
+        bool selected = false;
+        if (color_picker_mouse_button(
+                &level_editor->color_picker,
+                &event->button,
+                &selected) < 0) {
+            return -1;
+        }
 
-    if (color_picker_event(&level_editor->color_picker, event) < 0) {
-        return -1;
+        if (!selected && proto_rect_mouse_button(
+                &level_editor->proto_rect,
+                &event->button,
+                level_editor->boxes,
+                camera) < 0) {
+            return -1;
+        }
+    } break;
+
+    case SDL_MOUSEMOTION: {
+        const float sens = 1.0f / level_editor->camera_scale * 0.25f;
+        vec_add(&level_editor->camera_position,
+                vec((float) event->motion.xrel * sens, (float) event->motion.yrel * sens));
+
+        if (proto_rect_mouse_motion(&level_editor->proto_rect, &event->motion, camera) < 0) {
+            return -1;
+        }
+    } break;
     }
 
     return 0;

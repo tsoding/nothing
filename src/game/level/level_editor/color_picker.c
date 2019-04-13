@@ -46,30 +46,31 @@ int color_picker_update(ColorPicker *color_picker,
     return 0;
 }
 
-int color_picker_event(ColorPicker *color_picker,
-                       const SDL_Event *event)
+int color_picker_mouse_button(ColorPicker *color_picker,
+                              const SDL_MouseButtonEvent *event,
+                              bool *selected)
 {
     trace_assert(color_picker);
     trace_assert(event);
 
-    switch (event->type) {
-    case SDL_MOUSEBUTTONDOWN: {
-        switch (event->button.button) {
+    *selected = false;
+
+    if (event->type == SDL_MOUSEBUTTONDOWN) {
+        switch (event->button) {
         case SDL_BUTTON_LEFT: {
             for (size_t i = 0; i < colors_count; ++i) {
-                const Vec mouse_position = vec((float) event->button.x, (float) event->button.y);
+                const Vec mouse_position = vec((float) event->x, (float) event->y);
                 const Rect color_cell =
                     rect(COLOR_CELL_WIDTH * (float) i, 0,
                          COLOR_CELL_WIDTH,
                          COLOR_CELL_HEIGHT);
                 if (rect_contains_point(color_cell, mouse_position)) {
                     color_picker->proto_rect->color = colors[i];
-                    break;
+                    *selected = true;
                 }
             }
         } break;
         }
-    } break;
     }
 
     return 0;
