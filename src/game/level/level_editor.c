@@ -109,20 +109,25 @@ int level_editor_event(LevelEditor *level_editor,
             return -1;
         }
 
-        if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_MIDDLE) {
+        if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_RIGHT) {
             level_editor->drag = true;
         }
 
-        if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_MIDDLE) {
+        if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_RIGHT) {
             level_editor->drag = false;
         }
     } break;
 
     case SDL_MOUSEMOTION: {
         if (level_editor->drag) {
-            const float sens = 1.0f / level_editor->camera_scale * 0.25f;
+            const Vec next_position = camera_map_screen(camera, event->motion.x, event->motion.y);
+            const Vec prev_position = camera_map_screen(
+                camera,
+                event->motion.x + event->motion.xrel,
+                event->motion.y + event->motion.yrel);
+
             vec_add(&level_editor->camera_position,
-                    vec((float) -event->motion.xrel * sens, (float) -event->motion.yrel * sens));
+                    vec_sub(next_position, prev_position));
         }
 
         if (proto_rect_mouse_motion(&level_editor->proto_rect, &event->motion, camera) < 0) {
