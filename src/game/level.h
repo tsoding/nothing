@@ -33,6 +33,8 @@ int level_reload_preserve_player(Level *level,
 void level_toggle_debug_mode(Level *level);
 void level_toggle_pause_mode(Level *level);
 
+bool level_edit_mode(const Level *level);
+
 struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct Expr path);
 
 #endif  // LEVEL_H_

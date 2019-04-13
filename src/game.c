@@ -159,7 +159,7 @@ int game_render(const Game *game)
             return -1;
         }
 
-        if (game_render_cursor(game) < 0) {
+        if (level_edit_mode(game->level) && game_render_cursor(game) < 0) {
             return -1;
         }
     } break;
