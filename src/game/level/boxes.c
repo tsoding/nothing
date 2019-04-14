@@ -19,11 +19,10 @@ struct Boxes
     Lt *lt;
     RigidBodies *rigid_bodies;
     RigidBodyId *body_ids;
-    const Player *player;
     size_t count;
 };
 
-Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid_bodies, const Player *player)
+Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid_bodies)
 {
     trace_assert(line_stream);
 
@@ -60,8 +59,6 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid
     for (size_t i = 0; i < boxes->count; ++i) {
         boxes->body_ids[i] = rigid_bodies_add_from_line_stream(boxes->rigid_bodies, line_stream);
     }
-
-    boxes->player = player;
 
     return boxes;
 }
@@ -161,29 +158,32 @@ boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path)
             boxes_add_box(boxes, rect((float) x, (float) y, (float) w, (float) h), color);
 
             return eval_success(NIL(gc));
-        } else if (strcmp(action, "new-here") == 0) {
-            struct Expr optional_args = void_expr();
-            long int w, h;
-            res = match_list(gc, "dd*", rest, &w, &h, &optional_args);
-            if (res.is_error) {
-                return res;
-            }
-
-            Color color = rgba(rand_float(1.0f), rand_float(1.0f), rand_float(1.0f), 1.0f);
-            if (!nil_p(optional_args)) {
-                const char *color_hex = NULL;
-                res = match_list(gc, "s*", optional_args, &color_hex, NULL);
-                color = hexstr(color_hex);
-            }
-
-            const Rect hitbox = player_hitbox(boxes->player);
-            boxes_add_box(boxes, rect(hitbox.x, hitbox.y, (float) w, (float) h), color);
-
-            return eval_success(NIL(gc));
         }
 
         return unknown_target(gc, "box", action);
     }
 
     return wrong_argument_type(gc, "string-or-symbol-p", target);
+}
+
+
+int boxes_delete_at(Boxes *boxes, Vec position)
+{
+    trace_assert(boxes);
+
+    for (size_t i = 0; i < boxes->count; ++i) {
+        const Rect hitbox = rigid_bodies_hitbox(
+            boxes->rigid_bodies,
+            boxes->body_ids[i]);
+        if (rect_contains_point(hitbox, position)) {
+            rigid_bodies_remove(boxes->rigid_bodies, boxes->body_ids[i]);
+            for (size_t j = i; j < boxes->count - 1; ++j) {
+                boxes->body_ids[j] = boxes->body_ids[j + 1];
+            }
+            boxes->count--;
+            return 0;
+        }
+    }
+
+    return 0;
 }

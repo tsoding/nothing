@@ -144,7 +144,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
 
     level->boxes = PUSH_LT(
         lt,
-        create_boxes_from_line_stream(level_stream, level->rigid_bodies, level->player),
+        create_boxes_from_line_stream(level_stream, level->rigid_bodies),
         destroy_boxes);
     if (level->boxes == NULL) {
         RETURN_LT(lt, NULL);
@@ -272,9 +272,14 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
     switch (event->type) {
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
-        case SDLK_SPACE:
+        case SDLK_SPACE: {
             player_jump(level->player);
-            break;
+        } break;
+
+        case SDLK_TAB: {
+            level->edit_mode = !level->edit_mode;
+            SDL_SetRelativeMouseMode(level->edit_mode);
+        };
         }
         break;
 
@@ -379,7 +384,7 @@ int level_reload_preserve_player(Level *level, Broadcast *broadcast)
     }
     level->back_platforms = RESET_LT(level->lt, level->back_platforms, back_platforms);
 
-    Boxes * const boxes = create_boxes_from_line_stream(level_stream, level->rigid_bodies, level->player);
+    Boxes * const boxes = create_boxes_from_line_stream(level_stream, level->rigid_bodies);
     if (boxes == NULL) {
         RETURN_LT(lt, -1);
     }

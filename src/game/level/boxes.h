@@ -8,11 +8,10 @@
 
 typedef struct Boxes Boxes;
 typedef struct Player Player;
-typedef struct Physical_world Physical_world;
 typedef struct LineStream LineStream;
 typedef struct Player Player;
 
-Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid_bodies, const Player *player);
+Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid_bodies);
 void destroy_boxes(Boxes *boxes);
 
 int boxes_render(Boxes *boxes, Camera *camera);
@@ -21,6 +20,7 @@ int boxes_update(Boxes *boxes, float delta_time);
 void boxes_float_in_lava(Boxes *boxes, Lava *lava);
 
 int boxes_add_box(Boxes *boxes, Rect rect, Color color);
+int boxes_delete_at(Boxes *boxes, Vec position);
 
 struct EvalResult
 boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path);

@@ -93,6 +93,13 @@ int level_editor_event(LevelEditor *level_editor,
 
     case SDL_MOUSEBUTTONUP:
     case SDL_MOUSEBUTTONDOWN: {
+        if (event->type == SDL_MOUSEBUTTONUP) {
+            const Vec position = camera_map_screen(camera, event->button.x, event->button.y);
+            if (boxes_delete_at(level_editor->boxes, position) < 0) {
+                return -1;
+            }
+        }
+
         bool selected = false;
         if (color_picker_mouse_button(
                 &level_editor->color_picker,
