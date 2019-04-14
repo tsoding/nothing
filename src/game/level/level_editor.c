@@ -14,6 +14,7 @@
 // TODO(#802): Level Editor should modify boxes_layer instead of boxes
 struct LevelEditor
 {
+    Lt *lt;
     Vec camera_position;
     float camera_scale;
     ProtoRect proto_rect;
