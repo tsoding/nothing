@@ -4,34 +4,50 @@
 #include "game/level/boxes.h"
 #include "game/level/level_editor/proto_rect.h"
 #include "game/level/level_editor/color_picker.h"
+#include "game/level/level_editor/layer.h"
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
+#include "system/lt.h"
 
 #include "level_editor.h"
 
+// TODO: Level Editor should modify boxes_layer instead of boxes
 struct LevelEditor
 {
     Vec camera_position;
     float camera_scale;
     ProtoRect proto_rect;
     ColorPicker color_picker;
+    Layer *boxes_layer;
     Boxes *boxes;
     bool drag;
 };
 
 LevelEditor *create_level_editor(Boxes *boxes)
 {
-    LevelEditor *level_editor = nth_calloc(1, sizeof(LevelEditor));
-    if (level_editor == NULL) {
+    Lt *lt = create_lt();
+    if (lt == NULL) {
         return NULL;
     }
 
+    LevelEditor *level_editor = PUSH_LT(lt, nth_calloc(1, sizeof(LevelEditor)), free);
+    if (level_editor == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    level_editor->lt = lt;
+
     level_editor->camera_position = vec(0.0f, 0.0f);
     level_editor->camera_scale = 1.0f;
-    level_editor->boxes = boxes;
     level_editor->proto_rect.color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
     level_editor->color_picker.position = vec(0.0f, 0.0f);
     level_editor->color_picker.proto_rect = &level_editor->proto_rect;
+    level_editor->boxes_layer = PUSH_LT(lt, create_layer(), destroy_layer);
+
+    if (level_editor->boxes_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level_editor->boxes = boxes;
     level_editor->drag = false;
 
     return level_editor;
@@ -40,7 +56,7 @@ LevelEditor *create_level_editor(Boxes *boxes)
 void destroy_level_editor(LevelEditor *level_editor)
 {
     trace_assert(level_editor);
-    free(level_editor);
+    RETURN_LT0(level_editor->lt);
 }
 
 int level_editor_render(const LevelEditor *level_editor,
