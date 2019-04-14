@@ -508,7 +508,7 @@ static int game_render_cursor(const Game *game)
     trace_assert(game);
 
     SDL_Rect src = {0, 0, 32, 32};
-    SDL_Rect dest = {game->cursor_x, game->cursor_y, 128, 128};
+    SDL_Rect dest = {game->cursor_x, game->cursor_y, 32, 32};
     if (SDL_RenderCopy(game->renderer, game->texture_cursor, &src, &dest) < 0) {
         return -1;
     }
