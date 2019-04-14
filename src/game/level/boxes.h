@@ -20,6 +20,7 @@ int boxes_update(Boxes *boxes, float delta_time);
 void boxes_float_in_lava(Boxes *boxes, Lava *lava);
 
 int boxes_add_box(Boxes *boxes, Rect rect, Color color);
+int boxes_delete_at(Boxes *boxes, Vec position);
 
 struct EvalResult
 boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path);

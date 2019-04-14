@@ -165,3 +165,25 @@ boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path)
 
     return wrong_argument_type(gc, "string-or-symbol-p", target);
 }
+
+
+int boxes_delete_at(Boxes *boxes, Vec position)
+{
+    trace_assert(boxes);
+
+    for (size_t i = 0; i < boxes->count; ++i) {
+        const Rect hitbox = rigid_bodies_hitbox(
+            boxes->rigid_bodies,
+            boxes->body_ids[i]);
+        if (rect_contains_point(hitbox, position)) {
+            rigid_bodies_remove(boxes->rigid_bodies, boxes->body_ids[i]);
+            for (size_t j = i; j < boxes->count - 1; ++j) {
+                boxes->body_ids[j] = boxes->body_ids[j + 1];
+            }
+            boxes->count--;
+            return 0;
+        }
+    }
+
+    return 0;
+}
