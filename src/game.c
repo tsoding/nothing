@@ -357,6 +357,11 @@ static int game_event_running(Game *game, const SDL_Event *event)
             camera_toggle_debug_mode(game->camera);
             level_toggle_debug_mode(game->level);
             break;
+
+        case SDLK_ESCAPE: {
+            level_picker_clean_selection(game->level_picker);
+            game->state = GAME_STATE_LEVEL_PICKER;
+        } break;
         }
         break;
     case SDL_KEYUP:
