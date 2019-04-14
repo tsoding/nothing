@@ -11,7 +11,7 @@
 
 #include "level_editor.h"
 
-// TODO: Level Editor should modify boxes_layer instead of boxes
+// TODO(#802): Level Editor should modify boxes_layer instead of boxes
 struct LevelEditor
 {
     Vec camera_position;
