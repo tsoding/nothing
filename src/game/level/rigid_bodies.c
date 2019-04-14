@@ -24,7 +24,7 @@ struct RigidBodies
     Rect *bodies;
     Vec *velocities;
     Vec *movements;
-    // TODO: the color should not be stored in RigidBodies
+    // TODO(#803): the color should not be stored in RigidBodies
     Color *colors;
     bool *grounded;
     Vec *forces;
