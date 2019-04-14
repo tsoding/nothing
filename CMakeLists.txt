@@ -153,6 +153,8 @@ add_executable(nothing
   src/game/level/level_editor.c
   src/game/level/level_editor/color_picker.h
   src/game/level/level_editor/color_picker.c
+  src/game/level/level_editor/layer.h
+  src/game/level/level_editor/layer.c
 )
 
 add_executable(svg2level
