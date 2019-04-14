@@ -144,7 +144,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
 
     level->boxes = PUSH_LT(
         lt,
-        create_boxes_from_line_stream(level_stream, level->rigid_bodies, level->player),
+        create_boxes_from_line_stream(level_stream, level->rigid_bodies),
         destroy_boxes);
     if (level->boxes == NULL) {
         RETURN_LT(lt, NULL);
@@ -384,7 +384,7 @@ int level_reload_preserve_player(Level *level, Broadcast *broadcast)
     }
     level->back_platforms = RESET_LT(level->lt, level->back_platforms, back_platforms);
 
-    Boxes * const boxes = create_boxes_from_line_stream(level_stream, level->rigid_bodies, level->player);
+    Boxes * const boxes = create_boxes_from_line_stream(level_stream, level->rigid_bodies);
     if (boxes == NULL) {
         RETURN_LT(lt, -1);
     }
