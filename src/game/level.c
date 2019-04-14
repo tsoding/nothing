@@ -272,9 +272,14 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
     switch (event->type) {
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
-        case SDLK_SPACE:
+        case SDLK_SPACE: {
             player_jump(level->player);
-            break;
+        } break;
+
+        case SDLK_TAB: {
+            level->edit_mode = !level->edit_mode;
+            SDL_SetRelativeMouseMode(level->edit_mode);
+        };
         }
         break;
 
