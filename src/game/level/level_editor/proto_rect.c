@@ -4,10 +4,10 @@
 
 #include "system/stacktrace.h"
 #include "system/log.h"
-#include "game/level/boxes.h"
 #include "game/camera.h"
 
-#include "./proto_rect.h"
+#include "layer.h"
+#include "proto_rect.h"
 
 #define PROTO_AREA_THRESHOLD 10.0
 
@@ -42,12 +42,12 @@ int proto_rect_update(ProtoRect *proto_rect,
 int proto_rect_event(ProtoRect *proto_rect,
                      const SDL_Event *event,
                      const Camera *camera,
-                     Boxes *boxes)
+                     Layer *layer)
 {
     trace_assert(proto_rect);
     trace_assert(event);
     trace_assert(camera);
-    trace_assert(boxes);
+    trace_assert(layer);
 
     if (proto_rect->active) {
         // Active
@@ -62,7 +62,7 @@ int proto_rect_event(ProtoRect *proto_rect,
                 const float area = real_rect.w * real_rect.h;
 
                 if (area >= PROTO_AREA_THRESHOLD) {
-                    boxes_add_box(boxes, real_rect, proto_rect->color);
+                    layer_add_rect(layer, real_rect, proto_rect->color);
                 } else {
                     log_info("The area is too small %f. Such small box won't be created.\n", area);
                 }
@@ -101,12 +101,12 @@ int proto_rect_event(ProtoRect *proto_rect,
 
 int proto_rect_mouse_button(ProtoRect *proto_rect,
                             const SDL_MouseButtonEvent *event,
-                            Boxes *boxes,
+                            Layer *layer,
                             const Camera *camera)
 {
     trace_assert(proto_rect);
     trace_assert(event);
-    trace_assert(boxes);
+    trace_assert(layer);
     trace_assert(camera);
 
     if (proto_rect->active) {
@@ -122,7 +122,7 @@ int proto_rect_mouse_button(ProtoRect *proto_rect,
                 const float area = real_rect.w * real_rect.h;
 
                 if (area >= PROTO_AREA_THRESHOLD) {
-                    boxes_add_box(boxes, real_rect, proto_rect->color);
+                    layer_add_rect(layer, real_rect, proto_rect->color);
                 } else {
                     log_info("The area is too small %f. Such small box won't be created.\n", area);
                 }

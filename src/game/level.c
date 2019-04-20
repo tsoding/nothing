@@ -169,7 +169,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
     level->edit_mode = false;
     level->level_editor = PUSH_LT(
         lt,
-        create_level_editor(level->boxes),
+        create_level_editor(),
         destroy_level_editor);
     if (level->level_editor == NULL) {
         RETURN_LT(lt, NULL);

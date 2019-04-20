@@ -2,9 +2,8 @@
 #define LEVEL_EDITOR_H_
 
 typedef struct LevelEditor LevelEditor;
-typedef struct Boxes Boxes;
 
-LevelEditor *create_level_editor(Boxes *boxes);
+LevelEditor *create_level_editor(void);
 void destroy_level_editor(LevelEditor *level_editor);
 
 int level_editor_render(const LevelEditor *level_editor,

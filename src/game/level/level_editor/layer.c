@@ -54,6 +54,7 @@ void destroy_layer(Layer *layer)
     RETURN_LT0(layer->lt);
 }
 
+// TODO: layer_render is not implemented
 int layer_render(const Layer *layer, Camera *camera)
 {
     trace_assert(layer);
