@@ -19,6 +19,7 @@ struct LevelEditor
     float camera_scale;
     ProtoRect proto_rect;
     ColorPicker color_picker;
+    // TODO: boxes_layer is not connected with the level->boxes
     Layer *boxes_layer;
     bool drag;
 };
