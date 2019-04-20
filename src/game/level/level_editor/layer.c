@@ -3,6 +3,8 @@
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
+#include "math/rect.h"
+#include "color.h"
 #include "layer.h"
 #include "dynarray.h"
 
@@ -63,5 +65,24 @@ int layer_event(Layer *layer, const SDL_Event *event)
 {
     trace_assert(layer);
     trace_assert(event);
+    return 0;
+}
+
+// TODO: layer_add_rect is not implemented
+int layer_add_rect(Layer *layer, Rect rect, Color color)
+{
+    trace_assert(layer);
+    (void) rect;
+    (void) color;
+
+    return 0;
+}
+
+// TODO: layer_delete_rect_at is not implemented
+int layer_delete_rect_at(Layer *layer, Vec position)
+{
+    trace_assert(layer);
+    (void) position;
+
     return 0;
 }
