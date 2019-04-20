@@ -54,11 +54,21 @@ void destroy_layer(Layer *layer)
     RETURN_LT0(layer->lt);
 }
 
-// TODO: layer_render is not implemented
 int layer_render(const Layer *layer, Camera *camera)
 {
     trace_assert(layer);
     trace_assert(camera);
+
+    const size_t n = dynarray_count(layer->rects);
+    Rect *rects = dynarray_data(layer->rects);
+    Color *colors = dynarray_data(layer->colors);
+
+    for (size_t i = 0; i < n; ++i) {
+        if (camera_fill_rect(camera, rects[i], colors[i]) < 0) {
+            return -1;
+        }
+    }
+
     return 0;
 }
 
@@ -69,12 +79,12 @@ int layer_event(Layer *layer, const SDL_Event *event)
     return 0;
 }
 
-// TODO: layer_add_rect is not implemented
 int layer_add_rect(Layer *layer, Rect rect, Color color)
 {
     trace_assert(layer);
-    (void) rect;
-    (void) color;
+
+    dynarray_push(layer->rects, &rect);
+    dynarray_push(layer->colors, &color);
 
     return 0;
 }
