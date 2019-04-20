@@ -89,7 +89,6 @@ int layer_add_rect(Layer *layer, Rect rect, Color color)
     return 0;
 }
 
-// TODO: layer_delete_rect_at is not implemented
 int layer_delete_rect_at(Layer *layer, Vec position)
 {
     trace_assert(layer);
