@@ -93,7 +93,17 @@ int layer_add_rect(Layer *layer, Rect rect, Color color)
 int layer_delete_rect_at(Layer *layer, Vec position)
 {
     trace_assert(layer);
-    (void) position;
+
+    const size_t n = dynarray_count(layer->rects);
+    Rect *rects = dynarray_data(layer->rects);
+
+    for (size_t i = 0; i < n; ++i) {
+        if (rect_contains_point(rects[i], position)) {
+            dynarray_delete_at(layer->rects, i);
+            dynarray_delete_at(layer->colors, i);
+            return 0;
+        }
+    }
 
     return 0;
 }

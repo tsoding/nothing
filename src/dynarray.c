@@ -15,7 +15,7 @@ struct Dynarray
     size_t element_size;
     size_t capacity;
     size_t count;
-    void *data;
+    char *data;
 };
 
 Dynarray *create_dynarray(size_t element_size)
@@ -113,4 +113,15 @@ bool dynarray_contains(const Dynarray *dynarray,
     }
 
     return false;
+}
+
+void dynarray_delete_at(Dynarray *dynarray, size_t index)
+{
+    trace_assert(dynarray);
+    trace_assert(index < dynarray->count);
+    memmove(
+        dynarray->data + index * dynarray->element_size,
+        dynarray->data + (index + 1) * dynarray->element_size,
+        dynarray->element_size * (dynarray->count - index - 1));
+    dynarray->count--;
 }
