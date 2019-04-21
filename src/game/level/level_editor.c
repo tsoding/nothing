@@ -11,7 +11,6 @@
 
 #include "level_editor.h"
 
-// TODO(#802): Level Editor should modify boxes_layer instead of boxes
 struct LevelEditor
 {
     Lt *lt;
@@ -172,4 +171,9 @@ int level_editor_focus_camera(LevelEditor *level_editor,
     camera_center_at(camera, level_editor->camera_position);
     camera_scale(camera, level_editor->camera_scale);
     return 0;
+}
+
+const Layer *level_editor_boxes(const LevelEditor *level_editor)
+{
+    return level_editor->boxes_layer;
 }

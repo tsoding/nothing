@@ -64,7 +64,8 @@ int layer_render(const Layer *layer, Camera *camera)
     Color *colors = dynarray_data(layer->colors);
 
     for (size_t i = 0; i < n; ++i) {
-        if (camera_fill_rect(camera, rects[i], colors[i]) < 0) {
+        Color color = rgba(colors[i].r, colors[i].g, colors[i].b, 0.5f);
+        if (camera_fill_rect(camera, rects[i], color) < 0) {
             return -1;
         }
     }
@@ -105,4 +106,19 @@ int layer_delete_rect_at(Layer *layer, Vec position)
     }
 
     return 0;
+}
+
+size_t layer_count(const Layer *layer)
+{
+    return dynarray_count(layer->rects);
+}
+
+const Rect *layer_rects(const Layer *layer)
+{
+    return dynarray_data(layer->rects);
+}
+
+const Color *layer_colors(const Layer *layer)
+{
+    return dynarray_data(layer->colors);
 }

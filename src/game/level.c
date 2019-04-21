@@ -47,6 +47,7 @@ struct Level
     Regions *regions;
 
     bool edit_mode;
+    // TODO(#809): LevelEditor doesn't capture the initial state of the level loaded from a file
     LevelEditor *level_editor;
 };
 
@@ -279,6 +280,17 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
         case SDLK_TAB: {
             level->edit_mode = !level->edit_mode;
             SDL_SetRelativeMouseMode(level->edit_mode);
+            if (!level->edit_mode) {
+                level->boxes = RESET_LT(
+                    level->lt,
+                    level->boxes,
+                    create_boxes_from_layer(
+                        level_editor_boxes(level->level_editor),
+                        level->rigid_bodies));
+                if (level->boxes == NULL) {
+                    return -1;
+                }
+            }
         };
         }
         break;
