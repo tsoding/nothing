@@ -61,6 +61,7 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid
     for (size_t i = 0; i < boxes->count; ++i) {
         char color[7];
         Rect rect;
+        // TODO: box id is ignored
         char id[BOXES_MAX_ID_SIZE];
 
         if (sscanf(line_stream_next(line_stream),
