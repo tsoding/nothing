@@ -5,7 +5,6 @@ all: $(TXTS)
 
 .SECONDEXPANSION:
 
-# TODO(#759): devtools/scripts_of_svg.py must be rewritten in C
 %.txt: %.svg $$(shell ../build/svg2level deps $$*.svg)
 	../build/svg2level compile $< $@
 
