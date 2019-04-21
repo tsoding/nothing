@@ -469,21 +469,6 @@ struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct E
         rigid_bodies_apply_force(level->rigid_bodies, (size_t) id, vec((float) x, (float) y));
 
         return eval_success(NIL(gc));
-    } else if (strcmp(target, "body-add") == 0) {
-        long int x = 0, y = 0, w = 0, h = 0;
-        const char *color = 0;
-        res = match_list(gc, "dddds", rest, &x, &y, &w, &h, &color);
-        if (res.is_error) {
-            return res;
-        }
-
-        return eval_success(
-            NUMBER(
-                gc,
-                (long int) rigid_bodies_add(
-                    level->rigid_bodies,
-                    rect((float)x, (float)y, (float)w, (float)h),
-                    hexstr(color))));
     } else if (strcmp(target, "edit") == 0) {
         level->edit_mode = !level->edit_mode;
         SDL_SetRelativeMouseMode(level->edit_mode);

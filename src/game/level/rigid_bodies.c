@@ -13,8 +13,6 @@
 
 #include "./rigid_bodies.h"
 
-#define RIGID_BODIES_MAX_ID_SIZE 36
-
 struct RigidBodies
 {
     Lt *lt;
@@ -24,8 +22,6 @@ struct RigidBodies
     Rect *bodies;
     Vec *velocities;
     Vec *movements;
-    // TODO(#803): the color should not be stored in RigidBodies
-    Color *colors;
     bool *grounded;
     Vec *forces;
     bool *deleted;
@@ -61,11 +57,6 @@ RigidBodies *create_rigid_bodies(size_t capacity)
 
     rigid_bodies->movements = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec)), free);
     if (rigid_bodies->movements == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    rigid_bodies->colors = PUSH_LT(lt, nth_calloc(capacity, sizeof(Color)), free);
-    if (rigid_bodies->colors == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -263,6 +254,7 @@ int rigid_bodies_update(RigidBodies *rigid_bodies,
 
 int rigid_bodies_render(RigidBodies *rigid_bodies,
                         RigidBodyId id,
+                        Color color,
                         Camera *camera)
 {
     trace_assert(rigid_bodies);
@@ -277,7 +269,7 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
     if (camera_fill_rect(
             camera,
             rigid_bodies->bodies[id],
-            rigid_bodies->colors[id]) < 0) {
+            color) < 0) {
         return -1;
     }
 
@@ -328,15 +320,13 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
 }
 
 RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
-                             Rect rect,
-                             Color color)
+                             Rect rect)
 {
     trace_assert(rigid_bodies);
     trace_assert(rigid_bodies->count < rigid_bodies->capacity);
 
     RigidBodyId id = rigid_bodies->count++;
     rigid_bodies->bodies[id] = rect;
-    rigid_bodies->colors[id] = color;
 
     return id;
 }
@@ -348,31 +338,6 @@ void rigid_bodies_remove(RigidBodies *rigid_bodies,
     trace_assert(id < rigid_bodies->capacity);
 
     rigid_bodies->deleted[id] = true;
-}
-
-RigidBodyId rigid_bodies_add_from_line_stream(RigidBodies *rigid_bodies,
-                                              LineStream *line_stream)
-{
-    trace_assert(rigid_bodies);
-    trace_assert(line_stream);
-
-    char color[7];
-    Rect rect;
-    // TODO(#686): id should be part of boxes
-    char id[RIGID_BODIES_MAX_ID_SIZE];
-
-    if (sscanf(line_stream_next(line_stream),
-               "%" STRINGIFY(RIGID_BODIES_MAX_ID_SIZE) "s%f%f%f%f%6s\n",
-               id,
-               &rect.x, &rect.y,
-               &rect.w, &rect.h,
-               color) < 0) {
-        log_fail("Could not read rigid rect\n");
-        // TODO(#687): rigid_bodies_add_from_line_stream cannot indicate an error properly
-        return 0;
-    }
-
-    return rigid_bodies_add(rigid_bodies, rect, hexstr(color));
 }
 
 Rect rigid_bodies_hitbox(const RigidBodies *rigid_bodies,

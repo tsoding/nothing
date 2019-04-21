@@ -20,12 +20,10 @@ int rigid_bodies_update(RigidBodies *rigid_bodies,
 
 int rigid_bodies_render(RigidBodies *rigid_bodies,
                         RigidBodyId id,
+                        Color color,
                         Camera *camera);
 RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
-                             Rect rect,
-                             Color color);
-RigidBodyId rigid_bodies_add_from_line_stream(RigidBodies *rigid_bodies,
-                                              LineStream *line_stream);
+                             Rect rect);
 void rigid_bodies_remove(RigidBodies *rigid_bodies,
                          RigidBodyId id);
 

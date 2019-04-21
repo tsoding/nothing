@@ -11,14 +11,17 @@
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "system/str.h"
 
 #define BOXES_CAPACITY 1000
+#define BOXES_MAX_ID_SIZE 36
 
 struct Boxes
 {
     Lt *lt;
     RigidBodies *rigid_bodies;
     RigidBodyId *body_ids;
+    Color *body_colors;
     size_t count;
 };
 
@@ -56,8 +59,29 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid
         RETURN_LT(lt, NULL);
     }
 
+    boxes->body_colors = PUSH_LT(lt, nth_alloc(sizeof(Color) * BOXES_CAPACITY), free);
+    if (boxes->body_colors == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     for (size_t i = 0; i < boxes->count; ++i) {
-        boxes->body_ids[i] = rigid_bodies_add_from_line_stream(boxes->rigid_bodies, line_stream);
+        char color[7];
+        Rect rect;
+        // TODO: box id is ignored
+        char id[BOXES_MAX_ID_SIZE];
+
+        if (sscanf(line_stream_next(line_stream),
+                   "%" STRINGIFY(BOXES_MAX_ID_SIZE) "s%f%f%f%f%6s\n",
+                   id,
+                   &rect.x, &rect.y,
+                   &rect.w, &rect.h,
+                   color) < 0) {
+            log_fail("Could not read rigid rect\n");
+            RETURN_LT(lt, NULL);
+        }
+
+        boxes->body_colors[i] = hexstr(color);
+        boxes->body_ids[i] = rigid_bodies_add(rigid_bodies, rect);
     }
 
     return boxes;
@@ -80,7 +104,11 @@ int boxes_render(Boxes *boxes, Camera *camera)
     trace_assert(camera);
 
     for (size_t i = 0; i < boxes->count; ++i) {
-        if (rigid_bodies_render(boxes->rigid_bodies, boxes->body_ids[i], camera) < 0) {
+        if (rigid_bodies_render(
+                boxes->rigid_bodies,
+                boxes->body_ids[i],
+                boxes->body_colors[i],
+                camera) < 0) {
             return -1;
         }
     }
@@ -118,7 +146,9 @@ int boxes_add_box(Boxes *boxes, Rect rect, Color color)
     trace_assert(boxes);
     trace_assert(boxes->count < BOXES_CAPACITY);
 
-    boxes->body_ids[boxes->count++] = rigid_bodies_add(boxes->rigid_bodies, rect, color);
+    boxes->body_ids[boxes->count] = rigid_bodies_add(boxes->rigid_bodies, rect);
+    boxes->body_colors[boxes->count] = color;
+    boxes->count++;
 
     return 0;
 }

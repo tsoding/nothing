@@ -86,8 +86,7 @@ Player *create_player_from_line_stream(LineStream *line_stream, RigidBodies *rig
 
     player->alive_body_id = rigid_bodies_add(
         rigid_bodies,
-        rect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT),
-        color);
+        rect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT));
 
     player->dying_body = PUSH_LT(
         lt,
@@ -130,7 +129,11 @@ int player_render(const Player * player,
             return -1;
         }
 
-        return rigid_bodies_render(player->rigid_bodies, player->alive_body_id, camera);
+        return rigid_bodies_render(
+            player->rigid_bodies,
+            player->alive_body_id,
+            player->color,
+            camera);
     }
 
     case PLAYER_STATE_DYING:
