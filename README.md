@@ -17,7 +17,7 @@
 ### Ubuntu
 
 ```console
-$ sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev inotify-tools
+$ sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev inotify-tools libxml2-dev
 ```
 
 ### MacOS
@@ -39,7 +39,7 @@ $ nix-shell
 ### Arch Linux
 
 ```console
-$ sudo pacman -S gcc cmake sdl2 sdl2_mixer inotify-tools
+$ sudo pacman -S gcc cmake sdl2 sdl2_mixer inotify-tools libxml2
 ```
 
 ### Windows
