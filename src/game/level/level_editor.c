@@ -11,7 +11,6 @@
 
 #include "level_editor.h"
 
-// TODO(#802): Level Editor should modify boxes_layer instead of boxes
 struct LevelEditor
 {
     Lt *lt;
