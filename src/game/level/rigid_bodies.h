@@ -24,8 +24,6 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
 RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
                              Rect rect,
                              Color color);
-RigidBodyId rigid_bodies_add_from_line_stream(RigidBodies *rigid_bodies,
-                                              LineStream *line_stream);
 void rigid_bodies_remove(RigidBodies *rigid_bodies,
                          RigidBodyId id);
 

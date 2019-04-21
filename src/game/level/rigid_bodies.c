@@ -13,8 +13,6 @@
 
 #include "./rigid_bodies.h"
 
-#define RIGID_BODIES_MAX_ID_SIZE 36
-
 struct RigidBodies
 {
     Lt *lt;
@@ -348,31 +346,6 @@ void rigid_bodies_remove(RigidBodies *rigid_bodies,
     trace_assert(id < rigid_bodies->capacity);
 
     rigid_bodies->deleted[id] = true;
-}
-
-RigidBodyId rigid_bodies_add_from_line_stream(RigidBodies *rigid_bodies,
-                                              LineStream *line_stream)
-{
-    trace_assert(rigid_bodies);
-    trace_assert(line_stream);
-
-    char color[7];
-    Rect rect;
-    // TODO(#686): id should be part of boxes
-    char id[RIGID_BODIES_MAX_ID_SIZE];
-
-    if (sscanf(line_stream_next(line_stream),
-               "%" STRINGIFY(RIGID_BODIES_MAX_ID_SIZE) "s%f%f%f%f%6s\n",
-               id,
-               &rect.x, &rect.y,
-               &rect.w, &rect.h,
-               color) < 0) {
-        log_fail("Could not read rigid rect\n");
-        // TODO(#687): rigid_bodies_add_from_line_stream cannot indicate an error properly
-        return 0;
-    }
-
-    return rigid_bodies_add(rigid_bodies, rect, hexstr(color));
 }
 
 Rect rigid_bodies_hitbox(const RigidBodies *rigid_bodies,

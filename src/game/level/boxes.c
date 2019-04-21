@@ -11,8 +11,10 @@
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "system/str.h"
 
 #define BOXES_CAPACITY 1000
+#define BOXES_MAX_ID_SIZE 36
 
 struct Boxes
 {
@@ -57,7 +59,21 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid
     }
 
     for (size_t i = 0; i < boxes->count; ++i) {
-        boxes->body_ids[i] = rigid_bodies_add_from_line_stream(boxes->rigid_bodies, line_stream);
+        char color[7];
+        Rect rect;
+        char id[BOXES_MAX_ID_SIZE];
+
+        if (sscanf(line_stream_next(line_stream),
+                   "%" STRINGIFY(BOXES_MAX_ID_SIZE) "s%f%f%f%f%6s\n",
+                   id,
+                   &rect.x, &rect.y,
+                   &rect.w, &rect.h,
+                   color) < 0) {
+            log_fail("Could not read rigid rect\n");
+            RETURN_LT(lt, NULL);
+        }
+
+        boxes->body_ids[i] = rigid_bodies_add(rigid_bodies, rect, hexstr(color));
     }
 
     return boxes;
