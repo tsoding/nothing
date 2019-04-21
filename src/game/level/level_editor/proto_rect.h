@@ -9,6 +9,8 @@ typedef struct {
     Color color;
 } ProtoRect;
 
+typedef struct Layer Layer;
+
 int proto_rect_render(const ProtoRect *proto_rect,
                       Camera *camera);
 int proto_rect_update(ProtoRect *proto_rect,
@@ -16,10 +18,10 @@ int proto_rect_update(ProtoRect *proto_rect,
 int proto_rect_event(ProtoRect *proto_rect,
                      const SDL_Event *event,
                      const Camera *camera,
-                     Boxes *boxes);
+                     Layer *layer);
 int proto_rect_mouse_button(ProtoRect *proto_rect,
                             const SDL_MouseButtonEvent *event,
-                            Boxes *boxes,
+                            Layer *layer,
                             const Camera *camera);
 int proto_rect_mouse_motion(ProtoRect *proto_rect,
                             const SDL_MouseMotionEvent *event,

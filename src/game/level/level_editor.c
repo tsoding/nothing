@@ -19,12 +19,12 @@ struct LevelEditor
     float camera_scale;
     ProtoRect proto_rect;
     ColorPicker color_picker;
+    // TODO(#805): boxes_layer is not connected with the level->boxes
     Layer *boxes_layer;
-    Boxes *boxes;
     bool drag;
 };
 
-LevelEditor *create_level_editor(Boxes *boxes)
+LevelEditor *create_level_editor(void)
 {
     Lt *lt = create_lt();
     if (lt == NULL) {
@@ -48,7 +48,6 @@ LevelEditor *create_level_editor(Boxes *boxes)
         RETURN_LT(lt, NULL);
     }
 
-    level_editor->boxes = boxes;
     level_editor->drag = false;
 
     return level_editor;
@@ -65,6 +64,10 @@ int level_editor_render(const LevelEditor *level_editor,
 {
     trace_assert(level_editor);
     trace_assert(camera);
+
+    if (layer_render(level_editor->boxes_layer, camera) < 0) {
+        return -1;
+    }
 
     if (proto_rect_render(&level_editor->proto_rect, camera) < 0) {
         return -1;
@@ -112,7 +115,7 @@ int level_editor_event(LevelEditor *level_editor,
     case SDL_MOUSEBUTTONDOWN: {
         if (event->type == SDL_MOUSEBUTTONUP) {
             const Vec position = camera_map_screen(camera, event->button.x, event->button.y);
-            if (boxes_delete_at(level_editor->boxes, position) < 0) {
+            if (layer_delete_rect_at(level_editor->boxes_layer, position) < 0) {
                 return -1;
             }
         }
@@ -128,7 +131,7 @@ int level_editor_event(LevelEditor *level_editor,
         if (!selected && proto_rect_mouse_button(
                 &level_editor->proto_rect,
                 &event->button,
-                level_editor->boxes,
+                level_editor->boxes_layer,
                 camera) < 0) {
             return -1;
         }
