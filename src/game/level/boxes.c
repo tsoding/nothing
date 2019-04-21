@@ -1,9 +1,11 @@
 #include "system/stacktrace.h"
 
 #include "broadcast.h"
+#include "dynarray.h"
 #include "ebisp/builtins.h"
 #include "ebisp/interpreter.h"
 #include "game/level/boxes.h"
+#include "game/level/level_editor/layer.h"
 #include "game/level/player.h"
 #include "game/level/rigid_bodies.h"
 #include "math/rand.h"
@@ -12,7 +14,6 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/str.h"
-#include "dynarray.h"
 
 #define BOXES_MAX_ID_SIZE 36
 
@@ -42,16 +43,6 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid
 
     boxes->rigid_bodies = rigid_bodies;
 
-    size_t count = 0;
-
-    if (sscanf(
-            line_stream_next(line_stream),
-            "%lu",
-            &count) == EOF) {
-        log_fail("Could not read amount of boxes\n");
-        RETURN_LT(lt, NULL);
-    }
-
     boxes->body_ids = PUSH_LT(lt, create_dynarray(sizeof(RigidBodyId)), destroy_dynarray);
     if (boxes->body_ids == NULL) {
         RETURN_LT(lt, NULL);
@@ -59,6 +50,16 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid
 
     boxes->body_colors = PUSH_LT(lt, create_dynarray(sizeof(Color)), destroy_dynarray);
     if (boxes->body_colors == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    size_t count = 0;
+
+    if (sscanf(
+            line_stream_next(line_stream),
+            "%lu",
+            &count) == EOF) {
+        log_fail("Could not read amount of boxes\n");
         RETURN_LT(lt, NULL);
     }
 
@@ -89,7 +90,7 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid
     return boxes;
 }
 
-Boxes *create_boxes_from_layer(Layer *layer, RigidBodies *rigid_bodies)
+Boxes *create_boxes_from_layer(const Layer *layer, RigidBodies *rigid_bodies)
 {
     trace_assert(layer);
     trace_assert(rigid_bodies);
@@ -105,7 +106,27 @@ Boxes *create_boxes_from_layer(Layer *layer, RigidBodies *rigid_bodies)
     }
     boxes->lt = lt;
 
-    // TODO: create_boxes_from_layer is not implemented
+    boxes->rigid_bodies = rigid_bodies;
+
+    boxes->body_ids = PUSH_LT(lt, create_dynarray(sizeof(RigidBodyId)), destroy_dynarray);
+    if (boxes->body_ids == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    boxes->body_colors = PUSH_LT(lt, create_dynarray(sizeof(Color)), destroy_dynarray);
+    if (boxes->body_colors == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    const size_t count = layer_count(layer);
+    Rect const *rects = layer_rects(layer);
+    Color const *colors = layer_colors(layer);
+
+    for (size_t i = 0; i < count; ++i) {
+        RigidBodyId body_id = rigid_bodies_add(rigid_bodies, rects[i]);
+        dynarray_push(boxes->body_ids, &body_id);
+        dynarray_push(boxes->body_colors, &colors[i]);
+    }
 
     return boxes;
 }

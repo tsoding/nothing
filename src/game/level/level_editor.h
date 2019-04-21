@@ -16,4 +16,6 @@ int level_editor_event(LevelEditor *level_editor,
 int level_editor_focus_camera(LevelEditor *level_editor,
                               Camera *camera);
 
+const Layer *level_editor_boxes(const LevelEditor *level_editor);
+
 #endif  // LEVEL_EDITOR_H_

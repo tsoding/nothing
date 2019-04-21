@@ -173,3 +173,8 @@ int level_editor_focus_camera(LevelEditor *level_editor,
     camera_scale(camera, level_editor->camera_scale);
     return 0;
 }
+
+const Layer *level_editor_boxes(const LevelEditor *level_editor)
+{
+    return level_editor->boxes_layer;
+}
