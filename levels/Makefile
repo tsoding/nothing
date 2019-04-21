@@ -21,4 +21,3 @@ watch:
 		make; \
 	done
 
-# TODO(#734): integrate svg2level written in C with the level building process
