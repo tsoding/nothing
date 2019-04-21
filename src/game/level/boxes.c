@@ -21,6 +21,7 @@ struct Boxes
     Lt *lt;
     RigidBodies *rigid_bodies;
     RigidBodyId *body_ids;
+    Color *body_colors;
     size_t count;
 };
 
@@ -58,6 +59,11 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid
         RETURN_LT(lt, NULL);
     }
 
+    boxes->body_colors = PUSH_LT(lt, nth_alloc(sizeof(Color) * BOXES_CAPACITY), free);
+    if (boxes->body_colors == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     for (size_t i = 0; i < boxes->count; ++i) {
         char color[7];
         Rect rect;
@@ -74,7 +80,8 @@ Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid
             RETURN_LT(lt, NULL);
         }
 
-        boxes->body_ids[i] = rigid_bodies_add(rigid_bodies, rect, hexstr(color));
+        boxes->body_colors[i] = hexstr(color);
+        boxes->body_ids[i] = rigid_bodies_add(rigid_bodies, rect);
     }
 
     return boxes;
@@ -97,7 +104,11 @@ int boxes_render(Boxes *boxes, Camera *camera)
     trace_assert(camera);
 
     for (size_t i = 0; i < boxes->count; ++i) {
-        if (rigid_bodies_render(boxes->rigid_bodies, boxes->body_ids[i], camera) < 0) {
+        if (rigid_bodies_render(
+                boxes->rigid_bodies,
+                boxes->body_ids[i],
+                boxes->body_colors[i],
+                camera) < 0) {
             return -1;
         }
     }
@@ -135,7 +146,9 @@ int boxes_add_box(Boxes *boxes, Rect rect, Color color)
     trace_assert(boxes);
     trace_assert(boxes->count < BOXES_CAPACITY);
 
-    boxes->body_ids[boxes->count++] = rigid_bodies_add(boxes->rigid_bodies, rect, color);
+    boxes->body_ids[boxes->count] = rigid_bodies_add(boxes->rigid_bodies, rect);
+    boxes->body_colors[boxes->count] = color;
+    boxes->count++;
 
     return 0;
 }

@@ -22,8 +22,6 @@ struct RigidBodies
     Rect *bodies;
     Vec *velocities;
     Vec *movements;
-    // TODO(#803): the color should not be stored in RigidBodies
-    Color *colors;
     bool *grounded;
     Vec *forces;
     bool *deleted;
@@ -59,11 +57,6 @@ RigidBodies *create_rigid_bodies(size_t capacity)
 
     rigid_bodies->movements = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec)), free);
     if (rigid_bodies->movements == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    rigid_bodies->colors = PUSH_LT(lt, nth_calloc(capacity, sizeof(Color)), free);
-    if (rigid_bodies->colors == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -261,6 +254,7 @@ int rigid_bodies_update(RigidBodies *rigid_bodies,
 
 int rigid_bodies_render(RigidBodies *rigid_bodies,
                         RigidBodyId id,
+                        Color color,
                         Camera *camera)
 {
     trace_assert(rigid_bodies);
@@ -275,7 +269,7 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
     if (camera_fill_rect(
             camera,
             rigid_bodies->bodies[id],
-            rigid_bodies->colors[id]) < 0) {
+            color) < 0) {
         return -1;
     }
 
@@ -326,15 +320,13 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
 }
 
 RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
-                             Rect rect,
-                             Color color)
+                             Rect rect)
 {
     trace_assert(rigid_bodies);
     trace_assert(rigid_bodies->count < rigid_bodies->capacity);
 
     RigidBodyId id = rigid_bodies->count++;
     rigid_bodies->bodies[id] = rect;
-    rigid_bodies->colors[id] = color;
 
     return id;
 }
