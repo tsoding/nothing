@@ -47,7 +47,7 @@ struct Level
     Regions *regions;
 
     bool edit_mode;
-    // TODO: LevelEditor doesn't capture the initial state of the level loaded from a file
+    // TODO(#809): LevelEditor doesn't capture the initial state of the level loaded from a file
     LevelEditor *level_editor;
 };
 
