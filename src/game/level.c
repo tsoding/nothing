@@ -45,7 +45,7 @@ struct Level
     Platforms *platforms;
     // TODO(#815): LevelEditor does not support Goals
     Goals *goals;
-    // TODO: LevelEditor does not support Lava
+    // TODO(#816): LevelEditor does not support Lava
     Lava *lava;
     // TODO: LevelEditor does not support Back Platfrosm
     Platforms *back_platforms;
