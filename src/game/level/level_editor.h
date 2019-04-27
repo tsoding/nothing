@@ -3,6 +3,8 @@
 
 typedef struct LevelEditor LevelEditor;
 
+// TODO(#820): LevelEditor cannot generate a level file
+
 LevelEditor *create_level_editor(Layer *boxes_layer);
 void destroy_level_editor(LevelEditor *level_editor);
 
