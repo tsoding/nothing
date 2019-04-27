@@ -212,6 +212,8 @@ void destroy_level(Level *level)
     RETURN_LT0(level->lt);
 }
 
+// TODO: Level rendering obscures LevelEditor rendering
+
 int level_render(const Level *level, Camera *camera)
 {
     trace_assert(level);
