@@ -11,6 +11,7 @@
 #include "system/line_stream.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
+#include "game/level/level_editor/layer.h"
 
 struct Platforms {
     Lt *lt;
@@ -20,53 +21,37 @@ struct Platforms {
     size_t rects_size;
 };
 
-Platforms *create_platforms_from_line_stream(LineStream *line_stream)
+Platforms *create_platforms_from_layer(Layer *layer)
 {
-    trace_assert(line_stream);
+    trace_assert(layer);
 
-    Lt *const lt = create_lt();
+    Lt *lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
 
-    Platforms *platforms = PUSH_LT(lt, nth_alloc(sizeof(Platforms)), free);
+    Platforms *platforms = PUSH_LT(
+        lt,
+        nth_alloc(sizeof(Platforms)),
+        free);
     if (platforms == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    platforms->rects_size = 0;
-    if (sscanf(
-            line_stream_next(line_stream),
-            "%lu",
-            &platforms->rects_size) == EOF) {
-        log_fail("Could not read amount of platforms\n");
-        RETURN_LT(lt, NULL);
-    }
+    platforms->rects_size = layer_count(layer);
 
     platforms->rects = PUSH_LT(lt, nth_alloc(sizeof(Rect) * platforms->rects_size), free);
     if (platforms->rects == NULL) {
         RETURN_LT(lt, NULL);
     }
+    memcpy(platforms->rects, layer_rects(layer), sizeof(Rect) * platforms->rects_size);
+
 
     platforms->colors = PUSH_LT(lt, nth_alloc(sizeof(Color) * platforms->rects_size), free);
     if (platforms->colors == NULL) {
         RETURN_LT(lt, NULL);
     }
-
-    char color[7];
-    for (size_t i = 0; i < platforms->rects_size; ++i) {
-        if (sscanf(line_stream_next(line_stream),
-                   "%f%f%f%f%6s\n",
-                   &platforms->rects[i].x, &platforms->rects[i].y,
-                   &platforms->rects[i].w, &platforms->rects[i].h,
-                   color) < 0) {
-            log_fail("Could not read %dth platform\n", i);
-            RETURN_LT(lt, NULL);
-        }
-        platforms->colors[i] = hexstr(color);
-    }
-
-    platforms->lt = lt;
+    memcpy(platforms->colors, layer_colors(layer), sizeof(Color) * platforms->rects_size);
 
     return platforms;
 }

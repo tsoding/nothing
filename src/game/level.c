@@ -41,13 +41,11 @@ struct Level
     RigidBodies *rigid_bodies;
     // TODO(#813): LevelEditor does not support Player
     Player *player;
-    // TODO(#814): LevelEditor does not support Platforms
     Platforms *platforms;
     // TODO(#815): LevelEditor does not support Goals
     Goals *goals;
     // TODO(#816): LevelEditor does not support Lava
     Lava *lava;
-    // TODO(#817): LevelEditor does not support Back Platfrosm
     Platforms *back_platforms;
     Boxes *boxes;
     // TODO(#818): LevelEditor does not support Labels
@@ -120,9 +118,14 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
+    Layer *platforms_layer = create_layer_from_line_stream(level_stream);
+    if (platforms_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->platforms = PUSH_LT(
         lt,
-        create_platforms_from_line_stream(level_stream),
+        create_platforms_from_layer(platforms_layer),
         destroy_platforms);
     if (level->platforms == NULL) {
         RETURN_LT(lt, NULL);
@@ -144,9 +147,14 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
+    Layer *back_platforms_layer = create_layer_from_line_stream(level_stream);
+    if (back_platforms_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->back_platforms = PUSH_LT(
         lt,
-        create_platforms_from_line_stream(level_stream),
+        create_platforms_from_layer(back_platforms_layer),
         destroy_platforms);
     if (level->back_platforms == NULL) {
         RETURN_LT(lt, NULL);
