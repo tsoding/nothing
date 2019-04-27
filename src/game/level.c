@@ -41,7 +41,7 @@ struct Level
     RigidBodies *rigid_bodies;
     // TODO(#813): LevelEditor does not support Player
     Player *player;
-    // TODO: LevelEditor does not support Platforms
+    // TODO(#814): LevelEditor does not support Platforms
     Platforms *platforms;
     // TODO: LevelEditor does not support Goals
     Goals *goals;
