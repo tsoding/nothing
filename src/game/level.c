@@ -43,7 +43,7 @@ struct Level
     Player *player;
     // TODO(#814): LevelEditor does not support Platforms
     Platforms *platforms;
-    // TODO: LevelEditor does not support Goals
+    // TODO(#815): LevelEditor does not support Goals
     Goals *goals;
     // TODO: LevelEditor does not support Lava
     Lava *lava;
