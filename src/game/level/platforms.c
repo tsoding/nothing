@@ -32,11 +32,12 @@ Platforms *create_platforms_from_layer(Layer *layer)
 
     Platforms *platforms = PUSH_LT(
         lt,
-        nth_alloc(sizeof(Platforms)),
+        nth_calloc(1, sizeof(Platforms)),
         free);
     if (platforms == NULL) {
         RETURN_LT(lt, NULL);
     }
+    platforms->lt = lt;
 
     platforms->rects_size = layer_count(layer);
 
