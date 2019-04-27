@@ -7,6 +7,7 @@
 #include "color.h"
 #include "layer.h"
 #include "dynarray.h"
+#include "system/line_stream.h"
 
 struct Layer {
     Lt *lt;
@@ -43,7 +44,48 @@ Layer *create_layer(void)
         RETURN_LT(lt, NULL);
     }
 
-    trace_assert(layer);
+    return layer;
+}
+
+Layer *create_layer_from_line_stream(LineStream *line_stream)
+{
+    trace_assert(line_stream);
+
+    Layer *layer = create_layer();
+    if (layer == NULL) {
+        return NULL;
+    }
+
+    const char *line = line_stream_next(line_stream);
+    if (line == NULL) {
+        RETURN_LT(layer->lt, NULL);
+    }
+
+    size_t count = 0;
+    if (sscanf(line, "%lu", &count) < 0) {
+        RETURN_LT(layer->lt, NULL);
+    }
+
+    for (size_t i = 0; i < count; ++i) {
+        line = line_stream_next(line_stream);
+        if (line == NULL) {
+            RETURN_LT(layer->lt, NULL);
+        }
+
+        char hex[7];
+        Rect rect;
+
+        if (sscanf(line, "%f%f%f%f%6s\n",
+                   &rect.x, &rect.y,
+                   &rect.w, &rect.h,
+                   hex) < 0) {
+            RETURN_LT(layer->lt, NULL);
+        }
+
+        if (layer_add_rect(layer, rect, hexstr(hex)) < 0) {
+            RETURN_LT(layer->lt, NULL);
+        }
+    }
 
     return layer;
 }
@@ -84,8 +126,13 @@ int layer_add_rect(Layer *layer, Rect rect, Color color)
 {
     trace_assert(layer);
 
-    dynarray_push(layer->rects, &rect);
-    dynarray_push(layer->colors, &color);
+    if (dynarray_push(layer->rects, &rect) < 0) {
+        return -1;
+    }
+
+    if (dynarray_push(layer->colors, &color) < 0) {
+        return -1;
+    }
 
     return 0;
 }
