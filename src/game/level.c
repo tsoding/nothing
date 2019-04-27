@@ -50,7 +50,7 @@ struct Level
     // TODO(#817): LevelEditor does not support Back Platfrosm
     Platforms *back_platforms;
     Boxes *boxes;
-    // TODO: LevelEditor does not support Labels
+    // TODO(#818): LevelEditor does not support Labels
     Labels *labels;
     // TODO: LevelEditor does not support Regions
     Regions *regions;
