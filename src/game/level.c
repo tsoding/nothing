@@ -39,7 +39,7 @@ struct Level
     // TODO(#812): LevelEditor does not support Background
     Background *background;
     RigidBodies *rigid_bodies;
-    // TODO: LevelEditor does not support Player
+    // TODO(#813): LevelEditor does not support Player
     Player *player;
     // TODO: LevelEditor does not support Platforms
     Platforms *platforms;
