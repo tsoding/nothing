@@ -52,7 +52,7 @@ struct Level
     Boxes *boxes;
     // TODO(#818): LevelEditor does not support Labels
     Labels *labels;
-    // TODO: LevelEditor does not support Regions
+    // TODO(#819): LevelEditor does not support Regions
     Regions *regions;
 
     bool edit_mode;
