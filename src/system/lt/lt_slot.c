@@ -16,7 +16,7 @@ Lt_slot *create_lt_slot(void *resource, Lt_destroy resource_destroy)
     trace_assert(resource);
     trace_assert(resource_destroy);
 
-    Lt_slot *lt_slot = nth_alloc(sizeof(Lt_slot));
+    Lt_slot *lt_slot = nth_calloc(1, sizeof(Lt_slot));
     if (lt_slot == NULL) {
         return NULL;
     }

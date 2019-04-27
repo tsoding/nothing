@@ -22,7 +22,7 @@ Layer *create_layer(void)
         return NULL;
     }
 
-    Layer *layer = PUSH_LT(lt, nth_alloc(sizeof(Layer)), free);
+    Layer *layer = PUSH_LT(lt, nth_calloc(1, sizeof(Layer)), free);
     if (layer == NULL) {
         RETURN_LT(lt, NULL);
     }

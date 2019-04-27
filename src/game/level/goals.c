@@ -45,7 +45,7 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
         return NULL;
     }
 
-    Goals *const goals = PUSH_LT(lt, nth_alloc(sizeof(Goals)), free);
+    Goals *const goals = PUSH_LT(lt, nth_calloc(1, sizeof(Goals)), free);
     if (goals == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -61,34 +61,34 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
 
     goals->ids = PUSH_LT(
         lt,
-        nth_alloc(sizeof(char*) * goals->count),
+        nth_calloc(1, sizeof(char*) * goals->count),
         free);
     if (goals->ids == NULL) {
         RETURN_LT(lt, NULL);
     }
     for (size_t i = 0; i < goals->count; ++i) {
-        goals->ids[i] = PUSH_LT(lt, nth_alloc(sizeof(char) * GOAL_MAX_ID_SIZE), free);
+        goals->ids[i] = PUSH_LT(lt, nth_calloc(1, sizeof(char) * GOAL_MAX_ID_SIZE), free);
         if (goals->ids[i] == NULL) {
             RETURN_LT(lt, NULL);
         }
     }
 
-    goals->points = PUSH_LT(lt, nth_alloc(sizeof(Point) * goals->count), free);
+    goals->points = PUSH_LT(lt, nth_calloc(1, sizeof(Point) * goals->count), free);
     if (goals->points == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    goals->colors = PUSH_LT(lt, nth_alloc(sizeof(Color) * goals->count), free);
+    goals->colors = PUSH_LT(lt, nth_calloc(1, sizeof(Color) * goals->count), free);
     if (goals->colors == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    goals->cue_states = PUSH_LT(lt, nth_alloc(sizeof(int) * goals->count), free);
+    goals->cue_states = PUSH_LT(lt, nth_calloc(1, sizeof(int) * goals->count), free);
     if (goals->cue_states == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    goals->visible = PUSH_LT(lt, nth_alloc(sizeof(bool) * goals->count), free);
+    goals->visible = PUSH_LT(lt, nth_calloc(1, sizeof(bool) * goals->count), free);
     if (goals->visible == NULL) {
         RETURN_LT(lt, NULL);
     }

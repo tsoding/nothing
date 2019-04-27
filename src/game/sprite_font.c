@@ -29,7 +29,7 @@ Sprite_font *create_sprite_font_from_file(const char *bmp_file_path,
         return NULL;
     }
 
-    Sprite_font * const sprite_font = PUSH_LT(lt, nth_alloc(sizeof(Sprite_font)), free);
+    Sprite_font * const sprite_font = PUSH_LT(lt, nth_calloc(1, sizeof(Sprite_font)), free);
     if (sprite_font == NULL) {
         RETURN_LT(lt, NULL);
     }

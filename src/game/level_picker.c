@@ -33,7 +33,7 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
 
     LevelPicker *level_picker = PUSH_LT(
         lt,
-        nth_alloc(sizeof(LevelPicker)),
+        nth_calloc(1, sizeof(LevelPicker)),
         free);
     if (level_picker == NULL) {
         RETURN_LT(lt, NULL);

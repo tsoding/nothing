@@ -38,13 +38,13 @@ Edit_field *create_edit_field(const Sprite_font *font,
         return NULL;
     }
 
-    Edit_field *const edit_field = PUSH_LT(lt, nth_alloc(sizeof(Edit_field)), free);
+    Edit_field *const edit_field = PUSH_LT(lt, nth_calloc(1, sizeof(Edit_field)), free);
     if (edit_field == NULL) {
         RETURN_LT(lt, NULL);
     }
     edit_field->lt = lt;
 
-    edit_field->buffer = PUSH_LT(lt, nth_alloc(sizeof(char) * (BUFFER_CAPACITY + 10)), free);
+    edit_field->buffer = PUSH_LT(lt, nth_calloc(1, sizeof(char) * (BUFFER_CAPACITY + 10)), free);
     if (edit_field->buffer == NULL) {
         RETURN_LT(lt, NULL);
     }

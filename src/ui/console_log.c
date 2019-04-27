@@ -32,7 +32,7 @@ Console_Log *create_console_log(const Sprite_font *font,
         return NULL;
     }
 
-    Console_Log *console_log = PUSH_LT(lt, nth_alloc(sizeof(Console_Log)), free);
+    Console_Log *console_log = PUSH_LT(lt, nth_calloc(1, sizeof(Console_Log)), free);
     if (console_log == NULL) {
         RETURN_LT(lt, NULL);
     }

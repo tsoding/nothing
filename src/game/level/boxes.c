@@ -33,7 +33,7 @@ Boxes *create_boxes_from_layer(const Layer *layer, RigidBodies *rigid_bodies)
         return NULL;
     }
 
-    Boxes *boxes = PUSH_LT(lt, nth_alloc(sizeof(Boxes)), free);
+    Boxes *boxes = PUSH_LT(lt, nth_calloc(1, sizeof(Boxes)), free);
     if (boxes == NULL) {
         RETURN_LT(lt, NULL);
     }

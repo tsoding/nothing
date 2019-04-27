@@ -28,7 +28,7 @@ Lava *create_lava_from_line_stream(LineStream *line_stream)
         return NULL;
     }
 
-    Lava *lava = PUSH_LT(lt, nth_alloc(sizeof(Lava)), free);
+    Lava *lava = PUSH_LT(lt, nth_calloc(1, sizeof(Lava)), free);
     if (lava == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -41,7 +41,7 @@ Lava *create_lava_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    lava->rects = PUSH_LT(lt, nth_alloc(sizeof(Wavy_rect*) * lava->rects_count), free);
+    lava->rects = PUSH_LT(lt, nth_calloc(1, sizeof(Wavy_rect*) * lava->rects_count), free);
     if (lava->rects == NULL) {
         RETURN_LT(lt, NULL);
     }

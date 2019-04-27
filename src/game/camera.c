@@ -38,7 +38,7 @@ Camera *create_camera(SDL_Renderer *renderer,
     trace_assert(renderer);
     trace_assert(font);
 
-    Camera *camera = nth_alloc(sizeof(Camera));
+    Camera *camera = nth_calloc(1, sizeof(Camera));
 
     if (camera == NULL) {
         return NULL;

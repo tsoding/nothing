@@ -20,12 +20,20 @@ struct LevelEditor
     ColorPicker color_picker;
     // TODO(#805): boxes_layer is not connected with the level->boxes
     Layer *boxes_layer;
+    Layer *platforms_layer;
+    Layer *back_platforms_layer;
+    // TODO(#823): LevelEditor does not allow to switch the current layer
+    Layer *current_layer;
     bool drag;
 };
 
-LevelEditor *create_level_editor(Layer *boxes_layer)
+LevelEditor *create_level_editor(Layer *boxes_layer,
+                                 Layer *platforms_layer,
+                                 Layer *back_platforms_layer)
 {
     trace_assert(boxes_layer);
+    trace_assert(platforms_layer);
+    trace_assert(back_platforms_layer);
 
     Lt *lt = create_lt();
     if (lt == NULL) {
@@ -44,7 +52,10 @@ LevelEditor *create_level_editor(Layer *boxes_layer)
     level_editor->color_picker.position = vec(0.0f, 0.0f);
     level_editor->color_picker.proto_rect = &level_editor->proto_rect;
     level_editor->boxes_layer = PUSH_LT(lt, boxes_layer, destroy_layer);
+    level_editor->platforms_layer = PUSH_LT(lt, platforms_layer, destroy_layer);
+    level_editor->back_platforms_layer = PUSH_LT(lt, back_platforms_layer, destroy_layer);
     level_editor->drag = false;
+    level_editor->current_layer = level_editor->platforms_layer;
 
     return level_editor;
 }
@@ -61,7 +72,15 @@ int level_editor_render(const LevelEditor *level_editor,
     trace_assert(level_editor);
     trace_assert(camera);
 
+    if (layer_render(level_editor->back_platforms_layer, camera) < 0) {
+        return -1;
+    }
+
     if (layer_render(level_editor->boxes_layer, camera) < 0) {
+        return -1;
+    }
+
+    if (layer_render(level_editor->platforms_layer, camera) < 0) {
         return -1;
     }
 
@@ -111,7 +130,7 @@ int level_editor_event(LevelEditor *level_editor,
     case SDL_MOUSEBUTTONDOWN: {
         if (event->type == SDL_MOUSEBUTTONUP) {
             const Vec position = camera_map_screen(camera, event->button.x, event->button.y);
-            if (layer_delete_rect_at(level_editor->boxes_layer, position) < 0) {
+            if (layer_delete_rect_at(level_editor->current_layer, position) < 0) {
                 return -1;
             }
         }
@@ -127,7 +146,7 @@ int level_editor_event(LevelEditor *level_editor,
         if (!selected && proto_rect_mouse_button(
                 &level_editor->proto_rect,
                 &event->button,
-                level_editor->boxes_layer,
+                level_editor->current_layer,
                 camera) < 0) {
             return -1;
         }
@@ -173,4 +192,9 @@ int level_editor_focus_camera(LevelEditor *level_editor,
 const Layer *level_editor_boxes(const LevelEditor *level_editor)
 {
     return level_editor->boxes_layer;
+}
+
+const Layer *level_editor_platforms(const LevelEditor *level_editor)
+{
+    return level_editor->platforms_layer;
 }

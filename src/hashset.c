@@ -37,7 +37,7 @@ HashSet *create_hashset(size_t element_size, size_t n)
         return NULL;
     }
 
-    HashSet *hash_set = PUSH_LT(lt, nth_alloc(sizeof(HashSet)), free);
+    HashSet *hash_set = PUSH_LT(lt, nth_calloc(1, sizeof(HashSet)), free);
     if (hash_set == NULL) {
         RETURN_LT(lt, NULL);
     }

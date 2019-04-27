@@ -41,13 +41,11 @@ struct Level
     RigidBodies *rigid_bodies;
     // TODO(#813): LevelEditor does not support Player
     Player *player;
-    // TODO(#814): LevelEditor does not support Platforms
     Platforms *platforms;
     // TODO(#815): LevelEditor does not support Goals
     Goals *goals;
     // TODO(#816): LevelEditor does not support Lava
     Lava *lava;
-    // TODO(#817): LevelEditor does not support Back Platfrosm
     Platforms *back_platforms;
     Boxes *boxes;
     // TODO(#818): LevelEditor does not support Labels
@@ -69,7 +67,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         return NULL;
     }
 
-    Level *const level = PUSH_LT(lt, nth_alloc(sizeof(Level)), free);
+    Level *const level = PUSH_LT(lt, nth_calloc(1, sizeof(Level)), free);
     if (level == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -120,9 +118,14 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
+    Layer *platforms_layer = create_layer_from_line_stream(level_stream);
+    if (platforms_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->platforms = PUSH_LT(
         lt,
-        create_platforms_from_line_stream(level_stream),
+        create_platforms_from_layer(platforms_layer),
         destroy_platforms);
     if (level->platforms == NULL) {
         RETURN_LT(lt, NULL);
@@ -144,9 +147,14 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
+    Layer *back_platforms_layer = create_layer_from_line_stream(level_stream);
+    if (back_platforms_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->back_platforms = PUSH_LT(
         lt,
-        create_platforms_from_line_stream(level_stream),
+        create_platforms_from_layer(back_platforms_layer),
         destroy_platforms);
     if (level->back_platforms == NULL) {
         RETURN_LT(lt, NULL);
@@ -184,7 +192,10 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
     level->edit_mode = false;
     level->level_editor = PUSH_LT(
         lt,
-        create_level_editor(boxes_layer),
+        create_level_editor(
+            boxes_layer,
+            platforms_layer,
+            back_platforms_layer),
         destroy_level_editor);
     if (level->level_editor == NULL) {
         RETURN_LT(lt, NULL);
@@ -200,6 +211,8 @@ void destroy_level(Level *level)
     trace_assert(level);
     RETURN_LT0(level->lt);
 }
+
+// TODO(#822): Level rendering obscures LevelEditor rendering
 
 int level_render(const Level *level, Camera *camera)
 {
@@ -304,6 +317,16 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
                 if (level->boxes == NULL) {
                     return -1;
                 }
+
+                level->platforms = RESET_LT(
+                    level->lt,
+                    level->platforms,
+                    create_platforms_from_layer(
+                        level_editor_platforms(
+                            level->level_editor)));
+                if (level->platforms == NULL) {
+                    return -1;
+                }
             }
         };
         }
@@ -344,102 +367,6 @@ int level_input(Level *level,
     }
 
     return 0;
-}
-
-int level_reload_preserve_player(Level *level, Broadcast *broadcast)
-{
-    Lt * const lt = create_lt();
-    if (lt == NULL) {
-        return -1;
-    }
-
-    log_info("Soft-reloading the level from '%s'...\n", level->file_name);
-
-    /* TODO(#104): duplicate code in create_level_from_file and level_reload_preserve_player */
-
-    LineStream * const level_stream = PUSH_LT(
-        lt,
-        create_line_stream(
-            level->file_name,
-            "r",
-            LEVEL_LINE_MAX_LENGTH),
-        destroy_line_stream);
-    if (level_stream == NULL) {
-        RETURN_LT(lt, -1);
-    }
-
-    LevelMetadata *const metadata = create_level_metadata_from_line_stream(level_stream);
-    if (metadata == NULL) {
-        RETURN_LT(lt, -1);
-    }
-    level->metadata = RESET_LT(level->lt, level->metadata, metadata);
-
-    Background * const background = create_background_from_line_stream(level_stream);
-    if (background == NULL) {
-        RETURN_LT(lt, -1);
-    }
-    level->background = RESET_LT(level->lt, level->background, background);
-
-    Player * const skipped_player = create_player_from_line_stream(level_stream, level->rigid_bodies, broadcast);
-    if (skipped_player == NULL) {
-        RETURN_LT(lt, -1);
-    }
-    destroy_player(skipped_player);
-
-    Platforms * const platforms = create_platforms_from_line_stream(level_stream);
-    if (platforms == NULL) {
-        RETURN_LT(lt, -1);
-    }
-    level->platforms = RESET_LT(level->lt, level->platforms, platforms);
-
-    Goals * const goals = create_goals_from_line_stream(level_stream);
-    if (goals == NULL) {
-        RETURN_LT(lt, -1);
-    }
-    level->goals = RESET_LT(level->lt, level->goals, goals);
-
-    Lava * const lava = create_lava_from_line_stream(level_stream);
-    if (lava == NULL) {
-        RETURN_LT(lt, -1);
-    }
-    level->lava = RESET_LT(level->lt, level->lava, lava);
-
-    Platforms * const back_platforms = create_platforms_from_line_stream(level_stream);
-    if (back_platforms == NULL) {
-        RETURN_LT(lt, -1);
-    }
-    level->back_platforms = RESET_LT(level->lt, level->back_platforms, back_platforms);
-
-    Layer * const boxes_layer = create_layer_from_line_stream(level_stream);
-    if (boxes_layer == NULL) {
-        RETURN_LT(lt, -1);
-    }
-
-    Boxes * const boxes = create_boxes_from_layer(boxes_layer, level->rigid_bodies);
-    if (boxes == NULL) {
-        RETURN_LT(lt, -1);
-    }
-    level->boxes = RESET_LT(level->lt, level->boxes, boxes);
-
-    Labels * const labels = create_labels_from_line_stream(level_stream);
-    if (labels == NULL) {
-        RETURN_LT(lt, -1);
-    }
-    level->labels = RESET_LT(level->lt, level->labels, labels);
-
-    Regions * const regions = create_regions_from_line_stream(level_stream, broadcast);
-    if (regions == NULL) {
-        RETURN_LT(lt, -1);
-    }
-    level->regions = RESET_LT(level->lt, level->regions, regions);
-
-    LevelEditor * const level_editor = create_level_editor(boxes_layer);
-    if (level_editor == NULL) {
-        RETURN_LT(lt, -1);
-    }
-    level->level_editor = RESET_LT(level->lt, level->level_editor, level_editor);
-
-    RETURN_LT(lt, 0);
 }
 
 int level_sound(Level *level, Sound_samples *sound_samples)

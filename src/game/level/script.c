@@ -31,7 +31,7 @@ Script *create_script_from_line_stream(LineStream *line_stream, Broadcast *broad
         return NULL;
     }
 
-    Script *script = PUSH_LT(lt, nth_alloc(sizeof(Script)), free);
+    Script *script = PUSH_LT(lt, nth_calloc(1, sizeof(Script)), free);
     if (script == NULL) {
         RETURN_LT(lt, NULL);
     }
