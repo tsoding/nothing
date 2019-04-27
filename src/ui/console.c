@@ -62,7 +62,7 @@ Console *create_console(Broadcast *broadcast,
         return NULL;
     }
 
-    Console *console = PUSH_LT(lt, nth_alloc(sizeof(Console)), free);
+    Console *console = PUSH_LT(lt, nth_calloc(1, sizeof(Console)), free);
     if (console == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -105,7 +105,7 @@ Console *create_console(Broadcast *broadcast,
 
     console->eval_result = PUSH_LT(
         lt,
-        nth_alloc(sizeof(char) * CONSOLE_EVAL_RESULT_SIZE),
+        nth_calloc(1, sizeof(char) * CONSOLE_EVAL_RESULT_SIZE),
         free);
     if (console->eval_result == NULL) {
         RETURN_LT(lt, NULL);

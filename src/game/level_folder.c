@@ -31,7 +31,7 @@ LevelFolder *create_level_folder(const char *dirpath)
 
     LevelFolder *level_folder = PUSH_LT(
         lt,
-        nth_alloc(sizeof(LevelFolder)),
+        nth_calloc(1, sizeof(LevelFolder)),
         free);
     if (level_folder == NULL) {
         RETURN_LT(lt, NULL);

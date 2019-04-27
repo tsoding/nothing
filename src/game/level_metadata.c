@@ -39,7 +39,7 @@ LevelMetadata *create_level_metadata_from_line_stream(LineStream *line_stream)
     }
 
     LevelMetadata *level_metadata = PUSH_LT(
-        lt, nth_alloc(sizeof(LevelMetadata)), free);
+        lt, nth_calloc(1, sizeof(LevelMetadata)), free);
     if (level_metadata == NULL) {
         RETURN_LT(lt, NULL);
     }

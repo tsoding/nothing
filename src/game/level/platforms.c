@@ -41,14 +41,14 @@ Platforms *create_platforms_from_layer(Layer *layer)
 
     platforms->rects_size = layer_count(layer);
 
-    platforms->rects = PUSH_LT(lt, nth_alloc(sizeof(Rect) * platforms->rects_size), free);
+    platforms->rects = PUSH_LT(lt, nth_calloc(1, sizeof(Rect) * platforms->rects_size), free);
     if (platforms->rects == NULL) {
         RETURN_LT(lt, NULL);
     }
     memcpy(platforms->rects, layer_rects(layer), sizeof(Rect) * platforms->rects_size);
 
 
-    platforms->colors = PUSH_LT(lt, nth_alloc(sizeof(Color) * platforms->rects_size), free);
+    platforms->colors = PUSH_LT(lt, nth_calloc(1, sizeof(Color) * platforms->rects_size), free);
     if (platforms->colors == NULL) {
         RETURN_LT(lt, NULL);
     }

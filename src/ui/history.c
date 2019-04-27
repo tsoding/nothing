@@ -26,7 +26,7 @@ History *create_history(size_t capacity)
 
     History *history = PUSH_LT(
         lt,
-        nth_alloc(sizeof(History)),
+        nth_calloc(1, sizeof(History)),
         free);
     if (history == NULL) {
         RETURN_LT(lt, NULL);

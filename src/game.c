@@ -56,7 +56,7 @@ Game *create_game(const char *level_folder,
         return NULL;
     }
 
-    Game *game = PUSH_LT(lt, nth_alloc(sizeof(Game)), free);
+    Game *game = PUSH_LT(lt, nth_calloc(1, sizeof(Game)), free);
     if (game == NULL) {
         RETURN_LT(lt, NULL);
     }

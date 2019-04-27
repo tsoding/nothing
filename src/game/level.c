@@ -67,7 +67,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         return NULL;
     }
 
-    Level *const level = PUSH_LT(lt, nth_alloc(sizeof(Level)), free);
+    Level *const level = PUSH_LT(lt, nth_calloc(1, sizeof(Level)), free);
     if (level == NULL) {
         RETURN_LT(lt, NULL);
     }

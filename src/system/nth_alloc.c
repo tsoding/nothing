@@ -2,17 +2,6 @@
 #include "nth_alloc.h"
 #include "log.h"
 
-void *nth_alloc(size_t size)
-{
-    void *mem = malloc(size);
-
-    if (mem == NULL) {
-        log_fail("nth_alloc(%lu) failed", size);
-    }
-
-    return mem;
-}
-
 void *nth_calloc(size_t num, size_t size)
 {
     void *mem = calloc(num, size);

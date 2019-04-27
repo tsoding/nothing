@@ -17,12 +17,12 @@ struct Lt
 
 Lt *create_lt()
 {
-    Lt *lt = nth_alloc(sizeof(Lt));
+    Lt *lt = nth_calloc(1, sizeof(Lt));
     if(lt == NULL) {
         goto nth_alloc_lt_fail;
     }
 
-    lt->frames = nth_alloc(sizeof(Lt_slot*) * INITIAL_FRAME_BUFFER_SIZE);
+    lt->frames = nth_calloc(1, sizeof(Lt_slot*) * INITIAL_FRAME_BUFFER_SIZE);
     if (lt->frames == NULL) {
         goto nth_alloc_lt_slots_fail;
     }

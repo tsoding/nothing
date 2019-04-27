@@ -44,7 +44,7 @@ Broadcast *create_broadcast(Game *game)
 {
     trace_assert(game);
 
-    Broadcast *broadcast = nth_alloc(sizeof(Broadcast));
+    Broadcast *broadcast = nth_calloc(1, sizeof(Broadcast));
     if (broadcast == NULL) {
         return NULL;
     }

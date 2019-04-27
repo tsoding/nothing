@@ -35,7 +35,7 @@ Background *create_background(Color base_color)
         return NULL;
     }
 
-    Background *background = PUSH_LT(lt, nth_alloc(sizeof(Background)), free);
+    Background *background = PUSH_LT(lt, nth_calloc(1, sizeof(Background)), free);
     if (background == NULL) {
         RETURN_LT(lt, NULL);
     }

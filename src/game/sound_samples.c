@@ -40,14 +40,14 @@ Sound_samples *create_sound_samples(const char *sample_files[],
         return NULL;
     }
 
-    Sound_samples *sound_samples = PUSH_LT(lt, nth_alloc(sizeof(Sound_samples)), free);
+    Sound_samples *sound_samples = PUSH_LT(lt, nth_calloc(1, sizeof(Sound_samples)), free);
     if (sound_samples == NULL) {
         RETURN_LT(lt, NULL);
     }
 
     sound_samples->samples = PUSH_LT(
         lt,
-        nth_alloc(sizeof(Mix_Chunk*) * sample_files_count),
+        nth_calloc(1, sizeof(Mix_Chunk*) * sample_files_count),
         free);
     if (sound_samples->samples == NULL) {
         RETURN_LT(lt, NULL);

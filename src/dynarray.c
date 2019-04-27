@@ -25,7 +25,7 @@ Dynarray *create_dynarray(size_t element_size)
         return NULL;
     }
 
-    Dynarray *dynarray = PUSH_LT(lt, nth_alloc(sizeof(Dynarray)), free);
+    Dynarray *dynarray = PUSH_LT(lt, nth_calloc(1, sizeof(Dynarray)), free);
     if (dynarray == NULL) {
         RETURN_LT(lt, NULL);
     }

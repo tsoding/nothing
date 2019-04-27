@@ -32,7 +32,7 @@ MenuTitle *create_menu_title(const char *text,
 
     MenuTitle *menu_title = PUSH_LT(
         lt,
-        nth_alloc(sizeof(MenuTitle)),
+        nth_calloc(1, sizeof(MenuTitle)),
         free);
     if (menu_title == NULL) {
         RETURN_LT(lt, NULL);
