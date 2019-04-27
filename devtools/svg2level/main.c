@@ -334,7 +334,7 @@ static void save_backplatforms(Context *context, FILE *output_file)
 static void save_boxes(Context *context, FILE *output_file)
 {
     STATIC_ARRAY(const char*, attrs,
-                 "id", "x", "y", "width", "height", "#color");
+                 "x", "y", "width", "height", "#color");
     save_pack_by_id_prefix(context, output_file, "box", attrs, attrs_count);
 }
 

@@ -2,8 +2,10 @@
 #define LAYER_H_
 
 typedef struct Layer Layer;
+typedef struct LineStream LineStream;
 
 Layer *create_layer(void);
+Layer *create_layer_from_line_stream(LineStream *line_stream);
 void destroy_layer(Layer *layer);
 
 int layer_render(const Layer *layer, Camera *camera);

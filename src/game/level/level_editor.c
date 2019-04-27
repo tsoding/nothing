@@ -23,8 +23,10 @@ struct LevelEditor
     bool drag;
 };
 
-LevelEditor *create_level_editor(void)
+LevelEditor *create_level_editor(Layer *boxes_layer)
 {
+    trace_assert(boxes_layer);
+
     Lt *lt = create_lt();
     if (lt == NULL) {
         return NULL;
@@ -41,12 +43,7 @@ LevelEditor *create_level_editor(void)
     level_editor->proto_rect.color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
     level_editor->color_picker.position = vec(0.0f, 0.0f);
     level_editor->color_picker.proto_rect = &level_editor->proto_rect;
-    level_editor->boxes_layer = PUSH_LT(lt, create_layer(), destroy_layer);
-
-    if (level_editor->boxes_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
+    level_editor->boxes_layer = PUSH_LT(lt, boxes_layer, destroy_layer);
     level_editor->drag = false;
 
     return level_editor;

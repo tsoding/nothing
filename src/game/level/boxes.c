@@ -15,8 +15,6 @@
 #include "system/nth_alloc.h"
 #include "system/str.h"
 
-#define BOXES_MAX_ID_SIZE 36
-
 struct Boxes
 {
     Lt *lt;
@@ -24,71 +22,6 @@ struct Boxes
     Dynarray *body_ids;
     Dynarray *body_colors;
 };
-
-Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid_bodies)
-{
-    trace_assert(line_stream);
-
-    Lt *lt = create_lt();
-
-    if (lt == NULL) {
-        return NULL;
-    }
-
-    Boxes *boxes = PUSH_LT(lt, nth_alloc(sizeof(Boxes)), free);
-    if (boxes == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    boxes->lt = lt;
-
-    boxes->rigid_bodies = rigid_bodies;
-
-    boxes->body_ids = PUSH_LT(lt, create_dynarray(sizeof(RigidBodyId)), destroy_dynarray);
-    if (boxes->body_ids == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    boxes->body_colors = PUSH_LT(lt, create_dynarray(sizeof(Color)), destroy_dynarray);
-    if (boxes->body_colors == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    size_t count = 0;
-
-    if (sscanf(
-            line_stream_next(line_stream),
-            "%lu",
-            &count) == EOF) {
-        log_fail("Could not read amount of boxes\n");
-        RETURN_LT(lt, NULL);
-    }
-
-    for (size_t i = 0; i < count; ++i) {
-        char color[7];
-        Rect rect;
-        // TODO(#807): box id is ignored
-        char id[BOXES_MAX_ID_SIZE];
-
-        if (sscanf(line_stream_next(line_stream),
-                   "%" STRINGIFY(BOXES_MAX_ID_SIZE) "s%f%f%f%f%6s\n",
-                   id,
-                   &rect.x, &rect.y,
-                   &rect.w, &rect.h,
-                   color) < 0) {
-            log_fail("Could not read rigid rect\n");
-            RETURN_LT(lt, NULL);
-        }
-
-        const                   // North Const 4Head
-        Color box_color = hexstr(color);
-        RigidBodyId const body_id = rigid_bodies_add(rigid_bodies, rect);
-
-        dynarray_push(boxes->body_colors, &box_color);
-        dynarray_push(boxes->body_ids, &body_id);
-    }
-
-    return boxes;
-}
 
 Boxes *create_boxes_from_layer(const Layer *layer, RigidBodies *rigid_bodies)
 {
