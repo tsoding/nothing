@@ -18,6 +18,7 @@
 #include "game/level/rigid_bodies.h"
 #include "game/level_metadata.h"
 #include "game/level/level_editor/proto_rect.h"
+#include "game/level/level_editor/layer.h"
 #include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
@@ -143,9 +144,14 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
+    Layer *boxes_layer = create_layer_from_line_stream(level_stream);
+    if (boxes_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->boxes = PUSH_LT(
         lt,
-        create_boxes_from_line_stream(level_stream, level->rigid_bodies),
+        create_boxes_from_layer(boxes_layer, level->rigid_bodies),
         destroy_boxes);
     if (level->boxes == NULL) {
         RETURN_LT(lt, NULL);
@@ -170,7 +176,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
     level->edit_mode = false;
     level->level_editor = PUSH_LT(
         lt,
-        create_level_editor(),
+        create_level_editor(boxes_layer),
         destroy_level_editor);
     if (level->level_editor == NULL) {
         RETURN_LT(lt, NULL);
@@ -396,7 +402,12 @@ int level_reload_preserve_player(Level *level, Broadcast *broadcast)
     }
     level->back_platforms = RESET_LT(level->lt, level->back_platforms, back_platforms);
 
-    Boxes * const boxes = create_boxes_from_line_stream(level_stream, level->rigid_bodies);
+    Layer * const boxes_layer = create_layer_from_line_stream(level_stream);
+    if (boxes_layer == NULL) {
+        RETURN_LT(lt, -1);
+    }
+
+    Boxes * const boxes = create_boxes_from_layer(boxes_layer, level->rigid_bodies);
     if (boxes == NULL) {
         RETURN_LT(lt, -1);
     }
@@ -413,6 +424,12 @@ int level_reload_preserve_player(Level *level, Broadcast *broadcast)
         RETURN_LT(lt, -1);
     }
     level->regions = RESET_LT(level->lt, level->regions, regions);
+
+    LevelEditor * const level_editor = create_level_editor(boxes_layer);
+    if (level_editor == NULL) {
+        RETURN_LT(lt, -1);
+    }
+    level->level_editor = RESET_LT(level->lt, level->level_editor, level_editor);
 
     RETURN_LT(lt, 0);
 }

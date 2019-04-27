@@ -3,7 +3,7 @@
 
 typedef struct LevelEditor LevelEditor;
 
-LevelEditor *create_level_editor(void);
+LevelEditor *create_level_editor(Layer *boxes_layer);
 void destroy_level_editor(LevelEditor *level_editor);
 
 int level_editor_render(const LevelEditor *level_editor,
