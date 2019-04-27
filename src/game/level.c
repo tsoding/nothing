@@ -36,15 +36,23 @@ struct Level
 
     const char *file_name;
     LevelMetadata *metadata;
+    // TODO(#812): LevelEditor does not support Background
     Background *background;
     RigidBodies *rigid_bodies;
+    // TODO: LevelEditor does not support Player
     Player *player;
+    // TODO: LevelEditor does not support Platforms
     Platforms *platforms;
+    // TODO: LevelEditor does not support Goals
     Goals *goals;
+    // TODO: LevelEditor does not support Lava
     Lava *lava;
+    // TODO: LevelEditor does not support Back Platfrosm
     Platforms *back_platforms;
     Boxes *boxes;
+    // TODO: LevelEditor does not support Labels
     Labels *labels;
+    // TODO: LevelEditor does not support Regions
     Regions *regions;
 
     bool edit_mode;
