@@ -339,14 +339,6 @@ static int game_event_running(Game *game, const SDL_Event *event)
             camera_disable_debug_mode(game->camera);
         } break;
 
-        case SDLK_q:
-            if (level_reload_preserve_player(game->level, game->broadcast) < 0) {
-                log_fail("Could not reload level\n");
-                game->state = GAME_STATE_QUIT;
-                return -1;
-            }
-            break;
-
         case SDLK_p:
             game->state = GAME_STATE_PAUSE;
             camera_toggle_blackwhite_mode(game->camera);
