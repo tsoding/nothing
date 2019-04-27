@@ -192,7 +192,10 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
     level->edit_mode = false;
     level->level_editor = PUSH_LT(
         lt,
-        create_level_editor(boxes_layer),
+        create_level_editor(
+            boxes_layer,
+            platforms_layer,
+            back_platforms_layer),
         destroy_level_editor);
     if (level->level_editor == NULL) {
         RETURN_LT(lt, NULL);
@@ -310,6 +313,16 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
                         level_editor_boxes(level->level_editor),
                         level->rigid_bodies));
                 if (level->boxes == NULL) {
+                    return -1;
+                }
+
+                level->platforms = RESET_LT(
+                    level->lt,
+                    level->platforms,
+                    create_platforms_from_layer(
+                        level_editor_platforms(
+                            level->level_editor)));
+                if (level->platforms == NULL) {
                     return -1;
                 }
             }

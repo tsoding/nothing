@@ -10,7 +10,7 @@ typedef struct Platforms Platforms;
 typedef struct LineStream LineStream;
 typedef struct Layer Layer;
 
-Platforms *create_platforms_from_layer(Layer *layer);
+Platforms *create_platforms_from_layer(const Layer *layer);
 void destroy_platforms(Platforms *platforms);
 
 int platforms_render(const Platforms *platforms,
