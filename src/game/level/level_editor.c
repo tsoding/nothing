@@ -22,7 +22,7 @@ struct LevelEditor
     Layer *boxes_layer;
     Layer *platforms_layer;
     Layer *back_platforms_layer;
-    // TODO: LevelEditor does not allow to switch the current layer
+    // TODO(#823): LevelEditor does not allow to switch the current layer
     Layer *current_layer;
     bool drag;
 };
