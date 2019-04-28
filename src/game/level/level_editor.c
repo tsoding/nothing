@@ -5,6 +5,7 @@
 #include "game/level/level_editor/proto_rect.h"
 #include "game/level/level_editor/color_picker.h"
 #include "game/level/level_editor/layer.h"
+#include "game/level/level_editor/layer_picker.h"
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
 #include "system/lt.h"
@@ -22,7 +23,9 @@ struct LevelEditor
     Layer *platforms_layer;
     Layer *back_platforms_layer;
     // TODO(#823): LevelEditor does not allow to switch the current layer
+    // TODO: current_layer is not changed according to layer_picker
     Layer *current_layer;
+    LayerPicker layer_picker;
     bool drag;
 };
 
@@ -88,6 +91,10 @@ int level_editor_render(const LevelEditor *level_editor,
     }
 
     if (color_picker_render(&level_editor->color_picker, camera) < 0) {
+        return -1;
+    }
+
+    if (layer_picker_render(&level_editor->layer_picker, camera) < 0) {
         return -1;
     }
 

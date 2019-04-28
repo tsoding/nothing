@@ -298,6 +298,16 @@ Rect camera_view_port(const Camera *camera)
                 w, h);
 }
 
+Rect camera_view_port_screen(const Camera *camera)
+{
+    trace_assert(camera);
+
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(camera->renderer, &view_port);
+
+    return rect_from_sdl(&view_port);
+}
+
 int camera_is_text_visible(const Camera *camera,
                            Vec size,
                            Vec position,
@@ -450,4 +460,22 @@ int camera_fill_rect_screen(Camera *camera,
 
     return 0;
 
+}
+
+int camera_render_text_screen(Camera *camera,
+                              const char *text,
+                              Vec size,
+                              Color color,
+                              Vec position)
+{
+    trace_assert(camera);
+    trace_assert(text);
+
+    return sprite_font_render_text(
+        camera->font,
+        camera->renderer,
+        position,
+        size,
+        color,
+        text);
 }

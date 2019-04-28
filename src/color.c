@@ -75,3 +75,8 @@ Color color_darker(Color c, float d)
                 fmaxf(c.b - d, 0.0f),
                 c.a);
 }
+
+Color color_invert(Color c)
+{
+    return rgba(1.0f - c.r, 1.0f - c.g, 1.0f - c.b, c.a);
+}
