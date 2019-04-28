@@ -8,6 +8,7 @@
 #define LAYER_CELL_WIDTH 100.0f
 #define LAYER_CELL_HEIGHT 100.0f
 #define LAYER_TITLE_SIZE 5.0f
+#define SELECTOR_HEIGHT (LAYER_CELL_HEIGHT * 0.20f)
 
 static const Color LAYER_CELL_BACKGROUND_COLORS[LAYER_PICKER_N] = {
     {1.0f, 0.0f, 0.0f, 1.0f},  // LAYER_PICKER_BOXES = 0,
@@ -49,7 +50,17 @@ int layer_picker_render(const LayerPicker *layer_picker,
             return -1;
         }
 
-        // TODO: the selected layer is not indicated
+        if (*layer_picker == i) {
+            if (camera_fill_rect_screen(
+                    camera,
+                    rect(LAYER_CELL_WIDTH * (float) i + position.x,
+                         position.y + LAYER_CELL_HEIGHT - SELECTOR_HEIGHT,
+                         LAYER_CELL_WIDTH,
+                         SELECTOR_HEIGHT),
+                    color_invert(LAYER_CELL_BACKGROUND_COLORS[i])) < 0) {
+                return -1;
+            }
+        }
     }
 
     return 0;
