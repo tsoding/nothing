@@ -1,9 +1,12 @@
+#include <stdbool.h>
+
 #include <SDL2/SDL.h>
 
 #include "system/stacktrace.h"
 #include "layer_picker.h"
 #include "color.h"
 #include "game/camera.h"
+#include "math/rect.h"
 
 #define LAYER_CELL_WIDTH 100.0f
 #define LAYER_CELL_HEIGHT 100.0f
@@ -28,7 +31,7 @@ int layer_picker_render(const LayerPicker *layer_picker,
     trace_assert(layer_picker);
     trace_assert(camera);
 
-    volatile const Rect viewport = camera_view_port_screen(camera);
+    const Rect viewport = camera_view_port_screen(camera);
     const Vec position = vec(0.0f, viewport.h - LAYER_CELL_HEIGHT);
 
     for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
@@ -66,13 +69,31 @@ int layer_picker_render(const LayerPicker *layer_picker,
     return 0;
 }
 
-int layer_picker_event(LayerPicker *layer_picker,
-                       const SDL_Event *event)
+int layer_picker_mouse_button(LayerPicker *layer_picker,
+                              const Camera *camera,
+                              const SDL_MouseButtonEvent *event,
+                              bool *selected)
 {
     trace_assert(layer_picker);
     trace_assert(event);
 
-    // TODO: layer_picker_event is not implemented
+    switch (event->type) {
+    case SDL_MOUSEBUTTONDOWN: {
+        const Rect viewport = camera_view_port_screen(camera);
+        const Vec position = vec(0.0f, viewport.h - LAYER_CELL_HEIGHT);
+
+        for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
+            const Rect cell = rect(LAYER_CELL_WIDTH * (float) i + position.x, position.y,
+                                   LAYER_CELL_WIDTH,
+                                   LAYER_CELL_HEIGHT);
+            if (rect_contains_point(cell, vec((float) event->x, (float) event->y))) {
+                *layer_picker = i;
+                *selected = true;
+                return 0;
+            }
+        }
+    } break;
+    }
 
     return 0;
 }

@@ -149,6 +149,7 @@ int level_editor_event(LevelEditor *level_editor,
     case SDL_MOUSEBUTTONDOWN: {
         if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
             const Vec position = camera_map_screen(camera, event->button.x, event->button.y);
+            // TODO: elements of layer are deleted on switching the layer in LayerPicker
             if (layer_delete_rect_at(current_layer, position) < 0) {
                 return -1;
             }
@@ -157,6 +158,14 @@ int level_editor_event(LevelEditor *level_editor,
         bool selected = false;
         if (color_picker_mouse_button(
                 &level_editor->color_picker,
+                &event->button,
+                &selected) < 0) {
+            return -1;
+        }
+
+        if (layer_picker_mouse_button(
+                &level_editor->layer_picker,
+                camera,
                 &event->button,
                 &selected) < 0) {
             return -1;

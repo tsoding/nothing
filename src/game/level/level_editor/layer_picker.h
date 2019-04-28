@@ -14,7 +14,9 @@ typedef enum {
 
 int layer_picker_render(const LayerPicker *layer_picker,
                         Camera *camera);
-int layer_picker_event(LayerPicker *layer_picker,
-                       const SDL_Event *event);
+int layer_picker_mouse_button(LayerPicker *layer_picker,
+                              const Camera *camera,
+                              const SDL_MouseButtonEvent *event,
+                              bool *selected);
 
 #endif  // LAYER_PICKER_H_
