@@ -222,6 +222,10 @@ int level_render(const Level *level, Camera *camera)
         return -1;
     }
 
+    if (player_render(level->player, camera) < 0) {
+        return -1;
+    }
+
     if (level->edit_mode) {
         if (level_editor_render(level->level_editor, camera) < 0) {
             return -1;
@@ -231,10 +235,6 @@ int level_render(const Level *level, Camera *camera)
     }
 
     if (platforms_render(level->back_platforms, camera) < 0) {
-        return -1;
-    }
-
-    if (player_render(level->player, camera) < 0) {
         return -1;
     }
 
