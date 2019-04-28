@@ -128,7 +128,7 @@ int level_editor_event(LevelEditor *level_editor,
 
     case SDL_MOUSEBUTTONUP:
     case SDL_MOUSEBUTTONDOWN: {
-        if (event->type == SDL_MOUSEBUTTONUP) {
+        if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
             const Vec position = camera_map_screen(camera, event->button.x, event->button.y);
             if (layer_delete_rect_at(level_editor->current_layer, position) < 0) {
                 return -1;

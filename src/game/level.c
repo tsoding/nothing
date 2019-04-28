@@ -222,6 +222,14 @@ int level_render(const Level *level, Camera *camera)
         return -1;
     }
 
+    if (level->edit_mode) {
+        if (level_editor_render(level->level_editor, camera) < 0) {
+            return -1;
+        }
+
+        return 0;
+    }
+
     if (platforms_render(level->back_platforms, camera) < 0) {
         return -1;
     }
@@ -252,12 +260,6 @@ int level_render(const Level *level, Camera *camera)
 
     if (regions_render(level->regions, camera) < 0) {
         return -1;
-    }
-
-    if (level->edit_mode) {
-        if (level_editor_render(level->level_editor, camera) < 0) {
-            return -1;
-        }
     }
 
     return 0;

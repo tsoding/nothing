@@ -106,7 +106,7 @@ int layer_render(const Layer *layer, Camera *camera)
     Color *colors = dynarray_data(layer->colors);
 
     for (size_t i = 0; i < n; ++i) {
-        Color color = rgba(colors[i].r, colors[i].g, colors[i].b, 0.5f);
+        Color color = rgba(colors[i].r, colors[i].g, colors[i].b, 0.75f);
         if (camera_fill_rect(camera, rects[i], color) < 0) {
             return -1;
         }
