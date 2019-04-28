@@ -328,7 +328,7 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
                     return -1;
                 }
 
-                // TODO: Back platforms are not updated when you tab out from Level Editor
+                // TODO(#828): Back platforms are not updated when you tab out from Level Editor
             }
         };
         }
