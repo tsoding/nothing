@@ -23,8 +23,6 @@ struct LevelEditor
     Layer *platforms_layer;
     Layer *back_platforms_layer;
     // TODO(#823): LevelEditor does not allow to switch the current layer
-    // TODO: current_layer is not changed according to layer_picker
-    Layer *current_layer;
     LayerPicker layer_picker;
     bool drag;
 };
@@ -57,7 +55,6 @@ LevelEditor *create_level_editor(Layer *boxes_layer,
     level_editor->platforms_layer = PUSH_LT(lt, platforms_layer, destroy_layer);
     level_editor->back_platforms_layer = PUSH_LT(lt, back_platforms_layer, destroy_layer);
     level_editor->drag = false;
-    level_editor->current_layer = level_editor->platforms_layer;
 
     return level_editor;
 }
@@ -122,6 +119,22 @@ int level_editor_event(LevelEditor *level_editor,
 
     (void) camera;
 
+    Layer *current_layer = NULL;
+
+    switch (level_editor->layer_picker) {
+    case LAYER_PICKER_BOXES: {
+        current_layer = level_editor->boxes_layer;
+    } break;
+    case LAYER_PICKER_PLATFORMS: {
+        current_layer = level_editor->platforms_layer;
+    } break;
+    case LAYER_PICKER_BACK_PLATFORMS: {
+        current_layer = level_editor->back_platforms_layer;
+    } break;
+
+    default: {}
+    }
+
     switch (event->type) {
     case SDL_MOUSEWHEEL: {
         // TODO(#679): zooming in edit mode is not smooth enough
@@ -136,7 +149,7 @@ int level_editor_event(LevelEditor *level_editor,
     case SDL_MOUSEBUTTONDOWN: {
         if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
             const Vec position = camera_map_screen(camera, event->button.x, event->button.y);
-            if (layer_delete_rect_at(level_editor->current_layer, position) < 0) {
+            if (layer_delete_rect_at(current_layer, position) < 0) {
                 return -1;
             }
         }
@@ -152,7 +165,7 @@ int level_editor_event(LevelEditor *level_editor,
         if (!selected && proto_rect_mouse_button(
                 &level_editor->proto_rect,
                 &event->button,
-                level_editor->current_layer,
+                current_layer,
                 camera) < 0) {
             return -1;
         }
