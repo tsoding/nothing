@@ -38,14 +38,6 @@ int color_picker_render(const ColorPicker *color_picker,
     return 0;
 }
 
-int color_picker_update(ColorPicker *color_picker,
-                        float delta_time)
-{
-    trace_assert(color_picker);
-    (void) delta_time;
-    return 0;
-}
-
 int color_picker_mouse_button(ColorPicker *color_picker,
                               const SDL_MouseButtonEvent *event,
                               bool *selected)

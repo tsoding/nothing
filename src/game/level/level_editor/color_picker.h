@@ -7,8 +7,6 @@ typedef struct {
 
 int color_picker_render(const ColorPicker *color_picker,
                         Camera *camera);
-int color_picker_update(ColorPicker *color_picker,
-                        float delta_time);
 int color_picker_mouse_button(ColorPicker *color_picker,
                               const SDL_MouseButtonEvent *event,
                               bool *selected);
