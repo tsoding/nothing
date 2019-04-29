@@ -15,4 +15,6 @@ Color color_darker(Color color, float d);
 
 Color color_desaturate(Color color);
 
+Color color_invert(Color c);
+
 #endif  // COLOR_H_

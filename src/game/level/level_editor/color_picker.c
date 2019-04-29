@@ -53,8 +53,6 @@ int color_picker_mouse_button(ColorPicker *color_picker,
     trace_assert(color_picker);
     trace_assert(event);
 
-    *selected = false;
-
     if (event->type == SDL_MOUSEBUTTONDOWN) {
         switch (event->button) {
         case SDL_BUTTON_LEFT: {

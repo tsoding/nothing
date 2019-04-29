@@ -38,6 +38,12 @@ int camera_render_text(Camera *camera,
                        Color color,
                        Vec position);
 
+int camera_render_text_screen(Camera *camera,
+                              const char *text,
+                              Vec size,
+                              Color color,
+                              Vec position);
+
 int camera_render_debug_text(Camera *camera,
                              const char *text,
                              Vec position);
@@ -61,6 +67,8 @@ int camera_is_text_visible(const Camera *camera,
                            const char *text);
 
 Rect camera_view_port(const Camera *camera);
+
+Rect camera_view_port_screen(const Camera *camera);
 
 Vec camera_map_screen(const Camera *camera,
                       Sint32 x, Sint32 y);

@@ -5,6 +5,7 @@
 #include "game/level/level_editor/proto_rect.h"
 #include "game/level/level_editor/color_picker.h"
 #include "game/level/level_editor/layer.h"
+#include "game/level/level_editor/layer_picker.h"
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
 #include "system/lt.h"
@@ -18,12 +19,11 @@ struct LevelEditor
     float camera_scale;
     ProtoRect proto_rect;
     ColorPicker color_picker;
-    // TODO(#805): boxes_layer is not connected with the level->boxes
     Layer *boxes_layer;
     Layer *platforms_layer;
     Layer *back_platforms_layer;
     // TODO(#823): LevelEditor does not allow to switch the current layer
-    Layer *current_layer;
+    LayerPicker layer_picker;
     bool drag;
 };
 
@@ -55,7 +55,6 @@ LevelEditor *create_level_editor(Layer *boxes_layer,
     level_editor->platforms_layer = PUSH_LT(lt, platforms_layer, destroy_layer);
     level_editor->back_platforms_layer = PUSH_LT(lt, back_platforms_layer, destroy_layer);
     level_editor->drag = false;
-    level_editor->current_layer = level_editor->platforms_layer;
 
     return level_editor;
 }
@@ -92,6 +91,10 @@ int level_editor_render(const LevelEditor *level_editor,
         return -1;
     }
 
+    if (layer_picker_render(&level_editor->layer_picker, camera) < 0) {
+        return -1;
+    }
+
     return 0;
 }
 
@@ -116,6 +119,22 @@ int level_editor_event(LevelEditor *level_editor,
 
     (void) camera;
 
+    Layer *current_layer = NULL;
+
+    switch (level_editor->layer_picker) {
+    case LAYER_PICKER_BOXES: {
+        current_layer = level_editor->boxes_layer;
+    } break;
+    case LAYER_PICKER_PLATFORMS: {
+        current_layer = level_editor->platforms_layer;
+    } break;
+    case LAYER_PICKER_BACK_PLATFORMS: {
+        current_layer = level_editor->back_platforms_layer;
+    } break;
+
+    default: {}
+    }
+
     switch (event->type) {
     case SDL_MOUSEWHEEL: {
         // TODO(#679): zooming in edit mode is not smooth enough
@@ -130,7 +149,8 @@ int level_editor_event(LevelEditor *level_editor,
     case SDL_MOUSEBUTTONDOWN: {
         if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_LEFT) {
             const Vec position = camera_map_screen(camera, event->button.x, event->button.y);
-            if (layer_delete_rect_at(level_editor->current_layer, position) < 0) {
+            // TODO(#829): elements of layer are deleted on switching the layer in LayerPicker
+            if (layer_delete_rect_at(current_layer, position) < 0) {
                 return -1;
             }
         }
@@ -143,10 +163,18 @@ int level_editor_event(LevelEditor *level_editor,
             return -1;
         }
 
+        if (layer_picker_mouse_button(
+                &level_editor->layer_picker,
+                camera,
+                &event->button,
+                &selected) < 0) {
+            return -1;
+        }
+
         if (!selected && proto_rect_mouse_button(
                 &level_editor->proto_rect,
                 &event->button,
-                level_editor->current_layer,
+                current_layer,
                 camera) < 0) {
             return -1;
         }

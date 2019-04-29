@@ -54,7 +54,6 @@ struct Level
     Regions *regions;
 
     bool edit_mode;
-    // TODO(#809): LevelEditor doesn't capture the initial state of the level loaded from a file
     LevelEditor *level_editor;
 };
 
@@ -212,7 +211,6 @@ void destroy_level(Level *level)
     RETURN_LT0(level->lt);
 }
 
-// TODO(#822): Level rendering obscures LevelEditor rendering
 
 int level_render(const Level *level, Camera *camera)
 {
@@ -329,6 +327,8 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
                 if (level->platforms == NULL) {
                     return -1;
                 }
+
+                // TODO(#828): Back platforms are not updated when you tab out from Level Editor
             }
         };
         }
