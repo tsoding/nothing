@@ -15,6 +15,7 @@ int proto_rect_render(const ProtoRect *proto_rect,
                       Camera *camera)
 {
     trace_assert(proto_rect);
+    trace_assert(proto_rect->color_current);
     trace_assert(camera);
 
     if (proto_rect->active) {
@@ -23,7 +24,7 @@ int proto_rect_render(const ProtoRect *proto_rect,
                 rect_from_points(
                     proto_rect->begin,
                     proto_rect->end),
-                proto_rect->color) < 0) {
+                *proto_rect->color_current) < 0) {
             return -1;
         }
     }
@@ -41,13 +42,13 @@ int proto_rect_update(ProtoRect *proto_rect,
 
 int proto_rect_event(ProtoRect *proto_rect,
                      const SDL_Event *event,
-                     const Camera *camera,
-                     Layer *layer)
+                     const Camera *camera)
 {
     trace_assert(proto_rect);
+    trace_assert(proto_rect->color_current);
+    trace_assert(proto_rect->layer_current);
     trace_assert(event);
     trace_assert(camera);
-    trace_assert(layer);
 
     if (proto_rect->active) {
         // Active
@@ -62,7 +63,7 @@ int proto_rect_event(ProtoRect *proto_rect,
                 const float area = real_rect.w * real_rect.h;
 
                 if (area >= PROTO_AREA_THRESHOLD) {
-                    layer_add_rect(layer, real_rect, proto_rect->color);
+                    layer_add_rect(*proto_rect->layer_current, real_rect, *proto_rect->color_current);
                 } else {
                     log_info("The area is too small %f. Such small box won't be created.\n", area);
                 }
@@ -101,12 +102,12 @@ int proto_rect_event(ProtoRect *proto_rect,
 
 int proto_rect_mouse_button(ProtoRect *proto_rect,
                             const SDL_MouseButtonEvent *event,
-                            Layer *layer,
                             const Camera *camera)
 {
     trace_assert(proto_rect);
+    trace_assert(proto_rect->color_current);
+    trace_assert(proto_rect->layer_current);
     trace_assert(event);
-    trace_assert(layer);
     trace_assert(camera);
 
     if (proto_rect->active) {
@@ -122,7 +123,7 @@ int proto_rect_mouse_button(ProtoRect *proto_rect,
                 const float area = real_rect.w * real_rect.h;
 
                 if (area >= PROTO_AREA_THRESHOLD) {
-                    layer_add_rect(layer, real_rect, proto_rect->color);
+                    layer_add_rect(*proto_rect->layer_current, real_rect, *proto_rect->color_current);
                 } else {
                     log_info("The area is too small %f. Such small box won't be created.\n", area);
                 }
