@@ -3,7 +3,6 @@
 
 typedef struct {
     ProtoRect *proto_rect;
-    Vec position;
 } ColorPicker;
 
 int color_picker_render(const ColorPicker *color_picker,
