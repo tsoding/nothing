@@ -48,7 +48,6 @@ LevelEditor *create_level_editor(Layer *boxes_layer,
 
     level_editor->camera_position = vec(0.0f, 0.0f);
     level_editor->camera_scale = 1.0f;
-    level_editor->proto_rect.color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
     level_editor->color_picker.color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
     level_editor->boxes_layer = PUSH_LT(lt, boxes_layer, destroy_layer);
     level_editor->platforms_layer = PUSH_LT(lt, platforms_layer, destroy_layer);
@@ -82,7 +81,7 @@ int level_editor_render(const LevelEditor *level_editor,
         return -1;
     }
 
-    if (proto_rect_render(&level_editor->proto_rect, camera) < 0) {
+    if (proto_rect_render(&level_editor->proto_rect, level_editor->color_picker.color, camera) < 0) {
         return -1;
     }
 
@@ -174,6 +173,7 @@ int level_editor_event(LevelEditor *level_editor,
                 &level_editor->proto_rect,
                 &event->button,
                 current_layer,
+                level_editor->color_picker.color,
                 camera) < 0) {
             return -1;
         }
