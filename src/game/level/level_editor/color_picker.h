@@ -2,7 +2,7 @@
 #define COLOR_PICKER_H_
 
 typedef struct {
-    ProtoRect *proto_rect;
+    Color color;
 } ColorPicker;
 
 int color_picker_render(const ColorPicker *color_picker,
