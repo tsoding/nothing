@@ -18,6 +18,8 @@ struct PointLayer
     Dynarray *ids;
 };
 
+// TODO: PointLayer does not allow to edit itself
+
 PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
 {
     trace_assert(line_stream);

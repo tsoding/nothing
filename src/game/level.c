@@ -43,7 +43,6 @@ struct Level
     // TODO(#813): LevelEditor does not support Player
     Player *player;
     Platforms *platforms;
-    // TODO(#815): LevelEditor does not support Goals
     Goals *goals;
     // TODO(#816): LevelEditor does not support Lava
     Lava *lava;
@@ -344,6 +343,8 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
                 if (level->back_platforms == NULL) {
                     return -1;
                 }
+
+                // TODO: goals are not updated after tabbing from LevelEditor
             }
         };
         }
