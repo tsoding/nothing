@@ -1,7 +1,7 @@
 #ifndef LAYER_PICKER_H_
 #define LAYER_PICKER_H_
 
-typedef struct Layer Layer;
+typedef struct RectLayer RectLayer;
 typedef struct Camera Camera;
 
 typedef enum {

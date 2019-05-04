@@ -21,7 +21,7 @@ struct Platforms {
     size_t rects_size;
 };
 
-Platforms *create_platforms_from_layer(const Layer *layer)
+Platforms *create_platforms_from_layer(const RectLayer *layer)
 {
     trace_assert(layer);
 

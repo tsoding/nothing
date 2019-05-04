@@ -22,20 +22,20 @@ struct LevelEditor
     ColorPicker color_picker;
     ProtoRect proto_rect;
 
-    Layer *boxes_layer;
-    Layer *platforms_layer;
-    Layer *back_platforms_layer;
+    RectLayer *boxes_layer;
+    RectLayer *platforms_layer;
+    RectLayer *back_platforms_layer;
     PointLayer *goals_layer;
 
-    Layer *current_rect_layer;
+    RectLayer *current_rect_layer;
     PointLayer *current_point_layer;
     // TODO(#823): LevelEditor does not allow to switch the current layer
     bool drag;
 };
 
-LevelEditor *create_level_editor(Layer *boxes_layer,
-                                 Layer *platforms_layer,
-                                 Layer *back_platforms_layer,
+LevelEditor *create_level_editor(RectLayer *boxes_layer,
+                                 RectLayer *platforms_layer,
+                                 RectLayer *back_platforms_layer,
                                  PointLayer *goals_layer)
 {
     trace_assert(boxes_layer);
@@ -228,17 +228,17 @@ int level_editor_focus_camera(LevelEditor *level_editor,
     return 0;
 }
 
-const Layer *level_editor_boxes(const LevelEditor *level_editor)
+const RectLayer *level_editor_boxes(const LevelEditor *level_editor)
 {
     return level_editor->boxes_layer;
 }
 
-const Layer *level_editor_platforms(const LevelEditor *level_editor)
+const RectLayer *level_editor_platforms(const LevelEditor *level_editor)
 {
     return level_editor->platforms_layer;
 }
 
-const Layer *level_editor_back_platforms(const LevelEditor *level_editor)
+const RectLayer *level_editor_back_platforms(const LevelEditor *level_editor)
 {
     return level_editor->back_platforms_layer;
 }
