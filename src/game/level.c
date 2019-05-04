@@ -19,6 +19,7 @@
 #include "game/level_metadata.h"
 #include "game/level/level_editor/proto_rect.h"
 #include "game/level/level_editor/layer.h"
+#include "game/level/level_editor/point_layer.h"
 #include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
@@ -42,7 +43,6 @@ struct Level
     // TODO(#813): LevelEditor does not support Player
     Player *player;
     Platforms *platforms;
-    // TODO(#815): LevelEditor does not support Goals
     Goals *goals;
     // TODO(#816): LevelEditor does not support Lava
     Lava *lava;
@@ -117,22 +117,27 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
-    Layer *platforms_layer = create_layer_from_line_stream(level_stream);
-    if (platforms_layer == NULL) {
+    RectLayer *platforms_rect_layer = create_layer_from_line_stream(level_stream);
+    if (platforms_rect_layer == NULL) {
         RETURN_LT(lt, NULL);
     }
 
     level->platforms = PUSH_LT(
         lt,
-        create_platforms_from_layer(platforms_layer),
+        create_platforms_from_rect_layer(platforms_rect_layer),
         destroy_platforms);
     if (level->platforms == NULL) {
         RETURN_LT(lt, NULL);
     }
 
+    PointLayer *goals_rect_layer = create_point_layer_from_line_stream(level_stream);
+    if (goals_rect_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->goals = PUSH_LT(
         lt,
-        create_goals_from_line_stream(level_stream),
+        create_goals_from_point_rect_layer(goals_rect_layer),
         destroy_goals);
     if (level->goals == NULL) {
         RETURN_LT(lt, NULL);
@@ -146,27 +151,27 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
-    Layer *back_platforms_layer = create_layer_from_line_stream(level_stream);
-    if (back_platforms_layer == NULL) {
+    RectLayer *back_platforms_rect_layer = create_layer_from_line_stream(level_stream);
+    if (back_platforms_rect_layer == NULL) {
         RETURN_LT(lt, NULL);
     }
 
     level->back_platforms = PUSH_LT(
         lt,
-        create_platforms_from_layer(back_platforms_layer),
+        create_platforms_from_rect_layer(back_platforms_rect_layer),
         destroy_platforms);
     if (level->back_platforms == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    Layer *boxes_layer = create_layer_from_line_stream(level_stream);
-    if (boxes_layer == NULL) {
+    RectLayer *boxes_rect_layer = create_layer_from_line_stream(level_stream);
+    if (boxes_rect_layer == NULL) {
         RETURN_LT(lt, NULL);
     }
 
     level->boxes = PUSH_LT(
         lt,
-        create_boxes_from_layer(boxes_layer, level->rigid_bodies),
+        create_boxes_from_rect_layer(boxes_rect_layer, level->rigid_bodies),
         destroy_boxes);
     if (level->boxes == NULL) {
         RETURN_LT(lt, NULL);
@@ -192,9 +197,10 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
     level->level_editor = PUSH_LT(
         lt,
         create_level_editor(
-            boxes_layer,
-            platforms_layer,
-            back_platforms_layer),
+            boxes_rect_layer,
+            platforms_rect_layer,
+            back_platforms_rect_layer,
+            goals_rect_layer),
         destroy_level_editor);
     if (level->level_editor == NULL) {
         RETURN_LT(lt, NULL);
@@ -311,7 +317,7 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
                 level->boxes = RESET_LT(
                     level->lt,
                     level->boxes,
-                    create_boxes_from_layer(
+                    create_boxes_from_rect_layer(
                         level_editor_boxes(level->level_editor),
                         level->rigid_bodies));
                 if (level->boxes == NULL) {
@@ -321,7 +327,7 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
                 level->platforms = RESET_LT(
                     level->lt,
                     level->platforms,
-                    create_platforms_from_layer(
+                    create_platforms_from_rect_layer(
                         level_editor_platforms(
                             level->level_editor)));
                 if (level->platforms == NULL) {
@@ -331,12 +337,14 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
                 level->back_platforms = RESET_LT(
                     level->lt,
                     level->back_platforms,
-                    create_platforms_from_layer(
+                    create_platforms_from_rect_layer(
                         level_editor_back_platforms(
                             level->level_editor)));
                 if (level->back_platforms == NULL) {
                     return -1;
                 }
+
+                // TODO(#834): goals are not updated after tabbing from LevelEditor
             }
         };
         }

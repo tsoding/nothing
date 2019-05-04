@@ -23,7 +23,7 @@ struct Boxes
     Dynarray *body_colors;
 };
 
-Boxes *create_boxes_from_layer(const Layer *layer, RigidBodies *rigid_bodies)
+Boxes *create_boxes_from_rect_layer(const RectLayer *layer, RigidBodies *rigid_bodies)
 {
     trace_assert(layer);
     trace_assert(rigid_bodies);

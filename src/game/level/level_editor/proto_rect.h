@@ -1,7 +1,7 @@
 #ifndef PROTO_RECT_H_
 #define PROTO_RECT_H_
 
-typedef struct Layer Layer;
+typedef struct RectLayer RectLayer;
 
 typedef struct {
     bool active;
@@ -9,7 +9,7 @@ typedef struct {
     Vec begin, end;
 
     Color *color_current;
-    Layer **layer_current;
+    RectLayer **layer_current;
 } ProtoRect;
 
 int proto_rect_render(const ProtoRect *proto_rect,
