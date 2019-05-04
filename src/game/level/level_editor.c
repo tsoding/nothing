@@ -5,6 +5,7 @@
 #include "game/level/level_editor/proto_rect.h"
 #include "game/level/level_editor/color_picker.h"
 #include "game/level/level_editor/layer.h"
+#include "game/level/level_editor/point_layer.h"
 #include "game/level/level_editor/layer_picker.h"
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
@@ -24,6 +25,7 @@ struct LevelEditor
     Layer *boxes_layer;
     Layer *platforms_layer;
     Layer *back_platforms_layer;
+    PointLayer *goals_layer;
     Layer *current_layer;
     // TODO(#823): LevelEditor does not allow to switch the current layer
     bool drag;

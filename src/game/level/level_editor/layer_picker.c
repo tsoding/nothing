@@ -17,12 +17,14 @@ static const Color LAYER_CELL_BACKGROUND_COLORS[LAYER_PICKER_N] = {
     {1.0f, 0.0f, 0.0f, 1.0f},  // LAYER_PICKER_BOXES = 0,
     {0.0f, 1.0f, 0.0f, 1.0f},  // LAYER_PICKER_PLATFORMS,
     {0.0f, 0.0f, 1.0f, 1.0f},  // LAYER_PICKER_BACK_PLATFORMS,
+    {1.0f, 1.0f, 1.0f, 1.0f},  // LAYER_PICKER_GOALS
 };
 
 static const char *LAYER_CELL_TITLES[LAYER_PICKER_N] = {
     "B",                    // LAYER_PICKER_BOXES = 0,
     "P",                    // LAYER_PICKER_PLATFORMS,
-    "BP"                    // LAYER_PICKER_BACK_PLATFORMS,
+    "BP",                   // LAYER_PICKER_BACK_PLATFORMS,
+    "G",                    // LAYER_PICKER_GOALS
 };
 
 int layer_picker_render(const LayerPicker *layer_picker,
