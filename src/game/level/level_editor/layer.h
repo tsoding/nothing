@@ -5,9 +5,9 @@
 typedef struct RectLayer RectLayer;
 typedef struct LineStream LineStream;
 
-RectLayer *create_layer(void);
+RectLayer *create_rect_layer(void);
 RectLayer *create_layer_from_line_stream(LineStream *line_stream);
-void destroy_layer(RectLayer *layer);
+void destroy_rect_layer(RectLayer *layer);
 
 int layer_render(const RectLayer *layer, Camera *camera);
 int layer_event(RectLayer *layer, const SDL_Event *event);

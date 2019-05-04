@@ -13,7 +13,7 @@ typedef struct LineStream LineStream;
 typedef struct PointLayer PointLayer;
 
 Goals *create_goals_from_line_stream(LineStream *line_stream);
-Goals *create_goals_from_point_layer(PointLayer *point_layer);
+Goals *create_goals_from_point_rect_layer(PointLayer *point_rect_layer);
 void destroy_goals(Goals *goals);
 
 Rect goals_hitbox(const Goals *goals);

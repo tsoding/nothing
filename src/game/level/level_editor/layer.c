@@ -15,7 +15,7 @@ struct RectLayer {
     Dynarray *colors;
 };
 
-RectLayer *create_layer(void)
+RectLayer *create_rect_layer(void)
 {
     Lt *lt = create_lt();
     if (lt == NULL) {
@@ -51,7 +51,7 @@ RectLayer *create_layer_from_line_stream(LineStream *line_stream)
 {
     trace_assert(line_stream);
 
-    RectLayer *layer = create_layer();
+    RectLayer *layer = create_rect_layer();
     if (layer == NULL) {
         return NULL;
     }
@@ -90,7 +90,7 @@ RectLayer *create_layer_from_line_stream(LineStream *line_stream)
     return layer;
 }
 
-void destroy_layer(RectLayer *layer)
+void destroy_rect_layer(RectLayer *layer)
 {
     trace_assert(layer);
     RETURN_LT0(layer->lt);

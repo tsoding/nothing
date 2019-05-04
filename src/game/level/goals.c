@@ -12,7 +12,7 @@
 #include "system/log.h"
 #include "ebisp/interpreter.h"
 #include "broadcast.h"
-#include "game/level/level_editor/point_layer.h"
+#include "game/level/level_editor/point_rect_layer.h"
 
 #define GOAL_RADIUS 10.0f
 #define GOAL_MAX_ID_SIZE 36
@@ -117,9 +117,9 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
     return goals;
 }
 
-Goals *create_goals_from_point_layer(PointLayer *point_layer)
+Goals *create_goals_from_point_rect_layer(PointLayer *point_rect_layer)
 {
-    trace_assert(point_layer);
+    trace_assert(point_rect_layer);
 
     Lt *const lt = create_lt();
     if (lt == NULL) {
@@ -131,7 +131,7 @@ Goals *create_goals_from_point_layer(PointLayer *point_layer)
         RETURN_LT(lt, NULL);
     }
 
-    goals->count = point_layer_count(point_layer);
+    goals->count = point_layer_count(point_rect_layer);
 
     goals->ids = PUSH_LT(
         lt,
@@ -167,11 +167,11 @@ Goals *create_goals_from_point_layer(PointLayer *point_layer)
         RETURN_LT(lt, NULL);
     }
 
-    const Point *points = point_layer_points(point_layer);
-    const Color *colors = point_layer_colors(point_layer);
-    const char *ids = point_layer_ids(point_layer);
+    const Point *points = point_layer_points(point_rect_layer);
+    const Color *colors = point_layer_colors(point_rect_layer);
+    const char *ids = point_layer_ids(point_rect_layer);
 
-    // TODO(#835): we could use memcpy in create_goals_from_point_layer
+    // TODO(#835): we could use memcpy in create_goals_from_point_rect_layer
     for (size_t i = 0; i < goals->count; ++i) {
         goals->points[i] = points[i];
         goals->colors[i] = colors[i];
