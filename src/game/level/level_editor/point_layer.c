@@ -8,7 +8,7 @@
 #include "system/str.h"
 #include "dynarray.h"
 #include "game/camera.h"
-#include "./point_rect_layer.h"
+#include "./point_layer.h"
 
 struct PointLayer
 {

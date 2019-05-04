@@ -12,7 +12,7 @@
 #include "system/log.h"
 #include "ebisp/interpreter.h"
 #include "broadcast.h"
-#include "game/level/level_editor/point_rect_layer.h"
+#include "game/level/level_editor/point_layer.h"
 
 #define GOAL_RADIUS 10.0f
 #define GOAL_MAX_ID_SIZE 36
