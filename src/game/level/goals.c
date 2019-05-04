@@ -171,7 +171,7 @@ Goals *create_goals_from_point_layer(PointLayer *point_layer)
     const Color *colors = point_layer_colors(point_layer);
     const char *ids = point_layer_ids(point_layer);
 
-    // TODO: we could use memcpy in create_goals_from_point_layer
+    // TODO(#835): we could use memcpy in create_goals_from_point_layer
     for (size_t i = 0; i < goals->count; ++i) {
         goals->points[i] = points[i];
         goals->colors[i] = colors[i];
