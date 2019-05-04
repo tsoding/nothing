@@ -22,6 +22,6 @@ int level_editor_focus_camera(LevelEditor *level_editor,
 
 const Layer *level_editor_boxes(const LevelEditor *level_editor);
 const Layer *level_editor_platforms(const LevelEditor *level_editor);
-
+const Layer *level_editor_back_platforms(const LevelEditor *level_editor);
 
 #endif  // LEVEL_EDITOR_H_
