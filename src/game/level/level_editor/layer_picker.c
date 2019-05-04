@@ -99,3 +99,19 @@ int layer_picker_mouse_button(LayerPicker *layer_picker,
 
     return 0;
 }
+
+LayerType layer_picker_type(LayerPicker *layer_picker)
+{
+    switch (*layer_picker) {
+    case LAYER_PICKER_BOXES:
+    case LAYER_PICKER_PLATFORMS:
+    case LAYER_PICKER_BACK_PLATFORMS:
+        return LAYER_TYPE_RECT;
+
+    case LAYER_PICKER_GOALS:
+        return LAYER_TYPE_POINT;
+
+    default:
+        return LAYER_TYPE_UNKNOWN;
+    }
+}

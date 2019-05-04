@@ -19,6 +19,7 @@
 #include "game/level_metadata.h"
 #include "game/level/level_editor/proto_rect.h"
 #include "game/level/level_editor/layer.h"
+#include "game/level/level_editor/point_layer.h"
 #include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
@@ -130,9 +131,14 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
+    PointLayer *goals_layer = create_point_layer_from_line_stream(level_stream);
+    if (goals_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->goals = PUSH_LT(
         lt,
-        create_goals_from_line_stream(level_stream),
+        create_goals_from_point_layer(goals_layer),
         destroy_goals);
     if (level->goals == NULL) {
         RETURN_LT(lt, NULL);
@@ -194,7 +200,8 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         create_level_editor(
             boxes_layer,
             platforms_layer,
-            back_platforms_layer),
+            back_platforms_layer,
+            goals_layer),
         destroy_level_editor);
     if (level->level_editor == NULL) {
         RETURN_LT(lt, NULL);
