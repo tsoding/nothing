@@ -344,7 +344,7 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
                     return -1;
                 }
 
-                // TODO: goals are not updated after tabbing from LevelEditor
+                // TODO(#834): goals are not updated after tabbing from LevelEditor
             }
         };
         }
