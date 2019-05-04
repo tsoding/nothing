@@ -9,20 +9,20 @@
 #include "dynarray.h"
 #include "system/line_stream.h"
 
-struct Layer {
+struct RectLayer {
     Lt *lt;
     Dynarray *rects;
     Dynarray *colors;
 };
 
-Layer *create_layer(void)
+RectLayer *create_rect_layer(void)
 {
     Lt *lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
 
-    Layer *layer = PUSH_LT(lt, nth_calloc(1, sizeof(Layer)), free);
+    RectLayer *layer = PUSH_LT(lt, nth_calloc(1, sizeof(RectLayer)), free);
     if (layer == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -47,11 +47,11 @@ Layer *create_layer(void)
     return layer;
 }
 
-Layer *create_layer_from_line_stream(LineStream *line_stream)
+RectLayer *create_layer_from_line_stream(LineStream *line_stream)
 {
     trace_assert(line_stream);
 
-    Layer *layer = create_layer();
+    RectLayer *layer = create_rect_layer();
     if (layer == NULL) {
         return NULL;
     }
@@ -82,7 +82,7 @@ Layer *create_layer_from_line_stream(LineStream *line_stream)
             RETURN_LT(layer->lt, NULL);
         }
 
-        if (layer_add_rect(layer, rect, hexstr(hex)) < 0) {
+        if (rect_layer_add_rect(layer, rect, hexstr(hex)) < 0) {
             RETURN_LT(layer->lt, NULL);
         }
     }
@@ -90,13 +90,13 @@ Layer *create_layer_from_line_stream(LineStream *line_stream)
     return layer;
 }
 
-void destroy_layer(Layer *layer)
+void destroy_rect_layer(RectLayer *layer)
 {
     trace_assert(layer);
     RETURN_LT0(layer->lt);
 }
 
-int layer_render(const Layer *layer, Camera *camera)
+int layer_render(const RectLayer *layer, Camera *camera)
 {
     trace_assert(layer);
     trace_assert(camera);
@@ -115,14 +115,14 @@ int layer_render(const Layer *layer, Camera *camera)
     return 0;
 }
 
-int layer_event(Layer *layer, const SDL_Event *event)
+int layer_event(RectLayer *layer, const SDL_Event *event)
 {
     trace_assert(layer);
     trace_assert(event);
     return 0;
 }
 
-int layer_add_rect(Layer *layer, Rect rect, Color color)
+int rect_layer_add_rect(RectLayer *layer, Rect rect, Color color)
 {
     trace_assert(layer);
 
@@ -137,7 +137,7 @@ int layer_add_rect(Layer *layer, Rect rect, Color color)
     return 0;
 }
 
-int layer_delete_rect_at(Layer *layer, Vec position)
+int rect_layer_delete_rect_at(RectLayer *layer, Vec position)
 {
     trace_assert(layer);
 
@@ -155,17 +155,17 @@ int layer_delete_rect_at(Layer *layer, Vec position)
     return 0;
 }
 
-size_t layer_count(const Layer *layer)
+size_t layer_count(const RectLayer *layer)
 {
     return dynarray_count(layer->rects);
 }
 
-const Rect *layer_rects(const Layer *layer)
+const Rect *layer_rects(const RectLayer *layer)
 {
     return dynarray_data(layer->rects);
 }
 
-const Color *layer_colors(const Layer *layer)
+const Color *layer_colors(const RectLayer *layer)
 {
     return dynarray_data(layer->colors);
 }

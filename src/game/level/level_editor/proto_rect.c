@@ -63,7 +63,7 @@ int proto_rect_event(ProtoRect *proto_rect,
                 const float area = real_rect.w * real_rect.h;
 
                 if (area >= PROTO_AREA_THRESHOLD) {
-                    layer_add_rect(*proto_rect->layer_current, real_rect, *proto_rect->color_current);
+                    rect_layer_add_rect(*proto_rect->layer_current, real_rect, *proto_rect->color_current);
                 } else {
                     log_info("The area is too small %f. Such small box won't be created.\n", area);
                 }
@@ -123,7 +123,7 @@ int proto_rect_mouse_button(ProtoRect *proto_rect,
                 const float area = real_rect.w * real_rect.h;
 
                 if (area >= PROTO_AREA_THRESHOLD) {
-                    layer_add_rect(*proto_rect->layer_current, real_rect, *proto_rect->color_current);
+                    rect_layer_add_rect(*proto_rect->layer_current, real_rect, *proto_rect->color_current);
                 } else {
                     log_info("The area is too small %f. Such small box won't be created.\n", area);
                 }

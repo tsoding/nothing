@@ -1,22 +1,22 @@
 #ifndef LAYER_H_
 #define LAYER_H_
 
-// TODO(#836): Layer should be called RectLayer
-typedef struct Layer Layer;
+// TODO(#836): RectLayer should be called RectLayer
+typedef struct RectLayer RectLayer;
 typedef struct LineStream LineStream;
 
-Layer *create_layer(void);
-Layer *create_layer_from_line_stream(LineStream *line_stream);
-void destroy_layer(Layer *layer);
+RectLayer *create_rect_layer(void);
+RectLayer *create_layer_from_line_stream(LineStream *line_stream);
+void destroy_rect_layer(RectLayer *layer);
 
-int layer_render(const Layer *layer, Camera *camera);
-int layer_event(Layer *layer, const SDL_Event *event);
+int layer_render(const RectLayer *layer, Camera *camera);
+int layer_event(RectLayer *layer, const SDL_Event *event);
 
-int layer_add_rect(Layer *layer, Rect rect, Color color);
-int layer_delete_rect_at(Layer *layer, Vec position);
+int rect_layer_add_rect(RectLayer *layer, Rect rect, Color color);
+int rect_layer_delete_rect_at(RectLayer *layer, Vec position);
 
-size_t layer_count(const Layer *layer);
-const Rect *layer_rects(const Layer *layer);
-const Color *layer_colors(const Layer *layer);
+size_t layer_count(const RectLayer *layer);
+const Rect *layer_rects(const RectLayer *layer);
+const Color *layer_colors(const RectLayer *layer);
 
 #endif  // LAYER_H_
