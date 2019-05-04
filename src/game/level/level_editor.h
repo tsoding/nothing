@@ -2,12 +2,15 @@
 #define LEVEL_EDITOR_H_
 
 typedef struct LevelEditor LevelEditor;
+typedef struct Layer Layer;
+typedef struct PointLayer PointLayer;
 
 // TODO(#820): LevelEditor cannot generate a level file
 
 LevelEditor *create_level_editor(Layer *boxes_layer,
                                  Layer *platforms_layer,
-                                 Layer *back_platforms_layer);
+                                 Layer *back_platforms_layer,
+                                 PointLayer *goals_layer);
 void destroy_level_editor(LevelEditor *level_editor);
 
 int level_editor_render(const LevelEditor *level_editor,
