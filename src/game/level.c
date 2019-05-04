@@ -328,7 +328,15 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
                     return -1;
                 }
 
-                // TODO(#828): Back platforms are not updated when you tab out from Level Editor
+                level->back_platforms = RESET_LT(
+                    level->lt,
+                    level->back_platforms,
+                    create_platforms_from_layer(
+                        level_editor_back_platforms(
+                            level->level_editor)));
+                if (level->back_platforms == NULL) {
+                    return -1;
+                }
             }
         };
         }
