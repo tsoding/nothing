@@ -82,7 +82,7 @@ RectLayer *create_layer_from_line_stream(LineStream *line_stream)
             RETURN_LT(layer->lt, NULL);
         }
 
-        if (layer_add_rect(layer, rect, hexstr(hex)) < 0) {
+        if (rect_layer_add_rect(layer, rect, hexstr(hex)) < 0) {
             RETURN_LT(layer->lt, NULL);
         }
     }
@@ -122,7 +122,7 @@ int layer_event(RectLayer *layer, const SDL_Event *event)
     return 0;
 }
 
-int layer_add_rect(RectLayer *layer, Rect rect, Color color)
+int rect_layer_add_rect(RectLayer *layer, Rect rect, Color color)
 {
     trace_assert(layer);
 
@@ -137,7 +137,7 @@ int layer_add_rect(RectLayer *layer, Rect rect, Color color)
     return 0;
 }
 
-int layer_delete_rect_at(RectLayer *layer, Vec position)
+int rect_layer_delete_rect_at(RectLayer *layer, Vec position)
 {
     trace_assert(layer);
 

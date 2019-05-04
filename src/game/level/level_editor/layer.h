@@ -12,8 +12,8 @@ void destroy_rect_layer(RectLayer *layer);
 int layer_render(const RectLayer *layer, Camera *camera);
 int layer_event(RectLayer *layer, const SDL_Event *event);
 
-int layer_add_rect(RectLayer *layer, Rect rect, Color color);
-int layer_delete_rect_at(RectLayer *layer, Vec position);
+int rect_layer_add_rect(RectLayer *layer, Rect rect, Color color);
+int rect_layer_delete_rect_at(RectLayer *layer, Vec position);
 
 size_t layer_count(const RectLayer *layer);
 const Rect *layer_rects(const RectLayer *layer);
