@@ -1,6 +1,7 @@
 #ifndef LAYER_H_
 #define LAYER_H_
 
+// TODO: Layer should be called RectLayer
 typedef struct Layer Layer;
 typedef struct LineStream LineStream;
 
