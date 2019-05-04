@@ -11,6 +11,7 @@ with import <nixpkgs> {}; {
                         racket
                         inotifyTools
                         libxml2
+                        ninja
                       ];
     };
 }

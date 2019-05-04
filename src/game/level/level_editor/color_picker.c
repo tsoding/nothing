@@ -38,22 +38,12 @@ int color_picker_render(const ColorPicker *color_picker,
     return 0;
 }
 
-int color_picker_update(ColorPicker *color_picker,
-                        float delta_time)
-{
-    trace_assert(color_picker);
-    (void) delta_time;
-    return 0;
-}
-
 int color_picker_mouse_button(ColorPicker *color_picker,
                               const SDL_MouseButtonEvent *event,
                               bool *selected)
 {
     trace_assert(color_picker);
     trace_assert(event);
-
-    *selected = false;
 
     if (event->type == SDL_MOUSEBUTTONDOWN) {
         switch (event->button) {
@@ -65,7 +55,7 @@ int color_picker_mouse_button(ColorPicker *color_picker,
                          COLOR_CELL_WIDTH,
                          COLOR_CELL_HEIGHT);
                 if (rect_contains_point(color_cell, mouse_position)) {
-                    color_picker->proto_rect->color = colors[i];
+                    color_picker->color = colors[i];
                     *selected = true;
                 }
             }

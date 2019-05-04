@@ -27,9 +27,6 @@ int level_input(Level *level,
                 SDL_Joystick *the_stick_of_joy);
 int level_enter_camera_event(Level *level, Camera *camera);
 
-int level_reload_preserve_player(Level *level,
-                                 Broadcast *broadcast);
-
 void level_toggle_debug_mode(Level *level);
 void level_toggle_pause_mode(Level *level);
 

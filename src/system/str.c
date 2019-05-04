@@ -17,7 +17,7 @@ char *string_duplicate(const char *str,
     }
 
     const size_t n = str_end == NULL ? strlen(str) : (size_t) (str_end - str);
-    char *dup_str = nth_alloc(sizeof(char) * (n + 1));
+    char *dup_str = nth_calloc(1, sizeof(char) * (n + 1));
     if (dup_str == NULL) {
         return NULL;
     }

@@ -36,7 +36,7 @@ Explosion *create_explosion(Color color,
         return NULL;
     }
 
-    Explosion *explosion = PUSH_LT(lt, nth_alloc(sizeof(Explosion)), free);
+    Explosion *explosion = PUSH_LT(lt, nth_calloc(1, sizeof(Explosion)), free);
     if (explosion == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -47,7 +47,7 @@ Explosion *create_explosion(Color color,
     explosion->duration = duration;
     explosion->time_passed = duration;
 
-    explosion->pieces = PUSH_LT(lt, nth_alloc(sizeof(Piece) * EXPLOSION_PIECE_COUNT), free);
+    explosion->pieces = PUSH_LT(lt, nth_calloc(1, sizeof(Piece) * EXPLOSION_PIECE_COUNT), free);
     if (explosion->pieces == NULL) {
         RETURN_LT(lt, NULL);
     }

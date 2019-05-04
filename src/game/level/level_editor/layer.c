@@ -7,6 +7,7 @@
 #include "color.h"
 #include "layer.h"
 #include "dynarray.h"
+#include "system/line_stream.h"
 
 struct Layer {
     Lt *lt;
@@ -21,7 +22,7 @@ Layer *create_layer(void)
         return NULL;
     }
 
-    Layer *layer = PUSH_LT(lt, nth_alloc(sizeof(Layer)), free);
+    Layer *layer = PUSH_LT(lt, nth_calloc(1, sizeof(Layer)), free);
     if (layer == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -43,7 +44,48 @@ Layer *create_layer(void)
         RETURN_LT(lt, NULL);
     }
 
-    trace_assert(layer);
+    return layer;
+}
+
+Layer *create_layer_from_line_stream(LineStream *line_stream)
+{
+    trace_assert(line_stream);
+
+    Layer *layer = create_layer();
+    if (layer == NULL) {
+        return NULL;
+    }
+
+    const char *line = line_stream_next(line_stream);
+    if (line == NULL) {
+        RETURN_LT(layer->lt, NULL);
+    }
+
+    size_t count = 0;
+    if (sscanf(line, "%lu", &count) < 0) {
+        RETURN_LT(layer->lt, NULL);
+    }
+
+    for (size_t i = 0; i < count; ++i) {
+        line = line_stream_next(line_stream);
+        if (line == NULL) {
+            RETURN_LT(layer->lt, NULL);
+        }
+
+        char hex[7];
+        Rect rect;
+
+        if (sscanf(line, "%f%f%f%f%6s\n",
+                   &rect.x, &rect.y,
+                   &rect.w, &rect.h,
+                   hex) < 0) {
+            RETURN_LT(layer->lt, NULL);
+        }
+
+        if (layer_add_rect(layer, rect, hexstr(hex)) < 0) {
+            RETURN_LT(layer->lt, NULL);
+        }
+    }
 
     return layer;
 }
@@ -64,7 +106,8 @@ int layer_render(const Layer *layer, Camera *camera)
     Color *colors = dynarray_data(layer->colors);
 
     for (size_t i = 0; i < n; ++i) {
-        if (camera_fill_rect(camera, rects[i], colors[i]) < 0) {
+        Color color = rgba(colors[i].r, colors[i].g, colors[i].b, 0.75f);
+        if (camera_fill_rect(camera, rects[i], color) < 0) {
             return -1;
         }
     }
@@ -83,8 +126,13 @@ int layer_add_rect(Layer *layer, Rect rect, Color color)
 {
     trace_assert(layer);
 
-    dynarray_push(layer->rects, &rect);
-    dynarray_push(layer->colors, &color);
+    if (dynarray_push(layer->rects, &rect) < 0) {
+        return -1;
+    }
+
+    if (dynarray_push(layer->colors, &color) < 0) {
+        return -1;
+    }
 
     return 0;
 }
@@ -105,4 +153,19 @@ int layer_delete_rect_at(Layer *layer, Vec position)
     }
 
     return 0;
+}
+
+size_t layer_count(const Layer *layer)
+{
+    return dynarray_count(layer->rects);
+}
+
+const Rect *layer_rects(const Layer *layer)
+{
+    return dynarray_data(layer->rects);
+}
+
+const Color *layer_colors(const Layer *layer)
+{
+    return dynarray_data(layer->colors);
 }

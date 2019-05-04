@@ -42,7 +42,7 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
         return NULL;
     }
 
-    Labels * const labels = PUSH_LT(lt, nth_alloc(sizeof(Labels)), free);
+    Labels * const labels = PUSH_LT(lt, nth_calloc(1, sizeof(Labels)), free);
     if (labels == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -56,37 +56,37 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    labels->ids = PUSH_LT(lt, nth_alloc(sizeof(char*) * labels->count), free);
+    labels->ids = PUSH_LT(lt, nth_calloc(1, sizeof(char*) * labels->count), free);
     if (labels->ids == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    labels->positions = PUSH_LT(lt, nth_alloc(sizeof(Vec) * labels->count), free);
+    labels->positions = PUSH_LT(lt, nth_calloc(1, sizeof(Vec) * labels->count), free);
     if (labels->positions == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    labels->colors = PUSH_LT(lt, nth_alloc(sizeof(Color) * labels->count), free);
+    labels->colors = PUSH_LT(lt, nth_calloc(1, sizeof(Color) * labels->count), free);
     if (labels->colors == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    labels->texts = PUSH_LT(lt, nth_alloc(sizeof(char*) * labels->count), free);
+    labels->texts = PUSH_LT(lt, nth_calloc(1, sizeof(char*) * labels->count), free);
     if (labels->texts == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    labels->alphas = PUSH_LT(lt, nth_alloc(sizeof(float) * labels->count), free);
+    labels->alphas = PUSH_LT(lt, nth_calloc(1, sizeof(float) * labels->count), free);
     if (labels->alphas == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    labels->delta_alphas = PUSH_LT(lt, nth_alloc(sizeof(float) * labels->count), free);
+    labels->delta_alphas = PUSH_LT(lt, nth_calloc(1, sizeof(float) * labels->count), free);
     if (labels->delta_alphas == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    labels->states = PUSH_LT(lt, nth_alloc(sizeof(enum LabelState) * labels->count), free);
+    labels->states = PUSH_LT(lt, nth_calloc(1, sizeof(enum LabelState) * labels->count), free);
     if (labels->states == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -98,7 +98,7 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
         labels->states[i] = LABEL_STATE_VIRGIN;
         labels->texts[i] = NULL;
 
-        labels->ids[i] = PUSH_LT(lt, nth_alloc(sizeof(char) * LABEL_MAX_ID_SIZE), free);
+        labels->ids[i] = PUSH_LT(lt, nth_calloc(1, sizeof(char) * LABEL_MAX_ID_SIZE), free);
         if (labels->ids[i] == NULL) {
             RETURN_LT(lt, NULL);
         }

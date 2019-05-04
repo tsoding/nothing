@@ -39,7 +39,7 @@ LineStream *create_line_stream(const char *filename,
 
     LineStream *line_stream = PUSH_LT(
         lt,
-        nth_alloc(sizeof(LineStream)),
+        nth_calloc(1, sizeof(LineStream)),
         free);
     if (line_stream == NULL) {
         RETURN_LT(lt, NULL);
@@ -57,7 +57,7 @@ LineStream *create_line_stream(const char *filename,
 
     line_stream->buffer = PUSH_LT(
         lt,
-        nth_alloc(sizeof(char) * capacity),
+        nth_calloc(1, sizeof(char) * capacity),
         free);
     if (line_stream->buffer == NULL) {
         RETURN_LT(lt, NULL);

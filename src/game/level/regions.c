@@ -39,7 +39,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Broadcast *bro
 
     Regions *regions = PUSH_LT(
         lt,
-        nth_alloc(sizeof(Regions)),
+        nth_calloc(1, sizeof(Regions)),
         free);
     if (regions == NULL) {
         RETURN_LT(lt, NULL);
@@ -56,7 +56,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Broadcast *bro
 
     regions->rects = PUSH_LT(
         lt,
-        nth_alloc(sizeof(Rect) * regions->count),
+        nth_calloc(1, sizeof(Rect) * regions->count),
         free);
     if (regions->rects == NULL) {
         RETURN_LT(lt, NULL);
@@ -64,7 +64,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Broadcast *bro
 
     regions->colors = PUSH_LT(
         lt,
-        nth_alloc(sizeof(Color) * regions->count),
+        nth_calloc(1, sizeof(Color) * regions->count),
         free);
     if (regions->colors == NULL) {
         RETURN_LT(lt, NULL);
@@ -72,7 +72,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Broadcast *bro
 
     regions->scripts = PUSH_LT(
         lt,
-        nth_alloc(sizeof(Script*) * regions->count),
+        nth_calloc(1, sizeof(Script*) * regions->count),
         free);
     if (regions->scripts == NULL) {
         RETURN_LT(lt, NULL);
@@ -80,7 +80,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Broadcast *bro
 
     regions->states = PUSH_LT(
         lt,
-        nth_alloc(sizeof(enum RegionState) * regions->count),
+        nth_calloc(1, sizeof(enum RegionState) * regions->count),
         free);
     if (regions->states == NULL) {
         RETURN_LT(lt, NULL);

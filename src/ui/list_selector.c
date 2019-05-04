@@ -38,7 +38,7 @@ ListSelector *create_list_selector(const Sprite_font *sprite_font,
         return NULL;
     }
 
-    ListSelector *list_selector = PUSH_LT(lt, nth_alloc(sizeof(ListSelector)), free);
+    ListSelector *list_selector = PUSH_LT(lt, nth_calloc(1, sizeof(ListSelector)), free);
     if (list_selector == NULL) {
         RETURN_LT(lt, NULL);
     }

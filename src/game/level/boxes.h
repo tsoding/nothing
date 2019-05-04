@@ -10,8 +10,9 @@ typedef struct Boxes Boxes;
 typedef struct Player Player;
 typedef struct LineStream LineStream;
 typedef struct Player Player;
+typedef struct Layer Layer;
 
-Boxes *create_boxes_from_line_stream(LineStream *line_stream, RigidBodies *rigid_bodies);
+Boxes *create_boxes_from_layer(const Layer *layer, RigidBodies *rigid_bodies);
 void destroy_boxes(Boxes *boxes);
 
 int boxes_render(Boxes *boxes, Camera *camera);
