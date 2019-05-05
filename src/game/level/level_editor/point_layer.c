@@ -10,6 +10,8 @@
 #include "game/camera.h"
 #include "./point_layer.h"
 
+#define POINT_LAYER_ELEMENT_RADIUS 10.0f
+
 struct PointLayer
 {
     Lt *lt;
@@ -105,7 +107,7 @@ int point_layer_render(const PointLayer *point_layer,
             equilateral_triangle(),
             mat3x3_product(
                 trans_mat(points[i].x, points[i].y),
-                scale_mat(10.0f)));
+                scale_mat(POINT_LAYER_ELEMENT_RADIUS)));
 
         if (i == point_layer->selected) {
             const Triangle t0 = triangle_mat3x3_product(
@@ -138,14 +140,23 @@ int point_layer_mouse_button(PointLayer *point_layer,
     trace_assert(event);
 
     if (event->type == SDL_MOUSEBUTTONDOWN && event->button == SDL_BUTTON_LEFT) {
+        const int n = (int) dynarray_count(point_layer->points);
+        const Point *points = dynarray_data(point_layer->points);
+        const Point point = camera_map_screen(camera, event->x, event->y);
+
+        for (int i = 0; i < n; ++i) {
+            if (vec_length(vec_sub(points[i], point)) < POINT_LAYER_ELEMENT_RADIUS) {
+                point_layer->selected = i;
+                return 0;
+            }
+        }
+
         char id[ID_MAX_SIZE];
 
         // TODO(#842): PointLayer does not allow to specify an id of a point
         for (size_t i = 0; i < ID_MAX_SIZE - 1; ++i) {
             id[i] = (char) ('a' + rand() % ('z' - 'a' + 1));
         }
-
-        const Point point = camera_map_screen(camera, event->x, event->y);
 
         dynarray_push(point_layer->points, &point);
         dynarray_push(point_layer->colors, &color);
