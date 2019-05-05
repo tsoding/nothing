@@ -14,8 +14,6 @@ int point_layer_render(const PointLayer *point_rect_layer,
                        Camera *camera);
 int point_layer_mouse_button(PointLayer *point_rect_layer,
                              const SDL_MouseButtonEvent *event);
-int point_layer_event(PointLayer *point_rect_layer,
-                      const SDL_Event *event);
 
 size_t point_layer_count(const PointLayer *point_rect_layer);
 const Point *point_layer_points(const PointLayer *point_rect_layer);

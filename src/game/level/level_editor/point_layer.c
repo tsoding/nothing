@@ -105,15 +105,6 @@ int point_layer_mouse_button(PointLayer *point_rect_layer,
     return 0;
 }
 
-
-int point_layer_event(PointLayer *point_rect_layer,
-                      const SDL_Event *event)
-{
-    trace_assert(point_rect_layer);
-    trace_assert(event);
-    return 0;
-}
-
 size_t point_layer_count(const PointLayer *point_rect_layer)
 {
     trace_assert(point_rect_layer);
