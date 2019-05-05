@@ -7,9 +7,9 @@ typedef struct PointLayer PointLayer;
 
 // TODO(#820): LevelEditor cannot generate a level file
 
-LevelEditor *create_level_editor(RectLayer *boxes_rect_layer,
-                                 RectLayer *platforms_rect_layer,
-                                 RectLayer *back_platforms_rect_layer,
+LevelEditor *create_level_editor(RectLayer *boxes_layer,
+                                 RectLayer *platforms_layer,
+                                 RectLayer *back_platforms_layer,
                                  PointLayer *goals_layer);
 void destroy_level_editor(LevelEditor *level_editor);
 

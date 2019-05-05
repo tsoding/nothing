@@ -117,14 +117,14 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
-    RectLayer *platforms_rect_layer = create_layer_from_line_stream(level_stream);
-    if (platforms_rect_layer == NULL) {
+    RectLayer *platforms_layer = create_layer_from_line_stream(level_stream);
+    if (platforms_layer == NULL) {
         RETURN_LT(lt, NULL);
     }
 
     level->platforms = PUSH_LT(
         lt,
-        create_platforms_from_rect_layer(platforms_rect_layer),
+        create_platforms_from_rect_layer(platforms_layer),
         destroy_platforms);
     if (level->platforms == NULL) {
         RETURN_LT(lt, NULL);
@@ -151,27 +151,27 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
-    RectLayer *back_platforms_rect_layer = create_layer_from_line_stream(level_stream);
-    if (back_platforms_rect_layer == NULL) {
+    RectLayer *back_platforms_layer = create_layer_from_line_stream(level_stream);
+    if (back_platforms_layer == NULL) {
         RETURN_LT(lt, NULL);
     }
 
     level->back_platforms = PUSH_LT(
         lt,
-        create_platforms_from_rect_layer(back_platforms_rect_layer),
+        create_platforms_from_rect_layer(back_platforms_layer),
         destroy_platforms);
     if (level->back_platforms == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    RectLayer *boxes_rect_layer = create_layer_from_line_stream(level_stream);
-    if (boxes_rect_layer == NULL) {
+    RectLayer *boxes_layer = create_layer_from_line_stream(level_stream);
+    if (boxes_layer == NULL) {
         RETURN_LT(lt, NULL);
     }
 
     level->boxes = PUSH_LT(
         lt,
-        create_boxes_from_rect_layer(boxes_rect_layer, level->rigid_bodies),
+        create_boxes_from_rect_layer(boxes_layer, level->rigid_bodies),
         destroy_boxes);
     if (level->boxes == NULL) {
         RETURN_LT(lt, NULL);
@@ -197,9 +197,9 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
     level->level_editor = PUSH_LT(
         lt,
         create_level_editor(
-            boxes_rect_layer,
-            platforms_rect_layer,
-            back_platforms_rect_layer,
+            boxes_layer,
+            platforms_layer,
+            back_platforms_layer,
             goals_layer),
         destroy_level_editor);
     if (level->level_editor == NULL) {
