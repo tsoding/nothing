@@ -137,7 +137,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
 
     level->goals = PUSH_LT(
         lt,
-        create_goals_from_point_rect_layer(goals_rect_layer),
+        create_goals_from_point_layer(goals_rect_layer),
         destroy_goals);
     if (level->goals == NULL) {
         RETURN_LT(lt, NULL);
