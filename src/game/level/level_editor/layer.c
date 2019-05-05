@@ -96,7 +96,7 @@ void destroy_rect_layer(RectLayer *layer)
     RETURN_LT0(layer->lt);
 }
 
-int layer_render(const RectLayer *layer, Camera *camera)
+int rect_layer_render(const RectLayer *layer, Camera *camera)
 {
     trace_assert(layer);
     trace_assert(camera);
@@ -115,7 +115,7 @@ int layer_render(const RectLayer *layer, Camera *camera)
     return 0;
 }
 
-int layer_event(RectLayer *layer, const SDL_Event *event)
+int rect_layer_event(RectLayer *layer, const SDL_Event *event)
 {
     trace_assert(layer);
     trace_assert(event);
@@ -155,17 +155,17 @@ int rect_layer_delete_rect_at(RectLayer *layer, Vec position)
     return 0;
 }
 
-size_t layer_count(const RectLayer *layer)
+size_t rect_layer_count(const RectLayer *layer)
 {
     return dynarray_count(layer->rects);
 }
 
-const Rect *layer_rects(const RectLayer *layer)
+const Rect *rect_layer_rects(const RectLayer *layer)
 {
     return dynarray_data(layer->rects);
 }
 
-const Color *layer_colors(const RectLayer *layer)
+const Color *rect_layer_colors(const RectLayer *layer)
 {
     return dynarray_data(layer->colors);
 }
