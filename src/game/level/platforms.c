@@ -39,20 +39,20 @@ Platforms *create_platforms_from_rect_layer(const RectLayer *layer)
     }
     platforms->lt = lt;
 
-    platforms->rects_size = layer_count(layer);
+    platforms->rects_size = rect_layer_count(layer);
 
     platforms->rects = PUSH_LT(lt, nth_calloc(1, sizeof(Rect) * platforms->rects_size), free);
     if (platforms->rects == NULL) {
         RETURN_LT(lt, NULL);
     }
-    memcpy(platforms->rects, layer_rects(layer), sizeof(Rect) * platforms->rects_size);
+    memcpy(platforms->rects, rect_layer_rects(layer), sizeof(Rect) * platforms->rects_size);
 
 
     platforms->colors = PUSH_LT(lt, nth_calloc(1, sizeof(Color) * platforms->rects_size), free);
     if (platforms->colors == NULL) {
         RETURN_LT(lt, NULL);
     }
-    memcpy(platforms->colors, layer_colors(layer), sizeof(Color) * platforms->rects_size);
+    memcpy(platforms->colors, rect_layer_colors(layer), sizeof(Color) * platforms->rects_size);
 
     return platforms;
 }

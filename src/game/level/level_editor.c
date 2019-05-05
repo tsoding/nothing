@@ -87,15 +87,15 @@ int level_editor_render(const LevelEditor *level_editor,
     trace_assert(level_editor);
     trace_assert(camera);
 
-    if (layer_render(level_editor->back_platforms_rect_layer, camera) < 0) {
+    if (rect_layer_render(level_editor->back_platforms_rect_layer, camera) < 0) {
         return -1;
     }
 
-    if (layer_render(level_editor->boxes_rect_layer, camera) < 0) {
+    if (rect_layer_render(level_editor->boxes_rect_layer, camera) < 0) {
         return -1;
     }
 
-    if (layer_render(level_editor->platforms_rect_layer, camera) < 0) {
+    if (rect_layer_render(level_editor->platforms_rect_layer, camera) < 0) {
         return -1;
     }
 

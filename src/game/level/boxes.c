@@ -51,9 +51,9 @@ Boxes *create_boxes_from_rect_layer(const RectLayer *layer, RigidBodies *rigid_b
         RETURN_LT(lt, NULL);
     }
 
-    const size_t count = layer_count(layer);
-    Rect const *rects = layer_rects(layer);
-    Color const *colors = layer_colors(layer);
+    const size_t count = rect_layer_count(layer);
+    Rect const *rects = rect_layer_rects(layer);
+    Color const *colors = rect_layer_colors(layer);
 
     for (size_t i = 0; i < count; ++i) {
         RigidBodyId body_id = rigid_bodies_add(rigid_bodies, rects[i]);
