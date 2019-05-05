@@ -139,6 +139,19 @@ int level_editor_event(LevelEditor *level_editor,
     trace_assert(camera);
 
     switch (event->type) {
+    case SDL_KEYDOWN:
+    case SDL_KEYUP: {
+        if (layer_picker_type(&level_editor->layer_picker) == LAYER_TYPE_RECT) {
+            // Nothing
+        } else {
+            if (point_layer_keyboard(
+                    level_editor->current_point_layer,
+                    &event->key) < 0) {
+                return -1;
+            }
+        }
+    } break;
+
     case SDL_MOUSEWHEEL: {
         // TODO(#679): zooming in edit mode is not smooth enough
         if (event->wheel.y > 0) {

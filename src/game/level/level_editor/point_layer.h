@@ -16,6 +16,8 @@ int point_layer_mouse_button(PointLayer *point_layer,
                              const SDL_MouseButtonEvent *event,
                              const Camera *camera,
                              Color color);
+int point_layer_keyboard(PointLayer *point_layer,
+                         const SDL_KeyboardEvent *event);
 
 size_t point_layer_count(const PointLayer *point_layer);
 const Point *point_layer_points(const PointLayer *point_layer);
