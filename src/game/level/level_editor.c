@@ -27,7 +27,7 @@ struct LevelEditor
     RectLayer *back_platforms_rect_layer;
     PointLayer *goals_rect_layer;
 
-    RectLayer *current_rect_rect_layer;
+    RectLayer *current_rect_layer;
     PointLayer *current_point_rect_layer;
     // TODO(#823): LevelEditor does not allow to switch the current layer
     bool drag;
@@ -61,14 +61,14 @@ LevelEditor *create_level_editor(RectLayer *boxes_rect_layer,
     level_editor->platforms_rect_layer = PUSH_LT(lt, platforms_rect_layer, destroy_rect_layer);
     level_editor->back_platforms_rect_layer = PUSH_LT(lt, back_platforms_rect_layer, destroy_rect_layer);
     level_editor->goals_rect_layer = PUSH_LT(lt, goals_rect_layer, destroy_point_rect_layer);
-    level_editor->current_rect_rect_layer = boxes_rect_layer;
+    level_editor->current_rect_layer = boxes_rect_layer;
     level_editor->current_point_rect_layer = goals_rect_layer;
 
     level_editor->color_picker.color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
     level_editor->layer_picker = LAYER_PICKER_BOXES;
 
     level_editor->proto_rect.color_current = &level_editor->color_picker.color;
-    level_editor->proto_rect.layer_current = &level_editor->current_rect_rect_layer;
+    level_editor->proto_rect.layer_current = &level_editor->current_rect_layer;
 
     level_editor->drag = false;
 
@@ -164,13 +164,13 @@ int level_editor_event(LevelEditor *level_editor,
 
         switch (level_editor->layer_picker) {
         case LAYER_PICKER_BOXES: {
-            level_editor->current_rect_rect_layer = level_editor->boxes_rect_layer;
+            level_editor->current_rect_layer = level_editor->boxes_rect_layer;
         } break;
         case LAYER_PICKER_PLATFORMS: {
-            level_editor->current_rect_rect_layer = level_editor->platforms_rect_layer;
+            level_editor->current_rect_layer = level_editor->platforms_rect_layer;
         } break;
         case LAYER_PICKER_BACK_PLATFORMS: {
-            level_editor->current_rect_rect_layer = level_editor->back_platforms_rect_layer;
+            level_editor->current_rect_layer = level_editor->back_platforms_rect_layer;
         } break;
         case LAYER_PICKER_GOALS: {
             level_editor->current_point_rect_layer = level_editor->goals_rect_layer;
