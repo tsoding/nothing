@@ -120,7 +120,7 @@ int point_layer_mouse_button(PointLayer *point_layer,
     trace_assert(point_layer);
     trace_assert(event);
 
-    if (event->button == SDL_BUTTON_LEFT) {
+    if (event->type == SDL_MOUSEBUTTONDOWN && event->button == SDL_BUTTON_LEFT) {
         char id[ID_MAX_SIZE];
 
         // TODO: PointLayer does not allow to specify an id of a point
