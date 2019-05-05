@@ -10,7 +10,7 @@ typedef struct PointLayer PointLayer;
 LevelEditor *create_level_editor(RectLayer *boxes_rect_layer,
                                  RectLayer *platforms_rect_layer,
                                  RectLayer *back_platforms_rect_layer,
-                                 PointLayer *goals_rect_layer);
+                                 PointLayer *goals_layer);
 void destroy_level_editor(LevelEditor *level_editor);
 
 int level_editor_render(const LevelEditor *level_editor,

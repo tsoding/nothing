@@ -25,7 +25,7 @@ struct LevelEditor
     RectLayer *boxes_rect_layer;
     RectLayer *platforms_rect_layer;
     RectLayer *back_platforms_rect_layer;
-    PointLayer *goals_rect_layer;
+    PointLayer *goals_layer;
 
     RectLayer *current_rect_layer;
     PointLayer *current_point_layer;
@@ -36,12 +36,12 @@ struct LevelEditor
 LevelEditor *create_level_editor(RectLayer *boxes_rect_layer,
                                  RectLayer *platforms_rect_layer,
                                  RectLayer *back_platforms_rect_layer,
-                                 PointLayer *goals_rect_layer)
+                                 PointLayer *goals_layer)
 {
     trace_assert(boxes_rect_layer);
     trace_assert(platforms_rect_layer);
     trace_assert(back_platforms_rect_layer);
-    trace_assert(goals_rect_layer);
+    trace_assert(goals_layer);
 
     Lt *lt = create_lt();
     if (lt == NULL) {
@@ -60,9 +60,9 @@ LevelEditor *create_level_editor(RectLayer *boxes_rect_layer,
     level_editor->boxes_rect_layer = PUSH_LT(lt, boxes_rect_layer, destroy_rect_layer);
     level_editor->platforms_rect_layer = PUSH_LT(lt, platforms_rect_layer, destroy_rect_layer);
     level_editor->back_platforms_rect_layer = PUSH_LT(lt, back_platforms_rect_layer, destroy_rect_layer);
-    level_editor->goals_rect_layer = PUSH_LT(lt, goals_rect_layer, destroy_point_layer);
+    level_editor->goals_layer = PUSH_LT(lt, goals_layer, destroy_point_layer);
     level_editor->current_rect_layer = boxes_rect_layer;
-    level_editor->current_point_layer = goals_rect_layer;
+    level_editor->current_point_layer = goals_layer;
 
     level_editor->color_picker.color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
     level_editor->layer_picker = LAYER_PICKER_BOXES;
@@ -173,7 +173,7 @@ int level_editor_event(LevelEditor *level_editor,
             level_editor->current_rect_layer = level_editor->back_platforms_rect_layer;
         } break;
         case LAYER_PICKER_GOALS: {
-            level_editor->current_point_layer = level_editor->goals_rect_layer;
+            level_editor->current_point_layer = level_editor->goals_layer;
         } break;
 
         default: {}

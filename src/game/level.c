@@ -130,14 +130,14 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
-    PointLayer *goals_rect_layer = create_point_layer_from_line_stream(level_stream);
-    if (goals_rect_layer == NULL) {
+    PointLayer *goals_layer = create_point_layer_from_line_stream(level_stream);
+    if (goals_layer == NULL) {
         RETURN_LT(lt, NULL);
     }
 
     level->goals = PUSH_LT(
         lt,
-        create_goals_from_point_layer(goals_rect_layer),
+        create_goals_from_point_layer(goals_layer),
         destroy_goals);
     if (level->goals == NULL) {
         RETURN_LT(lt, NULL);
@@ -200,7 +200,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
             boxes_rect_layer,
             platforms_rect_layer,
             back_platforms_rect_layer,
-            goals_rect_layer),
+            goals_layer),
         destroy_level_editor);
     if (level->level_editor == NULL) {
         RETURN_LT(lt, NULL);
