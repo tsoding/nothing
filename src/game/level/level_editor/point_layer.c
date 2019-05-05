@@ -16,6 +16,7 @@ struct PointLayer
     Dynarray *points;
     Dynarray *colors;
     Dynarray *ids;
+    int selected;
 };
 
 // TODO(#837): PointLayer does not allow to edit itself
@@ -49,6 +50,8 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
     if (point_layer->ids == NULL) {
         RETURN_LT(lt, NULL);
     }
+
+    point_layer->selected = 0;
 
     size_t count = 0;
     if (sscanf(
@@ -93,16 +96,28 @@ int point_layer_render(const PointLayer *point_layer,
     trace_assert(point_layer);
     trace_assert(camera);
 
-    const size_t n = dynarray_count(point_layer->points);
+    const int n = (int) dynarray_count(point_layer->points);
     Point *points = dynarray_data(point_layer->points);
     Color *colors = dynarray_data(point_layer->colors);
 
-    for (size_t i = 0; i < n; ++i) {
+    for (int i = 0; i < n; ++i) {
         const Triangle t = triangle_mat3x3_product(
             equilateral_triangle(),
             mat3x3_product(
                 trans_mat(points[i].x, points[i].y),
                 scale_mat(10.0f)));
+
+        if (i == point_layer->selected) {
+            const Triangle t0 = triangle_mat3x3_product(
+                equilateral_triangle(),
+                mat3x3_product(
+                    trans_mat(points[i].x, points[i].y),
+                    scale_mat(15.0f)));
+
+            if (camera_fill_triangle(camera, t0, color_invert(colors[i])) < 0) {
+                return -1;
+            }
+        }
 
         if (camera_fill_triangle(camera, t, colors[i]) < 0) {
             return -1;
