@@ -113,11 +113,28 @@ int point_layer_render(const PointLayer *point_layer,
 }
 
 int point_layer_mouse_button(PointLayer *point_layer,
-                             const SDL_MouseButtonEvent *event)
+                             const SDL_MouseButtonEvent *event,
+                             const Camera *camera,
+                             Color color)
 {
     trace_assert(point_layer);
     trace_assert(event);
-    log_info("Clicked %d %d\n", event->x, event->y);
+
+    if (event->button == SDL_BUTTON_LEFT) {
+        char id[ID_MAX_SIZE];
+
+        // TODO: PointLayer does not allow to specify an id of a point
+        for (size_t i = 0; i < ID_MAX_SIZE - 1; ++i) {
+            id[i] = (char) ('a' + rand() % ('z' - 'a' + 1));
+        }
+
+        const Point point = camera_map_screen(camera, event->x, event->y);
+
+        dynarray_push(point_layer->points, &point);
+        dynarray_push(point_layer->colors, &color);
+        dynarray_push(point_layer->ids, id);
+    }
+
     return 0;
 }
 

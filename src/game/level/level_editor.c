@@ -191,7 +191,11 @@ int level_editor_event(LevelEditor *level_editor,
                 return -1;
             }
         } else {
-            point_layer_mouse_button(level_editor->current_point_layer, &event->button);
+            point_layer_mouse_button(
+                level_editor->current_point_layer,
+                &event->button,
+                camera,
+                level_editor->color_picker.color);
         }
 
         if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_MIDDLE) {
