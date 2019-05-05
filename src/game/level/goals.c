@@ -117,7 +117,7 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
     return goals;
 }
 
-Goals *create_goals_from_point_layer(PointLayer *point_layer)
+Goals *create_goals_from_point_layer(const PointLayer *point_layer)
 {
     trace_assert(point_layer);
 

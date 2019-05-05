@@ -344,7 +344,15 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
                     return -1;
                 }
 
-                // TODO(#834): goals are not updated after tabbing from LevelEditor
+                level->goals = RESET_LT(
+                    level->lt,
+                    level->goals,
+                    create_goals_from_point_layer(
+                        level_editor_goals_layer(
+                            level->level_editor)));
+                if (level->goals == NULL) {
+                    return -1;
+                }
             }
         };
         }

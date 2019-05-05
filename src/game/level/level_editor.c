@@ -252,3 +252,8 @@ const RectLayer *level_editor_back_platforms(const LevelEditor *level_editor)
 {
     return level_editor->back_platforms_layer;
 }
+
+const PointLayer *level_editor_goals_layer(const LevelEditor *level_editor)
+{
+    return level_editor->goals_layer;
+}
