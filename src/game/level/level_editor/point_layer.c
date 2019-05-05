@@ -53,7 +53,7 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    point_layer->selected = 0;
+    point_layer->selected = -1;
 
     size_t count = 0;
     if (sscanf(
@@ -161,6 +161,25 @@ int point_layer_mouse_button(PointLayer *point_layer,
         dynarray_push(point_layer->points, &point);
         dynarray_push(point_layer->colors, &color);
         dynarray_push(point_layer->ids, id);
+    }
+
+    return 0;
+}
+
+int point_layer_keyboard(PointLayer *point_layer,
+                         const SDL_KeyboardEvent *event)
+{
+    trace_assert(point_layer);
+    trace_assert(event);
+
+    if (event->type == SDL_KEYDOWN && event->keysym.sym == SDLK_DELETE) {
+        if (0 <= point_layer->selected && point_layer->selected < (int) dynarray_count(point_layer->points)) {
+            dynarray_delete_at(point_layer->points, (size_t) point_layer->selected);
+            dynarray_delete_at(point_layer->colors, (size_t) point_layer->selected);
+            dynarray_delete_at(point_layer->ids, (size_t) point_layer->selected);
+        }
+
+        point_layer->selected = -1;
     }
 
     return 0;
