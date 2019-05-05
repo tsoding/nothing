@@ -99,6 +99,10 @@ int level_editor_render(const LevelEditor *level_editor,
         return -1;
     }
 
+    if (point_layer_render(level_editor->goals_layer, camera) < 0) {
+        return -1;
+    }
+
     if (proto_rect_render(&level_editor->proto_rect, camera) < 0) {
         return -1;
     }

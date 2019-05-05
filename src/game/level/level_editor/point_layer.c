@@ -93,6 +93,22 @@ int point_layer_render(const PointLayer *point_layer,
     trace_assert(point_layer);
     trace_assert(camera);
 
+    const size_t n = dynarray_count(point_layer->points);
+    Point *points = dynarray_data(point_layer->points);
+    Color *colors = dynarray_data(point_layer->colors);
+
+    for (size_t i = 0; i < n; ++i) {
+        const Triangle t = triangle_mat3x3_product(
+            equilateral_triangle(),
+            mat3x3_product(
+                trans_mat(points[i].x, points[i].y),
+                scale_mat(10.0f)));
+
+        if (camera_fill_triangle(camera, t, colors[i]) < 0) {
+            return -1;
+        }
+    }
+
     return 0;
 }
 
