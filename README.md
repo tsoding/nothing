@@ -104,7 +104,12 @@ $ ./build/svg2level compile <svg-file> <level-file>
 ```
 
 All of the levels reside in the [./levels/] folder. Use
-[./levels/Makefile] to automatically rebuild all levels.
+[./levels/Makefile] to automatically rebuild all levels:
+
+```console
+$ cd levels/     # you must be inside of the `levels/` folder
+$ make
+```
 
 ### Level Editing Workflow
 
