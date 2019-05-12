@@ -17,7 +17,7 @@
 
 struct Boxes
 {
-    Lt lt;
+    Lt *lt;
     RigidBodies *rigid_bodies;
     Dynarray *body_ids;
     Dynarray *body_colors;
@@ -28,7 +28,7 @@ Boxes *create_boxes_from_rect_layer(const RectLayer *layer, RigidBodies *rigid_b
     trace_assert(layer);
     trace_assert(rigid_bodies);
 
-    Lt lt = {0};
+    Lt *lt = create_lt();
 
     Boxes *boxes = PUSH_LT(lt, nth_calloc(1, sizeof(Boxes)), free);
     if (boxes == NULL) {

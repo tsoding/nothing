@@ -10,7 +10,7 @@
 
 struct LevelMetadata
 {
-    Lt lt;
+    Lt *lt;
     const char *title;
 };
 
@@ -33,7 +33,7 @@ LevelMetadata *create_level_metadata_from_line_stream(LineStream *line_stream)
 {
     trace_assert(line_stream);
 
-    Lt lt = {0};
+    Lt *lt = create_lt();
 
     LevelMetadata *level_metadata = PUSH_LT(
         lt, nth_calloc(1, sizeof(LevelMetadata)), free);

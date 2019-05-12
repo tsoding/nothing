@@ -15,7 +15,7 @@
 
 struct Wavy_rect
 {
-    Lt lt;
+    Lt *lt;
 
     Rect rect;
     Color color;
@@ -24,7 +24,7 @@ struct Wavy_rect
 
 Wavy_rect *create_wavy_rect(Rect rect, Color color)
 {
-    Lt lt = {0};
+    Lt *lt = create_lt();
 
     Wavy_rect *wavy_rect = PUSH_LT(lt, nth_calloc(1, sizeof(Wavy_rect)), free);
     if (wavy_rect == NULL) {

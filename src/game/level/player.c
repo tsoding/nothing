@@ -28,7 +28,7 @@ typedef enum Player_state {
 } Player_state;
 
 struct Player {
-    Lt lt;
+    Lt *lt;
     Player_state state;
 
     RigidBodies *rigid_bodies;
@@ -49,7 +49,7 @@ Player *create_player_from_line_stream(LineStream *line_stream, RigidBodies *rig
 {
     trace_assert(line_stream);
 
-    Lt lt = {0};
+    Lt *lt = create_lt();
 
 
     Player *player = PUSH_LT(lt, nth_calloc(1, sizeof(Player)), free);

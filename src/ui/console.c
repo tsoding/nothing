@@ -38,7 +38,7 @@
 
 struct Console
 {
-    Lt lt;
+    Lt *lt;
     Gc *gc;
     struct Scope scope;
     Edit_field *edit_field;
@@ -56,7 +56,7 @@ struct Console
 Console *create_console(Broadcast *broadcast,
                         const Sprite_font *font)
 {
-    Lt lt = {0};
+    Lt *lt = create_lt();
 
 
     Console *console = PUSH_LT(lt, nth_calloc(1, sizeof(Console)), free);

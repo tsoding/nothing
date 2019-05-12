@@ -15,7 +15,7 @@
 
 struct RigidBodies
 {
-    Lt lt;
+    Lt *lt;
     size_t capacity;
     size_t count;
 
@@ -31,7 +31,7 @@ struct RigidBodies
 
 RigidBodies *create_rigid_bodies(size_t capacity)
 {
-    Lt lt = {0};
+    Lt *lt = create_lt();
 
     RigidBodies *rigid_bodies = PUSH_LT(lt, nth_calloc(1, sizeof(RigidBodies)), free);
     if (rigid_bodies == NULL) {

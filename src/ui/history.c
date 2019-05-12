@@ -9,7 +9,7 @@
 
 struct History
 {
-    Lt lt;
+    Lt *lt;
 
     char **buffer;
     size_t begin;
@@ -19,7 +19,7 @@ struct History
 
 History *create_history(size_t capacity)
 {
-    Lt lt = {0};
+    Lt *lt = create_lt();
 
     History *history = PUSH_LT(
         lt,

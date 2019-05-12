@@ -14,7 +14,7 @@
 #include "game/level/level_editor/layer.h"
 
 struct Platforms {
-    Lt lt;
+    Lt *lt;
 
     Rect *rects;
     Color *colors;
@@ -25,7 +25,7 @@ Platforms *create_platforms_from_rect_layer(const RectLayer *layer)
 {
     trace_assert(layer);
 
-    Lt lt = {0};
+    Lt *lt = create_lt();
 
     Platforms *platforms = PUSH_LT(
         lt,

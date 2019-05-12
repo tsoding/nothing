@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 {
     srand((unsigned int) time(NULL));
 
-    Lt  lt = {0};
+    Lt *lt = create_lt();
 
     char *level_folder = NULL;
     int fps = 30;

@@ -11,7 +11,7 @@
 
 struct Dynarray
 {
-    Lt lt;
+    Lt *lt;
     size_t element_size;
     size_t capacity;
     size_t count;
@@ -20,7 +20,7 @@ struct Dynarray
 
 Dynarray *create_dynarray(size_t element_size)
 {
-    Lt lt = {0};
+    Lt *lt = create_lt();
 
     Dynarray *dynarray = PUSH_LT(lt, nth_calloc(1, sizeof(Dynarray)), free);
     if (dynarray == NULL) {

@@ -14,7 +14,7 @@
 
 struct ListSelector
 {
-    Lt lt;
+    Lt *lt;
     const Sprite_font *sprite_font;
     const char **items;
     size_t count;
@@ -33,7 +33,7 @@ ListSelector *create_list_selector(const Sprite_font *sprite_font,
 {
     trace_assert(items);
 
-    Lt lt = {0};
+    Lt *lt = create_lt();
 
     ListSelector *list_selector = PUSH_LT(lt, nth_calloc(1, sizeof(ListSelector)), free);
     if (list_selector == NULL) {

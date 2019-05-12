@@ -15,7 +15,7 @@
 
 struct LevelEditor
 {
-    Lt lt;
+    Lt *lt;
     Vec camera_position;
     float camera_scale;
     LayerPicker layer_picker;
@@ -43,7 +43,7 @@ LevelEditor *create_level_editor(RectLayer *boxes_layer,
     trace_assert(back_platforms_layer);
     trace_assert(goals_layer);
 
-    Lt lt = {0};
+    Lt *lt = create_lt();
 
     LevelEditor *level_editor = PUSH_LT(lt, nth_calloc(1, sizeof(LevelEditor)), free);
     if (level_editor == NULL) {

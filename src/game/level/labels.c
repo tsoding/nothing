@@ -22,7 +22,7 @@ enum LabelState
 
 struct Labels
 {
-    Lt lt;
+    Lt *lt;
     size_t count;
     char **ids;
     Vec *positions;
@@ -37,7 +37,7 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
 {
     trace_assert(line_stream);
 
-    Lt  lt = {0};
+    Lt *lt = create_lt();
 
     Labels * const labels = PUSH_LT(lt, nth_calloc(1, sizeof(Labels)), free);
     if (labels == NULL) {

@@ -17,7 +17,7 @@
 
 struct Script
 {
-    Lt lt;
+    Lt *lt;
     Gc *gc;
     struct Scope scope;
 };
@@ -26,7 +26,7 @@ Script *create_script_from_line_stream(LineStream *line_stream, Broadcast *broad
 {
     trace_assert(line_stream);
 
-    Lt lt = {0};
+    Lt *lt = create_lt();
 
     Script *script = PUSH_LT(lt, nth_calloc(1, sizeof(Script)), free);
     if (script == NULL) {

@@ -3,8 +3,9 @@
 
 #include <assert.h>
 #include <string.h>
+#include "system/stacktrace.h"
 
-#define LT_INITIAL_CAPACITY 2
+#define LT_INITIAL_CAPACITY 8
 
 typedef void (*Dtor)(void*);
 
@@ -19,22 +20,32 @@ typedef struct {
     Slot *slots;
 } Lt;
 
-static inline void destroy_lt(Lt lt)
+static inline Lt *create_lt(void)
 {
-    for (size_t i = lt.size; i > 0; --i) {
-        if (lt.slots[i - 1].res) {
-            lt.slots[i - 1].dtor(lt.slots[i - 1].res);
+    return calloc(1, sizeof(Lt));
+}
+
+static inline void destroy_lt(Lt *lt)
+{
+    trace_assert(lt);
+
+    for (size_t i = lt->size; i > 0; --i) {
+        if (lt->slots[i - 1].res) {
+            lt->slots[i - 1].dtor(lt->slots[i - 1].res);
         }
     }
 
-    free(lt.slots);
+    free(lt->slots);
+    free(lt);
 }
 
 #define PUSH_LT(lt, res, dtor)                  \
-    lt_push(&lt, (void*)res, (Dtor)dtor)
+    lt_push(lt, (void*)res, (Dtor)dtor)
 
 static inline void *lt_push(Lt *lt, void *res, Dtor dtor)
 {
+    trace_assert(lt);
+
     if (lt->size >= lt->capacity) {
         if (lt->capacity == 0) {
             lt->capacity = LT_INITIAL_CAPACITY;
@@ -62,11 +73,12 @@ static inline void *lt_push(Lt *lt, void *res, Dtor dtor)
     } while (0)
 
 #define RESET_LT(lt, old_res, new_res)          \
-    lt_reset(&lt, (void*) old_res, (void*) new_res)
+    lt_reset(lt, (void*) old_res, (void*) new_res)
 
 static inline void *lt_reset(Lt *lt, void *old_res, void *new_res)
 {
-    assert(old_res != new_res);
+    trace_assert(lt);
+    trace_assert(old_res != new_res);
 
     for (size_t i = 0; i < lt->size; ++i) {
         if (lt->slots[i].res == old_res) {
@@ -75,15 +87,18 @@ static inline void *lt_reset(Lt *lt, void *old_res, void *new_res)
             return new_res;
         }
     }
+
+    trace_assert(0 && "Resource was not found");
     return NULL;
 }
 
 
 #define REPLACE_LT(lt, old_res, new_res)        \
-    lt_replace(&lt, (void *)old_res, (void*)new_res)
+    lt_replace(lt, (void *)old_res, (void*)new_res)
 
 static inline void *lt_replace(Lt *lt, void *old_res, void *new_res)
 {
+    trace_assert(lt);
     for (size_t i = 0; i < lt->size; ++i) {
         if (lt->slots[i].res == old_res) {
             lt->slots[i].res = new_res;
@@ -91,14 +106,16 @@ static inline void *lt_replace(Lt *lt, void *old_res, void *new_res)
         }
     }
 
+    trace_assert(0 && "Resource was not found");
     return NULL;
 }
 
 #define RELEASE_LT(lt, res)                     \
-    lt_release(&lt, (void*)res)
+    lt_release(lt, (void*)res)
 
 static inline void *lt_release(Lt *lt, void *res)
 {
+    trace_assert(lt);
     for (size_t i = 0; i < lt->size; ++i) {
         if (lt->slots[i].res == res) {
             memmove(
@@ -110,6 +127,7 @@ static inline void *lt_release(Lt *lt, void *res)
         }
     }
 
+    trace_assert(0 && "Resource was not found");
     return NULL;
 }
 

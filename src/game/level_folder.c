@@ -15,7 +15,7 @@
 
 struct LevelFolder
 {
-    Lt lt;
+    Lt *lt;
     Dynarray *filenames;
     Dynarray *titles;
 };
@@ -24,7 +24,7 @@ LevelFolder *create_level_folder(const char *dirpath)
 {
     trace_assert(dirpath);
 
-    Lt lt = {0};
+    Lt *lt = create_lt();
 
     LevelFolder *level_folder = PUSH_LT(
         lt,

@@ -14,7 +14,7 @@
 
 struct Sprite_font
 {
-    Lt lt;
+    Lt *lt;
     SDL_Texture *texture;
 };
 
@@ -24,7 +24,7 @@ Sprite_font *create_sprite_font_from_file(const char *bmp_file_path,
     trace_assert(bmp_file_path);
     trace_assert(renderer);
 
-    Lt lt = {0};
+    Lt *lt = create_lt();
 
     Sprite_font * const sprite_font = PUSH_LT(lt, nth_calloc(1, sizeof(Sprite_font)), free);
     if (sprite_font == NULL) {

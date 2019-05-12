@@ -13,7 +13,7 @@
 
 struct LineStream
 {
-    Lt lt;
+    Lt *lt;
     FILE *stream;
     char *buffer;
     size_t capacity;
@@ -32,7 +32,7 @@ LineStream *create_line_stream(const char *filename,
     trace_assert(filename);
     trace_assert(mode);
 
-    Lt lt = {0};
+    Lt *lt = create_lt();
 
     LineStream *line_stream = PUSH_LT(
         lt,
