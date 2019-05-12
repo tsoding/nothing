@@ -3,6 +3,7 @@ with import <nixpkgs> {}; {
         name = "nothing-env";
         buildInputs = [ stdenv
                         gcc
+                        gdb
                         SDL2
                         SDL2_mixer
                         pkgconfig
