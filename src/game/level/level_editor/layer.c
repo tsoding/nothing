@@ -10,14 +10,14 @@
 #include "system/line_stream.h"
 
 struct RectLayer {
-    Lt *lt;
+    Lt lt;
     Dynarray *rects;
     Dynarray *colors;
 };
 
 RectLayer *create_rect_layer(void)
 {
-    Lt *lt = create_lt();
+    Lt lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }

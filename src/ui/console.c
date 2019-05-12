@@ -38,7 +38,7 @@
 
 struct Console
 {
-    Lt *lt;
+    Lt lt;
     Gc *gc;
     struct Scope scope;
     Edit_field *edit_field;
@@ -56,7 +56,7 @@ struct Console
 Console *create_console(Broadcast *broadcast,
                         const Sprite_font *font)
 {
-    Lt *lt = create_lt();
+    Lt lt = create_lt();
 
     if (lt == NULL) {
         return NULL;

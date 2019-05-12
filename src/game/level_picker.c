@@ -14,7 +14,7 @@
 
 struct LevelPicker
 {
-    Lt *lt;
+    Lt lt;
     Background *background;
     Vec camera_position;
     LevelFolder *level_folder;
@@ -26,7 +26,7 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
 {
     trace_assert(dirpath);
 
-    Lt *lt = create_lt();
+    Lt lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }

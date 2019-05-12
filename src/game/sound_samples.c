@@ -12,7 +12,7 @@
 
 struct Sound_samples
 {
-    Lt *lt;
+    Lt lt;
     Mix_Chunk **samples;
     size_t samples_count;
     int paused;
@@ -35,7 +35,7 @@ Sound_samples *create_sound_samples(const char *sample_files[],
     trace_assert(sample_files);
     trace_assert(sample_files_count > 0);
 
-    Lt *lt = create_lt();
+    Lt lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }

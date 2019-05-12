@@ -12,7 +12,7 @@
 
 struct Console_Log
 {
-    Lt *lt;
+    Lt lt;
 
     const Sprite_font *font;
     Vec font_size;
@@ -27,7 +27,7 @@ Console_Log *create_console_log(const Sprite_font *font,
                 Vec font_size,
                 size_t capacity)
 {
-    Lt *lt = create_lt();
+    Lt lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }

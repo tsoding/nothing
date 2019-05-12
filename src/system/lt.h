@@ -33,7 +33,7 @@ static inline void destroy_lt(Lt lt)
 #define PUSH_LT(lt, res, dtor)                  \
     lt_push(&lt, (void*)res, (Dtor)dtor)
 
-static inline void *lt_push(Lt *lt, void *res, Dtor dtor)
+static inline void *lt_push(Lt lt, void *res, Dtor dtor)
 {
     if (lt->size >= lt->capacity) {
         if (lt->capacity == 0) {
@@ -60,7 +60,7 @@ static inline void *lt_push(Lt *lt, void *res, Dtor dtor)
 #define RESET_LT(lt, old_res, new_res)          \
     lt_reset(&lt, (void*) old_res, (void*) new_res)
 
-static inline void *lt_reset(Lt *lt, void *old_res, void *new_res)
+static inline void *lt_reset(Lt lt, void *old_res, void *new_res)
 {
     assert(old_res != new_res);
 
@@ -78,7 +78,7 @@ static inline void *lt_reset(Lt *lt, void *old_res, void *new_res)
 #define REPLACE_LT(lt, old_res, new_res)        \
     lt_replace(&lt, (void *)old_res, (void*)new_res)
 
-static inline void *lt_replace(Lt *lt, void *old_res, void *new_res)
+static inline void *lt_replace(Lt lt, void *old_res, void *new_res)
 {
     for (size_t i = 0; i < lt->size; ++i) {
         if (lt->slots[i].res == old_res) {
@@ -93,7 +93,7 @@ static inline void *lt_replace(Lt *lt, void *old_res, void *new_res)
 #define RELEASE_LT(lt, res)                     \
     lt_release(&lt, (void*)res)
 
-static inline void *lt_release(Lt *lt, void *res)
+static inline void *lt_release(Lt lt, void *res)
 {
     for (size_t i = 0; i < lt->size; ++i) {
         if (lt->slots[i].res == res) {

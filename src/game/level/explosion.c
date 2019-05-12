@@ -19,7 +19,7 @@ typedef struct Piece {
 
 struct Explosion
 {
-    Lt *lt;
+    Lt lt;
 
     Vec position;
     Color color;
@@ -31,7 +31,7 @@ struct Explosion
 Explosion *create_explosion(Color color,
                             float duration)
 {
-    Lt *lt = create_lt();
+    Lt lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }

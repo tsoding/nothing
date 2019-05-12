@@ -26,7 +26,7 @@ typedef enum Cue_state {
 } Cue_state;
 
 struct Goals {
-    Lt *lt;
+    Lt lt;
     char **ids;
     Point *points;
     Color *colors;
@@ -41,7 +41,7 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
 {
     trace_assert(line_stream);
 
-    Lt *const lt = create_lt();
+    Lt const lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
@@ -121,7 +121,7 @@ Goals *create_goals_from_point_layer(const PointLayer *point_layer)
 {
     trace_assert(point_layer);
 
-    Lt *const lt = create_lt();
+    Lt const lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }

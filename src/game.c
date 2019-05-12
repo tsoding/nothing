@@ -28,7 +28,7 @@ typedef enum Game_state {
 } Game_state;
 
 typedef struct Game {
-    Lt *lt;
+    Lt lt;
 
     Game_state state;
     Broadcast *broadcast;
@@ -51,7 +51,7 @@ Game *create_game(const char *level_folder,
 {
     trace_assert(level_folder);
 
-    Lt *const lt = create_lt();
+    Lt const lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }

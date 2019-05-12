@@ -11,7 +11,7 @@
 
 struct Edit_field
 {
-    Lt *lt;
+    Lt lt;
     char *buffer;
     size_t buffer_size;
     size_t cursor;
@@ -32,7 +32,7 @@ Edit_field *create_edit_field(const Sprite_font *font,
 {
     trace_assert(font);
 
-    Lt *lt = create_lt();
+    Lt lt = create_lt();
 
     if (lt == NULL) {
         return NULL;

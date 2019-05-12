@@ -12,7 +12,7 @@
 
 struct Gc
 {
-    Lt *lt;
+    Lt lt;
     struct Expr *exprs;
     int *visited;
     size_t size;
@@ -50,7 +50,7 @@ static int compare_exprs(const void *a, const void *b)
 
 Gc *create_gc(void)
 {
-    Lt *lt = create_lt();
+    Lt lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }

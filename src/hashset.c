@@ -10,7 +10,7 @@
 
 struct HashSet
 {
-    Lt *lt;
+    Lt lt;
     size_t n;
     size_t element_size;
     size_t count;
@@ -32,7 +32,7 @@ static uint64_t fnv1(const char *data, size_t size)
 
 HashSet *create_hashset(size_t element_size, size_t n)
 {
-    Lt *lt = create_lt();
+    Lt lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }

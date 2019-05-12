@@ -11,7 +11,7 @@
 
 struct MenuTitle
 {
-    Lt *lt;
+    Lt lt;
     const char *text;
     Vec font_scale;
     const Sprite_font *sprite_font;
@@ -25,7 +25,7 @@ MenuTitle *create_menu_title(const char *text,
 {
     trace_assert(text);
 
-    Lt *lt = create_lt();
+    Lt lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }

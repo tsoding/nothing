@@ -14,7 +14,7 @@
 
 struct PointLayer
 {
-    Lt *lt;
+    Lt lt;
     Dynarray *points;
     Dynarray *colors;
     Dynarray *ids;
@@ -27,7 +27,7 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
 {
     trace_assert(line_stream);
 
-    Lt *lt = create_lt();
+    Lt lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }

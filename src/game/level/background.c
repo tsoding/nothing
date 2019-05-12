@@ -22,7 +22,7 @@ int render_chunk(const Background *background,
 
 struct Background
 {
-    Lt *lt;
+    Lt lt;
     Color base_color;
     Vec position;
     int debug_mode;
@@ -30,7 +30,7 @@ struct Background
 
 Background *create_background(Color base_color)
 {
-    Lt *lt = create_lt();
+    Lt lt = create_lt();
     if (lt == NULL) {
         return NULL;
     }
