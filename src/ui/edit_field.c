@@ -34,9 +34,6 @@ Edit_field *create_edit_field(const Sprite_font *font,
 
     Lt lt = {0};
 
-    if (lt == NULL) {
-        return NULL;
-    }
 
     Edit_field *const edit_field = PUSH_LT(lt, nth_calloc(1, sizeof(Edit_field)), free);
     if (edit_field == NULL) {

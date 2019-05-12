@@ -51,9 +51,6 @@ Player *create_player_from_line_stream(LineStream *line_stream, RigidBodies *rig
 
     Lt lt = {0};
 
-    if (lt == NULL) {
-        return NULL;
-    }
 
     Player *player = PUSH_LT(lt, nth_calloc(1, sizeof(Player)), free);
     if (player == NULL) {

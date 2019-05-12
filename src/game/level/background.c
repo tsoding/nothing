@@ -31,9 +31,6 @@ struct Background
 Background *create_background(Color base_color)
 {
     Lt lt = {0};
-    if (lt == NULL) {
-        return NULL;
-    }
 
     Background *background = PUSH_LT(lt, nth_calloc(1, sizeof(Background)), free);
     if (background == NULL) {

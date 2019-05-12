@@ -32,9 +32,6 @@ struct RigidBodies
 RigidBodies *create_rigid_bodies(size_t capacity)
 {
     Lt lt = {0};
-    if (lt == NULL) {
-        return NULL;
-    }
 
     RigidBodies *rigid_bodies = PUSH_LT(lt, nth_calloc(1, sizeof(RigidBodies)), free);
     if (rigid_bodies == NULL) {

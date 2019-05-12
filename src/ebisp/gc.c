@@ -51,9 +51,6 @@ static int compare_exprs(const void *a, const void *b)
 Gc *create_gc(void)
 {
     Lt lt = {0};
-    if (lt == NULL) {
-        return NULL;
-    }
 
     Gc *gc = PUSH_LT(lt, malloc(sizeof(Gc)), free);
     if (gc == NULL) {

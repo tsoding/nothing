@@ -25,9 +25,6 @@ LevelFolder *create_level_folder(const char *dirpath)
     trace_assert(dirpath);
 
     Lt lt = {0};
-    if (lt == NULL) {
-        return NULL;
-    }
 
     LevelFolder *level_folder = PUSH_LT(
         lt,

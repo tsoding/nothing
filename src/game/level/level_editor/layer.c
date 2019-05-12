@@ -18,9 +18,6 @@ struct RectLayer {
 RectLayer *create_rect_layer(void)
 {
     Lt lt = {0};
-    if (lt == NULL) {
-        return NULL;
-    }
 
     RectLayer *layer = PUSH_LT(lt, nth_calloc(1, sizeof(RectLayer)), free);
     if (layer == NULL) {

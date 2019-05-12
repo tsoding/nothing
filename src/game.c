@@ -51,10 +51,7 @@ Game *create_game(const char *level_folder,
 {
     trace_assert(level_folder);
 
-    Lt const lt = {0};
-    if (lt == NULL) {
-        return NULL;
-    }
+    Lt lt = {0};
 
     Game *game = PUSH_LT(lt, nth_calloc(1, sizeof(Game)), free);
     if (game == NULL) {

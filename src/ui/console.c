@@ -58,9 +58,6 @@ Console *create_console(Broadcast *broadcast,
 {
     Lt lt = {0};
 
-    if (lt == NULL) {
-        return NULL;
-    }
 
     Console *console = PUSH_LT(lt, nth_calloc(1, sizeof(Console)), free);
     if (console == NULL) {

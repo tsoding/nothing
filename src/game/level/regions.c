@@ -33,9 +33,6 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Broadcast *bro
     trace_assert(line_stream);
 
     Lt lt = {0};
-    if (lt == NULL) {
-        return NULL;
-    }
 
     Regions *regions = PUSH_LT(
         lt,

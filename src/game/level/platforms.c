@@ -26,9 +26,6 @@ Platforms *create_platforms_from_rect_layer(const RectLayer *layer)
     trace_assert(layer);
 
     Lt lt = {0};
-    if (lt == NULL) {
-        return NULL;
-    }
 
     Platforms *platforms = PUSH_LT(
         lt,

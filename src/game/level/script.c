@@ -27,9 +27,6 @@ Script *create_script_from_line_stream(LineStream *line_stream, Broadcast *broad
     trace_assert(line_stream);
 
     Lt lt = {0};
-    if (lt == NULL) {
-        return NULL;
-    }
 
     Script *script = PUSH_LT(lt, nth_calloc(1, sizeof(Script)), free);
     if (script == NULL) {
@@ -58,7 +55,7 @@ Script *create_script_from_line_stream(LineStream *line_stream, Broadcast *broad
 
     char *source_code = NULL;
     for (size_t i = 0; i < n; ++i) {
-        /* TODO(#466): maybe source_code should be constantly replaced in the Lt /
+        /* TODO(#466): maybe source_code should be constantly replaced in the Lt */
         source_code = string_append(
             source_code,
             line_stream_next(line_stream));
