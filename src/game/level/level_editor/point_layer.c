@@ -28,9 +28,6 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
     trace_assert(line_stream);
 
     Lt *lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
 
     PointLayer *point_layer = PUSH_LT(lt, nth_calloc(1, sizeof(PointLayer)), free);
     if (point_layer == NULL) {

@@ -29,9 +29,6 @@ Boxes *create_boxes_from_rect_layer(const RectLayer *layer, RigidBodies *rigid_b
     trace_assert(rigid_bodies);
 
     Lt *lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
 
     Boxes *boxes = PUSH_LT(lt, nth_calloc(1, sizeof(Boxes)), free);
     if (boxes == NULL) {

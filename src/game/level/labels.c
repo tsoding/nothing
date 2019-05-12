@@ -37,10 +37,7 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
 {
     trace_assert(line_stream);
 
-    Lt *const lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
+    Lt *lt = create_lt();
 
     Labels * const labels = PUSH_LT(lt, nth_calloc(1, sizeof(Labels)), free);
     if (labels == NULL) {

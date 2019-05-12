@@ -33,9 +33,6 @@ LineStream *create_line_stream(const char *filename,
     trace_assert(mode);
 
     Lt *lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
 
     LineStream *line_stream = PUSH_LT(
         lt,

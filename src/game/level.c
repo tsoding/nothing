@@ -61,10 +61,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
 {
     trace_assert(file_name);
 
-    Lt *const lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
+    Lt *lt = create_lt();
 
     Level *const level = PUSH_LT(lt, nth_calloc(1, sizeof(Level)), free);
     if (level == NULL) {

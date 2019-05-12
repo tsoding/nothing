@@ -247,9 +247,6 @@ struct ParseResult read_expr_from_file(Gc *gc, const char *filename)
     trace_assert(filename);
 
     Lt *lt = create_lt();
-    if (lt == NULL) {
-        return parse_failure("Could not create Lt object", NULL);
-    }
 
     FILE *stream = PUSH_LT(lt, fopen(filename, "rb"), fclose_lt);
     if (!stream) {
@@ -299,9 +296,6 @@ struct ParseResult read_all_exprs_from_file(Gc *gc, const char *filename)
     trace_assert(filename);
 
     Lt *lt = create_lt();
-    if (lt == NULL) {
-        return parse_failure("Could not create Lt object", NULL);
-    }
 
     FILE *stream = PUSH_LT(lt, fopen(filename, "rb"), fclose_lt);
     if (!stream) {

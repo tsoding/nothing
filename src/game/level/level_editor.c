@@ -44,9 +44,6 @@ LevelEditor *create_level_editor(RectLayer *boxes_layer,
     trace_assert(goals_layer);
 
     Lt *lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
 
     LevelEditor *level_editor = PUSH_LT(lt, nth_calloc(1, sizeof(LevelEditor)), free);
     if (level_editor == NULL) {

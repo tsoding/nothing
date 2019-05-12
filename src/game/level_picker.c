@@ -27,9 +27,6 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
     trace_assert(dirpath);
 
     Lt *lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
 
     LevelPicker *level_picker = PUSH_LT(
         lt,

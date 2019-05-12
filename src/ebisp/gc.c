@@ -51,22 +51,19 @@ static int compare_exprs(const void *a, const void *b)
 Gc *create_gc(void)
 {
     Lt *lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
 
-    Gc *gc = PUSH_LT(lt, malloc(sizeof(Gc)), free);
+    Gc *gc = PUSH_LT(lt, calloc(1, sizeof(Gc)), free);
     if (gc == NULL) {
         RETURN_LT(lt, NULL);
     }
     gc->lt = lt;
 
-    gc->exprs = PUSH_LT(lt, malloc(sizeof(struct Expr) * GC_INITIAL_CAPACITY), free);
+    gc->exprs = PUSH_LT(lt, calloc(GC_INITIAL_CAPACITY, sizeof(struct Expr)), free);
     if (gc->exprs == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    gc->visited = PUSH_LT(lt, malloc(sizeof(int) * GC_INITIAL_CAPACITY), free);
+    gc->visited = PUSH_LT(lt, calloc(GC_INITIAL_CAPACITY, sizeof(int)), free);
     if (gc->visited == NULL) {
         RETURN_LT(lt, NULL);
     }

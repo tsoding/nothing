@@ -21,9 +21,6 @@ struct Dynarray
 Dynarray *create_dynarray(size_t element_size)
 {
     Lt *lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
 
     Dynarray *dynarray = PUSH_LT(lt, nth_calloc(1, sizeof(Dynarray)), free);
     if (dynarray == NULL) {

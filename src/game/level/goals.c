@@ -41,10 +41,7 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
 {
     trace_assert(line_stream);
 
-    Lt *const lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
+    Lt *lt = create_lt();
 
     Goals *const goals = PUSH_LT(lt, nth_calloc(1, sizeof(Goals)), free);
     if (goals == NULL) {
@@ -121,10 +118,7 @@ Goals *create_goals_from_point_layer(const PointLayer *point_layer)
 {
     trace_assert(point_layer);
 
-    Lt *const lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
+    Lt *lt = create_lt();
 
     Goals *const goals = PUSH_LT(lt, nth_calloc(1, sizeof(Goals)), free);
     if (goals == NULL) {

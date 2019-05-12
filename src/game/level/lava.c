@@ -24,9 +24,6 @@ Lava *create_lava_from_line_stream(LineStream *line_stream)
     trace_assert(line_stream);
 
     Lt *lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
 
     Lava *lava = PUSH_LT(lt, nth_calloc(1, sizeof(Lava)), free);
     if (lava == NULL) {

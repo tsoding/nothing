@@ -27,9 +27,6 @@ Script *create_script_from_line_stream(LineStream *line_stream, Broadcast *broad
     trace_assert(line_stream);
 
     Lt *lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
 
     Script *script = PUSH_LT(lt, nth_calloc(1, sizeof(Script)), free);
     if (script == NULL) {

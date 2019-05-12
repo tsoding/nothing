@@ -20,9 +20,6 @@ struct History
 History *create_history(size_t capacity)
 {
     Lt *lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
 
     History *history = PUSH_LT(
         lt,

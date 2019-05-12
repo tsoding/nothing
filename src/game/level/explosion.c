@@ -32,9 +32,6 @@ Explosion *create_explosion(Color color,
                             float duration)
 {
     Lt *lt = create_lt();
-    if (lt == NULL) {
-        return NULL;
-    }
 
     Explosion *explosion = PUSH_LT(lt, nth_calloc(1, sizeof(Explosion)), free);
     if (explosion == NULL) {
