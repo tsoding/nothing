@@ -32,7 +32,7 @@ Edit_field *create_edit_field(const Sprite_font *font,
 {
     trace_assert(font);
 
-    Lt lt = create_lt();
+    Lt lt = {0};
 
     if (lt == NULL) {
         return NULL;

@@ -32,7 +32,7 @@ LineStream *create_line_stream(const char *filename,
     trace_assert(filename);
     trace_assert(mode);
 
-    Lt lt = create_lt();
+    Lt lt = {0};
     if (lt == NULL) {
         return NULL;
     }

@@ -33,7 +33,7 @@ ListSelector *create_list_selector(const Sprite_font *sprite_font,
 {
     trace_assert(items);
 
-    Lt lt = create_lt();
+    Lt lt = {0};
     if (lt == NULL) {
         return NULL;
     }

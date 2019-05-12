@@ -35,7 +35,7 @@ Sound_samples *create_sound_samples(const char *sample_files[],
     trace_assert(sample_files);
     trace_assert(sample_files_count > 0);
 
-    Lt lt = create_lt();
+    Lt lt = {0};
     if (lt == NULL) {
         return NULL;
     }

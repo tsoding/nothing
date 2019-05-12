@@ -50,7 +50,7 @@ static int compare_exprs(const void *a, const void *b)
 
 Gc *create_gc(void)
 {
-    Lt lt = create_lt();
+    Lt lt = {0};
     if (lt == NULL) {
         return NULL;
     }

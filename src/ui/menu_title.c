@@ -25,7 +25,7 @@ MenuTitle *create_menu_title(const char *text,
 {
     trace_assert(text);
 
-    Lt lt = create_lt();
+    Lt lt = {0};
     if (lt == NULL) {
         return NULL;
     }

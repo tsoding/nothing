@@ -31,7 +31,7 @@ struct Explosion
 Explosion *create_explosion(Color color,
                             float duration)
 {
-    Lt lt = create_lt();
+    Lt lt = {0};
     if (lt == NULL) {
         return NULL;
     }

@@ -24,7 +24,7 @@ Sprite_font *create_sprite_font_from_file(const char *bmp_file_path,
     trace_assert(bmp_file_path);
     trace_assert(renderer);
 
-    Lt  const lt = create_lt();
+    Lt  const lt = {0};
     if (lt == NULL) {
         return NULL;
     }

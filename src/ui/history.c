@@ -19,7 +19,7 @@ struct History
 
 History *create_history(size_t capacity)
 {
-    Lt lt = create_lt();
+    Lt lt = {0};
     if (lt == NULL) {
         return NULL;
     }

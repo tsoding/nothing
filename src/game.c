@@ -51,7 +51,7 @@ Game *create_game(const char *level_folder,
 {
     trace_assert(level_folder);
 
-    Lt const lt = create_lt();
+    Lt const lt = {0};
     if (lt == NULL) {
         return NULL;
     }

@@ -30,7 +30,7 @@ struct Background
 
 Background *create_background(Color base_color)
 {
-    Lt lt = create_lt();
+    Lt lt = {0};
     if (lt == NULL) {
         return NULL;
     }

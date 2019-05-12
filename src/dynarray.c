@@ -20,7 +20,7 @@ struct Dynarray
 
 Dynarray *create_dynarray(size_t element_size)
 {
-    Lt lt = create_lt();
+    Lt lt = {0};
     if (lt == NULL) {
         return NULL;
     }

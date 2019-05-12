@@ -49,7 +49,7 @@ Player *create_player_from_line_stream(LineStream *line_stream, RigidBodies *rig
 {
     trace_assert(line_stream);
 
-    Lt lt = create_lt();
+    Lt lt = {0};
 
     if (lt == NULL) {
         return NULL;

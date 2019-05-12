@@ -56,7 +56,7 @@ struct Console
 Console *create_console(Broadcast *broadcast,
                         const Sprite_font *font)
 {
-    Lt lt = create_lt();
+    Lt lt = {0};
 
     if (lt == NULL) {
         return NULL;

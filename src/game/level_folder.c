@@ -24,7 +24,7 @@ LevelFolder *create_level_folder(const char *dirpath)
 {
     trace_assert(dirpath);
 
-    Lt lt = create_lt();
+    Lt lt = {0};
     if (lt == NULL) {
         return NULL;
     }

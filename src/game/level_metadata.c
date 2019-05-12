@@ -33,7 +33,7 @@ LevelMetadata *create_level_metadata_from_line_stream(LineStream *line_stream)
 {
     trace_assert(line_stream);
 
-    Lt lt = create_lt();
+    Lt lt = {0};
     if (lt == NULL) {
         return NULL;
     }

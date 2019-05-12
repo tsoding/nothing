@@ -24,7 +24,7 @@ struct Wavy_rect
 
 Wavy_rect *create_wavy_rect(Rect rect, Color color)
 {
-    Lt lt = create_lt();
+    Lt lt = {0};
     if (lt == NULL) {
         return NULL;
     }

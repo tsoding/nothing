@@ -27,7 +27,7 @@ Console_Log *create_console_log(const Sprite_font *font,
                 Vec font_size,
                 size_t capacity)
 {
-    Lt lt = create_lt();
+    Lt lt = {0};
     if (lt == NULL) {
         return NULL;
     }

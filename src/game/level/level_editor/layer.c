@@ -17,7 +17,7 @@ struct RectLayer {
 
 RectLayer *create_rect_layer(void)
 {
-    Lt lt = create_lt();
+    Lt lt = {0};
     if (lt == NULL) {
         return NULL;
     }

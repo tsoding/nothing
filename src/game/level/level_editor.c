@@ -43,7 +43,7 @@ LevelEditor *create_level_editor(RectLayer *boxes_layer,
     trace_assert(back_platforms_layer);
     trace_assert(goals_layer);
 
-    Lt lt = create_lt();
+    Lt lt = {0};
     if (lt == NULL) {
         return NULL;
     }
