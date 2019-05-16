@@ -46,7 +46,7 @@ static inline void *lt_push(Lt *lt, void *res, Dtor dtor)
 {
     trace_assert(lt);
 
-    if (lt->slots_end - lt->slots >= lt->capacity) {
+    if ((size_t)(lt->slots_end - lt->slots) >= lt->capacity) {
         if (lt->capacity == 0) {
             lt->capacity = LT_INITIAL_CAPACITY;
             lt->slots = calloc(LT_INITIAL_CAPACITY, sizeof(Slot));
@@ -120,7 +120,7 @@ static inline void *lt_release(Lt *lt, void *res)
     trace_assert(lt);
     for(Slot *p = lt->slots; p < lt->slots_end; ++p) {
         if (p->res == res) {
-            memmove(p, p + 1, (lt->slots_end - p - 1) * sizeof(Slot));
+            memmove(p, p + 1, (size_t)(lt->slots_end - p - 1) * sizeof(Slot));
             lt->slots_end--;
             return res;
         }
