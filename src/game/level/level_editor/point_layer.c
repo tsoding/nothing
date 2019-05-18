@@ -30,7 +30,6 @@ struct PointLayer
     int selected;
 };
 
-// TODO(#837): PointLayer does not allow to edit itself
 
 PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
 {
