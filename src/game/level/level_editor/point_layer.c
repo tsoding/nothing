@@ -119,7 +119,6 @@ int point_layer_render(const PointLayer *point_layer,
     const int n = (int) dynarray_count(point_layer->points);
     Point *points = dynarray_data(point_layer->points);
     Color *colors = dynarray_data(point_layer->colors);
-    char *ids = dynarray_data(point_layer->ids);
 
     for (int i = 0; i < n; ++i) {
         const Triangle t = triangle_mat3x3_product(
@@ -143,17 +142,13 @@ int point_layer_render(const PointLayer *point_layer,
         if (camera_fill_triangle(camera, t, colors[i]) < 0) {
             return -1;
         }
-
-        if (camera_render_debug_text(camera, ids + ID_MAX_SIZE * i, points[i]) < 0) {
-            return -1;
-        }
     }
 
     if (point_layer->state == POINT_LAYER_ID_EDITING_STATE) {
         if (edit_field_render(
                 point_layer->edit_field,
                 camera,
-                vec(0.0f, 0.0f)) < 0) {
+                camera_point(camera, points[point_layer->selected])) < 0) {
             return -1;
         }
     }
@@ -227,6 +222,7 @@ int point_layer_keyboard(PointLayer *point_layer,
                     edit_field_replace(
                         point_layer->edit_field,
                         ids + ID_MAX_SIZE * point_layer->selected);
+                    SDL_StartTextInput();
                 }
             } break;
 
@@ -240,13 +236,23 @@ int point_layer_keyboard(PointLayer *point_layer,
             return -1;
         }
 
-        if (key->type == SDL_KEYDOWN && key->keysym.sym == SDLK_RETURN) {
-            char *ids = dynarray_data(point_layer->ids);
-            const char *text = edit_field_as_text(point_layer->edit_field);
-            size_t n = max_size_t(strlen(text), ID_MAX_SIZE - 1);
-            memcpy(ids + point_layer->selected * ID_MAX_SIZE, text, n);
-            *(ids + point_layer->selected * ID_MAX_SIZE + n) = '\0';
-            point_layer->state = POINT_LAYER_NORMAL_STATE;
+        if (key->type == SDL_KEYDOWN) {
+            switch(key->keysym.sym) {
+            case SDLK_RETURN: {
+                char *ids = dynarray_data(point_layer->ids);
+                const char *text = edit_field_as_text(point_layer->edit_field);
+                size_t n = max_size_t(strlen(text), ID_MAX_SIZE - 1);
+                memcpy(ids + point_layer->selected * ID_MAX_SIZE, text, n);
+                *(ids + point_layer->selected * ID_MAX_SIZE + n) = '\0';
+                point_layer->state = POINT_LAYER_NORMAL_STATE;
+                SDL_StopTextInput();
+            } break;
+
+            case SDLK_ESCAPE: {
+                point_layer->state = POINT_LAYER_NORMAL_STATE;
+                SDL_StopTextInput();
+            } break;
+            }
         }
     } break;
     }

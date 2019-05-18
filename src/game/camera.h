@@ -73,6 +73,8 @@ Rect camera_view_port_screen(const Camera *camera);
 Vec camera_map_screen(const Camera *camera,
                       Sint32 x, Sint32 y);
 
+Vec camera_point(const Camera *camera, const Vec p);
+
 int camera_fill_rect_screen(Camera *camera,
                             Rect rect,
                             Color color);
