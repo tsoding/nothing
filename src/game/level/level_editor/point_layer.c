@@ -159,7 +159,6 @@ int point_layer_render(const PointLayer *point_layer,
     return 0;
 }
 
-// TODO(#841): PointLayer does not allow to remove elements
 
 int point_layer_mouse_button(PointLayer *point_layer,
                              const SDL_MouseButtonEvent *event,
