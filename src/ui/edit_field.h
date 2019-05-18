@@ -6,18 +6,16 @@
 #include "color.h"
 #include "math/point.h"
 
-
 typedef struct Edit_field Edit_field;
-typedef struct Sprite_font Sprite_font;
+typedef struct Camera Camera;
 
-Edit_field *create_edit_field(const Sprite_font *font,
-                              Vec font_size,
+Edit_field *create_edit_field(Vec font_size,
                               Color font_color);
 void destroy_edit_field(Edit_field *edit_field);
 
 int edit_field_render(const Edit_field *edit_field,
-                      SDL_Renderer *renderer,
-                      Point position);
+                      Camera *camera,
+                      Point screen_position);
 
 int edit_field_handle_event(Edit_field *edit_field,
                             const SDL_Event *event);

@@ -82,7 +82,6 @@ Console *create_console(Broadcast *broadcast,
     console->edit_field = PUSH_LT(
         lt,
         create_edit_field(
-            font,
             vec(FONT_WIDTH_SCALE, FONT_HEIGHT_SCALE),
             CONSOLE_FOREGROUND),
         destroy_edit_field);
@@ -212,6 +211,7 @@ int console_handle_event(Console *console,
 }
 
 int console_render(const Console *console,
+                   Camera *camera,
                    SDL_Renderer *renderer)
 {
     /* TODO(#364): console doesn't have any padding around the edit fields */
@@ -236,7 +236,7 @@ int console_render(const Console *console,
     }
 
     if (edit_field_render(console->edit_field,
-                          renderer,
+                          camera,
                           vec(0.0f, y + CONSOLE_LOG_HEIGHT)) < 0) {
         return -1;
     }

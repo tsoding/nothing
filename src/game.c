@@ -166,7 +166,7 @@ int game_render(const Game *game)
             return -1;
         }
 
-        if (console_render(game->console, game->renderer) < 0) {
+        if (console_render(game->console, game->camera, game->renderer) < 0) {
             return -1;
         }
     } break;
