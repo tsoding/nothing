@@ -185,7 +185,6 @@ int point_layer_mouse_button(PointLayer *point_layer,
 
         char id[ID_MAX_SIZE];
 
-        // TODO(#842): PointLayer does not allow to specify an id of a point
         for (size_t i = 0; i < ID_MAX_SIZE - 1; ++i) {
             id[i] = (char) ('a' + rand() % ('z' - 'a' + 1));
         }
