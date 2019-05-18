@@ -10,6 +10,7 @@
 #include "system/str.h"
 #include "ui/edit_field.h"
 #include "./point_layer.h"
+#include "math/extrema.h"
 
 #define POINT_LAYER_ELEMENT_RADIUS 10.0f
 
@@ -43,7 +44,7 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
     }
     point_layer->lt = lt;
 
-    point_layer->state = POINT_LAYER_ID_EDITING_STATE;
+    point_layer->state = POINT_LAYER_NORMAL_STATE;
 
     point_layer->points = PUSH_LT(lt, create_dynarray(sizeof(Point)), destroy_dynarray);
     if (point_layer->points == NULL) {
@@ -91,7 +92,7 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
     point_layer->edit_field = PUSH_LT(
         point_layer->lt,
         create_edit_field(
-            vec(1.0f, 1.0f),
+            vec(5.0f, 5.0f),
             rgba(0.0f, 0.0f, 0.0f, 1.0f)),
         destroy_edit_field);
     if (point_layer->edit_field == NULL) {
@@ -170,7 +171,9 @@ int point_layer_mouse_button(PointLayer *point_layer,
     trace_assert(point_layer);
     trace_assert(event);
 
-    if (event->type == SDL_MOUSEBUTTONDOWN && event->button == SDL_BUTTON_LEFT) {
+    if (point_layer->state == POINT_LAYER_NORMAL_STATE &&
+        event->type == SDL_MOUSEBUTTONDOWN &&
+        event->button == SDL_BUTTON_LEFT) {
         const int n = (int) dynarray_count(point_layer->points);
         const Point *points = dynarray_data(point_layer->points);
         const Point point = camera_map_screen(camera, event->x, event->y);
@@ -199,29 +202,68 @@ int point_layer_mouse_button(PointLayer *point_layer,
 }
 
 int point_layer_keyboard(PointLayer *point_layer,
-                         const SDL_KeyboardEvent *event)
+                         const SDL_KeyboardEvent *key)
 {
     trace_assert(point_layer);
-    trace_assert(event);
+    trace_assert(key);
 
-    if (event->type == SDL_KEYDOWN && event->keysym.sym == SDLK_DELETE) {
-        if (0 <= point_layer->selected && point_layer->selected < (int) dynarray_count(point_layer->points)) {
-            dynarray_delete_at(point_layer->points, (size_t) point_layer->selected);
-            dynarray_delete_at(point_layer->colors, (size_t) point_layer->selected);
-            dynarray_delete_at(point_layer->ids, (size_t) point_layer->selected);
+    switch(point_layer->state) {
+    case POINT_LAYER_NORMAL_STATE: {
+        if (key->type == SDL_KEYDOWN) {
+            switch (key->keysym.sym) {
+            case SDLK_DELETE: {
+                if (0 <= point_layer->selected && point_layer->selected < (int) dynarray_count(point_layer->points)) {
+                    dynarray_delete_at(point_layer->points, (size_t) point_layer->selected);
+                    dynarray_delete_at(point_layer->colors, (size_t) point_layer->selected);
+                    dynarray_delete_at(point_layer->ids, (size_t) point_layer->selected);
+                }
+                point_layer->selected = -1;
+            } break;
+
+            case SDLK_F2: {
+                if (point_layer->selected >= 0) {
+                    char *ids = dynarray_data(point_layer->ids);
+                    point_layer->state = POINT_LAYER_ID_EDITING_STATE;
+                    edit_field_replace(
+                        point_layer->edit_field,
+                        ids + ID_MAX_SIZE * point_layer->selected);
+                }
+            } break;
+
+            default: {}
+            }
+        }
+    } break;
+
+    case POINT_LAYER_ID_EDITING_STATE: {
+        if (edit_field_keyboard(point_layer->edit_field, key) < 0) {
+            return -1;
         }
 
-        point_layer->selected = -1;
+        if (key->type == SDL_KEYDOWN && key->keysym.sym == SDLK_RETURN) {
+            char *ids = dynarray_data(point_layer->ids);
+            const char *text = edit_field_as_text(point_layer->edit_field);
+            size_t n = max_size_t(strlen(text), ID_MAX_SIZE - 1);
+            memcpy(ids + point_layer->selected * ID_MAX_SIZE, text, n);
+            *(ids + point_layer->selected * ID_MAX_SIZE + n) = '\0';
+            point_layer->state = POINT_LAYER_NORMAL_STATE;
+        }
+    } break;
     }
+
 
     return 0;
 }
 
 int point_layer_text_input(PointLayer *point_layer,
-                           const SDL_TextInputEvent *event)
+                           const SDL_TextInputEvent *text_input)
 {
     trace_assert(point_layer);
-    trace_assert(event);
+    trace_assert(text_input);
+
+    if (point_layer->state == POINT_LAYER_ID_EDITING_STATE) {
+        return edit_field_text_input(point_layer->edit_field, text_input);
+    }
 
     return 0;
 }
