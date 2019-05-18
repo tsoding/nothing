@@ -271,7 +271,7 @@ int point_layer_text_input(PointLayer *point_layer,
     trace_assert(text_input);
 
     if (point_layer->state == POINT_LAYER_ID_EDITING_STATE) {
-        /* TODO: Special development keybindings interfere with id editing field */
+        /* TODO(#856): Special development keybindings interfere with id editing field */
         return edit_field_text_input(point_layer->edit_field, text_input);
     }
 
