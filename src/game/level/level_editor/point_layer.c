@@ -154,6 +154,7 @@ int point_layer_mouse_button(PointLayer *point_layer,
         for (size_t i = 0; i < ID_MAX_SIZE - 1; ++i) {
             id[i] = (char) ('a' + rand() % ('z' - 'a' + 1));
         }
+        id[ID_MAX_SIZE - 1] = '\0';
 
         dynarray_push(point_layer->points, &point);
         dynarray_push(point_layer->colors, &color);
