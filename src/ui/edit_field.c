@@ -91,48 +91,6 @@ int edit_field_render(const Edit_field *edit_field,
     return 0;
 }
 
-int edit_field_handle_event(Edit_field *edit_field,
-                            const SDL_Event *event)
-{
-    trace_assert(edit_field);
-    trace_assert(event);
-
-    switch (event->type) {
-    case SDL_KEYDOWN:
-        switch (event->key.keysym.sym) {
-        case SDLK_LEFT:
-            edit_field_left(edit_field);
-            break;
-
-        case SDLK_RIGHT:
-            edit_field_right(edit_field);
-            break;
-
-        case SDLK_BACKSPACE:
-            edit_field_backspace(edit_field);
-            break;
-
-        case SDLK_DELETE:
-            edit_field_delete(edit_field);
-            break;
-
-        default: {}
-        }
-        break;
-
-    case SDL_TEXTINPUT: {
-        size_t n = strlen(event->text.text);
-        for (size_t i = 0; i < n; ++i) {
-            edit_field_insert_char(edit_field, event->text.text[i]);
-        }
-    } break;
-
-    default: {}
-    }
-
-    return 0;
-}
-
 const char *edit_field_as_text(const Edit_field *edit_field)
 {
     trace_assert(edit_field);
@@ -224,4 +182,49 @@ void edit_field_replace(Edit_field *edit_field, const char *text)
     for (size_t i = 0; i < n; ++i) {
         edit_field_insert_char(edit_field, text[i]);
     }
+}
+
+int edit_field_keyboard(Edit_field *edit_field,
+                        const SDL_KeyboardEvent *key)
+{
+    trace_assert(edit_field);
+    trace_assert(key);
+
+    if (key->type == SDL_KEYDOWN) {
+        switch (key->keysym.sym) {
+        case SDLK_LEFT:
+            edit_field_left(edit_field);
+            break;
+
+        case SDLK_RIGHT:
+            edit_field_right(edit_field);
+            break;
+
+        case SDLK_BACKSPACE:
+            edit_field_backspace(edit_field);
+            break;
+
+        case SDLK_DELETE:
+            edit_field_delete(edit_field);
+            break;
+
+        default: {}
+        }
+    }
+
+    return 0;
+}
+
+int edit_field_text_input(Edit_field *edit_field,
+                          const SDL_TextInputEvent *text_input)
+{
+    trace_assert(edit_field);
+    trace_assert(text_input);
+
+    size_t n = strlen(text_input->text);
+    for (size_t i = 0; i < n; ++i) {
+        edit_field_insert_char(edit_field, text_input->text[i]);
+    }
+
+    return 0;
 }

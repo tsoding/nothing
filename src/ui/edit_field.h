@@ -17,8 +17,10 @@ int edit_field_render(const Edit_field *edit_field,
                       Camera *camera,
                       Point screen_position);
 
-int edit_field_handle_event(Edit_field *edit_field,
-                            const SDL_Event *event);
+int edit_field_keyboard(Edit_field *edit_field,
+                        const SDL_KeyboardEvent *event);
+int edit_field_text_input(Edit_field *edit_field,
+                          const SDL_TextInputEvent *text_input);
 
 const char *edit_field_as_text(const Edit_field *edit_field);
 
