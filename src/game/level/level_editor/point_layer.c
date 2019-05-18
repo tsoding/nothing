@@ -1,23 +1,31 @@
 #include <SDL2/SDL.h>
 
-#include "system/stacktrace.h"
+#include "dynarray.h"
+#include "game/camera.h"
 #include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "system/stacktrace.h"
 #include "system/str.h"
-#include "dynarray.h"
-#include "game/camera.h"
+#include "ui/edit_field.h"
 #include "./point_layer.h"
 
 #define POINT_LAYER_ELEMENT_RADIUS 10.0f
 
+typedef enum {
+    POINT_LAYER_NORMAL_STATE = 0,
+    POINT_LAYER_ID_EDITING_STATE
+} PointLayerState;
+
 struct PointLayer
 {
     Lt *lt;
-    Dynarray *points;
-    Dynarray *colors;
-    Dynarray *ids;
+    PointLayerState state;
+    Dynarray/*<Point>*/ *points;
+    Dynarray/*<Color>*/ *colors;
+    Dynarray/*<char[ID_MAX_SIZE]>*/ *ids;
+    Edit_field *edit_field;
     int selected;
 };
 
@@ -35,6 +43,8 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
     }
     point_layer->lt = lt;
 
+    point_layer->state = POINT_LAYER_ID_EDITING_STATE;
+
     point_layer->points = PUSH_LT(lt, create_dynarray(sizeof(Point)), destroy_dynarray);
     if (point_layer->points == NULL) {
         RETURN_LT(lt, NULL);
@@ -49,8 +59,6 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
     if (point_layer->ids == NULL) {
         RETURN_LT(lt, NULL);
     }
-
-    point_layer->selected = -1;
 
     size_t count = 0;
     if (sscanf(
@@ -80,6 +88,18 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
         dynarray_push(point_layer->ids, id);
     }
 
+    point_layer->edit_field = PUSH_LT(
+        point_layer->lt,
+        create_edit_field(
+            vec(1.0f, 1.0f),
+            rgba(0.0f, 0.0f, 0.0f, 1.0f)),
+        destroy_edit_field);
+    if (point_layer->edit_field == NULL) {
+        RETURN_LT(point_layer->lt, NULL);
+    }
+
+    point_layer->selected = -1;
+
     return point_layer;
 }
 
@@ -98,6 +118,7 @@ int point_layer_render(const PointLayer *point_layer,
     const int n = (int) dynarray_count(point_layer->points);
     Point *points = dynarray_data(point_layer->points);
     Color *colors = dynarray_data(point_layer->colors);
+    char *ids = dynarray_data(point_layer->ids);
 
     for (int i = 0; i < n; ++i) {
         const Triangle t = triangle_mat3x3_product(
@@ -119,6 +140,19 @@ int point_layer_render(const PointLayer *point_layer,
         }
 
         if (camera_fill_triangle(camera, t, colors[i]) < 0) {
+            return -1;
+        }
+
+        if (camera_render_debug_text(camera, ids + ID_MAX_SIZE * i, points[i]) < 0) {
+            return -1;
+        }
+    }
+
+    if (point_layer->state == POINT_LAYER_ID_EDITING_STATE) {
+        if (edit_field_render(
+                point_layer->edit_field,
+                camera,
+                vec(0.0f, 0.0f)) < 0) {
             return -1;
         }
     }
