@@ -143,7 +143,7 @@ int point_layer_render(const PointLayer *point_layer,
             return -1;
         }
 
-        /* TODO: The ids of PointLayer are not displayed constantly */
+        /* TODO(#854): The ids of PointLayer are not displayed constantly */
     }
 
     if (point_layer->state == POINT_LAYER_ID_EDITING_STATE) {
