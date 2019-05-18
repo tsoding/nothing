@@ -15,7 +15,7 @@ typedef struct {
 } Slot;
 
 typedef struct {
-    size_t size;
+    Slot *slots_end;
     size_t capacity;
     Slot *slots;
 } Lt;
@@ -29,9 +29,9 @@ static inline void destroy_lt(Lt *lt)
 {
     trace_assert(lt);
 
-    for (size_t i = lt->size; i > 0; --i) {
-        if (lt->slots[i - 1].res) {
-            lt->slots[i - 1].dtor(lt->slots[i - 1].res);
+    for (Slot *p = lt->slots_end - 1; p >= lt->slots; --p) {
+        if (p->res) {
+            p->dtor(p->res);
         }
     }
 
@@ -45,20 +45,22 @@ static inline void destroy_lt(Lt *lt)
 static inline void *lt_push(Lt *lt, void *res, Dtor dtor)
 {
     trace_assert(lt);
-
-    if (lt->size >= lt->capacity) {
+    size_t size = (size_t)(lt->slots_end - lt->slots);
+    if (size >= lt->capacity) {
         if (lt->capacity == 0) {
             lt->capacity = LT_INITIAL_CAPACITY;
             lt->slots = calloc(LT_INITIAL_CAPACITY, sizeof(Slot));
+            lt->slots_end = lt->slots;
         } else {
             lt->capacity *= 2;
             lt->slots = realloc(lt->slots, lt->capacity * sizeof(Slot));
+            lt->slots_end = lt->slots + size;
         }
     }
 
-    lt->slots[lt->size].res = res;
-    lt->slots[lt->size].dtor = dtor;
-    lt->size++;
+    lt->slots_end->res = res;
+    lt->slots_end->dtor = dtor;
+    lt->slots_end++;
 
     return res;
 }
@@ -80,10 +82,10 @@ static inline void *lt_reset(Lt *lt, void *old_res, void *new_res)
     trace_assert(lt);
     trace_assert(old_res != new_res);
 
-    for (size_t i = 0; i < lt->size; ++i) {
-        if (lt->slots[i].res == old_res) {
-            lt->slots[i].dtor(old_res);
-            lt->slots[i].res = new_res;
+    for(Slot *p = lt->slots; p < lt->slots_end; ++p) {
+        if (p->res == old_res) {
+            p->dtor(old_res);
+            p->res = new_res;
             return new_res;
         }
     }
@@ -99,9 +101,9 @@ static inline void *lt_reset(Lt *lt, void *old_res, void *new_res)
 static inline void *lt_replace(Lt *lt, void *old_res, void *new_res)
 {
     trace_assert(lt);
-    for (size_t i = 0; i < lt->size; ++i) {
-        if (lt->slots[i].res == old_res) {
-            lt->slots[i].res = new_res;
+    for(Slot *p = lt->slots; p < lt->slots_end; ++p) {
+        if (p->res == old_res) {
+            p->res = new_res;
             return new_res;
         }
     }
@@ -116,13 +118,10 @@ static inline void *lt_replace(Lt *lt, void *old_res, void *new_res)
 static inline void *lt_release(Lt *lt, void *res)
 {
     trace_assert(lt);
-    for (size_t i = 0; i < lt->size; ++i) {
-        if (lt->slots[i].res == res) {
-            memmove(
-                &lt->slots[i],
-                &lt->slots[i + 1],
-                (lt->size - i - 1) * sizeof(Slot));
-            lt->size--;
+    for(Slot *p = lt->slots; p < lt->slots_end; ++p) {
+        if (p->res == res) {
+            memmove(p, p + 1, (size_t)(lt->slots_end - p - 1) * sizeof(Slot));
+            lt->slots_end--;
             return res;
         }
     }
