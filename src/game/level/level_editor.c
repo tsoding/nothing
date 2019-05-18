@@ -29,7 +29,6 @@ struct LevelEditor
 
     RectLayer *current_rect_layer;
     PointLayer *current_point_layer;
-    // TODO(#823): LevelEditor does not allow to switch the current layer
     bool drag;
 };
 
