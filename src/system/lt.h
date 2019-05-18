@@ -29,7 +29,7 @@ static inline void destroy_lt(Lt *lt)
 {
     trace_assert(lt);
 
-    for (Slot *p = lt->slots_end; p != lt->slots; --p) {
+    for (Slot *p = lt->slots_end - 1; p >= lt->slots; --p) {
         if (p->res) {
             p->dtor(p->res);
         }
@@ -45,8 +45,8 @@ static inline void destroy_lt(Lt *lt)
 static inline void *lt_push(Lt *lt, void *res, Dtor dtor)
 {
     trace_assert(lt);
-
-    if ((size_t)(lt->slots_end - lt->slots) >= lt->capacity) {
+    size_t size = (size_t)(lt->slots_end - lt->slots);
+    if (size >= lt->capacity) {
         if (lt->capacity == 0) {
             lt->capacity = LT_INITIAL_CAPACITY;
             lt->slots = calloc(LT_INITIAL_CAPACITY, sizeof(Slot));
@@ -54,7 +54,7 @@ static inline void *lt_push(Lt *lt, void *res, Dtor dtor)
         } else {
             lt->capacity *= 2;
             lt->slots = realloc(lt->slots, lt->capacity * sizeof(Slot));
-            lt->slots_end = lt->slots;
+            lt->slots_end = lt->slots + size;
         }
     }
 
