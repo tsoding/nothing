@@ -217,6 +217,15 @@ int point_layer_keyboard(PointLayer *point_layer,
     return 0;
 }
 
+int point_layer_text_input(PointLayer *point_layer,
+                           const SDL_TextInputEvent *event)
+{
+    trace_assert(point_layer);
+    trace_assert(event);
+
+    return 0;
+}
+
 size_t point_layer_count(const PointLayer *point_layer)
 {
     trace_assert(point_layer);
