@@ -16,6 +16,7 @@ int console_handle_event(Console *console,
                          const SDL_Event *event);
 
 int console_render(const Console *console,
+                   Camera *camera,
                    SDL_Renderer *renderer);
 
 int console_update(Console *console,

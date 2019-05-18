@@ -82,7 +82,6 @@ Console *create_console(Broadcast *broadcast,
     console->edit_field = PUSH_LT(
         lt,
         create_edit_field(
-            font,
             vec(FONT_WIDTH_SCALE, FONT_HEIGHT_SCALE),
             CONSOLE_FOREGROUND),
         destroy_edit_field);
@@ -186,7 +185,7 @@ int console_handle_event(Console *console,
                          const SDL_Event *event)
 {
     switch(event->type) {
-    case SDL_KEYDOWN:
+    case SDL_KEYDOWN: {
         switch(event->key.keysym.sym) {
         case SDLK_RETURN:
             return console_eval_input(console);
@@ -205,13 +204,21 @@ int console_handle_event(Console *console,
             history_next(console->history);
             return 0;
         }
-        break;
+
+        return edit_field_keyboard(console->edit_field, &event->key);
+    } break;
+
+    case SDL_TEXTINPUT:
+        return edit_field_text_input(console->edit_field, &event->text);
+
+    default: {}
     }
 
-    return edit_field_handle_event(console->edit_field, event);
+    return 0;
 }
 
 int console_render(const Console *console,
+                   Camera *camera,
                    SDL_Renderer *renderer)
 {
     /* TODO(#364): console doesn't have any padding around the edit fields */
@@ -236,7 +243,7 @@ int console_render(const Console *console,
     }
 
     if (edit_field_render(console->edit_field,
-                          renderer,
+                          camera,
                           vec(0.0f, y + CONSOLE_LOG_HEIGHT)) < 0) {
         return -1;
     }

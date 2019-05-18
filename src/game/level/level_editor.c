@@ -235,6 +235,16 @@ int level_editor_event(LevelEditor *level_editor,
             return -1;
         }
     } break;
+
+    case SDL_TEXTINPUT: {
+        if (layer_picker_type(&level_editor->layer_picker) == LAYER_TYPE_POINT) {
+            if (point_layer_text_input(
+                    level_editor->current_point_layer,
+                    &event->text) < 0) {
+                return -1;
+            }
+        }
+    } break;
     }
 
     return 0;
