@@ -22,15 +22,11 @@ struct Camera {
 
 static Vec effective_ratio(const SDL_Rect *view_port);
 static Vec effective_scale(const SDL_Rect *view_port);
-static Vec camera_point(const Camera *camera,
-                        const SDL_Rect *view_port,
-                        const Vec p);
+static Vec camera_point(const Camera *camera, const Vec p);
 static Rect camera_rect(const Camera *camera,
-                        const SDL_Rect *view_port,
                         const Rect rect);
 static Triangle camera_triangle(const Camera *camera,
-                                  const SDL_Rect *view_port,
-                                  const Triangle t);
+                                const Triangle t);
 
 Camera *create_camera(SDL_Renderer *renderer,
                       Sprite_font *font)
@@ -67,11 +63,8 @@ int camera_fill_rect(Camera *camera,
 {
     trace_assert(camera);
 
-    SDL_Rect view_port;
-    SDL_RenderGetViewport(camera->renderer, &view_port);
-
     const SDL_Rect sdl_rect = rect_for_sdl(
-        camera_rect(camera, &view_port, rect));
+        camera_rect(camera, rect));
 
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
@@ -101,11 +94,8 @@ int camera_draw_rect(Camera * camera,
 {
     trace_assert(camera);
 
-    SDL_Rect view_port;
-    SDL_RenderGetViewport(camera->renderer, &view_port);
-
     const SDL_Rect sdl_rect = rect_for_sdl(
-        camera_rect(camera, &view_port, rect));
+        camera_rect(camera, rect));
 
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
@@ -128,9 +118,6 @@ int camera_draw_triangle(Camera *camera,
 {
     trace_assert(camera);
 
-    SDL_Rect view_port;
-    SDL_RenderGetViewport(camera->renderer, &view_port);
-
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
     if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
@@ -138,7 +125,7 @@ int camera_draw_triangle(Camera *camera,
         return -1;
     }
 
-    if (draw_triangle(camera->renderer, camera_triangle(camera, &view_port, t)) < 0) {
+    if (draw_triangle(camera->renderer, camera_triangle(camera, t)) < 0) {
         return -1;
     }
 
@@ -151,11 +138,7 @@ int camera_fill_triangle(Camera *camera,
 {
     trace_assert(camera);
 
-    SDL_Rect view_port;
-    SDL_RenderGetViewport(camera->renderer, &view_port);
-
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
-
 
     if (camera->debug_mode) {
         if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a / 2) < 0) {
@@ -169,7 +152,7 @@ int camera_fill_triangle(Camera *camera,
         }
     }
 
-    if (fill_triangle(camera->renderer, camera_triangle(camera, &view_port, t)) < 0) {
+    if (fill_triangle(camera->renderer, camera_triangle(camera, t)) < 0) {
         return -1;
     }
 
@@ -186,7 +169,7 @@ int camera_render_text(Camera *camera,
     SDL_RenderGetViewport(camera->renderer, &view_port);
 
     const Vec scale = effective_scale(&view_port);
-    const Vec screen_position = camera_point(camera, &view_port, position);
+    const Vec screen_position = camera_point(camera, position);
 
     if (sprite_font_render_text(
             camera->font,
@@ -279,7 +262,7 @@ int camera_is_point_visible(const Camera *camera, Point p)
 
     return rect_contains_point(
         rect_from_sdl(&view_port),
-        camera_point(camera, &view_port, p));
+        camera_point(camera, p));
 }
 
 Rect camera_view_port(const Camera *camera)
@@ -322,7 +305,6 @@ int camera_is_text_visible(const Camera *camera,
     return rects_overlap(
         camera_rect(
             camera,
-            &view_port,
             sprite_font_boundary_box(
                 camera->font,
                 position,
@@ -349,43 +331,39 @@ static Vec effective_scale(const SDL_Rect *view_port)
         vec_scala_mult(effective_ratio(view_port), 50.0f));
 }
 
-static Vec camera_point(const Camera *camera,
-                          const SDL_Rect *view_port,
-                          const Vec p)
-
+static Vec camera_point(const Camera *camera, const Vec p)
 {
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(camera->renderer, &view_port);
+
     return vec_sum(
         vec_scala_mult(
             vec_entry_mult(
                 vec_sum(p, vec_neg(camera->position)),
-                effective_scale(view_port)),
+                effective_scale(&view_port)),
             camera->scale),
-        vec((float) view_port->w * 0.5f,
-            (float) view_port->h * 0.5f));
+        vec((float) view_port.w * 0.5f,
+            (float) view_port.h * 0.5f));
 }
 
 static Triangle camera_triangle(const Camera *camera,
-                                  const SDL_Rect *view_port,
-                                  const Triangle t)
+                                const Triangle t)
 {
     return triangle(
-        camera_point(camera, view_port, t.p1),
-        camera_point(camera, view_port, t.p2),
-        camera_point(camera, view_port, t.p3));
+        camera_point(camera, t.p1),
+        camera_point(camera, t.p2),
+        camera_point(camera, t.p3));
 }
 
 static Rect camera_rect(const Camera *camera,
-                          const SDL_Rect *view_port,
-                          const Rect rect)
+                        const Rect rect)
 {
     return rect_from_points(
         camera_point(
             camera,
-            view_port,
             vec(rect.x, rect.y)),
         camera_point(
             camera,
-            view_port,
             vec(rect.x + rect.w, rect.y + rect.h)));
 }
 
