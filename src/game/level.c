@@ -114,7 +114,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
-    RectLayer *platforms_layer = create_layer_from_line_stream(level_stream);
+    RectLayer *platforms_layer = create_rect_layer_from_line_stream(level_stream);
     if (platforms_layer == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -148,7 +148,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
-    RectLayer *back_platforms_layer = create_layer_from_line_stream(level_stream);
+    RectLayer *back_platforms_layer = create_rect_layer_from_line_stream(level_stream);
     if (back_platforms_layer == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -161,7 +161,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
-    RectLayer *boxes_layer = create_layer_from_line_stream(level_stream);
+    RectLayer *boxes_layer = create_rect_layer_from_line_stream(level_stream);
     if (boxes_layer == NULL) {
         RETURN_LT(lt, NULL);
     }

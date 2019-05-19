@@ -44,7 +44,7 @@ RectLayer *create_rect_layer(void)
     return layer;
 }
 
-RectLayer *create_layer_from_line_stream(LineStream *line_stream)
+RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream)
 {
     trace_assert(line_stream);
 

@@ -5,7 +5,7 @@ typedef struct RectLayer RectLayer;
 typedef struct LineStream LineStream;
 
 RectLayer *create_rect_layer(void);
-RectLayer *create_layer_from_line_stream(LineStream *line_stream);
+RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream);
 void destroy_rect_layer(RectLayer *layer);
 
 int rect_layer_render(const RectLayer *layer, Camera *camera);
