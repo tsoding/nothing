@@ -31,7 +31,7 @@ int player_layer_render(const PlayerLayer *player_layer,
     return 0;
 }
 
-// TODO: PlayerLayer does not allow to change to position of the Player
+// TODO(#859): PlayerLayer does not allow to change to position of the Player
 
 int player_layer_event(PlayerLayer *player_layer,
                        const SDL_Event *event,
