@@ -1,11 +1,12 @@
 #ifndef PLAYER_LAYER_H_
 #define PLAYER_LAYER_H_
 
+#include "color_picker.h"
 #include "layer.h"
 
 typedef struct {
     Vec position;
-    Color color;
+    ColorPicker color_picker;
 } PlayerLayer;
 
 LayerPtr player_layer_as_layer(PlayerLayer *player_layer);

@@ -56,7 +56,7 @@ LevelEditor *create_level_editor(RectLayer *boxes_layer,
     level_editor->platforms_layer = PUSH_LT(lt, platforms_layer, destroy_rect_layer);
     level_editor->back_platforms_layer = PUSH_LT(lt, back_platforms_layer, destroy_rect_layer);
     level_editor->goals_layer = PUSH_LT(lt, goals_layer, destroy_point_layer);
-    level_editor->player_layer.color = rgba(0.0f, 0.0f, 0.0f, 1.0f);
+    level_editor->player_layer.color_picker.color = rgba(0.0f, 0.0f, 0.0f, 1.0f);
 
     level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(level_editor->boxes_layer);
     level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
@@ -83,20 +83,10 @@ int level_editor_render(const LevelEditor *level_editor,
     trace_assert(level_editor);
     trace_assert(camera);
 
-    if (rect_layer_render(level_editor->back_platforms_layer, camera) < 0) {
-        return -1;
-    }
-
-    if (rect_layer_render(level_editor->boxes_layer, camera) < 0) {
-        return -1;
-    }
-
-    if (rect_layer_render(level_editor->platforms_layer, camera) < 0) {
-        return -1;
-    }
-
-    if (point_layer_render(level_editor->goals_layer, camera) < 0) {
-        return -1;
+    for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
+        if (layer_render(level_editor->layers[i], camera) < 0) {
+            return -1;
+        }
     }
 
     if (layer_picker_render(&level_editor->layer_picker, camera) < 0) {

@@ -19,6 +19,15 @@ int player_layer_render(const PlayerLayer *player_layer,
     trace_assert(player_layer);
     trace_assert(camera);
 
+    if (camera_fill_rect(
+            camera,
+            rect_from_vecs(
+                player_layer->position,
+                vec(25.0f, 25.0f)),
+            player_layer->color_picker.color) < 0) {
+        return -1;
+    }
+
     return 0;
 }
 
