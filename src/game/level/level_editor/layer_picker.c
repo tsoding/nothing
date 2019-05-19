@@ -18,6 +18,7 @@ static const Color LAYER_CELL_BACKGROUND_COLORS[LAYER_PICKER_N] = {
     {0.0f, 1.0f, 0.0f, 1.0f},  // LAYER_PICKER_PLATFORMS,
     {0.0f, 0.0f, 1.0f, 1.0f},  // LAYER_PICKER_BACK_PLATFORMS,
     {1.0f, 1.0f, 1.0f, 1.0f},  // LAYER_PICKER_GOALS
+    {1.0f, 0.2f, 0.6f, 1.0f},  // LAYER_PICKER_PLAYER
 };
 
 static const char *LAYER_CELL_TITLES[LAYER_PICKER_N] = {
@@ -25,6 +26,7 @@ static const char *LAYER_CELL_TITLES[LAYER_PICKER_N] = {
     "P",                    // LAYER_PICKER_PLATFORMS,
     "BP",                   // LAYER_PICKER_BACK_PLATFORMS,
     "G",                    // LAYER_PICKER_GOALS
+    "Pr",                   // LAYER_PICKER_PLAYER
 };
 
 int layer_picker_render(const LayerPicker *layer_picker,
@@ -111,7 +113,11 @@ LayerType layer_picker_type(LayerPicker *layer_picker)
     case LAYER_PICKER_GOALS:
         return LAYER_TYPE_POINT;
 
-    default:
-        return LAYER_TYPE_UNKNOWN;
+    case LAYER_PICKER_PLAYER:
+        return LAYER_TYPE_PLAYER;
+
+    case LAYER_PICKER_N: {}
     }
+
+    return LAYER_TYPE_UNKNOWN;
 }

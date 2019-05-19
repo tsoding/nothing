@@ -7,7 +7,8 @@ typedef struct Camera Camera;
 typedef enum {
     LAYER_TYPE_UNKNOWN,
     LAYER_TYPE_RECT,
-    LAYER_TYPE_POINT
+    LAYER_TYPE_POINT,
+    LAYER_TYPE_PLAYER
 } LayerType;
 
 typedef enum {
@@ -15,6 +16,7 @@ typedef enum {
     LAYER_PICKER_PLATFORMS,
     LAYER_PICKER_BACK_PLATFORMS,
     LAYER_PICKER_GOALS,
+    LAYER_PICKER_PLAYER,
 
     LAYER_PICKER_N
 } LayerPicker;
