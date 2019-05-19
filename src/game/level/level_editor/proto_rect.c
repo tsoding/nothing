@@ -32,14 +32,6 @@ int proto_rect_render(const ProtoRect *proto_rect,
     return 0;
 }
 
-int proto_rect_update(ProtoRect *proto_rect,
-                      float delta_time)
-{
-    trace_assert(proto_rect);
-    (void) delta_time;
-    return 0;
-}
-
 int proto_rect_event(ProtoRect *proto_rect,
                      const SDL_Event *event,
                      const Camera *camera)
@@ -63,7 +55,7 @@ int proto_rect_event(ProtoRect *proto_rect,
                 const float area = real_rect.w * real_rect.h;
 
                 if (area >= PROTO_AREA_THRESHOLD) {
-                    rect_layer_add_rect(*proto_rect->layer_current, real_rect, *proto_rect->color_current);
+                    rect_layer_add_rect(proto_rect->layer_current, real_rect, *proto_rect->color_current);
                 } else {
                     log_info("The area is too small %f. Such small box won't be created.\n", area);
                 }
@@ -123,7 +115,7 @@ int proto_rect_mouse_button(ProtoRect *proto_rect,
                 const float area = real_rect.w * real_rect.h;
 
                 if (area >= PROTO_AREA_THRESHOLD) {
-                    rect_layer_add_rect(*proto_rect->layer_current, real_rect, *proto_rect->color_current);
+                    rect_layer_add_rect(proto_rect->layer_current, real_rect, *proto_rect->color_current);
                 } else {
                     log_info("The area is too small %f. Such small box won't be created.\n", area);
                 }

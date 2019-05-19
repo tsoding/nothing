@@ -8,12 +8,25 @@
 #include "rect_layer.h"
 #include "dynarray.h"
 #include "system/line_stream.h"
+#include "proto_rect.h"
+#include "color_picker.h"
 
 struct RectLayer {
     Lt *lt;
     Dynarray *rects;
     Dynarray *colors;
+    ProtoRect proto_rect;
+    ColorPicker color_picker;
 };
+
+LayerPtr rect_layer_as_layer(RectLayer *rect_layer)
+{
+    LayerPtr layer = {
+        .type = LAYER_RECT,
+        .ptr = rect_layer
+    };
+    return layer;
+}
 
 RectLayer *create_rect_layer(void)
 {
@@ -40,6 +53,10 @@ RectLayer *create_rect_layer(void)
     if (layer->colors == NULL) {
         RETURN_LT(lt, NULL);
     }
+
+    layer->color_picker.color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
+    layer->proto_rect.color_current = &layer->color_picker.color;
+    layer->proto_rect.layer_current = layer;
 
     return layer;
 }
@@ -109,13 +126,49 @@ int rect_layer_render(const RectLayer *layer, Camera *camera)
         }
     }
 
+    if (proto_rect_render(&layer->proto_rect, camera) < 0) {
+        return -1;
+    }
+
+    if (color_picker_render(&layer->color_picker, camera) < 0) {
+        return -1;
+    }
+
     return 0;
 }
 
-int rect_layer_event(RectLayer *layer, const SDL_Event *event)
+int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *camera)
 {
     trace_assert(layer);
     trace_assert(event);
+
+    switch(event->type) {
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP: {
+        bool selected = false;
+        if (color_picker_mouse_button(
+                &layer->color_picker,
+                &event->button,
+                &selected) < 0) {
+            return -1;
+        }
+
+        if (!selected && proto_rect_mouse_button(
+                &layer->proto_rect,
+                &event->button,
+                camera) < 0) {
+            return -1;
+        }
+
+    } break;
+
+    case SDL_MOUSEMOTION: {
+        if (proto_rect_mouse_motion(&layer->proto_rect, &event->motion, camera) < 0) {
+            return -1;
+        }
+    } break;
+    }
+
     return 0;
 }
 

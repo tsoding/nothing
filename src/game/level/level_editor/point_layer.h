@@ -1,25 +1,23 @@
 #ifndef POINT_LAYER_H_
 #define POINT_LAYER_H_
 
+#include "layer.h"
+
 #define ID_MAX_SIZE 36
 
 typedef struct PointLayer PointLayer;
 typedef struct LineStream LineStream;
 typedef struct Camera Camera;
 
+LayerPtr point_layer_as_layer(PointLayer *point_layer);
 PointLayer *create_point_layer_from_line_stream(LineStream *line_stream);
 void destroy_point_layer(PointLayer *point_layer);
 
 int point_layer_render(const PointLayer *point_layer,
                        Camera *camera);
-int point_layer_mouse_button(PointLayer *point_layer,
-                             const SDL_MouseButtonEvent *event,
-                             const Camera *camera,
-                             Color color);
-int point_layer_keyboard(PointLayer *point_layer,
-                         const SDL_KeyboardEvent *event);
-int point_layer_text_input(PointLayer *point_layer,
-                           const SDL_TextInputEvent *event);
+int point_layer_event(PointLayer *point_layer,
+                      const SDL_Event *event,
+                      const Camera *camera);
 
 size_t point_layer_count(const PointLayer *point_layer);
 const Point *point_layer_points(const PointLayer *point_layer);

@@ -288,10 +288,6 @@ int level_update(Level *level, float delta_time)
     lava_update(level->lava, delta_time);
     labels_update(level->labels, delta_time);
 
-    if (level->edit_mode) {
-        level_editor_update(level->level_editor, delta_time);
-    }
-
     return 0;
 }
 

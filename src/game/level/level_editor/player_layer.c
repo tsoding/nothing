@@ -4,6 +4,15 @@
 #include "system/stacktrace.h"
 #include "player_layer.h"
 
+LayerPtr player_layer_as_layer(PlayerLayer *player_layer)
+{
+    LayerPtr layer = {
+        .type = LAYER_PLAYER,
+        .ptr = player_layer
+    };
+    return layer;
+}
+
 int player_layer_render(const PlayerLayer *player_layer,
                         Camera *camera)
 {
@@ -13,20 +22,12 @@ int player_layer_render(const PlayerLayer *player_layer,
     return 0;
 }
 
-int player_layer_mouse_button(PlayerLayer *player_layer,
-                              const SDL_MouseButtonEvent *mouse_button)
+int player_layer_event(PlayerLayer *player_layer,
+                       const SDL_Event *event,
+                       const Camera *camera)
 {
     trace_assert(player_layer);
-    trace_assert(mouse_button);
-
-    return 0;
-}
-
-int player_layer_mouse_motion(PlayerLayer *player_layer,
-                              const SDL_MouseMotionEvent *mouse_motion)
-{
-    trace_assert(player_layer);
-    trace_assert(mouse_motion);
-
+    trace_assert(event);
+    trace_assert(camera);
     return 0;
 }
