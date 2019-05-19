@@ -1,6 +1,8 @@
 #ifndef COLOR_PICKER_H_
 #define COLOR_PICKER_H_
 
+#include <stdbool.h>
+
 typedef struct {
     Color color;
 } ColorPicker;

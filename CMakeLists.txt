@@ -150,12 +150,16 @@ add_executable(nothing
   src/game/level/level_editor.c
   src/game/level/level_editor/color_picker.h
   src/game/level/level_editor/color_picker.c
-  src/game/level/level_editor/layer.h
-  src/game/level/level_editor/layer.c
+  src/game/level/level_editor/rect_layer.h
+  src/game/level/level_editor/rect_layer.c
   src/game/level/level_editor/layer_picker.h
   src/game/level/level_editor/layer_picker.c
   src/game/level/level_editor/point_layer.h
   src/game/level/level_editor/point_layer.c
+  src/game/level/level_editor/player_layer.h
+  src/game/level/level_editor/player_layer.c
+  src/game/level/level_editor/layer.h
+  src/game/level/level_editor/layer.c
 )
 
 add_executable(svg2level
@@ -217,6 +221,7 @@ if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" ST
      -fno-common \
      -pedantic \
      -std=c11 \
+     -ggdb \
      -O3")
   target_link_libraries(nothing m)
 endif()

@@ -18,7 +18,7 @@
 #include "game/level/rigid_bodies.h"
 #include "game/level_metadata.h"
 #include "game/level/level_editor/proto_rect.h"
-#include "game/level/level_editor/layer.h"
+#include "game/level/level_editor/rect_layer.h"
 #include "game/level/level_editor/point_layer.h"
 #include "system/line_stream.h"
 #include "system/log.h"
@@ -114,7 +114,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
-    RectLayer *platforms_layer = create_layer_from_line_stream(level_stream);
+    RectLayer *platforms_layer = create_rect_layer_from_line_stream(level_stream);
     if (platforms_layer == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -148,7 +148,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
-    RectLayer *back_platforms_layer = create_layer_from_line_stream(level_stream);
+    RectLayer *back_platforms_layer = create_rect_layer_from_line_stream(level_stream);
     if (back_platforms_layer == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -161,7 +161,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
-    RectLayer *boxes_layer = create_layer_from_line_stream(level_stream);
+    RectLayer *boxes_layer = create_rect_layer_from_line_stream(level_stream);
     if (boxes_layer == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -288,10 +288,6 @@ int level_update(Level *level, float delta_time)
     lava_update(level->lava, delta_time);
     labels_update(level->labels, delta_time);
 
-    if (level->edit_mode) {
-        level_editor_update(level->level_editor, delta_time);
-    }
-
     return 0;
 }
 
@@ -307,6 +303,7 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
             player_jump(level->player);
         } break;
 
+        // TODO(#858): Player state is not exchanged between Level and LevelEditor
         case SDLK_TAB: {
             level->edit_mode = !level->edit_mode;
             SDL_SetRelativeMouseMode(level->edit_mode);

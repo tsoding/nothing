@@ -11,7 +11,7 @@
 #include "system/line_stream.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
-#include "game/level/level_editor/layer.h"
+#include "game/level/level_editor/rect_layer.h"
 
 struct Platforms {
     Lt *lt;

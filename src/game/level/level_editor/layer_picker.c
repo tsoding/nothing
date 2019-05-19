@@ -18,6 +18,7 @@ static const Color LAYER_CELL_BACKGROUND_COLORS[LAYER_PICKER_N] = {
     {0.0f, 1.0f, 0.0f, 1.0f},  // LAYER_PICKER_PLATFORMS,
     {0.0f, 0.0f, 1.0f, 1.0f},  // LAYER_PICKER_BACK_PLATFORMS,
     {1.0f, 1.0f, 1.0f, 1.0f},  // LAYER_PICKER_GOALS
+    {1.0f, 0.2f, 0.6f, 1.0f},  // LAYER_PICKER_PLAYER
 };
 
 static const char *LAYER_CELL_TITLES[LAYER_PICKER_N] = {
@@ -25,6 +26,7 @@ static const char *LAYER_CELL_TITLES[LAYER_PICKER_N] = {
     "P",                    // LAYER_PICKER_PLATFORMS,
     "BP",                   // LAYER_PICKER_BACK_PLATFORMS,
     "G",                    // LAYER_PICKER_GOALS
+    "Pr",                   // LAYER_PICKER_PLAYER
 };
 
 int layer_picker_render(const LayerPicker *layer_picker,
@@ -71,13 +73,14 @@ int layer_picker_render(const LayerPicker *layer_picker,
     return 0;
 }
 
-int layer_picker_mouse_button(LayerPicker *layer_picker,
-                              const Camera *camera,
-                              const SDL_MouseButtonEvent *event,
-                              bool *selected)
+int layer_picker_event(LayerPicker *layer_picker,
+                       const SDL_Event *event,
+                       const Camera *camera,
+                       bool *selected)
 {
     trace_assert(layer_picker);
     trace_assert(event);
+    trace_assert(camera);
 
     switch (event->type) {
     case SDL_MOUSEBUTTONDOWN: {
@@ -88,7 +91,7 @@ int layer_picker_mouse_button(LayerPicker *layer_picker,
             const Rect cell = rect(LAYER_CELL_WIDTH * (float) i + position.x, position.y,
                                    LAYER_CELL_WIDTH,
                                    LAYER_CELL_HEIGHT);
-            if (rect_contains_point(cell, vec((float) event->x, (float) event->y))) {
+            if (rect_contains_point(cell, vec((float) event->button.x, (float) event->button.y))) {
                 *layer_picker = i;
                 *selected = true;
                 return 0;
@@ -98,20 +101,4 @@ int layer_picker_mouse_button(LayerPicker *layer_picker,
     }
 
     return 0;
-}
-
-LayerType layer_picker_type(LayerPicker *layer_picker)
-{
-    switch (*layer_picker) {
-    case LAYER_PICKER_BOXES:
-    case LAYER_PICKER_PLATFORMS:
-    case LAYER_PICKER_BACK_PLATFORMS:
-        return LAYER_TYPE_RECT;
-
-    case LAYER_PICKER_GOALS:
-        return LAYER_TYPE_POINT;
-
-    default:
-        return LAYER_TYPE_UNKNOWN;
-    }
 }

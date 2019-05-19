@@ -11,6 +11,7 @@
 #include "ui/edit_field.h"
 #include "./point_layer.h"
 #include "math/extrema.h"
+#include "./color_picker.h"
 
 #define POINT_LAYER_ELEMENT_RADIUS 10.0f
 
@@ -28,8 +29,17 @@ struct PointLayer
     Dynarray/*<char[ID_MAX_SIZE]>*/ *ids;
     Edit_field *edit_field;
     int selected;
+    ColorPicker color_picker;
 };
 
+LayerPtr point_layer_as_layer(PointLayer *point_layer)
+{
+    LayerPtr layer = {
+        .type = LAYER_POINT,
+        .ptr = point_layer
+    };
+    return layer;
+}
 
 PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
 {
@@ -100,6 +110,8 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
 
     point_layer->selected = -1;
 
+    point_layer->color_picker.color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
+
     return point_layer;
 }
 
@@ -155,19 +167,32 @@ int point_layer_render(const PointLayer *point_layer,
         }
     }
 
+    if (color_picker_render(&point_layer->color_picker, camera) < 0) {
+        return -1;
+    }
+
+
     return 0;
 }
 
 
-int point_layer_mouse_button(PointLayer *point_layer,
-                             const SDL_MouseButtonEvent *event,
-                             const Camera *camera,
-                             Color color)
+static int point_layer_mouse_button(PointLayer *point_layer,
+                                    const SDL_MouseButtonEvent *event,
+                                    const Camera *camera)
 {
     trace_assert(point_layer);
     trace_assert(event);
 
-    if (point_layer->state == POINT_LAYER_NORMAL_STATE &&
+    bool selected = false;
+    if (color_picker_mouse_button(
+            &point_layer->color_picker,
+            event,
+            &selected) < 0) {
+        return -1;
+    }
+
+    if (!selected &&
+        point_layer->state == POINT_LAYER_NORMAL_STATE &&
         event->type == SDL_MOUSEBUTTONDOWN &&
         event->button == SDL_BUTTON_LEFT) {
         const int n = (int) dynarray_count(point_layer->points);
@@ -189,13 +214,14 @@ int point_layer_mouse_button(PointLayer *point_layer,
         id[ID_MAX_SIZE - 1] = '\0';
 
         dynarray_push(point_layer->points, &point);
-        dynarray_push(point_layer->colors, &color);
+        dynarray_push(point_layer->colors, &point_layer->color_picker.color);
         dynarray_push(point_layer->ids, id);
     }
 
     return 0;
 }
 
+static
 int point_layer_keyboard(PointLayer *point_layer,
                          const SDL_KeyboardEvent *key)
 {
@@ -261,6 +287,7 @@ int point_layer_keyboard(PointLayer *point_layer,
     return 0;
 }
 
+static
 int point_layer_text_input(PointLayer *point_layer,
                            const SDL_TextInputEvent *text_input)
 {
@@ -270,6 +297,37 @@ int point_layer_text_input(PointLayer *point_layer,
     if (point_layer->state == POINT_LAYER_ID_EDITING_STATE) {
         /* TODO(#856): Special development keybindings interfere with id editing field */
         return edit_field_text_input(point_layer->edit_field, text_input);
+    }
+
+    return 0;
+}
+
+int point_layer_event(PointLayer *point_layer,
+                      const SDL_Event *event,
+                      const Camera *camera)
+{
+    trace_assert(point_layer);
+    trace_assert(event);
+    trace_assert(camera);
+
+    switch(event->type) {
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+        return point_layer_mouse_button(
+            point_layer,
+            &event->button,
+            camera);
+
+    case SDL_KEYDOWN:
+    case SDL_KEYUP:
+        return point_layer_keyboard(
+            point_layer,
+            &event->key);
+
+    case SDL_TEXTINPUT:
+        return point_layer_text_input(
+            point_layer,
+            &event->text);
     }
 
     return 0;

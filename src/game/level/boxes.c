@@ -5,7 +5,7 @@
 #include "ebisp/builtins.h"
 #include "ebisp/interpreter.h"
 #include "game/level/boxes.h"
-#include "game/level/level_editor/layer.h"
+#include "game/level/level_editor/rect_layer.h"
 #include "game/level/player.h"
 #include "game/level/rigid_bodies.h"
 #include "math/rand.h"

@@ -9,13 +9,11 @@ typedef struct {
     Vec begin, end;
 
     Color *color_current;
-    RectLayer **layer_current;
+    RectLayer *layer_current;
 } ProtoRect;
 
 int proto_rect_render(const ProtoRect *proto_rect,
                       Camera *camera);
-int proto_rect_update(ProtoRect *proto_rect,
-                      float delta_time);
 int proto_rect_event(ProtoRect *proto_rect,
                      const SDL_Event *event,
                      const Camera *camera);
