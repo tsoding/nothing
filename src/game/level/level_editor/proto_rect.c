@@ -6,7 +6,7 @@
 #include "system/log.h"
 #include "game/camera.h"
 
-#include "layer.h"
+#include "rect_layer.h"
 #include "proto_rect.h"
 
 #define PROTO_AREA_THRESHOLD 10.0

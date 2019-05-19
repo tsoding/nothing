@@ -5,7 +5,7 @@
 #include "system/log.h"
 #include "math/rect.h"
 #include "color.h"
-#include "layer.h"
+#include "rect_layer.h"
 #include "dynarray.h"
 #include "system/line_stream.h"
 

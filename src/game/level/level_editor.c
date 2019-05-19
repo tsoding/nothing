@@ -4,7 +4,7 @@
 #include "game/level/boxes.h"
 #include "game/level/level_editor/proto_rect.h"
 #include "game/level/level_editor/color_picker.h"
-#include "game/level/level_editor/layer.h"
+#include "game/level/level_editor/rect_layer.h"
 #include "game/level/level_editor/point_layer.h"
 #include "game/level/level_editor/layer_picker.h"
 #include "system/stacktrace.h"

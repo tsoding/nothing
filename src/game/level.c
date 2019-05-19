@@ -18,7 +18,7 @@
 #include "game/level/rigid_bodies.h"
 #include "game/level_metadata.h"
 #include "game/level/level_editor/proto_rect.h"
-#include "game/level/level_editor/layer.h"
+#include "game/level/level_editor/rect_layer.h"
 #include "game/level/level_editor/point_layer.h"
 #include "system/line_stream.h"
 #include "system/log.h"

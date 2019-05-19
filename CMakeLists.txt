@@ -150,8 +150,8 @@ add_executable(nothing
   src/game/level/level_editor.c
   src/game/level/level_editor/color_picker.h
   src/game/level/level_editor/color_picker.c
-  src/game/level/level_editor/layer.h
-  src/game/level/level_editor/layer.c
+  src/game/level/level_editor/rect_layer.h
+  src/game/level/level_editor/rect_layer.c
   src/game/level/level_editor/layer_picker.h
   src/game/level/level_editor/layer_picker.c
   src/game/level/level_editor/point_layer.h
