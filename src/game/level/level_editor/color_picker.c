@@ -56,7 +56,10 @@ int color_picker_mouse_button(ColorPicker *color_picker,
                          COLOR_CELL_HEIGHT);
                 if (rect_contains_point(color_cell, mouse_position)) {
                     color_picker->color = colors[i];
-                    *selected = true;
+                    if (selected) {
+                        *selected = true;
+                    }
+                    return 0;
                 }
             }
         } break;

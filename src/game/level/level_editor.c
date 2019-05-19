@@ -149,11 +149,13 @@ int level_editor_event(LevelEditor *level_editor,
         return -1;
     }
 
-    if (!selected && layer_event(
-            level_editor->layers[level_editor->layer_picker],
-            event,
-            camera) < 0) {
-        return -1;
+    if (!selected) {
+        if (layer_event(
+                level_editor->layers[level_editor->layer_picker],
+                event,
+                camera) < 0) {
+            return -1;
+        }
     }
 
     return 0;

@@ -221,6 +221,7 @@ if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" ST
      -fno-common \
      -pedantic \
      -std=c11 \
+     -ggdb \
      -O3")
   target_link_libraries(nothing m)
 endif()

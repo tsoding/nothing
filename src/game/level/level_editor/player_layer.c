@@ -38,5 +38,15 @@ int player_layer_event(PlayerLayer *player_layer,
     trace_assert(player_layer);
     trace_assert(event);
     trace_assert(camera);
+
+    switch (event->type) {
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+        return color_picker_mouse_button(
+            &player_layer->color_picker,
+            &event->button,
+            NULL);
+    }
+
     return 0;
 }
