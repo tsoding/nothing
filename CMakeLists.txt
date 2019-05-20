@@ -61,6 +61,7 @@ add_library(ebisp STATIC
   src/ebisp/tokenizer.c
   src/ebisp/tokenizer.h
   )
+target_link_libraries(ebisp system)
 
 add_executable(nothing 
   broadcast_lisp.h
@@ -155,9 +156,12 @@ add_executable(nothing
   src/game/level/level_editor/layer.h
   src/game/level/level_editor/layer.c
 )
+target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} m system ebisp)
 
 add_executable(svg2level
-  devtools/svg2level/main.c)
+  devtools/svg2level/main.c
+  )
+target_link_libraries(svg2level ${LIBXML2_LIBRARIES})
 
 add_custom_command(
   OUTPUT broadcast_lisp.h
@@ -168,23 +172,19 @@ add_executable(repl
   src/ebisp/repl.c
   src/ebisp/repl_runtime.c
   )
+target_link_libraries(repl ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} m system ebisp)
 
 add_executable(baker
   src/ebisp/baker.c
   )
+target_link_libraries(baker m system ebisp)
 
 add_executable(nothing_test
   test/main.c
   test/test.h
   test/tokenizer_suite.h
   )
-
-target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} m system ebisp)
 target_link_libraries(nothing_test ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} m system ebisp)
-target_link_libraries(repl ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} m system ebisp)
-target_link_libraries(ebisp system)
-target_link_libraries(baker m system ebisp)
-target_link_libraries(svg2level ${LIBXML2_LIBRARIES})
 
 if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "CLANG"))
   set(CMAKE_C_FLAGS
