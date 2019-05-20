@@ -257,7 +257,7 @@ int goals_sound(Goals *goals,
     for (size_t i = 0; i < goals->count; ++i) {
         switch (goals->cue_states[i]) {
         case CUE_STATE_HIT_NOTHING:
-            sound_samples_play_sound(sound_samples, 0, 0);
+            sound_samples_play_sound(sound_samples, 0);
             goals->cue_states[i] = CUE_STATE_SEEN_NOTHING;
             break;
 

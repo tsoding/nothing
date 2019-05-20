@@ -11,19 +11,18 @@
 - [gcc]
 - [cmake]
 - [libsdl2-dev]
-- [libsdl2-mixer-dev]
 - [inotify-tools]
 
 ### Ubuntu
 
 ```console
-$ sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev inotify-tools libxml2-dev
+$ sudo apt-get install gcc cmake libsdl2-dev inotify-tools libxml2-dev
 ```
 
 ### MacOS
 
 ```console
-$ brew install gcc cmake sdl2 sdl2_mixer
+$ brew install gcc cmake sdl2
 ```
 
 ### NixOS
@@ -39,7 +38,7 @@ $ nix-shell
 ### Arch Linux
 
 ```console
-$ sudo pacman -S gcc cmake sdl2 sdl2_mixer inotify-tools libxml2
+$ sudo pacman -S gcc cmake sdl2 inotify-tools libxml2
 ```
 
 ### Windows
@@ -162,7 +161,6 @@ You can support my work via
 [gcc]: https://gcc.gnu.org/
 [cmake]: https://cmake.org/
 [libsdl2-dev]: https://www.libsdl.org/
-[libsdl2-mixer-dev]: https://www.libsdl.org/projects/SDL_mixer/
 [NixOS]: https://nixos.org/
 [default.nix]: ./default.nix
 [build-on-windows]: #build-on-windows

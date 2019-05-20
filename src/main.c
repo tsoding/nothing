@@ -1,5 +1,4 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
 
 #include <stdint.h>
 #include <stdio.h>
@@ -116,16 +115,6 @@ int main(int argc, char *argv[])
     } else {
         log_warn("Could not find any Sticks of the Joy\n");
     }
-
-    if (Mix_OpenAudio(
-            MIX_DEFAULT_FREQUENCY,
-            MIX_DEFAULT_FORMAT,
-            2,
-            1024) < 0) {
-        log_fail("Could not initialize the audio: %s\n", Mix_GetError());
-        RETURN_LT(lt, -1);
-    }
-    PUSH_LT(lt, 42, Mix_CloseAudio_lt);
 
     // ------------------------------
 
