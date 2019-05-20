@@ -1,18 +1,12 @@
 cmake_minimum_required(VERSION 3.2)
 project(nothing)
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-
 find_package(SDL2 REQUIRED)
 
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(src/)
 
-if(APPLE)
-  include_directories(${SDL2_INCLUDE_DIR}/..)
-else()
-  include_directories(${SDL2_INCLUDE_DIR})
-endif()
+include_directories(${SDL2_INCLUDE_DIR})
 
 add_library(system STATIC
   src/system/line_stream.c
@@ -147,7 +141,7 @@ add_executable(nothing
   src/game/level/level_editor/layer.h
   src/game/level/level_editor/layer.c
 )
-target_link_libraries(nothing ${SDL2_LIBRARY} m system ebisp)
+target_link_libraries(nothing ${SDL2_LIBRARIES} m system ebisp)
 
 add_custom_command(
   OUTPUT broadcast_lisp.h
@@ -158,7 +152,7 @@ add_executable(repl
   src/ebisp/repl.c
   src/ebisp/repl_runtime.c
   )
-target_link_libraries(repl ${SDL2_LIBRARY} m system ebisp)
+target_link_libraries(repl ${SDL2_LIBRARIES} m system ebisp)
 
 add_executable(baker
   src/ebisp/baker.c
@@ -170,7 +164,7 @@ add_executable(nothing_test
   test/test.h
   test/tokenizer_suite.h
   )
-target_link_libraries(nothing_test ${SDL2_LIBRARY} m system ebisp)
+target_link_libraries(nothing_test ${SDL2_LIBRARIES} m system ebisp)
 
 if (UNIX)
   add_subdirectory(devtools/svg2level)
