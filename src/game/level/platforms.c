@@ -7,7 +7,6 @@
 
 #include "platforms.h"
 #include "system/lt.h"
-#include "system/lt/lt_adapters.h"
 #include "system/line_stream.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"

@@ -23,7 +23,6 @@
 #include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
-#include "system/lt/lt_adapters.h"
 #include "system/nth_alloc.h"
 #include "system/str.h"
 #include "game/level/level_editor.h"

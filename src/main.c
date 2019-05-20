@@ -15,7 +15,6 @@
 #include "sdl/renderer.h"
 #include "system/log.h"
 #include "system/lt.h"
-#include "system/lt/lt_adapters.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -64,7 +63,7 @@ int main(int argc, char *argv[])
         log_fail("Could not initialize SDL: %s\n", SDL_GetError());
         RETURN_LT(lt, -1);
     }
-    PUSH_LT(lt, 42, SDL_Quit_lt);
+    PUSH_LT(lt, 42, SDL_Quit);
 
     SDL_ShowCursor(SDL_DISABLE);
 
