@@ -5,9 +5,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
-find_package(PkgConfig REQUIRED)
-
-pkg_check_modules(LIBXML2 REQUIRED libxml-2.0)
 
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(src/)
@@ -19,7 +16,6 @@ else()
 endif()
 
 include_directories(${SDL2_MIXER_INCLUDE_DIR})
-include_directories(${LIBXML2_INCLUDE_DIRS})
 
 add_library(system STATIC
   src/system/line_stream.c
@@ -158,11 +154,6 @@ add_executable(nothing
 )
 target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} m system ebisp)
 
-add_executable(svg2level
-  devtools/svg2level/main.c
-  )
-target_link_libraries(svg2level ${LIBXML2_LIBRARIES})
-
 add_custom_command(
   OUTPUT broadcast_lisp.h
   COMMAND ${CMAKE_BINARY_DIR}/baker ${CMAKE_SOURCE_DIR}/src/broadcast.lisp broadcast_lisp.h broadcast_lisp_library
@@ -185,6 +176,10 @@ add_executable(nothing_test
   test/tokenizer_suite.h
   )
 target_link_libraries(nothing_test ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} m system ebisp)
+
+if (UNIX)
+  add_subdirectory(devtools/svg2level)
+endif()
 
 if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "CLANG"))
   set(CMAKE_C_FLAGS

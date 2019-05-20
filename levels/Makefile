@@ -1,12 +1,13 @@
 SVGS=$(wildcard ./*.svg)
 TXTS=$(SVGS:.svg=.txt)
+SVG2LEVEL=../build/devtools/svg2level/svg2level
 
 all: $(TXTS)
 
 .SECONDEXPANSION:
 
-%.txt: %.svg $$(shell ../build/svg2level deps $$*.svg)
-	../build/svg2level compile $< $@
+%.txt: %.svg $$(shell $(SVG2LEVEL) deps $$*.svg)
+	$(SVG2LEVEL) compile $< $@
 
 .PHONY: clean watch
 
