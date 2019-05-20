@@ -1,12 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 project(nothing)
 
-if(WIN32)
-  # Conan integration
-  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-  conan_basic_setup()
-endif()
-
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 find_package(SDL2 REQUIRED)
