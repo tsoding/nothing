@@ -5,7 +5,6 @@ with import <nixpkgs> {}; {
                         gcc
                         gdb
                         SDL2
-                        SDL2_mixer
                         pkgconfig
                         cmake
                         valgrind

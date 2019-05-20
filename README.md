@@ -11,19 +11,18 @@
 - [gcc]
 - [cmake]
 - [libsdl2-dev]
-- [libsdl2-mixer-dev]
 - [inotify-tools]
 
 ### Ubuntu
 
 ```console
-$ sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev inotify-tools libxml2-dev
+$ sudo apt-get install gcc cmake libsdl2-dev inotify-tools libxml2-dev
 ```
 
 ### MacOS
 
 ```console
-$ brew install gcc cmake sdl2 sdl2_mixer
+$ brew install gcc cmake sdl2
 ```
 
 ### NixOS
@@ -39,7 +38,7 @@ $ nix-shell
 ### Arch Linux
 
 ```console
-$ sudo pacman -S gcc cmake sdl2 sdl2_mixer inotify-tools libxml2
+$ sudo pacman -S gcc cmake sdl2 inotify-tools libxml2
 ```
 
 ### Windows
@@ -144,31 +143,9 @@ $ make
 
 ## Build on Windows
 
-You need to install [conan][] and [Visual Studio 2017][visual-studio].
+TBD
 
-### Dependencies
-
-Current version of [SDL2/2.0.5@lasote/stable][conan-sdl2] in the conan-transit
-repository is not compatible with the latest conan, so you'll need to install
-it locally from the git repository:
-
-```console
-$ git clone https://github.com/lasote/conan-sdl2.git # temporary, I hope hope hope
-$ cd conan-sdl2
-$ conan export SDL2/2.0.5@lasote/stable
-```
-
-### Building
-
-Execute the following commands inside of the `nothing` directory:
-
-```console
-$ conan install --build missing --install-folder build
-$ cd build
-$ cmake .. -G "Visual Studio 15 2017 Win64"
-```
-
-After that, build the `build/nothing.sln` file with Visual Studio.
+<!-- TODO(#862): Windows build is not documented -->
 
 ## Support
 
@@ -177,8 +154,6 @@ You can support my work via
 - Twitch channel: https://www.twitch.tv/subs/tsoding
 - Patreon: https://www.patreon.com/tsoding
 
-[conan]: https://www.conan.io/
-[conan-sdl2]: https://bintray.com/conan/conan-transit/SDL2%3Alasote/2.0.5%3Astable
 [visual-studio]: https://www.visualstudio.com/
 [svg2rects.py]: ./devtools/svg2rects.py
 [./levels/]: ./levels/
@@ -186,7 +161,6 @@ You can support my work via
 [gcc]: https://gcc.gnu.org/
 [cmake]: https://cmake.org/
 [libsdl2-dev]: https://www.libsdl.org/
-[libsdl2-mixer-dev]: https://www.libsdl.org/projects/SDL_mixer/
 [NixOS]: https://nixos.org/
 [default.nix]: ./default.nix
 [build-on-windows]: #build-on-windows

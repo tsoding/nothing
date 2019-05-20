@@ -3,7 +3,6 @@ addons:
   homebrew:
     packages:
       - sdl2
-      - sdl2_mixer
 os:
   - osx
 compiler:

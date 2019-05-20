@@ -7,7 +7,6 @@
 
 #include "line_stream.h"
 #include "lt.h"
-#include "lt/lt_adapters.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
 

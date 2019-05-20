@@ -2,7 +2,6 @@
 #define LEVEL_H_
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
 
 #include "game/camera.h"
 #include "game/level/platforms.h"

@@ -298,7 +298,7 @@ int player_sound(Player *player,
     if (player->play_die_cue) {
         player->play_die_cue = 0;
 
-        if (sound_samples_play_sound(sound_samples, 0, 0) < 0) {
+        if (sound_samples_play_sound(sound_samples, 0) < 0) {
             return -1;
         }
     }

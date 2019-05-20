@@ -1,31 +1,12 @@
 cmake_minimum_required(VERSION 3.2)
 project(nothing)
 
-if(WIN32)
-  # Conan integration
-  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-  conan_basic_setup()
-endif()
-
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-
 find_package(SDL2 REQUIRED)
-find_package(SDL2_mixer REQUIRED)
-find_package(PkgConfig REQUIRED)
-
-pkg_check_modules(LIBXML2 REQUIRED libxml-2.0)
 
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(src/)
 
-if(APPLE)
-  include_directories(${SDL2_INCLUDE_DIR}/..)
-else()
-  include_directories(${SDL2_INCLUDE_DIR})
-endif()
-
-include_directories(${SDL2_MIXER_INCLUDE_DIR})
-include_directories(${LIBXML2_INCLUDE_DIRS})
+include_directories(${SDL2_INCLUDE_DIR})
 
 add_library(system STATIC
   src/system/line_stream.c
@@ -35,8 +16,6 @@ add_library(system STATIC
   src/system/log_script.c
   src/system/log_script.h
   src/system/lt.h
-  src/system/lt/lt_adapters.c
-  src/system/lt/lt_adapters.h
   src/system/nth_alloc.c
   src/system/nth_alloc.h
   src/system/stacktrace.c
@@ -67,6 +46,7 @@ add_library(ebisp STATIC
   src/ebisp/tokenizer.c
   src/ebisp/tokenizer.h
   )
+target_link_libraries(ebisp system)
 
 add_executable(nothing 
   broadcast_lisp.h
@@ -161,9 +141,7 @@ add_executable(nothing
   src/game/level/level_editor/layer.h
   src/game/level/level_editor/layer.c
 )
-
-add_executable(svg2level
-  devtools/svg2level/main.c)
+target_link_libraries(nothing ${SDL2_LIBRARIES} m system ebisp)
 
 add_custom_command(
   OUTPUT broadcast_lisp.h
@@ -174,23 +152,23 @@ add_executable(repl
   src/ebisp/repl.c
   src/ebisp/repl_runtime.c
   )
+target_link_libraries(repl ${SDL2_LIBRARIES} m system ebisp)
 
 add_executable(baker
   src/ebisp/baker.c
   )
+target_link_libraries(baker m system ebisp)
 
 add_executable(nothing_test
   test/main.c
   test/test.h
   test/tokenizer_suite.h
   )
+target_link_libraries(nothing_test ${SDL2_LIBRARIES} m system ebisp)
 
-target_link_libraries(nothing ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} m system ebisp)
-target_link_libraries(nothing_test ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} m system ebisp)
-target_link_libraries(repl ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} m system ebisp)
-target_link_libraries(ebisp system)
-target_link_libraries(baker m system ebisp)
-target_link_libraries(svg2level ${LIBXML2_LIBRARIES})
+if (UNIX)
+  add_subdirectory(devtools/svg2level)
+endif()
 
 if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "CLANG"))
   set(CMAKE_C_FLAGS
