@@ -80,3 +80,12 @@ Color color_invert(Color c)
 {
     return rgba(1.0f - c.r, 1.0f - c.g, 1.0f - c.b, c.a);
 }
+
+Color color_scale(Color c, Color fc)
+{
+    return rgba(
+        fmaxf(fminf(c.r * fc.r, 1.0f), 0.0f),
+        fmaxf(fminf(c.g * fc.g, 1.0f), 0.0f),
+        fmaxf(fminf(c.b * fc.b, 1.0f), 0.0f),
+        fmaxf(fminf(c.a * fc.a, 1.0f), 0.0f));
+}

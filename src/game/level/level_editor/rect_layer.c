@@ -110,7 +110,7 @@ void destroy_rect_layer(RectLayer *layer)
     RETURN_LT0(layer->lt);
 }
 
-int rect_layer_render(const RectLayer *layer, Camera *camera)
+int rect_layer_render(const RectLayer *layer, Camera *camera, float fa)
 {
     trace_assert(layer);
     trace_assert(camera);
@@ -120,7 +120,12 @@ int rect_layer_render(const RectLayer *layer, Camera *camera)
     Color *colors = dynarray_data(layer->colors);
 
     for (size_t i = 0; i < n; ++i) {
-        if (camera_fill_rect(camera, rects[i], colors[i]) < 0) {
+        if (camera_fill_rect(
+                camera,
+                rects[i],
+                color_scale(
+                    colors[i],
+                    rgba(1.0f, 1.0f, 1.0f, fa))) < 0) {
             return -1;
         }
     }

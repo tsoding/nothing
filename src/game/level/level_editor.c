@@ -84,7 +84,10 @@ int level_editor_render(const LevelEditor *level_editor,
     trace_assert(camera);
 
     for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
-        if (layer_render(level_editor->layers[i], camera) < 0) {
+        if (layer_render(
+                level_editor->layers[i],
+                camera,
+                i == level_editor->layer_picker ? 1.0f : 0.5f) < 0) {
             return -1;
         }
     }

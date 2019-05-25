@@ -17,4 +17,6 @@ Color color_desaturate(Color color);
 
 Color color_invert(Color c);
 
+Color color_scale(Color c, Color fc);
+
 #endif  // COLOR_H_
