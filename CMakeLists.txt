@@ -154,7 +154,7 @@ add_executable(nothing
   src/game/level/level_editor/layer.h
   src/game/level/level_editor/layer.c
 )
-target_link_libraries(nothing ${SDL2_LIBRARIES} m system ebisp)
+target_link_libraries(nothing ${SDL2_LIBRARIES} system ebisp)
 
 add_custom_command(
   OUTPUT broadcast_lisp.h
@@ -165,19 +165,19 @@ add_executable(repl
   src/ebisp/repl.c
   src/ebisp/repl_runtime.c
   )
-target_link_libraries(repl ${SDL2_LIBRARIES} m system ebisp)
+target_link_libraries(repl ${SDL2_LIBRARIES} system ebisp)
 
 add_executable(baker
   src/ebisp/baker.c
   )
-target_link_libraries(baker m system ebisp)
+target_link_libraries(baker system ebisp)
 
 add_executable(nothing_test
   test/main.c
   test/test.h
   test/tokenizer_suite.h
   )
-target_link_libraries(nothing_test ${SDL2_LIBRARIES} m system ebisp)
+target_link_libraries(nothing_test ${SDL2_LIBRARIES} system ebisp)
 
 if (UNIX)
   add_subdirectory(devtools/svg2level)
