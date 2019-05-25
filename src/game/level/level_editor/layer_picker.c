@@ -12,7 +12,7 @@
 
 #define LAYER_TITLE_PADDING 15.0f
 #define LAYER_TITLE_SIZE 3.0f
-#define LAYER_SELECTED_OFFSET 20.0f
+#define LAYER_SELECTED_OFFSET 15.0f
 
 static const Color LAYER_CELL_BACKGROUND_COLORS[LAYER_PICKER_N] = {
     {1.0f, 0.0f, 0.0f, 1.0f},  // LAYER_PICKER_BOXES = 0,
@@ -66,9 +66,12 @@ int layer_picker_render(const LayerPicker *layer_picker,
 
     for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
         Vec position = layer_picker_position(camera);
+        Color color = LAYER_CELL_BACKGROUND_COLORS[i];
 
         if (*layer_picker == i) {
             position.x += LAYER_SELECTED_OFFSET;
+        } else {
+            color.a *= 0.70f;
         }
 
         if (camera_fill_rect_screen(
@@ -78,7 +81,7 @@ int layer_picker_render(const LayerPicker *layer_picker,
                     LAYER_CELL_HEIGHT * (float) i + position.y,
                     LAYER_CELL_WIDTH,
                     LAYER_CELL_HEIGHT),
-                LAYER_CELL_BACKGROUND_COLORS[i]) < 0) {
+                color) < 0) {
             return -1;
         }
 
@@ -86,7 +89,7 @@ int layer_picker_render(const LayerPicker *layer_picker,
                 camera,
                 LAYER_CELL_TITLES[i],
                 vec(LAYER_TITLE_SIZE, LAYER_TITLE_SIZE),
-                color_invert(LAYER_CELL_BACKGROUND_COLORS[i]),
+                color_invert(color),
                 vec(position.x + LAYER_TITLE_PADDING,
                     LAYER_CELL_HEIGHT * (float) i + position.y + LAYER_TITLE_PADDING)) < 0) {
             return -1;
