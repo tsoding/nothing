@@ -5,6 +5,7 @@ install:
   - sh: sudo apt-get update -qq
   - sh: sudo apt-get install -qq cmake cmake-data libsdl2-dev libxml2-dev
   - cmd: curl -fsSL -o SDL2-devel-2.0.9-VC.zip https://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip
+  - cmd: 7z x SDL2-devel-2.0.9-VC.zip
   - cmd: move SDL2-2.0.9 SDL2
 build_script:
   - mkdir build
