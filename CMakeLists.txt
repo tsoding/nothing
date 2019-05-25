@@ -62,7 +62,6 @@ add_library(ebisp STATIC
 target_link_libraries(ebisp system)
 
 add_executable(nothing 
-  broadcast_lisp.h
   src/broadcast.c
   src/broadcast.h
   src/color.c
@@ -156,21 +155,11 @@ add_executable(nothing
 )
 target_link_libraries(nothing ${SDL2_LIBRARIES} system ebisp)
 
-add_custom_command(
-  OUTPUT broadcast_lisp.h
-  COMMAND ${CMAKE_BINARY_DIR}/baker ${CMAKE_SOURCE_DIR}/src/broadcast.lisp broadcast_lisp.h broadcast_lisp_library
-  DEPENDS baker src/broadcast.lisp)
-
 add_executable(repl
   src/ebisp/repl.c
   src/ebisp/repl_runtime.c
   )
 target_link_libraries(repl ${SDL2_LIBRARIES} system ebisp)
-
-add_executable(baker
-  src/ebisp/baker.c
-  )
-target_link_libraries(baker system ebisp)
 
 add_executable(nothing_test
   test/main.c
