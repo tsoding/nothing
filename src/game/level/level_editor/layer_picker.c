@@ -11,8 +11,8 @@
 #include "game/sprite_font.h"
 
 #define LAYER_TITLE_PADDING 15.0f
-#define LAYER_TITLE_SIZE 2.0f
-#define SELECTOR_HEIGHT (LAYER_CELL_HEIGHT * 0.20f)
+#define LAYER_TITLE_SIZE 3.0f
+#define LAYER_SELECTED_OFFSET 20.0f
 
 static const Color LAYER_CELL_BACKGROUND_COLORS[LAYER_PICKER_N] = {
     {1.0f, 0.0f, 0.0f, 1.0f},  // LAYER_PICKER_BOXES = 0,
@@ -64,9 +64,13 @@ int layer_picker_render(const LayerPicker *layer_picker,
     trace_assert(layer_picker);
     trace_assert(camera);
 
-    const Vec position = layer_picker_position(camera);
-
     for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
+        Vec position = layer_picker_position(camera);
+
+        if (*layer_picker == i) {
+            position.x += LAYER_SELECTED_OFFSET;
+        }
+
         if (camera_fill_rect_screen(
                 camera,
                 rect(
@@ -86,18 +90,6 @@ int layer_picker_render(const LayerPicker *layer_picker,
                 vec(position.x + LAYER_TITLE_PADDING,
                     LAYER_CELL_HEIGHT * (float) i + position.y + LAYER_TITLE_PADDING)) < 0) {
             return -1;
-        }
-
-        if (*layer_picker == i) {
-            if (camera_fill_rect_screen(
-                    camera,
-                    rect(position.x,
-                         position.y + LAYER_CELL_HEIGHT * (float) (i + 1) - SELECTOR_HEIGHT,
-                         LAYER_CELL_WIDTH,
-                         SELECTOR_HEIGHT),
-                    color_invert(LAYER_CELL_BACKGROUND_COLORS[i])) < 0) {
-                return -1;
-            }
         }
     }
 
