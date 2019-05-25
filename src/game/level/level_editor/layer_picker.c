@@ -15,8 +15,6 @@
 #define LAYER_CELL_HEIGHT (LAYER_TITLE_SIZE * FONT_CHAR_HEIGHT + LAYER_TITLE_PADDING * 2.0f)
 #define SELECTOR_HEIGHT (LAYER_CELL_HEIGHT * 0.20f)
 
-/* TODO: introduce Button "class" */
-
 static const Color LAYER_CELL_BACKGROUND_COLORS[LAYER_PICKER_N] = {
     {1.0f, 0.0f, 0.0f, 1.0f},  // LAYER_PICKER_BOXES = 0,
     {0.0f, 1.0f, 0.0f, 1.0f},  // LAYER_PICKER_PLATFORMS,
