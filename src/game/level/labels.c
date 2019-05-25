@@ -1,15 +1,16 @@
-#include "system/stacktrace.h"
+#include <stdio.h>
 #include <stdbool.h>
 
+#include "broadcast.h"
+#include "ebisp/interpreter.h"
 #include "game/camera.h"
 #include "game/level/labels.h"
-#include "system/str.h"
 #include "system/line_stream.h"
+#include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
-#include "system/log.h"
-#include "ebisp/interpreter.h"
-#include "broadcast.h"
+#include "system/stacktrace.h"
+#include "system/str.h"
 
 #define LABEL_MAX_ID_SIZE 36
 
