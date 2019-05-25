@@ -1,7 +1,7 @@
 #ifndef CONSOLE_H_
 #define CONSOLE_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "ebisp/interpreter.h"
 
 typedef struct Console Console;

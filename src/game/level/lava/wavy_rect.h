@@ -1,7 +1,7 @@
 #ifndef WAVY_RECT_H_
 #define WAVY_RECT_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "color.h"
 #include "game/camera.h"

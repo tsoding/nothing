@@ -1,7 +1,7 @@
 #ifndef LEVEL_PICKER_H_
 #define LEVEL_PICKER_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 typedef struct LevelPicker LevelPicker;
 typedef struct Camera Camera;

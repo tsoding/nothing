@@ -1,7 +1,7 @@
 #ifndef LEVEL_H_
 #define LEVEL_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "game/camera.h"
 #include "game/level/platforms.h"

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.2)
 project(nothing)
 
 if(WIN32)
-  set(SDL2_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/SDL2/include")
+  set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/include")
 
   # Support both 32 and 64 bit builds
   if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
@@ -19,7 +19,7 @@ endif()
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(src/)
 
-include_directories(${SDL2_INCLUDE_DIR})
+include_directories(${SDL2_INCLUDE_DIRS})
 
 add_library(system STATIC
   src/system/line_stream.c

@@ -1,7 +1,7 @@
 #ifndef EXPLOSION_H_
 #define EXPLOSION_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "color.h"
 #include "game/camera.h"
