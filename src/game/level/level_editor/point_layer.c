@@ -124,7 +124,8 @@ void destroy_point_layer(PointLayer *point_layer)
 }
 
 int point_layer_render(const PointLayer *point_layer,
-                       Camera *camera)
+                       Camera *camera,
+                       float fa)
 {
     trace_assert(point_layer);
     trace_assert(camera);
@@ -140,6 +141,10 @@ int point_layer_render(const PointLayer *point_layer,
                 trans_mat(points[i].x, points[i].y),
                 scale_mat(POINT_LAYER_ELEMENT_RADIUS)));
 
+        const Color color = color_scale(
+            colors[i],
+            rgba(1.0f, 1.0f, 1.0f, fa));
+
         if (i == point_layer->selected) {
             const Triangle t0 = triangle_mat3x3_product(
                 equilateral_triangle(),
@@ -147,12 +152,12 @@ int point_layer_render(const PointLayer *point_layer,
                     trans_mat(points[i].x, points[i].y),
                     scale_mat(15.0f)));
 
-            if (camera_fill_triangle(camera, t0, color_invert(colors[i])) < 0) {
+            if (camera_fill_triangle(camera, t0, color_invert(color)) < 0) {
                 return -1;
             }
         }
 
-        if (camera_fill_triangle(camera, t, colors[i]) < 0) {
+        if (camera_fill_triangle(camera, t, color) < 0) {
             return -1;
         }
 

@@ -4,17 +4,17 @@
 #include "player_layer.h"
 #include "./layer.h"
 
-int layer_render(LayerPtr layer, Camera *camera)
+int layer_render(LayerPtr layer, Camera *camera, float fa)
 {
     switch (layer.type) {
     case LAYER_RECT:
-        return rect_layer_render(layer.ptr, camera);
+        return rect_layer_render(layer.ptr, camera, fa);
 
     case LAYER_POINT:
-        return point_layer_render(layer.ptr, camera);
+        return point_layer_render(layer.ptr, camera, fa);
 
     case LAYER_PLAYER:
-        return player_layer_render(layer.ptr, camera);
+        return player_layer_render(layer.ptr, camera, fa);
     }
 
     return -1;

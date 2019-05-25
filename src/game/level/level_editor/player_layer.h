@@ -11,7 +11,8 @@ typedef struct {
 
 LayerPtr player_layer_as_layer(PlayerLayer *player_layer);
 int player_layer_render(const PlayerLayer *player_layer,
-                        Camera *camera);
+                        Camera *camera,
+                        float fa);
 int player_layer_event(PlayerLayer *player_layer,
                        const SDL_Event *event,
                        const Camera *camera);
