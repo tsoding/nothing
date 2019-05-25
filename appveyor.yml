@@ -12,7 +12,9 @@ build_script:
   - cd build
   - cmake ..
   - cmake --build .
-  - ./nothing_test
+  # TODO: Unit Tests are not run on Windows CI build
+  #   https://ci.appveyor.com/project/rexim/nothing/builds/24807772/job/nr36kt098djthl4l#L431
+  - sh: ./nothing_test
   - sh: cd ../levels/
   - sh: make clean
   - sh: make -k
