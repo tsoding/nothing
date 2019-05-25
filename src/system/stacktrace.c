@@ -2,8 +2,8 @@
 #include <stdio.h>
 #ifdef __GNUC__
 #include <execinfo.h>
-#endif
 #include <unistd.h>
+#endif
 
 #include "./stacktrace.h"
 
