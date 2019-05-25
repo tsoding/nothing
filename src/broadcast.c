@@ -91,7 +91,7 @@ struct EvalResult broadcast_load_library(Broadcast *broadcast,
     trace_assert(scope);
     trace_assert(broadcast);
 
-    set_scope_value(gc, scope, SYMBOL(gc, "send-native"), NATIVE(gc, send, broadcast));
+    set_scope_value(gc, scope, SYMBOL(gc, "send"), NATIVE(gc, send, broadcast));
 
     return eval_success(NIL(gc));
 }
