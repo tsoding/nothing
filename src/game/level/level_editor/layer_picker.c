@@ -7,12 +7,11 @@
 #include "color.h"
 #include "game/camera.h"
 #include "math/rect.h"
+#include "math/extrema.h"
 #include "game/sprite_font.h"
 
 #define LAYER_TITLE_PADDING 15.0f
 #define LAYER_TITLE_SIZE 2.0f
-#define LAYER_CELL_WIDTH (200.0f + LAYER_TITLE_PADDING * 2.0f)
-#define LAYER_CELL_HEIGHT (LAYER_TITLE_SIZE * FONT_CHAR_HEIGHT + LAYER_TITLE_PADDING * 2.0f)
 #define SELECTOR_HEIGHT (LAYER_CELL_HEIGHT * 0.20f)
 
 static const Color LAYER_CELL_BACKGROUND_COLORS[LAYER_PICKER_N] = {
@@ -30,6 +29,20 @@ static const char *LAYER_CELL_TITLES[LAYER_PICKER_N] = {
     "Goals",                   // LAYER_PICKER_GOALS
     "Player",                  // LAYER_PICKER_PLAYER
 };
+
+inline static float layer_picker_max_width(void)
+{
+    size_t max = 0;
+
+    for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
+        max = max_size_t(max, strlen(LAYER_CELL_TITLES[i]));
+    }
+
+    return (float) max * FONT_CHAR_WIDTH * LAYER_TITLE_SIZE + LAYER_TITLE_PADDING * 2.0f;
+}
+
+#define LAYER_CELL_WIDTH layer_picker_max_width()
+#define LAYER_CELL_HEIGHT (LAYER_TITLE_SIZE * FONT_CHAR_HEIGHT + LAYER_TITLE_PADDING * 2.0f)
 
 inline static Vec layer_picker_position(const Camera *camera)
 {
