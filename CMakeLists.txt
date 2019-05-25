@@ -1,7 +1,20 @@
 cmake_minimum_required(VERSION 3.2)
 project(nothing)
 
-find_package(SDL2 REQUIRED)
+if(WIN32)
+  set(SDL2_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/SDL2/include")
+
+  # Support both 32 and 64 bit builds
+  if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
+    set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/lib/x64/SDL2.lib;${CMAKE_SOURCE_DIR}/SDL2/lib/x64/SDL2main.lib")
+  else()
+    set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/lib/x86/SDL2.lib;${CMAKE_SOURCE_DIR}/SDL2/lib/x86/SDL2main.lib")
+  endif()
+
+  string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
+else()
+  find_package(SDL2 REQUIRED)
+endif()
 
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(src/)
