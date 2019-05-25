@@ -158,7 +158,7 @@ static void gc_traverse_expr(Gc *gc, struct Expr root)
                && root.atom->type == ATOM_LAMBDA) {
         gc_traverse_expr(gc, root.atom->lambda.args_list);
         gc_traverse_expr(gc, root.atom->lambda.body);
-        gc_traverse_expr(gc, root.atom->lambda.environ);
+        gc_traverse_expr(gc, root.atom->lambda.envir);
     }
 }
 
