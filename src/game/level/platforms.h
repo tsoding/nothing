@@ -1,7 +1,7 @@
 #ifndef PLATFORMS_H_
 #define PLATFORMS_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "game/camera.h"
 #include "math/rect.h"

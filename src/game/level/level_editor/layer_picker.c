@@ -1,6 +1,6 @@
 #include <stdbool.h>
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "system/stacktrace.h"
 #include "layer_picker.h"

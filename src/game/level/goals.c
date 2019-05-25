@@ -1,18 +1,20 @@
-#include <SDL2/SDL.h>
-#include "system/stacktrace.h"
+#include <stdio.h>
 #include <math.h>
 
+#include <SDL.h>
+
+#include "broadcast.h"
+#include "ebisp/interpreter.h"
+#include "game/level/level_editor/point_layer.h"
 #include "goals.h"
 #include "math/pi.h"
 #include "math/triangle.h"
-#include "system/str.h"
 #include "system/line_stream.h"
+#include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
-#include "system/log.h"
-#include "ebisp/interpreter.h"
-#include "broadcast.h"
-#include "game/level/level_editor/point_layer.h"
+#include "system/stacktrace.h"
+#include "system/str.h"
 
 #define GOAL_RADIUS 10.0f
 #define GOAL_MAX_ID_SIZE 36

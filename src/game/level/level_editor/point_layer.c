@@ -1,4 +1,6 @@
-#include <SDL2/SDL.h>
+#include <stdio.h>
+
+#include <SDL.h>
 
 #include "dynarray.h"
 #include "game/camera.h"

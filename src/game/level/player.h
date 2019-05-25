@@ -1,7 +1,7 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "game/camera.h"
 #include "game/sound_samples.h"

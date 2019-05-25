@@ -1,7 +1,7 @@
 #ifndef GAME_H_
 #define GAME_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "game/sound_samples.h"
 #include "ebisp/expr.h"

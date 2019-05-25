@@ -57,9 +57,9 @@ TEST(assoc_test)
     struct Expr b = SYMBOL(gc, "b");
     struct Expr c = SYMBOL(gc, "c");
 
-    struct Expr a_pair = CONS(gc, a, NUMBER(gc, 10.0f));
-    struct Expr b_pair = CONS(gc, b, NUMBER(gc, 20.0f));
-    struct Expr c_pair = CONS(gc, c, NUMBER(gc, 30.0f));
+    struct Expr a_pair = CONS(gc, a, NUMBER(gc, 10));
+    struct Expr b_pair = CONS(gc, b, NUMBER(gc, 20));
+    struct Expr c_pair = CONS(gc, c, NUMBER(gc, 30));
 
     struct Expr alist =
         CONS(gc, a_pair,

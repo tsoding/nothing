@@ -143,7 +143,7 @@ static struct EvalResult call_lambda(Gc *gc,
     }
 
     struct Scope scope = {
-        .expr = lambda.atom->lambda.environ
+        .expr = lambda.atom->lambda.envir
     };
     push_scope_frame(gc, &scope, vars, args);
 

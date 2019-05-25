@@ -1,7 +1,7 @@
 #ifndef GOALS_H_
 #define GOALS_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "game/camera.h"
 #include "game/level/player.h"

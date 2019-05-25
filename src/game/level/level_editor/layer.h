@@ -12,6 +12,8 @@ typedef struct {
     void *ptr;
 } LayerPtr;
 
+typedef struct Camera Camera;
+
 int layer_render(LayerPtr layer, Camera *camera);
 int layer_event(LayerPtr layer, const SDL_Event *event, const Camera *camera);
 

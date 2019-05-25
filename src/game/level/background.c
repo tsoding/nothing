@@ -1,4 +1,4 @@
-#include "system/stacktrace.h"
+#include <stdio.h>
 
 #include "game/level/background.h"
 #include "math/rand.h"
@@ -7,6 +7,7 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
+#include "system/stacktrace.h"
 
 #define BACKGROUND_CHUNK_COUNT 5
 #define BACKGROUND_CHUNK_WIDTH 250.0f

@@ -8,7 +8,6 @@
 #include "ebisp/expr.h"
 #include "ebisp/scope.h"
 #include "game.h"
-#include "broadcast_lisp.h"
 
 struct EvalResult
 unknown_target(Gc *gc, const char *source, const char *target)
@@ -93,11 +92,6 @@ struct EvalResult broadcast_load_library(Broadcast *broadcast,
     trace_assert(broadcast);
 
     set_scope_value(gc, scope, SYMBOL(gc, "send-native"), NATIVE(gc, send, broadcast));
-
-    struct EvalResult result = eval_block(gc, scope, broadcast_lisp_library(gc));
-    if (result.is_error) {
-        return result;
-    }
 
     return eval_success(NIL(gc));
 }

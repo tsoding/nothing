@@ -1,12 +1,25 @@
 cmake_minimum_required(VERSION 3.2)
 project(nothing)
 
-find_package(SDL2 REQUIRED)
+if(WIN32)
+  set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/include")
+
+  # Support both 32 and 64 bit builds
+  if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
+    set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/lib/x64/SDL2.lib;${CMAKE_SOURCE_DIR}/SDL2/lib/x64/SDL2main.lib")
+  else()
+    set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/lib/x86/SDL2.lib;${CMAKE_SOURCE_DIR}/SDL2/lib/x86/SDL2main.lib")
+  endif()
+
+  string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
+else()
+  find_package(SDL2 REQUIRED)
+endif()
 
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(src/)
 
-include_directories(${SDL2_INCLUDE_DIR})
+include_directories(${SDL2_INCLUDE_DIRS})
 
 add_library(system STATIC
   src/system/line_stream.c
@@ -49,7 +62,6 @@ add_library(ebisp STATIC
 target_link_libraries(ebisp system)
 
 add_executable(nothing 
-  broadcast_lisp.h
   src/broadcast.c
   src/broadcast.h
   src/color.c
@@ -141,30 +153,20 @@ add_executable(nothing
   src/game/level/level_editor/layer.h
   src/game/level/level_editor/layer.c
 )
-target_link_libraries(nothing ${SDL2_LIBRARIES} m system ebisp)
-
-add_custom_command(
-  OUTPUT broadcast_lisp.h
-  COMMAND ${CMAKE_BINARY_DIR}/baker ${CMAKE_SOURCE_DIR}/src/broadcast.lisp broadcast_lisp.h broadcast_lisp_library
-  DEPENDS baker src/broadcast.lisp)
+target_link_libraries(nothing ${SDL2_LIBRARIES} system ebisp)
 
 add_executable(repl
   src/ebisp/repl.c
   src/ebisp/repl_runtime.c
   )
-target_link_libraries(repl ${SDL2_LIBRARIES} m system ebisp)
-
-add_executable(baker
-  src/ebisp/baker.c
-  )
-target_link_libraries(baker m system ebisp)
+target_link_libraries(repl ${SDL2_LIBRARIES} system ebisp)
 
 add_executable(nothing_test
   test/main.c
   test/test.h
   test/tokenizer_suite.h
   )
-target_link_libraries(nothing_test ${SDL2_LIBRARIES} m system ebisp)
+target_link_libraries(nothing_test ${SDL2_LIBRARIES} system ebisp)
 
 if (UNIX)
   add_subdirectory(devtools/svg2level)

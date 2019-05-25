@@ -1,6 +1,6 @@
 #include "system/stacktrace.h"
 #include <stdlib.h>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "color.h"
 #include "game/sprite_font.h"

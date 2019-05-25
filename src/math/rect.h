@@ -1,7 +1,7 @@
 #ifndef RECT_H_
 #define RECT_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "math/point.h"
 

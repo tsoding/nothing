@@ -1,7 +1,7 @@
 #ifndef BACKGROUND_H_
 #define BACKGROUND_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "color.h"
 #include "game/camera.h"

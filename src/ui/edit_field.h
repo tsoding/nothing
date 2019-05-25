@@ -1,7 +1,7 @@
 #ifndef EDIT_FIELD_H_
 #define EDIT_FIELD_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "color.h"
 #include "math/point.h"

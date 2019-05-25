@@ -1,6 +1,8 @@
 #ifndef POINT_LAYER_H_
 #define POINT_LAYER_H_
 
+#include "math/point.h"
+#include "color.h"
 #include "layer.h"
 
 #define ID_MAX_SIZE 36

@@ -1,7 +1,7 @@
-#include <SDL2/SDL.h>
-#include "system/stacktrace.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <SDL.h>
 
 #include "game/level/explosion.h"
 #include "game/level/script.h"
@@ -14,6 +14,7 @@
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "system/stacktrace.h"
 
 #define PLAYER_WIDTH 25.0f
 #define PLAYER_HEIGHT 25.0f

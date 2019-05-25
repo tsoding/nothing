@@ -1,6 +1,0 @@
-[requires]
-SDL2/2.0.5@lasote/stable
-zlib/1.2.11@conan/stable
-
-[generators]
-cmake
