@@ -9,6 +9,7 @@
 #include "lt.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
+#include "system/str.h"
 
 struct LineStream
 {
@@ -98,4 +99,20 @@ const char *line_stream_next(LineStream *line_stream)
     }
 
     return line_stream_next_chunk(line_stream);
+}
+
+char *line_stream_collect_n_lines(LineStream *line_stream, size_t n)
+{
+    char *result = NULL;
+    for (size_t i = 0; i < n; ++i) {
+        const char *line = line_stream_next(line_stream);
+        if (line == NULL) {
+            free(result);
+            return NULL;
+        }
+
+        result = string_append(result,line);
+    }
+
+    return result;
 }

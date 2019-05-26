@@ -8,6 +8,7 @@
 #include "lava.h"
 #include "platforms.h"
 #include "boxes.h"
+#include "game/level/level_editor/player_layer.h"
 
 typedef struct Player Player;
 typedef struct Goals Goals;
@@ -16,7 +17,9 @@ typedef struct Script Script;
 typedef struct Broadcast Broadcast;
 typedef struct RigidBodies RigidBodies;
 
-Player *create_player_from_line_stream(LineStream *line_stream, RigidBodies *rigid_bodies, Broadcast *broadcast);
+Player *create_player_from_player_layer(const PlayerLayer *player_layer,
+                                        RigidBodies *rigid_bodies,
+                                        Broadcast *broadcast);
 void destroy_player(Player * player);
 
 int player_render(const Player * player,

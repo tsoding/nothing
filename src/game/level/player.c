@@ -46,9 +46,13 @@ struct Player {
     int play_die_cue;
 };
 
-Player *create_player_from_line_stream(LineStream *line_stream, RigidBodies *rigid_bodies, Broadcast *broadcast)
+Player *create_player_from_player_layer(const PlayerLayer *player_layer,
+                                        RigidBodies *rigid_bodies,
+                                        Broadcast *broadcast)
 {
-    trace_assert(line_stream);
+    trace_assert(player_layer);
+    trace_assert(rigid_bodies);
+    trace_assert(broadcast);
 
     Lt *lt = create_lt();
 
@@ -61,35 +65,26 @@ Player *create_player_from_line_stream(LineStream *line_stream, RigidBodies *rig
 
     player->rigid_bodies = rigid_bodies;
 
-    float x = 0.0f, y = 0.0f;
-    char colorstr[7];
-
-    if (sscanf(
-            line_stream_next(line_stream),
-            "%f%f%6s",
-            &x, &y, colorstr) == EOF) {
-        log_fail("Could not read player\n");
-        RETURN_LT(lt, NULL);
-    }
-
     player->script = PUSH_LT(
         lt,
-        create_script_from_line_stream(line_stream, broadcast),
+        create_script_from_string(broadcast, player_layer->source_code),
         destroy_script);
     if (player->script == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    const Color color = hexstr(colorstr);
-
     player->alive_body_id = rigid_bodies_add(
         rigid_bodies,
-        rect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT));
+        rect(
+            player_layer->position.x,
+            player_layer->position.y,
+            PLAYER_WIDTH,
+            PLAYER_HEIGHT));
 
     player->dying_body = PUSH_LT(
         lt,
         create_explosion(
-            color,
+            player_layer->color_picker.color,
             PLAYER_DEATH_DURATION),
         destroy_explosion);
     if (player->dying_body == NULL) {
@@ -97,8 +92,8 @@ Player *create_player_from_line_stream(LineStream *line_stream, RigidBodies *rig
     }
 
     player->jump_threshold = 0;
-    player->color = color;
-    player->checkpoint = vec(x, y);
+    player->color = player_layer->color_picker.color;
+    player->checkpoint = player_layer->position;
     player->play_die_cue = 0;
     player->state = PLAYER_STATE_ALIVE;
 

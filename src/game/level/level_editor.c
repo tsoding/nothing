@@ -25,7 +25,7 @@ struct LevelEditor
     RectLayer *platforms_layer;
     RectLayer *back_platforms_layer;
     PointLayer *goals_layer;
-    PlayerLayer player_layer;
+    PlayerLayer *player_layer;
     LayerPtr layers[LAYER_PICKER_N];
 
     bool drag;
@@ -34,12 +34,14 @@ struct LevelEditor
 LevelEditor *create_level_editor(RectLayer *boxes_layer,
                                  RectLayer *platforms_layer,
                                  RectLayer *back_platforms_layer,
-                                 PointLayer *goals_layer)
+                                 PointLayer *goals_layer,
+                                 PlayerLayer *player_layer)
 {
     trace_assert(boxes_layer);
     trace_assert(platforms_layer);
     trace_assert(back_platforms_layer);
     trace_assert(goals_layer);
+    trace_assert(player_layer);
 
     Lt *lt = create_lt();
 
@@ -56,13 +58,13 @@ LevelEditor *create_level_editor(RectLayer *boxes_layer,
     level_editor->platforms_layer = PUSH_LT(lt, platforms_layer, destroy_rect_layer);
     level_editor->back_platforms_layer = PUSH_LT(lt, back_platforms_layer, destroy_rect_layer);
     level_editor->goals_layer = PUSH_LT(lt, goals_layer, destroy_point_layer);
-    level_editor->player_layer.color_picker.color = rgba(0.0f, 0.0f, 0.0f, 1.0f);
+    level_editor->player_layer = PUSH_LT(lt, player_layer, destroy_player_layer);
 
     level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(level_editor->boxes_layer);
     level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
     level_editor->layers[LAYER_PICKER_BACK_PLATFORMS] = rect_layer_as_layer(level_editor->back_platforms_layer);
     level_editor->layers[LAYER_PICKER_GOALS] = point_layer_as_layer(level_editor->goals_layer);
-    level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(&level_editor->player_layer);
+    level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(level_editor->player_layer);
 
     level_editor->layer_picker = LAYER_PICKER_BOXES;
 
@@ -190,4 +192,9 @@ const RectLayer *level_editor_back_platforms(const LevelEditor *level_editor)
 const PointLayer *level_editor_goals_layer(const LevelEditor *level_editor)
 {
     return level_editor->goals_layer;
+}
+
+const PlayerLayer *level_editor_player_layer(const LevelEditor *level_editor)
+{
+    return level_editor->player_layer;
 }

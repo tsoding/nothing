@@ -12,5 +12,6 @@ void destroy_line_stream(LineStream *line_stream);
 
 const char *line_stream_next_chunk(LineStream *line_stream);
 const char *line_stream_next(LineStream *line_stream);
+char *line_stream_collect_n_lines(LineStream *line_stream, size_t n);
 
 #endif  // LINE_STREAM_H_

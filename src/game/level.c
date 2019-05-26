@@ -20,6 +20,7 @@
 #include "game/level/level_editor/proto_rect.h"
 #include "game/level/level_editor/rect_layer.h"
 #include "game/level/level_editor/point_layer.h"
+#include "game/level/level_editor/player_layer.h"
 #include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
@@ -51,6 +52,7 @@ struct Level
     Labels *labels;
     // TODO(#819): LevelEditor does not support Regions
     Regions *regions;
+    Broadcast *broadcast;
 
     bool edit_mode;
     LevelEditor *level_editor;
@@ -105,9 +107,14 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
+    PlayerLayer *player_layer = create_player_layer_from_line_stream(level_stream);
+    if (player_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->player = PUSH_LT(
         lt,
-        create_player_from_line_stream(level_stream, level->rigid_bodies, broadcast),
+        create_player_from_player_layer(player_layer, level->rigid_bodies, broadcast),
         destroy_player);
     if (level->player == NULL) {
         RETURN_LT(lt, NULL);
@@ -189,6 +196,8 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
+    level->broadcast = broadcast;
+
     level->edit_mode = false;
     level->level_editor = PUSH_LT(
         lt,
@@ -196,7 +205,8 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
             boxes_layer,
             platforms_layer,
             back_platforms_layer,
-            goals_layer),
+            goals_layer,
+            player_layer),
         destroy_level_editor);
     if (level->level_editor == NULL) {
         RETURN_LT(lt, NULL);
@@ -344,6 +354,18 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
                         level_editor_goals_layer(
                             level->level_editor)));
                 if (level->goals == NULL) {
+                    return -1;
+                }
+
+                level->player = RESET_LT(
+                    level->lt,
+                    level->player,
+                    create_player_from_player_layer(
+                        level_editor_player_layer(
+                            level->level_editor),
+                        level->rigid_bodies,
+                        level->broadcast));
+                if (level->player == NULL) {
                     return -1;
                 }
             }

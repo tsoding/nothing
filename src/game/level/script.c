@@ -94,19 +94,13 @@ Script *create_script_from_line_stream(LineStream *line_stream, Broadcast *broad
     }
 
     size_t n = 0;
-    sscanf(line, "%lu", &n);
+    if (sscanf(line, "%lu", &n) == EOF) {
+        return NULL;
+    }
 
-    char *source_code = NULL;
-    for (size_t i = 0; i < n; ++i) {
-        line = line_stream_next(line_stream);
-        if (line == NULL) {
-            free(source_code);
-            return NULL;
-        }
-
-        source_code = string_append(
-            source_code,
-            line);
+    const char *source_code = line_stream_collect_n_lines(line_stream, n);
+    if (source_code == NULL) {
+        return NULL;
     }
 
     return create_script(broadcast, source_code);
