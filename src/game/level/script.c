@@ -20,11 +20,12 @@ struct Script
     Lt *lt;
     Gc *gc;
     struct Scope scope;
+    const char *source_code;
 };
 
-Script *create_script_from_line_stream(LineStream *line_stream, Broadcast *broadcast)
+static Script *create_script(Broadcast *broadcast, const char *source_code)
 {
-    trace_assert(line_stream);
+    trace_assert(source_code);
 
     Lt *lt = create_lt();
 
@@ -40,27 +41,17 @@ Script *create_script_from_line_stream(LineStream *line_stream, Broadcast *broad
     }
 
     script->scope = create_scope(script->gc);
-
     load_std_library(script->gc, &script->scope);
     load_log_library(script->gc, &script->scope);
-    struct EvalResult eval_result = broadcast_load_library(broadcast, script->gc, &script->scope);
-    if (eval_result.is_error) {
-        print_expr_as_sexpr(stderr, eval_result.expr);
-        log_fail("\n");
+    broadcast_load_library(broadcast, script->gc, &script->scope);
+
+    script->source_code = PUSH_LT(
+        lt,
+        string_duplicate(source_code, NULL),
+        free);
+    if (script->source_code == NULL) {
         RETURN_LT(lt, NULL);
     }
-
-    size_t n = 0;
-    sscanf(line_stream_next(line_stream), "%lu", &n);
-
-    char *source_code = NULL;
-    for (size_t i = 0; i < n; ++i) {
-        /* TODO(#466): maybe source_code should be constantly replaced in the Lt */
-        source_code = string_append(
-            source_code,
-            line_stream_next(line_stream));
-    }
-    PUSH_LT(lt, source_code, free);
 
     struct ParseResult parse_result =
         read_all_exprs_from_string(
@@ -71,7 +62,7 @@ Script *create_script_from_line_stream(LineStream *line_stream, Broadcast *broad
         RETURN_LT(lt, NULL);
     }
 
-    eval_result = eval(
+    struct EvalResult eval_result = eval(
         script->gc,
         &script->scope,
         CONS(script->gc,
@@ -85,15 +76,45 @@ Script *create_script_from_line_stream(LineStream *line_stream, Broadcast *broad
 
     gc_collect(script->gc, script->scope.expr);
 
-    free(RELEASE_LT(lt, source_code));
-
     return script;
+}
+
+Script *create_script_from_string(Broadcast *broadcast, const char *source_code)
+{
+    return create_script(broadcast, string_duplicate(source_code, NULL));
+}
+
+Script *create_script_from_line_stream(LineStream *line_stream, Broadcast *broadcast)
+{
+    trace_assert(line_stream);
+
+    const char *line = line_stream_next(line_stream);
+    if (line == NULL) {
+        return NULL;
+    }
+
+    size_t n = 0;
+    if (sscanf(line, "%lu", &n) == EOF) {
+        return NULL;
+    }
+
+    const char *source_code = line_stream_collect_n_lines(line_stream, n);
+    if (source_code == NULL) {
+        return NULL;
+    }
+
+    return create_script(broadcast, source_code);
 }
 
 void destroy_script(Script *script)
 {
     trace_assert(script);
     RETURN_LT0(script->lt);
+}
+
+const char *script_source_code(const Script *script)
+{
+    return script->source_code;
 }
 
 int script_eval(Script *script, const char *source_code)
