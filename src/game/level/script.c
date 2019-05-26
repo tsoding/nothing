@@ -20,7 +20,7 @@ struct Script
     Lt *lt;
     Gc *gc;
     struct Scope scope;
-    const char *source;
+    const char *source_code;
 };
 
 static Script *create_script(Broadcast *broadcast, const char *source_code)
@@ -45,11 +45,11 @@ static Script *create_script(Broadcast *broadcast, const char *source_code)
     load_log_library(script->gc, &script->scope);
     broadcast_load_library(broadcast, script->gc, &script->scope);
 
-    script->source = PUSH_LT(
+    script->source_code = PUSH_LT(
         lt,
         string_duplicate(source_code, NULL),
         free);
-    if (script->source == NULL) {
+    if (script->source_code == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -116,6 +116,11 @@ void destroy_script(Script *script)
 {
     trace_assert(script);
     RETURN_LT0(script->lt);
+}
+
+const char *script_source_code(const Script *script)
+{
+    return script->source_code;
 }
 
 int script_eval(Script *script, const char *source_code)

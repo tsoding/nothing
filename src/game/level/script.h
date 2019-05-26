@@ -17,4 +17,6 @@ int script_eval(Script *script, const char *source_code);
 
 bool script_has_scope_value(const Script *script, const char *name);
 
+const char *script_source_code(const Script *script);
+
 #endif  // SCRIPT_H_
