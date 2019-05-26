@@ -83,15 +83,13 @@ broadcast_send(Broadcast *broadcast,
     return unknown_target(gc, "game", target);
 }
 
-struct EvalResult broadcast_load_library(Broadcast *broadcast,
-                                         Gc *gc,
-                                         struct Scope *scope)
+void broadcast_load_library(Broadcast *broadcast,
+                            Gc *gc,
+                            struct Scope *scope)
 {
     trace_assert(gc);
     trace_assert(scope);
     trace_assert(broadcast);
 
     set_scope_value(gc, scope, SYMBOL(gc, "send"), NATIVE(gc, send, broadcast));
-
-    return eval_success(NIL(gc));
 }

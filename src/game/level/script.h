@@ -7,6 +7,7 @@ typedef struct Script Script;
 typedef struct LineStream LineStream;
 typedef struct Broadcast Broadcast;
 
+Script *create_script_from_string(Broadcast *broadcast, const char *source);
 Script *create_script_from_line_stream(LineStream *line_stream,
                                        Broadcast *broadcast);
 void destroy_script(Script *script);

@@ -15,9 +15,9 @@ broadcast_send(Broadcast *broadcast,
                struct Scope *scope,
                struct Expr path);
 
-struct EvalResult broadcast_load_library(Broadcast *broadcast,
-                                         Gc *gc,
-                                         struct Scope *scope);
+void broadcast_load_library(Broadcast *broadcast,
+                            Gc *gc,
+                            struct Scope *scope);
 
 struct EvalResult
 unknown_target(Gc *gc, const char *source, const char *target);
