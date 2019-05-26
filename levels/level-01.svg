@@ -87,7 +87,7 @@
      x="28.578053"
      y="-456.51523">
     <title
-       id="title67">level-01/player.lisp</title>
+       id="title67">level-01/player.ebi</title>
   </rect>
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.26267335"
@@ -126,7 +126,7 @@
      y="-301.85339"
      inkscape:label="#region4529">
     <title
-       id="title47">level-01/goal.lisp goal1</title>
+       id="title47">level-01/goal.ebi goal1</title>
   </rect>
   <rect
      style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -317,7 +317,7 @@
      y="-862.22498"
      inkscape:label="#region4530">
     <title
-       id="title49-6">level-01/goal-show.lisp goal2</title>
+       id="title49-6">level-01/goal-show.ebi goal2</title>
   </rect>
   <rect
      style="fill:#d35f5f;fill-opacity:0.66169152;stroke:none;stroke-width:0.17478877"
@@ -328,7 +328,7 @@
      y="-862.22498"
      inkscape:label="#rect44">
     <title
-       id="title45-6-6">level-01/hide_label_double_jump.lisp</title>
+       id="title45-6-6">level-01/hide_label_double_jump.ebi</title>
   </rect>
   <rect
      style="fill:#483737;fill-opacity:1;stroke:none;stroke-width:0.03527637"

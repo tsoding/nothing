@@ -10,7 +10,7 @@ TEST(read_expr_from_file_test)
 {
     Gc *gc = create_gc();
 
-    struct ParseResult result = read_expr_from_file(gc, "test-data/simple-sum.lisp");
+    struct ParseResult result = read_expr_from_file(gc, "test-data/simple-sum.ebi");
 
     ASSERT_TRUE(!result.is_error, {
             fprintf(stderr,
