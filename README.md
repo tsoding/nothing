@@ -62,6 +62,7 @@ $ ./nothing_test
 ### Windows
 
 - Enter the Visual Studio Command Line Development Environment https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line
+  - Basically just find `vcvarsall.bat` and run `vcvarsall.bat x64` inside of cmd
 - Download [SDL2 VC Development Libraries](https://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip) and copy it to `path\to\nothing`
 
 ```console
