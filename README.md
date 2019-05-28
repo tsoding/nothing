@@ -43,9 +43,12 @@ $ sudo pacman -S gcc cmake sdl2 inotify-tools libxml2
 
 ### Windows
 
-See [Build on Windows][build-on-windows] section.
+- [Visual Studio 2015+](https://visualstudio.microsoft.com/)
+- [SDL2 VC Development Libraries](https://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip)
 
 ## Quick Start
+
+### Linux
 
 ```console
 $ mkdir build
@@ -54,6 +57,21 @@ $ cmake ..
 $ make
 $ ./nothing ../levels/
 $ ./nothing_test
+```
+
+### Windows
+
+- Enter the Visual Studio Command Line Development Environment https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line
+- Download [SDL2 VC Development Libraries](https://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip) and copy it to `path\to\nothing`
+
+```console
+> cd path\to\nothing
+> 7z x SDL2-devel-2.0.9-VC.zip
+> move SDL2-2.0.9 SDL2
+> mkdir build
+> cmake ..
+> cmake --build .
+> nothing ..\levels
 ```
 
 ## Controls
@@ -141,12 +159,6 @@ $ make
 |-------------|----------------------------------------------------------------------------|
 | `label.*`   | Defines **position** and **text** of a in-game label. **Size is ignored**. |
 
-## Build on Windows
-
-TBD
-
-<!-- TODO(#862): Windows build is not documented -->
-
 ## Support
 
 You can support my work via
@@ -163,5 +175,4 @@ You can support my work via
 [libsdl2-dev]: https://www.libsdl.org/
 [NixOS]: https://nixos.org/
 [default.nix]: ./default.nix
-[build-on-windows]: #build-on-windows
 [inotify-tools]: https://github.com/rvoicilas/inotify-tools
