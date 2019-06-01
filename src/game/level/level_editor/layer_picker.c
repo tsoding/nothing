@@ -20,6 +20,7 @@ static const Color LAYER_CELL_BACKGROUND_COLORS[LAYER_PICKER_N] = {
     {0.0f, 0.0f, 1.0f, 1.0f},  // LAYER_PICKER_BACK_PLATFORMS,
     {1.0f, 1.0f, 1.0f, 1.0f},  // LAYER_PICKER_GOALS
     {1.0f, 0.2f, 0.6f, 1.0f},  // LAYER_PICKER_PLAYER
+    {0.6f, 0.6f, 1.0f, 1.0f},  // LAYER_PICKER_LAVA
 };
 
 static const char *LAYER_CELL_TITLES[LAYER_PICKER_N] = {
@@ -28,6 +29,7 @@ static const char *LAYER_CELL_TITLES[LAYER_PICKER_N] = {
     "Back Platforms",          // LAYER_PICKER_BACK_PLATFORMS,
     "Goals",                   // LAYER_PICKER_GOALS
     "Player",                  // LAYER_PICKER_PLAYER
+    "Lava",                    // LAYER_PICKER_LAVA
 };
 
 inline static float layer_picker_max_width(void)

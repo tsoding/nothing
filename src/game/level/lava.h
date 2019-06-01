@@ -9,8 +9,10 @@
 
 typedef struct Lava Lava;
 typedef struct LineStream LineStream;
+typedef struct RectLayer RectLayer;
 
 Lava *create_lava_from_line_stream(LineStream *line_stream);
+Lava *create_lava_from_rect_layer(const RectLayer *rect_layer);
 void destroy_lava(Lava *lava);
 
 int lava_render(const Lava *lava,
