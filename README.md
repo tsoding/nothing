@@ -55,8 +55,8 @@ $ mkdir build
 $ cd build/
 $ cmake ..
 $ make
-$ ./nothing ../levels/
-$ ./nothing_test
+$ cd ../data/
+$ ../build/nothing
 ```
 
 ### Windows
@@ -72,7 +72,8 @@ $ ./nothing_test
 > mkdir build
 > cmake ..
 > cmake --build .
-> nothing ..\levels
+> cd ../data/
+> ..\build\nothing
 ```
 
 ## Controls
