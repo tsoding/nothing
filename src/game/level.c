@@ -44,7 +44,6 @@ struct Level
     Player *player;
     Platforms *platforms;
     Goals *goals;
-    // TODO(#816): LevelEditor does not support Lava
     Lava *lava;
     Platforms *back_platforms;
     Boxes *boxes;
