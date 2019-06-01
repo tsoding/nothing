@@ -15,5 +15,4 @@ script:
   - make -k
   - ./nothing_test
   - cd ../levels/
-  - make clean
-  - make -k
+  - ../build/devtools/svg2level/svg2level level-01.svg platforms.svg ../data/levels/

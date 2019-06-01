@@ -16,5 +16,4 @@ build_script:
   #   https://ci.appveyor.com/project/rexim/nothing/builds/24807772/job/nr36kt098djthl4l#L431
   - sh: ./nothing_test
   - sh: cd ../levels/
-  - sh: make clean
-  - sh: make -k
+  - sh: ../build/devtools/svg2level/svg2level level-01.svg platforms.svg ../data/levels/

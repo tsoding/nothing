@@ -28,9 +28,7 @@ typedef struct {
 
 static void print_usage(FILE *stream)
 {
-    fprintf(stream, "Usage: ./svg2level <compile|deps>\n");
-    fprintf(stream, "  ./svg2level compile <input.svg> <output.txt>\n");
-    fprintf(stream, "  ./svg2level deps    <input.svg>\n");
+    fprintf(stream, "Usage: ./svg2level <input.svg...> <output-folder>\n");
 }
 
 static void fail_node(xmlNode *node, const char *format, ...)
@@ -401,7 +399,8 @@ static void save_level(Context *context, FILE *output_file)
     save_script_regions(context, output_file);
 }
 
-static int compile_subcommand(const char *input_filename, const char *output_filename)
+
+static int compile_svg_file(const char *input_filename, const char *output_filename)
 {
     xmlDoc *doc = xmlReadFile(input_filename, NULL, 0);
     if (doc == NULL) {
@@ -410,6 +409,13 @@ static int compile_subcommand(const char *input_filename, const char *output_fil
     }
 
     xmlNode *root = xmlDocGetRootElement(doc);
+
+    Context context;
+    context.rects = calloc(RECTS_CAPACITY, sizeof(xmlNode*));
+    context.rects_count = extract_nodes_by_name(root, "rect", context.rects, RECTS_CAPACITY);
+    context.texts = calloc(TEXTS_CAPACITY, sizeof(xmlNode*));
+    context.texts_count = extract_nodes_by_name(root, "text", context.texts, TEXTS_CAPACITY);
+    context.buffer = calloc(BUFFER_CAPACITY, sizeof(char));
 
     FILE *output_file = fopen(output_filename, "w");
     if (output_file == NULL) {
@@ -417,104 +423,89 @@ static int compile_subcommand(const char *input_filename, const char *output_fil
         return -1;
     }
 
-    Context context;
-    context.rects = calloc(RECTS_CAPACITY, sizeof(xmlNode*));
-    context.rects_count = extract_nodes_by_name(root, "rect", context.rects, RECTS_CAPACITY);
-    context.texts = calloc(TEXTS_CAPACITY, sizeof(xmlNode*));
-    context.texts_count = extract_nodes_by_name(root, "text", context.texts, TEXTS_CAPACITY);
-    context.buffer = calloc(BUFFER_CAPACITY, sizeof(char));
-
     save_level(&context, output_file);
 
     fclose(output_file);
     xmlFreeDoc(doc);
     xmlCleanupParser();
 
+    free(context.rects);
+    free(context.texts);
+    free(context.buffer);
+
     return 0;
 }
 
-static int deps_subcommand(const char *input_filename)
+static const char *filename(const char *path)
 {
-    xmlDoc *doc = xmlReadFile(input_filename, NULL, 0);
-    if (doc == NULL) {
-        fprintf(stderr, "Could not parse file `%s`\n", input_filename);
+    const int n = strlen(path);
+
+    int i = n - 1;
+    while (i >= 0 && path[i] != '/') {
+        --i;
+    }
+
+    return &path[i + 1];
+}
+
+static const char *extension(const char *path)
+{
+    const int n = strlen(path);
+
+    int i = n - 1;
+    while (i >= 0 && path[i] != '.') {
+        --i;
+    }
+
+    return &path[i + 1];
+}
+
+static int compile_subcommand(char **input_filenames, size_t n,
+                              char *output_folder)
+{
+    char input_name[1024] = {0};
+    char output_filename[1024] = {0};
+
+    sprintf(output_filename, "%s/meta.txt", output_folder);
+    FILE *fmeta = fopen(output_filename, "w");
+    if (fmeta == NULL) {
+        fprintf(stderr, "Could not open file `%s`\n", output_filename);
         return -1;
     }
 
-    xmlNode *root = xmlDocGetRootElement(doc);
+    for (size_t i = 0; i < n; ++i) {
+        memcpy(
+            input_name,
+            filename(input_filenames[i]),
+            extension(input_filenames[i]) - filename(input_filenames[i]) - 1);
 
-    Context context;
-    context.rects = calloc(RECTS_CAPACITY, sizeof(xmlNode*));
-    context.rects_count = extract_nodes_by_name(root, "rect", context.rects, RECTS_CAPACITY);
-    context.texts = calloc(TEXTS_CAPACITY, sizeof(xmlNode*));
-    context.texts_count = extract_nodes_by_name(root, "text", context.texts, TEXTS_CAPACITY);
-    context.buffer = calloc(BUFFER_CAPACITY, sizeof(char));
+        fprintf(fmeta, "%s.txt\n", input_name);
 
-    xmlNode** scripts = (xmlNode**)context.buffer;
-    size_t scripts_count =
-        filter_nodes_by_id_prefix(
-            context.rects, context.rects_count,
-            "script",
-            scripts, BUFFER_CAPACITY / sizeof(xmlNode*));
-    scripts_count +=
-        filter_nodes_by_id_prefix(
-            context.rects, context.rects_count,
-            "player",
-            scripts + scripts_count,
-            BUFFER_CAPACITY / sizeof(xmlNode*) - scripts_count);
+        memset(output_filename, 0, 1024);
+        sprintf(output_filename, "%s/%s.txt", output_folder, input_name);
 
-    for (size_t i = 0; i < scripts_count; ++i) {
-        for (xmlNode *iter = scripts[i]->children; iter; iter = iter->next) {
-            if (!xmlStrEqual(iter->name, (const xmlChar*)"title")) {
-                continue;
-            }
+        printf("Compiling %s into %s\n", input_filenames[i], output_filename);
 
-            size_t n = 0;
-            const char *s = (const char *)iter->children->content;
-            next_token(&s, &n);
-            fwrite(s, sizeof(char), n, stdout);
-            printf(" ");
+        if (compile_svg_file(input_filenames[i], output_filename) < 0) {
+            return -1;
         }
     }
-    printf("\n");
 
-    xmlFreeDoc(doc);
-    xmlCleanupParser();
+    fclose(fmeta);
 
     return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
     LIBXML_TEST_VERSION
 
-    if (argc < 2) {
+    if (argc < 3) {
         print_usage(stderr);
         return -1;
     }
 
-    if (strcmp(argv[1], "compile") == 0) {
-        if (argc < 4) {
-            print_usage(stderr);
-            return -1;
-        }
-
-        return compile_subcommand(argv[2], argv[3]);
-    } else if (strcmp(argv[1], "deps") == 0) {
-        if (argc < 3) {
-            print_usage(stderr);
-            return -1;
-        }
-
-        return deps_subcommand(argv[2]);
-    } else {
-        fprintf(stderr, "Unrecognized subcommand `%s'\n", argv[1]);
-        print_usage(stderr);
-        return -1;
-    }
-
-
-    return 0;
+    return compile_subcommand(argv + 1, argc - 2, argv[argc - 1]);
 }
 
 #else
