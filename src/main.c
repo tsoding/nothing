@@ -21,7 +21,7 @@
 
 static void print_usage(FILE *stream)
 {
-    fprintf(stream, "Usage: nothing [--fps <fps>] <level-folder>\n");
+    fprintf(stream, "Usage: nothing [--fps <fps>]\n");
 }
 
 int main(int argc, char *argv[])
@@ -30,7 +30,6 @@ int main(int argc, char *argv[])
 
     Lt *lt = create_lt();
 
-    char *level_folder = NULL;
     int fps = 30;
 
     for (int i = 1; i < argc;) {
@@ -48,15 +47,10 @@ int main(int argc, char *argv[])
                 RETURN_LT(lt, -1);
             }
         } else {
-            level_folder = argv[i];
-            i++;
+            log_fail("Unknown flag %s\n", argv[i]);
+            print_usage(stderr);
+            RETURN_LT(lt, -1);
         }
-    }
-
-    if (level_folder == NULL) {
-        log_fail("Path to level file is not provided\n");
-        print_usage(stderr);
-        RETURN_LT(lt, -1);
     }
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
@@ -126,7 +120,7 @@ int main(int argc, char *argv[])
     Game *const game = PUSH_LT(
         lt,
         create_game(
-            level_folder,
+            "./levels/",
             sound_sample_files,
             sound_sample_files_count,
             renderer),
