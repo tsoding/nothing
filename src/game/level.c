@@ -318,7 +318,6 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
             player_jump(level->player);
         } break;
 
-        // TODO(#858): Player state is not exchanged between Level and LevelEditor
         case SDLK_TAB: {
             level->edit_mode = !level->edit_mode;
             SDL_SetRelativeMouseMode(level->edit_mode);
