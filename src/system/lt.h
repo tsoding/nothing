@@ -29,13 +29,18 @@ static inline void destroy_lt(Lt *lt)
 {
     trace_assert(lt);
 
-    for (Slot *p = lt->slots_end - 1; p >= lt->slots; --p) {
-        if (p->res) {
-            p->dtor(p->res);
+    if (lt->slots_end) {
+        for (Slot *p = lt->slots_end - 1; p >= lt->slots; --p) {
+            if (p->res) {
+                p->dtor(p->res);
+            }
         }
     }
 
-    free(lt->slots);
+    if (lt->slots) {
+        free(lt->slots);
+    }
+
     free(lt);
 }
 
