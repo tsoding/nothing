@@ -10,6 +10,7 @@
 #include "system/line_stream.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
+#include "game/level/level_editor/rect_layer.h"
 
 #define LAVA_BOINGNESS 2500.0f
 
@@ -51,6 +52,34 @@ Lava *create_lava_from_line_stream(LineStream *line_stream)
     }
 
     lava->lt = lt;
+
+    return lava;
+}
+
+Lava *create_lava_from_rect_layer(const RectLayer *rect_layer)
+{
+    Lt *lt = create_lt();
+
+    Lava *lava = PUSH_LT(lt, nth_calloc(1, sizeof(Lava)), free);
+    if (lava == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    lava->lt = lt;
+
+    lava->rects_count = rect_layer_count(rect_layer);
+    lava->rects = PUSH_LT(lt, nth_calloc(lava->rects_count, sizeof(Wavy_rect*)), free);
+    if (lava->rects == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    const Rect *rects = rect_layer_rects(rect_layer);
+    const Color *colors = rect_layer_colors(rect_layer);
+    for (size_t i = 0; i < lava->rects_count; ++i) {
+        lava->rects[i] = PUSH_LT(lt, create_wavy_rect(rects[i], colors[i]), destroy_wavy_rect);
+        if (lava->rects[i] == NULL) {
+            RETURN_LT(lt, NULL);
+        }
+    }
 
     return lava;
 }
