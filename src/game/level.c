@@ -27,6 +27,7 @@
 #include "system/nth_alloc.h"
 #include "system/str.h"
 #include "game/level/level_editor.h"
+#include "game/level/script.h"
 
 #define LEVEL_LINE_MAX_LENGTH 512
 #define LEVEL_GRAVITY 1500.0f
@@ -51,6 +52,7 @@ struct Level
     // TODO(#819): LevelEditor does not support Regions
     Regions *regions;
     Broadcast *broadcast;
+    Script *supa_script;
 
     bool edit_mode;
     LevelEditor *level_editor;
@@ -193,13 +195,23 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
 
     level->regions = PUSH_LT(
         lt,
-        create_regions_from_line_stream(level_stream, broadcast),
+        create_regions_from_line_stream(level_stream),
         destroy_regions);
     if (level->regions == NULL) {
         RETURN_LT(lt, NULL);
     }
 
     level->broadcast = broadcast;
+    level->supa_script = PUSH_LT(
+        lt,
+        create_script_from_line_stream(
+            level_stream,
+            broadcast),
+        destroy_script);
+    if (level->supa_script == NULL) {
+        log_fail("Could not construct Supa Script for the level\n");
+        RETURN_LT(lt, NULL);
+    }
 
     level->edit_mode = false;
     level->level_editor = PUSH_LT(

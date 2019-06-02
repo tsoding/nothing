@@ -305,6 +305,27 @@ lambda_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 }
 
 static struct EvalResult
+equal_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
+{
+    (void) param;
+    trace_assert(gc);
+    trace_assert(scope);
+
+    struct Expr obj1;
+    struct Expr obj2;
+    struct EvalResult result = match_list(gc, "ee", args, &obj1, &obj2);
+    if (result.is_error) {
+        return result;
+    }
+
+    if (equal(obj1, obj2)) {
+        return eval_success(T(gc));
+    } else {
+        return eval_success(NIL(gc));
+    }
+}
+
+static struct EvalResult
 load(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 {
     (void) param;
@@ -383,4 +404,5 @@ void load_std_library(Gc *gc, struct Scope *scope)
     set_scope_value(gc, scope, SYMBOL(gc, "unquote"), NATIVE(gc, unquote, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "load"), NATIVE(gc, load, NULL));
     set_scope_value(gc, scope, SYMBOL(gc, "append"), NATIVE(gc, append, NULL));
+    set_scope_value(gc, scope, SYMBOL(gc, "equal"), NATIVE(gc, equal_op, NULL));
 }

@@ -14,7 +14,7 @@
    viewBox="0 0 210 297"
    version="1.1"
    id="svg4541"
-   inkscape:version="0.92.0 r15299"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    sodipodi:docname="level-01.svg">
   <defs
      id="defs4535" />
@@ -26,13 +26,13 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.0625"
-     inkscape:cx="100.65172"
-     inkscape:cy="4033.04"
+     inkscape:cx="-339.34828"
+     inkscape:cy="6113.04"
      inkscape:document-units="mm"
      inkscape:current-layer="svg4541"
      showgrid="false"
-     inkscape:window-width="1916"
-     inkscape:window-height="1041"
+     inkscape:window-width="1920"
+     inkscape:window-height="1043"
      inkscape:window-x="0"
      inkscape:window-y="18"
      inkscape:window-maximized="0"
@@ -356,4 +356,15 @@
        x="-1134.1858"
        y="-2134.6028"
        style="stroke-width:3.58178067px">Level 01</tspan></text>
+  <rect
+     id="level_script"
+     width="533.39996"
+     height="139.7"
+     x="-427.56665"
+     y="-2378.4668"
+     style="stroke-width:0.26458332"
+     inkscape:label="#rect51">
+    <title
+       id="title53">./level-01.ebi</title>
+  </rect>
 </svg>

@@ -35,25 +35,6 @@ PlayerLayer *create_player_layer_from_line_stream(LineStream *line_stream)
     }
     player_layer->color_picker.color = hexstr(colorstr);
 
-    line = line_stream_next(line_stream);
-    if (line == NULL) {
-        log_fail("Could not read Player Layer\n");
-        RETURN_LT(lt, NULL);
-    }
-
-    size_t n;
-    if (sscanf(line, "%lu", &n) == EOF) {
-        log_fail("Could not read Player Layer\n");
-        RETURN_LT(lt, NULL);
-    }
-
-    player_layer->source_code = PUSH_LT(
-        lt, line_stream_collect_n_lines(line_stream, n), free);
-    if (player_layer->source_code == NULL) {
-        log_fail("Could not read Player Layer\n");
-        RETURN_LT(lt, NULL);
-    }
-
     return player_layer;
 }
 

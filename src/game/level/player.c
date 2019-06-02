@@ -36,7 +36,6 @@ struct Player {
 
     RigidBodyId alive_body_id;
     Explosion *dying_body;
-    Script *script;
 
     int jump_threshold;
     Color color;
@@ -56,7 +55,6 @@ Player *create_player_from_player_layer(const PlayerLayer *player_layer,
 
     Lt *lt = create_lt();
 
-
     Player *player = PUSH_LT(lt, nth_calloc(1, sizeof(Player)), free);
     if (player == NULL) {
         RETURN_LT(lt, NULL);
@@ -64,14 +62,6 @@ Player *create_player_from_player_layer(const PlayerLayer *player_layer,
     player->lt = lt;
 
     player->rigid_bodies = rigid_bodies;
-
-    player->script = PUSH_LT(
-        lt,
-        create_script_from_string(broadcast, player_layer->source_code),
-        destroy_script);
-    if (player->script == NULL) {
-        RETURN_LT(lt, NULL);
-    }
 
     player->alive_body_id = rigid_bodies_add(
         rigid_bodies,
@@ -218,10 +208,6 @@ void player_jump(Player *player)
             player->alive_body_id,
             vec(0.0f, -PLAYER_JUMP));
         player->jump_threshold++;
-
-        if (script_has_scope_value(player->script, "on-jump")) {
-            script_eval(player->script, "(on-jump)");
-        }
     }
 }
 
