@@ -2,6 +2,7 @@
 #define SCRIPT_H_
 
 #include <stdbool.h>
+#include "ebisp/expr.h"
 
 typedef struct Script Script;
 typedef struct LineStream LineStream;
@@ -12,11 +13,13 @@ Script *create_script_from_line_stream(LineStream *line_stream,
                                        Broadcast *broadcast);
 void destroy_script(Script *script);
 
-// TODO(#470): script_eval accepting string instead of expr is very error prone
-int script_eval(Script *script, const char *source_code);
+// TODO: script_eval should return EvalResult and it should be handled properly everywhere
+int script_eval(Script *script, struct Expr expr);
 
 bool script_has_scope_value(const Script *script, const char *name);
 
 const char *script_source_code(const Script *script);
+
+Gc *script_gc(const Script *script);
 
 #endif  // SCRIPT_H_

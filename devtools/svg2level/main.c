@@ -369,12 +369,14 @@ static void save_regions(Context *context, FILE *output_file)
 
     fprintf(output_file, "%ld\n", regions_count);
     for (size_t i = 0; i < regions_count; ++i) {
+        xmlNode *id = require_attr_by_name(regions[i], "id");
         xmlNode *x = require_attr_by_name(regions[i], "x");
         xmlNode *y = require_attr_by_name(regions[i], "y");
         xmlNode *width = require_attr_by_name(regions[i], "width");
         xmlNode *height = require_attr_by_name(regions[i], "height");
         const char *color = require_color_of_node(regions[i]);
-        fprintf(output_file, "%s %s %s %s %.6s\n",
+        fprintf(output_file, "%s %s %s %s %s %.6s\n",
+                id->content,
                 x->content, y->content,
                 width->content, height->content,
                 color);

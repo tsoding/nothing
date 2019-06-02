@@ -42,9 +42,9 @@ SPACE to Jump
 label_double_jump 950.9303 -279.0629 fffda5
 Double Jump
 3
-659.88593 -301.85339 904.875 333.04886 deaa87
-1249.8324 -862.22498 323.92441 544.63507 deaa87
-1033.8625 -862.22498 215.96986 569.73328 d35f5f
+script_goal_1 659.88593 -301.85339 904.875 333.04886 deaa87
+script_show_goal_2 1249.8324 -862.22498 323.92441 544.63507 deaa87
+script_hide_label_double_jump 1033.8625 -862.22498 215.96986 569.73328 d35f5f
 21
 (set args '())
 (set jump-count 0)
@@ -55,13 +55,13 @@ Double Jump
     (send `(game level label "label_space_to_jump" hide))))
 
 (defun on-region-enter (region-id)
-  (cond
-   ((equal region-id "script_goal_1")
-    (send `(game level goal "goal1" hide)))
-   ((equal region-id "script_show_goal_2")
-    (send `(game level goal "goal2" show)))
-   ((equal region-id "script_hide_label_double_jump")
-    (send `(game level label "label_double_jump" hide)))))
+  ;; TODO: Implement cond for ebisp
+  (when (equal region-id "script_goal_1")
+   (send `(game level goal "goal1" hide)))
+  (when (equal region-id "script_show_goal_2")
+   (send `(game level goal "goal2" show)))
+  (when (equal region-id "script_hide_label_double_jump")
+   (send `(game level label "label_double_jump" hide))))
 
 (defun on-region-leave (region-id)
   (when (equal region-id "script_goal_1")

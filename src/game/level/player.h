@@ -38,7 +38,7 @@ void player_checkpoint(Player *player,
 void player_move_left(Player *player);
 void player_move_right(Player *player);
 void player_stop(Player *player);
-void player_jump(Player *player);
+void player_jump(Player *player, Script *supa_script);
 void player_die(Player *player);
 
 void player_focus_camera(Player *player,

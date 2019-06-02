@@ -15,6 +15,7 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/stacktrace.h"
+#include "ebisp/builtins.h"
 
 #define PLAYER_WIDTH 25.0f
 #define PLAYER_HEIGHT 25.0f
@@ -188,9 +189,10 @@ void player_stop(Player *player)
     rigid_bodies_move(player->rigid_bodies, player->alive_body_id, vec(0.0f, 0.0f));
 }
 
-void player_jump(Player *player)
+void player_jump(Player *player, Script *supa_script)
 {
     trace_assert(player);
+    trace_assert(supa_script);
 
     if (rigid_bodies_touches_ground(player->rigid_bodies, player->alive_body_id)) {
         player->jump_threshold = 0;
@@ -208,6 +210,11 @@ void player_jump(Player *player)
             player->alive_body_id,
             vec(0.0f, -PLAYER_JUMP));
         player->jump_threshold++;
+
+        if (script_has_scope_value(supa_script, "on-player-jump")) {
+            Gc *gc = script_gc(supa_script);
+            script_eval(supa_script, list(gc, "q", "on-player-jump"));
+        }
     }
 }
 

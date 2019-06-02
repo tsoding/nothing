@@ -117,23 +117,14 @@ const char *script_source_code(const Script *script)
     return script->source_code;
 }
 
-int script_eval(Script *script, const char *source_code)
+int script_eval(Script *script, struct Expr expr)
 {
     trace_assert(script);
-    trace_assert(source_code);
-
-    struct ParseResult parse_result = read_expr_from_string(
-        script->gc,
-        source_code);
-    if (parse_result.is_error) {
-        log_fail("Parsing error: %s\n", parse_result.error_message);
-        return -1;
-    }
 
     struct EvalResult eval_result = eval(
         script->gc,
         &script->scope,
-        parse_result.expr);
+        expr);
     if (eval_result.is_error) {
         log_fail("Evaluation error: ");
         /* TODO(#521): Evalation error is prepended with `[FAIL]` at the end of the message */
@@ -154,4 +145,9 @@ bool script_has_scope_value(const Script *script, const char *name)
         get_scope_value(
             &script->scope,
             SYMBOL(script->gc, name)));
+}
+
+Gc *script_gc(const Script *script)
+{
+    return script->gc;
 }
