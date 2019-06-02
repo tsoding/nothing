@@ -13,6 +13,8 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 
+#define ID_MAX_SIZE 36
+
 enum RegionState {
     RS_PLAYER_INSIDE = 0,
     RS_PLAYER_OUTSIDE
@@ -22,13 +24,13 @@ struct Regions
 {
     Lt *lt;
     size_t count;
+    char *ids;
     Rect *rects;
     Color *colors;
-    Script **scripts;
     enum RegionState *states;
 };
 
-Regions *create_regions_from_line_stream(LineStream *line_stream, Broadcast *broadcast)
+Regions *create_regions_from_line_stream(LineStream *line_stream)
 {
     trace_assert(line_stream);
 
@@ -51,6 +53,14 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Broadcast *bro
         RETURN_LT(lt, NULL);
     }
 
+    regions->ids = PUSH_LT(
+        lt,
+        nth_calloc(regions->count * ID_MAX_SIZE, sizeof(char)),
+        free);
+    if (regions->ids == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     regions->rects = PUSH_LT(
         lt,
         nth_calloc(1, sizeof(Rect) * regions->count),
@@ -64,14 +74,6 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Broadcast *bro
         nth_calloc(1, sizeof(Color) * regions->count),
         free);
     if (regions->colors == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    regions->scripts = PUSH_LT(
-        lt,
-        nth_calloc(1, sizeof(Script*) * regions->count),
-        free);
-    if (regions->scripts == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -90,7 +92,8 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Broadcast *bro
     for (size_t i = 0; i < regions->count; ++i) {
         if (sscanf(
                 line_stream_next(line_stream),
-                "%f%f%f%f%6s",
+                "%" STRINGIFY(ID_MAX_SIZE) "s%f%f%f%f%6s",
+                regions->ids + ID_MAX_SIZE * i,
                 &regions->rects[i].x,
                 &regions->rects[i].y,
                 &regions->rects[i].w,
@@ -101,26 +104,6 @@ Regions *create_regions_from_line_stream(LineStream *line_stream, Broadcast *bro
         }
 
         regions->colors[i] = hexstr(color);
-
-        regions->scripts[i] = PUSH_LT(
-            lt,
-            create_script_from_line_stream(line_stream, broadcast),
-            destroy_script);
-        if (regions->scripts[i] == NULL) {
-            RETURN_LT(lt, NULL);
-        }
-
-        /* TODO(#472): Script doesn't provide its id on missing callback error */
-        if (!script_has_scope_value(regions->scripts[i], "on-enter")) {
-            log_fail("Script does not provide on-enter callback\n");
-            RETURN_LT(lt, NULL);
-        }
-
-        if (!script_has_scope_value(regions->scripts[i], "on-leave")) {
-            log_fail("Script does not provide on-leave callback\n");
-            RETURN_LT(lt, NULL);
-        }
-
         regions->states[i] = RS_PLAYER_OUTSIDE;
     }
 
@@ -134,7 +117,7 @@ void destroy_regions(Regions *regions)
     RETURN_LT0(regions->lt);
 }
 
-void regions_player_enter(Regions *regions, Player *player)
+void regions_player_enter(Regions *regions, Player *player, Script *supa_script)
 {
     trace_assert(regions);
     trace_assert(player);
@@ -143,21 +126,37 @@ void regions_player_enter(Regions *regions, Player *player)
         if (regions->states[i] == RS_PLAYER_OUTSIDE &&
             player_overlaps_rect(player, regions->rects[i])) {
             regions->states[i] = RS_PLAYER_INSIDE;
-            script_eval(regions->scripts[i], "(on-enter)");
+
+            Gc *gc = script_gc(supa_script);
+            if (script_has_scope_value(supa_script, "on-region-enter")) {
+                script_eval(
+                    supa_script,
+                    list(gc, "qs",
+                         "on-region-enter",
+                         regions->ids + i * ID_MAX_SIZE));
+            }
         }
     }
 }
 
-void regions_player_leave(Regions *regions, Player *player)
+void regions_player_leave(Regions *regions, Player *player, Script *supa_script)
 {
     trace_assert(regions);
     trace_assert(player);
+    trace_assert(supa_script);
 
     for (size_t i = 0; i < regions->count; ++i) {
         if (regions->states[i] == RS_PLAYER_INSIDE &&
             !player_overlaps_rect(player, regions->rects[i])) {
             regions->states[i] = RS_PLAYER_OUTSIDE;
-            script_eval(regions->scripts[i], "(on-leave)");
+            Gc *gc = script_gc(supa_script);
+            if (script_has_scope_value(supa_script, "on-region-leave")) {
+                script_eval(
+                    supa_script,
+                    list(gc, "qs",
+                         "on-region-leave",
+                         regions->ids + i * ID_MAX_SIZE));
+            }
         }
     }
 }

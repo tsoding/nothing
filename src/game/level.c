@@ -27,6 +27,7 @@
 #include "system/nth_alloc.h"
 #include "system/str.h"
 #include "game/level/level_editor.h"
+#include "game/level/script.h"
 
 #define LEVEL_LINE_MAX_LENGTH 512
 #define LEVEL_GRAVITY 1500.0f
@@ -51,6 +52,7 @@ struct Level
     // TODO(#819): LevelEditor does not support Regions
     Regions *regions;
     Broadcast *broadcast;
+    Script *supa_script;
 
     bool edit_mode;
     LevelEditor *level_editor;
@@ -193,13 +195,23 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
 
     level->regions = PUSH_LT(
         lt,
-        create_regions_from_line_stream(level_stream, broadcast),
+        create_regions_from_line_stream(level_stream),
         destroy_regions);
     if (level->regions == NULL) {
         RETURN_LT(lt, NULL);
     }
 
     level->broadcast = broadcast;
+    level->supa_script = PUSH_LT(
+        lt,
+        create_script_from_line_stream(
+            level_stream,
+            broadcast),
+        destroy_script);
+    if (level->supa_script == NULL) {
+        log_fail("Could not construct Supa Script for the level\n");
+        RETURN_LT(lt, NULL);
+    }
 
     level->edit_mode = false;
     level->level_editor = PUSH_LT(
@@ -294,8 +306,8 @@ int level_update(Level *level, float delta_time)
 
     player_hide_goals(level->player, level->goals);
     player_die_from_lava(level->player, level->lava);
-    regions_player_enter(level->regions, level->player);
-    regions_player_leave(level->regions, level->player);
+    regions_player_enter(level->regions, level->player, level->supa_script);
+    regions_player_leave(level->regions, level->player, level->supa_script);
 
     goals_update(level->goals, delta_time);
     lava_update(level->lava, delta_time);
@@ -313,7 +325,7 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
         case SDLK_SPACE: {
-            player_jump(level->player);
+            player_jump(level->player, level->supa_script);
         } break;
 
         case SDLK_TAB: {
@@ -388,7 +400,7 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
 
     case SDL_JOYBUTTONDOWN:
         if (event->jbutton.button == 1) {
-            player_jump(level->player);
+            player_jump(level->player, level->supa_script);
         }
         break;
     }

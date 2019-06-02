@@ -1,0 +1,20 @@
+(set jump-count 0)
+
+(defun on-player-jump ()
+  (set jump-count (+ jump-count 1))
+  (when (> jump-count 3)
+    (send `(game level label "label_space_to_jump" hide))))
+
+(defun on-region-enter (region-id)
+  ;; TODO(#880): Implement cond for ebisp
+  (when (equal region-id "script_goal_1")
+   (send `(game level goal "goal1" hide)))
+  (when (equal region-id "script_show_goal_2")
+   (send `(game level goal "goal2" show)))
+  (when (equal region-id "script_hide_label_double_jump")
+   (send `(game level label "label_double_jump" hide))))
+
+(defun on-region-leave (region-id)
+  (when (equal region-id "script_goal_1")
+    (send `(game level goal "goal1" show))))
+

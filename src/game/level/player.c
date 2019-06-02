@@ -15,6 +15,7 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/stacktrace.h"
+#include "ebisp/builtins.h"
 
 #define PLAYER_WIDTH 25.0f
 #define PLAYER_HEIGHT 25.0f
@@ -36,7 +37,6 @@ struct Player {
 
     RigidBodyId alive_body_id;
     Explosion *dying_body;
-    Script *script;
 
     int jump_threshold;
     Color color;
@@ -56,7 +56,6 @@ Player *create_player_from_player_layer(const PlayerLayer *player_layer,
 
     Lt *lt = create_lt();
 
-
     Player *player = PUSH_LT(lt, nth_calloc(1, sizeof(Player)), free);
     if (player == NULL) {
         RETURN_LT(lt, NULL);
@@ -64,14 +63,6 @@ Player *create_player_from_player_layer(const PlayerLayer *player_layer,
     player->lt = lt;
 
     player->rigid_bodies = rigid_bodies;
-
-    player->script = PUSH_LT(
-        lt,
-        create_script_from_string(broadcast, player_layer->source_code),
-        destroy_script);
-    if (player->script == NULL) {
-        RETURN_LT(lt, NULL);
-    }
 
     player->alive_body_id = rigid_bodies_add(
         rigid_bodies,
@@ -198,9 +189,10 @@ void player_stop(Player *player)
     rigid_bodies_move(player->rigid_bodies, player->alive_body_id, vec(0.0f, 0.0f));
 }
 
-void player_jump(Player *player)
+void player_jump(Player *player, Script *supa_script)
 {
     trace_assert(player);
+    trace_assert(supa_script);
 
     if (rigid_bodies_touches_ground(player->rigid_bodies, player->alive_body_id)) {
         player->jump_threshold = 0;
@@ -219,8 +211,9 @@ void player_jump(Player *player)
             vec(0.0f, -PLAYER_JUMP));
         player->jump_threshold++;
 
-        if (script_has_scope_value(player->script, "on-jump")) {
-            script_eval(player->script, "(on-jump)");
+        if (script_has_scope_value(supa_script, "on-player-jump")) {
+            Gc *gc = script_gc(supa_script);
+            script_eval(supa_script, list(gc, "q", "on-player-jump"));
         }
     }
 }

@@ -9,12 +9,12 @@ typedef struct LineStream LineStream;
 typedef struct Level Level;
 typedef struct Camera Camera;
 
-Regions *create_regions_from_line_stream(LineStream *line_stream, Broadcast *broadcast);
+Regions *create_regions_from_line_stream(LineStream *line_stream);
 void destroy_regions(Regions *regions);
 
 int regions_render(Regions *regions, Camera *camera);
 
-void regions_player_enter(Regions *regions, Player *player);
-void regions_player_leave(Regions *regions, Player *player);
+void regions_player_enter(Regions *regions, Player *player, Script *supa_script);
+void regions_player_leave(Regions *regions, Player *player, Script *supa_script);
 
 #endif  // REGIONS_H_

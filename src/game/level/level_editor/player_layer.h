@@ -10,7 +10,6 @@ typedef struct {
     Lt *lt;
     Vec position;
     ColorPicker color_picker;
-    const char *source_code;
 } PlayerLayer;
 
 PlayerLayer *create_player_layer_from_line_stream(LineStream *line_stream);

@@ -302,7 +302,6 @@ static void save_player(Context *context, FILE *output_file)
     xmlNode *xAttr = require_attr_by_name(node, "x");
     xmlNode *yAttr = require_attr_by_name(node, "y");
     fprintf(output_file, "%s %s %.6s\n", xAttr->content, yAttr->content, color);
-    save_script(output_file, node, context->buffer, BUFFER_CAPACITY);
 }
 
 static void save_platforms(Context *context, FILE *output_file)
@@ -360,7 +359,7 @@ static void save_labels(Context *context, FILE *output_file)
     }
 }
 
-static void save_script_regions(Context *context, FILE *output_file)
+static void save_regions(Context *context, FILE *output_file)
 {
     xmlNode **regions = (xmlNode**)context->buffer;
     size_t regions_count = filter_nodes_by_id_prefix(
@@ -370,18 +369,33 @@ static void save_script_regions(Context *context, FILE *output_file)
 
     fprintf(output_file, "%ld\n", regions_count);
     for (size_t i = 0; i < regions_count; ++i) {
+        xmlNode *id = require_attr_by_name(regions[i], "id");
         xmlNode *x = require_attr_by_name(regions[i], "x");
         xmlNode *y = require_attr_by_name(regions[i], "y");
         xmlNode *width = require_attr_by_name(regions[i], "width");
         xmlNode *height = require_attr_by_name(regions[i], "height");
         const char *color = require_color_of_node(regions[i]);
-        fprintf(output_file, "%s %s %s %s %.6s\n",
+        fprintf(output_file, "%s %s %s %s %s %.6s\n",
+                id->content,
                 x->content, y->content,
                 width->content, height->content,
                 color);
-        save_script(output_file, regions[i],
-                    context->buffer + regions_count * sizeof(xmlNode*),
-                    BUFFER_CAPACITY - regions_count);
+    }
+}
+
+static void save_level_script(Context *context, FILE *output_file)
+{
+    xmlNode *level_script = find_node_by_id(
+        context->rects, context->rects_count,
+        "level_script");
+
+    if (level_script) {
+        save_script(
+            output_file,
+            level_script,
+            context->buffer, BUFFER_CAPACITY);
+    } else {
+        fprintf(output_file, "0\n");
     }
 }
 
@@ -396,7 +410,8 @@ static void save_level(Context *context, FILE *output_file)
     save_backplatforms(context, output_file);
     save_boxes(context, output_file);
     save_labels(context, output_file);
-    save_script_regions(context, output_file);
+    save_regions(context, output_file);
+    save_level_script(context, output_file);
 }
 
 
