@@ -13,7 +13,7 @@ Script *create_script_from_line_stream(LineStream *line_stream,
                                        Broadcast *broadcast);
 void destroy_script(Script *script);
 
-// TODO: script_eval should return EvalResult and it should be handled properly everywhere
+// TODO(#881): script_eval should return EvalResult and it should be handled properly everywhere
 int script_eval(Script *script, struct Expr expr);
 
 bool script_has_scope_value(const Script *script, const char *name);
