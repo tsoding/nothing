@@ -70,6 +70,7 @@ $ ../build/nothing
 > 7z x SDL2-devel-2.0.9-VC.zip
 > move SDL2-2.0.9 SDL2
 > mkdir build
+> cd build
 > cmake ..
 > cmake --build .
 > cd ../data/
