@@ -49,9 +49,9 @@ struct Level
     Boxes *boxes;
     // TODO(#818): LevelEditor does not support Labels
     Labels *labels;
-    // TODO(#819): LevelEditor does not support Regions
     Regions *regions;
     Broadcast *broadcast;
+    // TODO: LevelEditor does not support SupaScript
     Script *supa_script;
 
     bool edit_mode;
