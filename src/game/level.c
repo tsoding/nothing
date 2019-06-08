@@ -51,7 +51,7 @@ struct Level
     Labels *labels;
     Regions *regions;
     Broadcast *broadcast;
-    // TODO: LevelEditor does not support SupaScript
+    // TODO(#885): LevelEditor does not support SupaScript
     Script *supa_script;
 
     bool edit_mode;
