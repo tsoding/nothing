@@ -4,7 +4,8 @@
 typedef enum {
     LAYER_RECT,
     LAYER_POINT,
-    LAYER_PLAYER
+    LAYER_PLAYER,
+    LAYER_COLOR_PICKER,
 } LayerType;
 
 typedef struct {

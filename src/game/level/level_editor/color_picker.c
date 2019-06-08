@@ -18,6 +18,15 @@ static Color colors[] = {
 };
 static const size_t colors_count = sizeof(colors) / sizeof(Color);
 
+LayerPtr color_picker_as_layer(ColorPicker *color_picker)
+{
+    LayerPtr layer = {
+        .ptr = color_picker,
+        .type = LAYER_COLOR_PICKER
+    };
+    return layer;
+}
+
 int color_picker_render(const ColorPicker *color_picker,
                         Camera *camera)
 {

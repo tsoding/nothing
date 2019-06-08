@@ -161,3 +161,8 @@ void background_toggle_debug_mode(Background *background)
 {
     background->debug_mode = !background->debug_mode;
 }
+
+Color background_base_color(const Background *background)
+{
+    return background->base_color;
+}

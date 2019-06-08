@@ -29,6 +29,7 @@ struct LevelEditor
     PlayerLayer *player_layer;
     RectLayer *lava_layer;
     RectLayer *regions_layer;
+    ColorPicker background_layer;
     LayerPtr layers[LAYER_PICKER_N];
 
     bool drag;
@@ -40,7 +41,8 @@ LevelEditor *create_level_editor(RectLayer *boxes_layer,
                                  PointLayer *goals_layer,
                                  PlayerLayer *player_layer,
                                  RectLayer *lava_layer,
-                                 RectLayer *regions_layer)
+                                 RectLayer *regions_layer,
+                                 Color background_color)
 {
     trace_assert(boxes_layer);
     trace_assert(platforms_layer);
@@ -68,6 +70,7 @@ LevelEditor *create_level_editor(RectLayer *boxes_layer,
     level_editor->player_layer = PUSH_LT(lt, player_layer, destroy_player_layer);
     level_editor->lava_layer = PUSH_LT(lt, lava_layer, destroy_rect_layer);
     level_editor->regions_layer = PUSH_LT(lt, regions_layer, destroy_rect_layer);
+    level_editor->background_layer.color = background_color;
 
     level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(level_editor->boxes_layer);
     level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
@@ -76,6 +79,7 @@ LevelEditor *create_level_editor(RectLayer *boxes_layer,
     level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(level_editor->player_layer);
     level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(level_editor->lava_layer);
     level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(level_editor->regions_layer);
+    level_editor->layers[LAYER_PICKER_BACKGROUND] = color_picker_as_layer(&level_editor->background_layer);
 
     level_editor->layer_picker = LAYER_PICKER_BOXES;
 
@@ -95,6 +99,10 @@ int level_editor_render(const LevelEditor *level_editor,
 {
     trace_assert(level_editor);
     trace_assert(camera);
+
+    if (camera_clear_background(camera, level_editor->background_layer.color) < 0) {
+        return -1;
+    }
 
     for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
         if (layer_render(
@@ -218,4 +226,9 @@ const RectLayer *level_editor_lava_layer(const LevelEditor *level_editor)
 const RectLayer *level_editor_regions_layer(const LevelEditor *level_editor)
 {
     return level_editor->regions_layer;
+}
+
+Color level_editor_background_color(const LevelEditor *level_editor)
+{
+    return level_editor->background_layer.color;
 }
