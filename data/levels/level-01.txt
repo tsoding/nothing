@@ -55,7 +55,7 @@ script_hide_label_double_jump 1033.8625 -862.22498 215.96986 569.73328 d35f5f
     (send `(game level label "label_space_to_jump" hide))))
 
 (defun on-region-enter (region-id)
-  ;; TODO: Implement cond for ebisp
+  ;; TODO(#880): Implement cond for ebisp
   (when (equal region-id "script_goal_1")
    (send `(game level goal "goal1" hide)))
   (when (equal region-id "script_show_goal_2")
