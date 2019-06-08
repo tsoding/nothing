@@ -20,5 +20,6 @@ int rect_layer_delete_rect_at(RectLayer *layer, Vec position);
 size_t rect_layer_count(const RectLayer *layer);
 const Rect *rect_layer_rects(const RectLayer *layer);
 const Color *rect_layer_colors(const RectLayer *layer);
+const char *rect_layer_ids(const RectLayer *layer);
 
 #endif  // RECT_LAYER_H_

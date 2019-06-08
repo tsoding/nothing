@@ -37,6 +37,7 @@ struct Level
     Lt *lt;
 
     const char *file_name;
+    // TODO(#887): LevelEditor does not support chaning the metadata of the Level
     LevelMetadata *metadata;
     // TODO(#812): LevelEditor does not support Background
     Background *background;
@@ -49,9 +50,9 @@ struct Level
     Boxes *boxes;
     // TODO(#818): LevelEditor does not support Labels
     Labels *labels;
-    // TODO(#819): LevelEditor does not support Regions
     Regions *regions;
     Broadcast *broadcast;
+    // TODO(#885): LevelEditor does not support SupaScript
     Script *supa_script;
 
     bool edit_mode;
@@ -193,9 +194,15 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
+    RectLayer *regions_layer =
+        create_rect_layer_from_line_stream(level_stream);
+    if (regions_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->regions = PUSH_LT(
         lt,
-        create_regions_from_line_stream(level_stream),
+        create_regions_from_rect_layer(regions_layer),
         destroy_regions);
     if (level->regions == NULL) {
         RETURN_LT(lt, NULL);
@@ -222,7 +229,8 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
             back_platforms_layer,
             goals_layer,
             player_layer,
-            lava_layer),
+            lava_layer,
+            regions_layer),
         destroy_level_editor);
     if (level->level_editor == NULL) {
         RETURN_LT(lt, NULL);
@@ -391,6 +399,16 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
                         level_editor_lava_layer(
                             level->level_editor)));
                 if (level->lava == NULL) {
+                    return -1;
+                }
+
+                level->regions = RESET_LT(
+                    level->lt,
+                    level->regions,
+                    create_regions_from_rect_layer(
+                        level_editor_regions_layer(
+                            level->level_editor)));
+                if (level->regions == NULL) {
                     return -1;
                 }
             }

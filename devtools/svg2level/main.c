@@ -306,7 +306,7 @@ static void save_player(Context *context, FILE *output_file)
 
 static void save_platforms(Context *context, FILE *output_file)
 {
-    STATIC_ARRAY(const char *, attrs, "x", "y", "width", "height", "#color");
+    STATIC_ARRAY(const char *, attrs, "id", "x", "y", "width", "height", "#color");
     save_pack_by_id_prefix(context, output_file, "rect", attrs, attrs_count);
 }
 
@@ -318,20 +318,20 @@ static void save_goals(Context *context, FILE *output_file)
 
 static void save_lavas(Context *context, FILE *output_file)
 {
-    STATIC_ARRAY(const char *, attrs, "x", "y", "width", "height", "#color");
+    STATIC_ARRAY(const char *, attrs, "id", "x", "y", "width", "height", "#color");
     save_pack_by_id_prefix(context, output_file, "lava", attrs, attrs_count);
 }
 
 static void save_backplatforms(Context *context, FILE *output_file)
 {
-    STATIC_ARRAY(const char *, attrs, "x", "y", "width", "height", "#color");
+    STATIC_ARRAY(const char *, attrs, "id", "x", "y", "width", "height", "#color");
     save_pack_by_id_prefix(context, output_file, "backrect", attrs, attrs_count);
 }
 
 static void save_boxes(Context *context, FILE *output_file)
 {
     STATIC_ARRAY(const char*, attrs,
-                 "x", "y", "width", "height", "#color");
+                 "id", "x", "y", "width", "height", "#color");
     save_pack_by_id_prefix(context, output_file, "box", attrs, attrs_count);
 }
 
