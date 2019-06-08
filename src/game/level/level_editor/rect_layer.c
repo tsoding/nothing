@@ -14,7 +14,7 @@
 
 #define RECT_LAYER_ID_MAX_SIZE 36
 
-/* TODO: RectLayer does not allow to modify ids of Rects */
+/* TODO(#886): RectLayer does not allow to modify ids of Rects */
 struct RectLayer {
     Lt *lt;
     Dynarray *ids;
