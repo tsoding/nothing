@@ -249,3 +249,8 @@ const Color *rect_layer_colors(const RectLayer *layer)
 {
     return dynarray_data(layer->colors);
 }
+
+const char *rect_layer_ids(const RectLayer *layer)
+{
+    return dynarray_data(layer->ids);
+}
