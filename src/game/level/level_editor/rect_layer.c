@@ -112,9 +112,11 @@ RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream)
             RETURN_LT(layer->lt, NULL);
         }
 
-        if (rect_layer_add_rect(layer, rect, hexstr(hex)) < 0) {
-            RETURN_LT(layer->lt, NULL);
-        }
+        Color color = hexstr(hex);
+
+        dynarray_push(layer->rects, &rect);
+        dynarray_push(layer->ids, id);
+        dynarray_push(layer->colors, &color);
     }
 
     return layer;

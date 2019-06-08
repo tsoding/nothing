@@ -11,6 +11,7 @@ typedef enum {
     LAYER_PICKER_GOALS,
     LAYER_PICKER_PLAYER,
     LAYER_PICKER_LAVA,
+    LAYER_PICKER_REGIONS,
 
     LAYER_PICKER_N
 } LayerPicker;
