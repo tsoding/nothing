@@ -10,9 +10,14 @@
 #include "system/line_stream.h"
 #include "proto_rect.h"
 #include "color_picker.h"
+#include "system/str.h"
 
+#define RECT_LAYER_ID_MAX_SIZE 36
+
+/* TODO: RectLayer does not allow to modify ids of Rects */
 struct RectLayer {
     Lt *lt;
+    Dynarray *ids;
     Dynarray *rects;
     Dynarray *colors;
     ProtoRect proto_rect;
@@ -37,6 +42,14 @@ RectLayer *create_rect_layer(void)
         RETURN_LT(lt, NULL);
     }
     layer->lt = lt;
+
+    layer->ids = PUSH_LT(
+        lt,
+        create_dynarray(sizeof(char) * RECT_LAYER_ID_MAX_SIZE),
+        destroy_dynarray);
+    if (layer->ids == NULL) {
+        RETURN_LT(lt, NULL);
+    }
 
     layer->rects = PUSH_LT(
         lt,
@@ -88,8 +101,11 @@ RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream)
 
         char hex[7];
         Rect rect;
+        char id[RECT_LAYER_ID_MAX_SIZE];
 
-        if (sscanf(line, "%f%f%f%f%6s\n",
+        if (sscanf(line,
+                   "%"STRINGIFY(RECT_LAYER_ID_MAX_SIZE)"s%f%f%f%f%6s\n",
+                   id,
                    &rect.x, &rect.y,
                    &rect.w, &rect.h,
                    hex) < 0) {
@@ -185,6 +201,16 @@ int rect_layer_add_rect(RectLayer *layer, Rect rect, Color color)
     }
 
     if (dynarray_push(layer->colors, &color) < 0) {
+        return -1;
+    }
+
+    char id[RECT_LAYER_ID_MAX_SIZE];
+    for (size_t i = 0; i < RECT_LAYER_ID_MAX_SIZE - 1; ++i) {
+        id[i] = (char) ('a' + rand() % ('z' - 'a' + 1));
+    }
+    id[RECT_LAYER_ID_MAX_SIZE - 1] = '\0';
+
+    if (dynarray_push(layer->ids, id)) {
         return -1;
     }
 
