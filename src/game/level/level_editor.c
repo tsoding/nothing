@@ -77,13 +77,6 @@ LevelEditor *create_level_editor(RectLayer *boxes_layer,
     level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(level_editor->lava_layer);
     level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(level_editor->regions_layer);
 
-    size_t n = rect_layer_count(level_editor->regions_layer);
-    const char *ids = rect_layer_ids(level_editor->regions_layer);
-    log_info("Regions:\n");
-    for (size_t i = 0; i < n; ++i) {
-        log_info("%s\n", ids + i * 36);
-    }
-
     level_editor->layer_picker = LAYER_PICKER_BOXES;
 
     level_editor->drag = false;
