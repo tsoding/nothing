@@ -2,10 +2,13 @@
 #define COLOR_PICKER_H_
 
 #include <stdbool.h>
+#include "layer.h"
 
 typedef struct {
     Color color;
 } ColorPicker;
+
+LayerPtr color_picker_as_layer(ColorPicker *color_picker);
 
 int color_picker_render(const ColorPicker *color_picker,
                         Camera *camera);

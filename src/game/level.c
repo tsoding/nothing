@@ -230,7 +230,8 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
             goals_layer,
             player_layer,
             lava_layer,
-            regions_layer),
+            regions_layer,
+            background_base_color(level->background)),
         destroy_level_editor);
     if (level->level_editor == NULL) {
         RETURN_LT(lt, NULL);
@@ -252,16 +253,16 @@ int level_render(const Level *level, Camera *camera)
 {
     trace_assert(level);
 
-    if (background_render(level->background, camera) < 0) {
-        return -1;
-    }
-
     if (level->edit_mode) {
         if (level_editor_render(level->level_editor, camera) < 0) {
             return -1;
         }
 
         return 0;
+    }
+
+    if (background_render(level->background, camera) < 0) {
+        return -1;
     }
 
     if (platforms_render(level->back_platforms, camera) < 0) {
@@ -409,6 +410,16 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
                         level_editor_regions_layer(
                             level->level_editor)));
                 if (level->regions == NULL) {
+                    return -1;
+                }
+
+                level->background = RESET_LT(
+                    level->lt,
+                    level->background,
+                    create_background(
+                        level_editor_background_color(
+                            level->level_editor)));
+                if (level->background == NULL) {
                     return -1;
                 }
             }
