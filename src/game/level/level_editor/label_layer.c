@@ -169,7 +169,7 @@ int label_layer_event(LabelLayer *label_layer,
     trace_assert(label_layer);
     trace_assert(event);
     trace_assert(camera);
-    /* TODO: LabelLayer doesn't allow to modify and add labels */
+    /* TODO(#892): LabelLayer doesn't allow to modify and add labels */
     return 0;
 }
 
