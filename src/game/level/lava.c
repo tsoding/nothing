@@ -35,7 +35,7 @@ Lava *create_lava_from_line_stream(LineStream *line_stream)
             line_stream_next(line_stream),
             "%lu",
             &lava->rects_count) < 0) {
-        log_fail("Could not read amount of lavas\n");
+        log_fail("Could not read amount of lava\n");
         RETURN_LT(lt, NULL);
     }
 
