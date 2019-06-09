@@ -21,6 +21,7 @@
 #include "game/level/level_editor/rect_layer.h"
 #include "game/level/level_editor/point_layer.h"
 #include "game/level/level_editor/player_layer.h"
+#include "game/level/level_editor/label_layer.h"
 #include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
@@ -231,7 +232,8 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
             player_layer,
             lava_layer,
             regions_layer,
-            background_base_color(level->background)),
+            background_base_color(level->background),
+            create_label_layer()),
         destroy_level_editor);
     if (level->level_editor == NULL) {
         RETURN_LT(lt, NULL);

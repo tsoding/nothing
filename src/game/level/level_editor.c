@@ -7,6 +7,7 @@
 #include "game/level/level_editor/rect_layer.h"
 #include "game/level/level_editor/point_layer.h"
 #include "game/level/level_editor/player_layer.h"
+#include "game/level/level_editor/label_layer.h"
 #include "game/level/level_editor/layer_picker.h"
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
@@ -30,6 +31,7 @@ struct LevelEditor
     RectLayer *lava_layer;
     RectLayer *regions_layer;
     ColorPicker background_layer;
+    LabelLayer *label_layer;
     LayerPtr layers[LAYER_PICKER_N];
 
     bool drag;
@@ -42,7 +44,8 @@ LevelEditor *create_level_editor(RectLayer *boxes_layer,
                                  PlayerLayer *player_layer,
                                  RectLayer *lava_layer,
                                  RectLayer *regions_layer,
-                                 Color background_color)
+                                 Color background_color,
+                                 LabelLayer *label_layer)
 {
     trace_assert(boxes_layer);
     trace_assert(platforms_layer);
@@ -51,6 +54,7 @@ LevelEditor *create_level_editor(RectLayer *boxes_layer,
     trace_assert(player_layer);
     trace_assert(lava_layer);
     trace_assert(regions_layer);
+    trace_assert(label_layer);
 
     Lt *lt = create_lt();
 
@@ -71,6 +75,7 @@ LevelEditor *create_level_editor(RectLayer *boxes_layer,
     level_editor->lava_layer = PUSH_LT(lt, lava_layer, destroy_rect_layer);
     level_editor->regions_layer = PUSH_LT(lt, regions_layer, destroy_rect_layer);
     level_editor->background_layer.color = background_color;
+    level_editor->label_layer = PUSH_LT(lt, label_layer, destroy_label_layer);
 
     level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(level_editor->boxes_layer);
     level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
@@ -80,6 +85,7 @@ LevelEditor *create_level_editor(RectLayer *boxes_layer,
     level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(level_editor->lava_layer);
     level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(level_editor->regions_layer);
     level_editor->layers[LAYER_PICKER_BACKGROUND] = color_picker_as_layer(&level_editor->background_layer);
+    level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
 
     level_editor->layer_picker = LAYER_PICKER_BOXES;
 

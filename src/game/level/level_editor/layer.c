@@ -2,6 +2,7 @@
 #include "rect_layer.h"
 #include "point_layer.h"
 #include "player_layer.h"
+#include "label_layer.h"
 #include "./layer.h"
 
 int layer_render(LayerPtr layer, Camera *camera, float fa)
@@ -18,6 +19,9 @@ int layer_render(LayerPtr layer, Camera *camera, float fa)
 
     case LAYER_COLOR_PICKER:
         return color_picker_render(layer.ptr, camera);
+
+    case LAYER_LABEL:
+        return label_layer_render(layer.ptr, camera, fa);
     }
 
     return -1;
@@ -44,6 +48,8 @@ int layer_event(LayerPtr layer,
             return 0;
         }
     } break;
+    case LAYER_LABEL:
+        return label_layer_event(layer.ptr, event, camera);
     }
 
     return -1;
