@@ -5,6 +5,7 @@
 #include "ebisp/interpreter.h"
 #include "game/camera.h"
 #include "game/level/labels.h"
+#include "game/level/level_editor/label_layer.h"
 #include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
@@ -25,10 +26,12 @@ struct Labels
 {
     Lt *lt;
     size_t count;
-    char **ids;
+    char *ids;
     Vec *positions;
     Color *colors;
     char **texts;
+
+    /* Animation state */
     float *alphas;
     float *delta_alphas;
     enum LabelState *states;
@@ -54,7 +57,7 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    labels->ids = PUSH_LT(lt, nth_calloc(1, sizeof(char*) * labels->count), free);
+    labels->ids = PUSH_LT(lt, nth_calloc(labels->count, sizeof(char) * LABEL_MAX_ID_SIZE), free);
     if (labels->ids == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -91,20 +94,10 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
 
     char color[7];
     for (size_t i = 0; i < labels->count; ++i) {
-        labels->alphas[i] = 0.0f;
-        labels->delta_alphas[i] = 0.0f;
-        labels->states[i] = LABEL_STATE_VIRGIN;
-        labels->texts[i] = NULL;
-
-        labels->ids[i] = PUSH_LT(lt, nth_calloc(1, sizeof(char) * LABEL_MAX_ID_SIZE), free);
-        if (labels->ids[i] == NULL) {
-            RETURN_LT(lt, NULL);
-        }
-
         if (sscanf(
                 line_stream_next(line_stream),
                 "%" STRINGIFY(LABEL_MAX_ID_SIZE) "s%f%f%6s\n",
-                labels->ids[i],
+                labels->ids + i * LABEL_MAX_ID_SIZE,
                 &labels->positions[i].x,
                 &labels->positions[i].y,
                 color) == EOF) {
@@ -129,6 +122,75 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
         }
 
         trim_endline(labels->texts[i]);
+    }
+
+    return labels;
+}
+
+Labels *create_labels_from_label_layer(const LabelLayer *label_layer)
+{
+    trace_assert(label_layer);
+
+    Lt *lt = create_lt();
+
+    Labels *labels = PUSH_LT(lt, nth_calloc(1, sizeof(Labels)), free);
+    if (labels == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    labels->lt = lt;
+
+    labels->count = label_layer_count(label_layer);
+
+    labels->ids = PUSH_LT(lt, nth_calloc(labels->count, sizeof(char) * LABEL_MAX_ID_SIZE), free);
+    if (labels->ids == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    memcpy(labels->ids,
+           label_layer_ids(label_layer),
+           labels->count * sizeof(char) * LABEL_MAX_ID_SIZE);
+
+    labels->positions = PUSH_LT(lt, nth_calloc(1, sizeof(Vec) * labels->count), free);
+    if (labels->positions == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    memcpy(labels->positions,
+           label_layer_positions(label_layer),
+           labels->count * sizeof(Point));
+
+    labels->colors = PUSH_LT(lt, nth_calloc(1, sizeof(Color) * labels->count), free);
+    if (labels->colors == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    memcpy(labels->colors,
+           label_layer_colors(label_layer),
+           labels->count * sizeof(Color));
+
+    labels->texts = PUSH_LT(lt, nth_calloc(1, sizeof(char*) * labels->count), free);
+    if (labels->texts == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    char **texts = labels_layer_texts(label_layer);
+    for (size_t i = 0; i < labels->count; ++i) {
+        labels->texts[i] = PUSH_LT(
+            labels->lt,
+            string_duplicate(texts[i], NULL),
+            free);
+    }
+
+    labels->alphas = PUSH_LT(lt, nth_calloc(1, sizeof(float) * labels->count), free);
+    if (labels->alphas == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    labels->delta_alphas = PUSH_LT(lt, nth_calloc(1, sizeof(float) * labels->count), free);
+    if (labels->delta_alphas == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    labels->states = PUSH_LT(lt, nth_calloc(1, sizeof(enum LabelState) * labels->count), free);
+    if (labels->states == NULL) {
+        RETURN_LT(lt, NULL);
     }
 
     return labels;
@@ -235,7 +297,7 @@ labels_action(Labels *labels,
         return eval_success(NIL(gc));
     }
 
-    return unknown_target(gc, labels->ids[index], target);
+    return unknown_target(gc, labels->ids + index * LABEL_MAX_ID_SIZE, target);
 }
 
 struct EvalResult
@@ -253,7 +315,7 @@ labels_send(Labels *labels, Gc *gc, struct Scope *scope, struct Expr path)
     }
 
     for (size_t i = 0; i < labels->count; ++i) {
-        if (strcmp(target, labels->ids[i]) == 0) {
+        if (strcmp(target, labels->ids + i * LABEL_MAX_ID_SIZE) == 0) {
             return labels_action(labels, i, gc, scope, rest);
         }
     }

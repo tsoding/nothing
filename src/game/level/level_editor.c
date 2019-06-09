@@ -238,3 +238,8 @@ Color level_editor_background_color(const LevelEditor *level_editor)
 {
     return level_editor->background_layer.color;
 }
+
+const LabelLayer *level_editor_label_layer(const LevelEditor *level_editor)
+{
+    return level_editor->label_layer;
+}

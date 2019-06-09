@@ -187,9 +187,14 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
 
+    LabelLayer *label_layer = create_label_layer_from_line_stream(level_stream);
+    if (label_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level->labels = PUSH_LT(
         lt,
-        create_labels_from_line_stream(level_stream),
+        create_labels_from_label_layer(label_layer),
         destroy_labels);
     if (level->labels == NULL) {
         RETURN_LT(lt, NULL);
@@ -233,7 +238,7 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
             lava_layer,
             regions_layer,
             background_base_color(level->background),
-            create_label_layer()),
+            label_layer),
         destroy_level_editor);
     if (level->level_editor == NULL) {
         RETURN_LT(lt, NULL);
@@ -422,6 +427,16 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
                         level_editor_background_color(
                             level->level_editor)));
                 if (level->background == NULL) {
+                    return -1;
+                }
+
+                level->labels = RESET_LT(
+                    level->lt,
+                    level->labels,
+                    create_labels_from_label_layer(
+                        level_editor_label_layer(
+                            level->level_editor)));
+                if (level->labels == NULL) {
                     return -1;
                 }
             }
