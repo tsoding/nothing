@@ -6,6 +6,7 @@ typedef enum {
     LAYER_POINT,
     LAYER_PLAYER,
     LAYER_COLOR_PICKER,
+    LAYER_LABEL
 } LayerType;
 
 typedef struct {

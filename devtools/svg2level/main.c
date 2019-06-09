@@ -316,7 +316,7 @@ static void save_goals(Context *context, FILE *output_file)
     save_pack_by_id_prefix(context, output_file, "goal", attrs, attrs_count);
 }
 
-static void save_lavas(Context *context, FILE *output_file)
+static void save_lava(Context *context, FILE *output_file)
 {
     STATIC_ARRAY(const char *, attrs, "id", "x", "y", "width", "height", "#color");
     save_pack_by_id_prefix(context, output_file, "lava", attrs, attrs_count);
@@ -406,7 +406,7 @@ static void save_level(Context *context, FILE *output_file)
     save_player(context, output_file);
     save_platforms(context, output_file);
     save_goals(context, output_file);
-    save_lavas(context, output_file);
+    save_lava(context, output_file);
     save_backplatforms(context, output_file);
     save_boxes(context, output_file);
     save_labels(context, output_file);

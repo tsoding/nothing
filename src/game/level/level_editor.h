@@ -4,6 +4,7 @@
 typedef struct LevelEditor LevelEditor;
 typedef struct RectLayer RectLayer;
 typedef struct PointLayer PointLayer;
+typedef struct LabelLayer LabelLayer;
 
 // TODO(#820): LevelEditor cannot generate a level file
 
@@ -14,7 +15,8 @@ LevelEditor *create_level_editor(RectLayer *boxes_layer,
                                  PlayerLayer *player_layer_render,
                                  RectLayer *lava_editor,
                                  RectLayer *regions_layer,
-                                 Color background_color);
+                                 Color background_color,
+                                 LabelLayer *label_layer);
 void destroy_level_editor(LevelEditor *level_editor);
 
 int level_editor_render(const LevelEditor *level_editor,
@@ -33,5 +35,6 @@ const PlayerLayer *level_editor_player_layer(const LevelEditor *level_editor);
 const RectLayer *level_editor_lava_layer(const LevelEditor *level_editor);
 const RectLayer *level_editor_regions_layer(const LevelEditor *level_editor);
 Color level_editor_background_color(const LevelEditor *level_editor);
+const LabelLayer *level_editor_label_layer(const LevelEditor *level_editor);
 
 #endif  // LEVEL_EDITOR_H_
