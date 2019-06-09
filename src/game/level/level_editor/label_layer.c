@@ -10,6 +10,7 @@
 #include "label_layer.h"
 #include "dynarray.h"
 #include "color.h"
+#include "game/camera.h"
 
 #define LABEL_LAYER_ID_MAX_SIZE 36
 
@@ -138,7 +139,26 @@ int label_layer_render(const LabelLayer *label_layer,
 {
     trace_assert(label_layer);
     trace_assert(camera);
-    (void) fa;
+
+    size_t n = dynarray_count(label_layer->ids);
+    Point *positions = dynarray_data(label_layer->positions);
+    Color *colors = dynarray_data(label_layer->colors);
+    char **texts = dynarray_data(label_layer->texts);
+
+    /* TODO: LabelLayer doesn't show the final position of Label after the animation */
+    for (size_t i = 0; i < n; ++i) {
+        if (camera_render_text(
+                camera,
+                texts[i],
+                vec(2.0f, 2.0f),
+                color_scale(
+                    colors[i],
+                    rgba(1.0f, 1.0f, 1.0f, fa)),
+                positions[i]) < 0) {
+            return -1;
+        }
+    }
+
     return 0;
 }
 
@@ -149,6 +169,7 @@ int label_layer_event(LabelLayer *label_layer,
     trace_assert(label_layer);
     trace_assert(event);
     trace_assert(camera);
+    /* TODO: LabelLayer doesn't allow to modify and add labels */
     return 0;
 }
 
