@@ -145,7 +145,7 @@ int label_layer_render(const LabelLayer *label_layer,
     Color *colors = dynarray_data(label_layer->colors);
     char **texts = dynarray_data(label_layer->texts);
 
-    /* TODO: LabelLayer doesn't show the final position of Label after the animation */
+    /* TODO(#891): LabelLayer doesn't show the final position of Label after the animation */
     for (size_t i = 0; i < n; ++i) {
         if (camera_render_text(
                 camera,
