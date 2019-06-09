@@ -93,6 +93,7 @@ Player *create_player_from_player_layer(const PlayerLayer *player_layer,
 
 void destroy_player(Player * player)
 {
+    rigid_bodies_remove(player->rigid_bodies, player->alive_body_id);
     RETURN_LT0(player->lt);
 }
 
