@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include <SDL.h>
 
 #include "system/line_stream.h"
