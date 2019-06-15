@@ -88,17 +88,7 @@ Script *create_script_from_line_stream(LineStream *line_stream, Broadcast *broad
 {
     trace_assert(line_stream);
 
-    const char *line = line_stream_next(line_stream);
-    if (line == NULL) {
-        return NULL;
-    }
-
-    size_t n = 0;
-    if (sscanf(line, "%lu", &n) == EOF) {
-        return NULL;
-    }
-
-    const char *source_code = line_stream_collect_n_lines(line_stream, n);
+    const char *source_code = line_stream_collect_until_end(line_stream);
     if (source_code == NULL) {
         return NULL;
     }
