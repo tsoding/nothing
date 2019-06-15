@@ -49,7 +49,6 @@ struct Level
     Lava *lava;
     Platforms *back_platforms;
     Boxes *boxes;
-    // TODO(#818): LevelEditor does not support Labels
     Labels *labels;
     Regions *regions;
     Broadcast *broadcast;
