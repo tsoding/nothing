@@ -8,6 +8,11 @@ typedef struct {
     Color color;
 } ColorPicker;
 
+typedef struct LineStream LineStream;
+
+int color_picker_read_from_line_stream(ColorPicker *color_picker,
+                                       LineStream *line_stream);
+
 LayerPtr color_picker_as_layer(ColorPicker *color_picker);
 
 int color_picker_render(const ColorPicker *color_picker,

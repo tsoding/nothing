@@ -8,6 +8,7 @@ typedef struct LabelLayer LabelLayer;
 
 // TODO(#820): LevelEditor cannot generate a level file
 
+LevelEditor *create_level_editor_from_file(const char *file_name);
 LevelEditor *create_level_editor(RectLayer *boxes_layer,
                                  RectLayer *platforms_layer,
                                  RectLayer *back_platforms_layer,

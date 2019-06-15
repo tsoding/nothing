@@ -2,6 +2,7 @@
 #define LEVEL_METADATA_H_
 
 typedef struct LevelMetadata LevelMetadata;
+typedef struct LineStream LineStream;
 
 LevelMetadata *create_level_metadata_from_file(const char *filename);
 LevelMetadata *create_level_metadata_from_line_stream(LineStream *line_stream);
