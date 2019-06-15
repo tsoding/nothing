@@ -154,6 +154,8 @@ add_executable(nothing
   src/game/level/level_editor/layer.c
   src/game/level/level_editor/label_layer.c
   src/game/level/level_editor/label_layer.h
+  src/system/file.h
+  src/system/file.c
 )
 target_link_libraries(nothing ${SDL2_LIBRARIES} system ebisp)
 
