@@ -82,10 +82,18 @@ TEST(read_all_exprs_from_string_empty_test)
     Gc *gc = create_gc();
     struct ParseResult result = read_all_exprs_from_string(gc, "");
 
-    ASSERT_TRUE(result.is_error, {
+    ASSERT_FALSE(result.is_error, {
             fprintf(stderr,
-                    "Parsing is expected to fail, "
-                    "but it did not\n");
+                    "Parsing was unsuccessful: %s\n",
+                    result.error_message);
+    });
+
+    ASSERT_EQ(long int, 0, length_of_list(result.expr), {
+            fprintf(stderr, "Expected: %ld\n", _expected);
+            fprintf(stderr, "Actual: %ld\n", _actual);
+            fprintf(stderr, "Expression: ");
+            print_expr_as_sexpr(stderr, result.expr);
+            fprintf(stderr, "\n");
     });
 
     destroy_gc(gc);

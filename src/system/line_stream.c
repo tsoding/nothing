@@ -103,7 +103,7 @@ const char *line_stream_next(LineStream *line_stream)
 
 char *line_stream_collect_n_lines(LineStream *line_stream, size_t n)
 {
-    char *result = NULL;
+    char *result = string_append(NULL, "");
     for (size_t i = 0; i < n; ++i) {
         const char *line = line_stream_next(line_stream);
         if (line == NULL) {
