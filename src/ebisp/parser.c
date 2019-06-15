@@ -216,6 +216,10 @@ struct ParseResult read_all_exprs_from_string(Gc *gc, const char *str)
     trace_assert(str);
 
     struct Token current_token = next_token(str);
+    if (*current_token.end == 0) {
+        return parse_success(NIL(gc), current_token.end);
+    }
+
     struct ParseResult parse_result = parse_expr(gc, current_token);
     if (parse_result.is_error) {
         return parse_result;
