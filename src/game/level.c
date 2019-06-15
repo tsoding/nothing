@@ -37,7 +37,6 @@ struct Level
 {
     Lt *lt;
 
-    const char *file_name;
     LevelMetadata *metadata;
     Background *background;
     RigidBodies *rigid_bodies;
@@ -67,11 +66,6 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
     level->lt = lt;
-
-    level->file_name = PUSH_LT(lt, string_duplicate(file_name, NULL), free);
-    if (level->file_name == NULL) {
-        RETURN_LT(lt, NULL);
-    }
 
     LineStream *level_stream = PUSH_LT(
         lt,
