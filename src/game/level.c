@@ -40,7 +40,6 @@ struct Level
     const char *file_name;
     // TODO(#887): LevelEditor does not support chaning the metadata of the Level
     LevelMetadata *metadata;
-    // TODO(#812): LevelEditor does not support Background
     Background *background;
     RigidBodies *rigid_bodies;
     Player *player;
