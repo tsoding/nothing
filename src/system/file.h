@@ -3,6 +3,6 @@
 
 #include <time.h>
 
-time_t last_modified(const char *filepath);
+int last_modified(const char *filepath, time_t *time);
 
 #endif  // FILE_H_
