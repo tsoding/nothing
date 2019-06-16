@@ -44,7 +44,7 @@ int last_modified(const char *filepath, time_t *time)
         // TODO: convert GetLastError() to errno
         // for now let's just assume that file was not found.
         errno = ENOENT;
-        return 0;
+        return -1;
     }
     FILETIME filetime = { 0 };
     BOOL res = GetFileTime(hFile, NULL, NULL, &filetime);
