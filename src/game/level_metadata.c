@@ -29,7 +29,7 @@ LevelMetadata *create_level_metadata(const char *title)
 
     level_metadata->title = PUSH_LT(
         lt,
-        string_duplicate(title, NULL),
+        trim_endline(string_duplicate(title, NULL)),
         free);
     if (level_metadata->title == NULL) {
         RETURN_LT(lt, NULL);
@@ -57,25 +57,12 @@ LevelMetadata *create_level_metadata_from_line_stream(LineStream *line_stream)
 {
     trace_assert(line_stream);
 
-    Lt *lt = create_lt();
-
-    LevelMetadata *level_metadata = PUSH_LT(
-        lt, nth_calloc(1, sizeof(LevelMetadata)), free);
-    if (level_metadata == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    level_metadata->lt = lt;
-
-
-    level_metadata->title = PUSH_LT(
-        lt,
-        trim_endline(string_duplicate(line_stream_next(line_stream), NULL)),
-        free);
-    if (level_metadata->title == NULL) {
-        RETURN_LT(lt, NULL);
+    const char *line = line_stream_next(line_stream);
+    if (line == NULL) {
+        return NULL;
     }
 
-    return level_metadata;
+    return create_level_metadata(line);
 }
 
 void destroy_level_metadata(LevelMetadata *level_metadata)
