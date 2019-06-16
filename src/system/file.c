@@ -62,7 +62,7 @@ int last_modified(const char *filepath, time_t *time)
 
 #elif defined(__APPLE__)
 
-    // TODO: implement last_modified for Mac OS X
+    // TODO(#901): implement last_modified for Mac OS X
     #warning last_modified is not implemented
     return -1;
 
