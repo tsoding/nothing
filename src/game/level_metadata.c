@@ -14,6 +14,30 @@ struct LevelMetadata
     const char *title;
 };
 
+LevelMetadata *create_level_metadata(const char *title)
+{
+    trace_assert(title);
+
+    Lt *lt = create_lt();
+
+    LevelMetadata *level_metadata = PUSH_LT(
+        lt, nth_calloc(1, sizeof(LevelMetadata)), free);
+    if (level_metadata == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    level_metadata->lt = lt;
+
+    level_metadata->title = PUSH_LT(
+        lt,
+        string_duplicate(title, NULL),
+        free);
+    if (level_metadata->title == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    return level_metadata;
+}
+
 LevelMetadata *create_level_metadata_from_file(const char *filename)
 {
     trace_assert(filename);

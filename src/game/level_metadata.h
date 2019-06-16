@@ -4,6 +4,7 @@
 typedef struct LevelMetadata LevelMetadata;
 typedef struct LineStream LineStream;
 
+LevelMetadata *create_level_metadata(const char *title);
 LevelMetadata *create_level_metadata_from_file(const char *filename);
 LevelMetadata *create_level_metadata_from_line_stream(LineStream *line_stream);
 void destroy_level_metadata(LevelMetadata *level_metadata);
