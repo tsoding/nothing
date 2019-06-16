@@ -4,6 +4,7 @@
 #include "game/level/level_editor/layer.h"
 #include "game/level/level_editor/layer_picker.h"
 
+typedef struct LevelMetadata LevelMetadata;
 typedef struct LevelEditor LevelEditor;
 typedef struct RectLayer RectLayer;
 typedef struct PointLayer PointLayer;

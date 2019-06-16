@@ -30,7 +30,6 @@
 #include "game/level/level_editor.h"
 #include "game/level/script.h"
 
-#define LEVEL_LINE_MAX_LENGTH 512
 #define LEVEL_GRAVITY 1500.0f
 
 struct Level
@@ -50,194 +49,7 @@ struct Level
     Regions *regions;
     Broadcast *broadcast;
     Script *supa_script;
-
-    bool edit_mode;
-    LevelEditor *level_editor;
 };
-
-Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
-{
-    trace_assert(file_name);
-
-    Lt *lt = create_lt();
-
-    Level *const level = PUSH_LT(lt, nth_calloc(1, sizeof(Level)), free);
-    if (level == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    level->lt = lt;
-
-    LineStream *level_stream = PUSH_LT(
-        lt,
-        create_line_stream(
-            file_name,
-            "r",
-            LEVEL_LINE_MAX_LENGTH),
-        destroy_line_stream);
-    if (level_stream == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level->metadata = PUSH_LT(
-        lt,
-        create_level_metadata_from_line_stream(level_stream),
-        destroy_level_metadata);
-    if (level->metadata == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level->background = PUSH_LT(
-        lt,
-        create_background_from_line_stream(level_stream),
-        destroy_background);
-    if (level->background == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level->rigid_bodies = PUSH_LT(lt, create_rigid_bodies(1024), destroy_rigid_bodies);
-    if (level->rigid_bodies == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    PlayerLayer *player_layer = create_player_layer_from_line_stream(level_stream);
-    if (player_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level->player = PUSH_LT(
-        lt,
-        create_player_from_player_layer(player_layer, level->rigid_bodies, broadcast),
-        destroy_player);
-    if (level->player == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    RectLayer *platforms_layer = create_rect_layer_from_line_stream(level_stream);
-    if (platforms_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level->platforms = PUSH_LT(
-        lt,
-        create_platforms_from_rect_layer(platforms_layer),
-        destroy_platforms);
-    if (level->platforms == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    PointLayer *goals_layer = create_point_layer_from_line_stream(level_stream);
-    if (goals_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level->goals = PUSH_LT(
-        lt,
-        create_goals_from_point_layer(goals_layer),
-        destroy_goals);
-    if (level->goals == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    RectLayer *lava_layer = create_rect_layer_from_line_stream(level_stream);
-    if (lava_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level->lava = PUSH_LT(
-        lt,
-        create_lava_from_rect_layer(lava_layer),
-        destroy_lava);
-    if (level->lava == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    RectLayer *back_platforms_layer = create_rect_layer_from_line_stream(level_stream);
-    if (back_platforms_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level->back_platforms = PUSH_LT(
-        lt,
-        create_platforms_from_rect_layer(back_platforms_layer),
-        destroy_platforms);
-    if (level->back_platforms == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    RectLayer *boxes_layer = create_rect_layer_from_line_stream(level_stream);
-    if (boxes_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level->boxes = PUSH_LT(
-        lt,
-        create_boxes_from_rect_layer(boxes_layer, level->rigid_bodies),
-        destroy_boxes);
-    if (level->boxes == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    LabelLayer *label_layer = create_label_layer_from_line_stream(level_stream);
-    if (label_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level->labels = PUSH_LT(
-        lt,
-        create_labels_from_label_layer(label_layer),
-        destroy_labels);
-    if (level->labels == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    RectLayer *regions_layer =
-        create_rect_layer_from_line_stream(level_stream);
-    if (regions_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level->regions = PUSH_LT(
-        lt,
-        create_regions_from_rect_layer(regions_layer),
-        destroy_regions);
-    if (level->regions == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level->broadcast = broadcast;
-    level->supa_script = PUSH_LT(
-        lt,
-        create_script_from_line_stream(
-            level_stream,
-            broadcast),
-        destroy_script);
-    if (level->supa_script == NULL) {
-        log_fail("Could not construct Supa Script for the level\n");
-        RETURN_LT(lt, NULL);
-    }
-
-    level->edit_mode = false;
-    level->level_editor = PUSH_LT(
-        lt,
-        create_level_editor(
-            boxes_layer,
-            platforms_layer,
-            back_platforms_layer,
-            goals_layer,
-            player_layer,
-            lava_layer,
-            regions_layer,
-            background_base_color(level->background),
-            label_layer),
-        destroy_level_editor);
-    if (level->level_editor == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    destroy_line_stream(RELEASE_LT(lt, level_stream));
-
-    return level;
-}
 
 Level *create_level_from_level_editor(const LevelEditor *level_editor,
                                       Broadcast *broadcast)
@@ -351,8 +163,6 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor,
         RETURN_LT(lt, NULL);
     }
 
-    level->edit_mode = false;
-
     return level;
 }
 
@@ -366,14 +176,6 @@ void destroy_level(Level *level)
 int level_render(const Level *level, Camera *camera)
 {
     trace_assert(level);
-
-    if (level->edit_mode) {
-        if (level_editor_render(level->level_editor, camera) < 0) {
-            return -1;
-        }
-
-        return 0;
-    }
 
     if (background_render(level->background, camera) < 0) {
         return -1;
@@ -439,7 +241,7 @@ int level_update(Level *level, float delta_time)
     return 0;
 }
 
-int level_event(Level *level, const SDL_Event *event, const Camera *camera)
+int level_event(Level *level, const SDL_Event *event)
 {
     trace_assert(level);
     trace_assert(event);
@@ -450,104 +252,6 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
         case SDLK_SPACE: {
             player_jump(level->player, level->supa_script);
         } break;
-
-        case SDLK_TAB: {
-            level->edit_mode = !level->edit_mode;
-            SDL_SetRelativeMouseMode(level->edit_mode);
-            if (!level->edit_mode) {
-                level->boxes = RESET_LT(
-                    level->lt,
-                    level->boxes,
-                    create_boxes_from_rect_layer(
-                        level_editor_boxes(level->level_editor),
-                        level->rigid_bodies));
-                if (level->boxes == NULL) {
-                    return -1;
-                }
-
-                level->platforms = RESET_LT(
-                    level->lt,
-                    level->platforms,
-                    create_platforms_from_rect_layer(
-                        level_editor_platforms(
-                            level->level_editor)));
-                if (level->platforms == NULL) {
-                    return -1;
-                }
-
-                level->back_platforms = RESET_LT(
-                    level->lt,
-                    level->back_platforms,
-                    create_platforms_from_rect_layer(
-                        level_editor_back_platforms(
-                            level->level_editor)));
-                if (level->back_platforms == NULL) {
-                    return -1;
-                }
-
-                level->goals = RESET_LT(
-                    level->lt,
-                    level->goals,
-                    create_goals_from_point_layer(
-                        level_editor_goals_layer(
-                            level->level_editor)));
-                if (level->goals == NULL) {
-                    return -1;
-                }
-
-                level->player = RESET_LT(
-                    level->lt,
-                    level->player,
-                    create_player_from_player_layer(
-                        level_editor_player_layer(
-                            level->level_editor),
-                        level->rigid_bodies,
-                        level->broadcast));
-                if (level->player == NULL) {
-                    return -1;
-                }
-
-                level->lava = RESET_LT(
-                    level->lt,
-                    level->lava,
-                    create_lava_from_rect_layer(
-                        level_editor_lava_layer(
-                            level->level_editor)));
-                if (level->lava == NULL) {
-                    return -1;
-                }
-
-                level->regions = RESET_LT(
-                    level->lt,
-                    level->regions,
-                    create_regions_from_rect_layer(
-                        level_editor_regions_layer(
-                            level->level_editor)));
-                if (level->regions == NULL) {
-                    return -1;
-                }
-
-                level->background = RESET_LT(
-                    level->lt,
-                    level->background,
-                    create_background(
-                        level_editor_background_color(
-                            level->level_editor)));
-                if (level->background == NULL) {
-                    return -1;
-                }
-
-                level->labels = RESET_LT(
-                    level->lt,
-                    level->labels,
-                    create_labels_from_label_layer(
-                        level_editor_label_layer(
-                            level->level_editor)));
-                if (level->labels == NULL) {
-                    return -1;
-                }
-            }
-        };
         }
         break;
 
@@ -556,10 +260,6 @@ int level_event(Level *level, const SDL_Event *event, const Camera *camera)
             player_jump(level->player, level->supa_script);
         }
         break;
-    }
-
-    if (level->edit_mode) {
-        level_editor_event(level->level_editor, event, camera);
     }
 
     return 0;
@@ -608,14 +308,8 @@ void level_toggle_debug_mode(Level *level)
 
 int level_enter_camera_event(Level *level, Camera *camera)
 {
-    if (!level->edit_mode) {
-        player_focus_camera(level->player, camera);
-        camera_scale(camera, 1.0f);
-    } else {
-        level_editor_focus_camera(
-            level->level_editor,
-            camera);
-    }
+    player_focus_camera(level->player, camera);
+    camera_scale(camera, 1.0f);
 
     goals_cue(level->goals, camera);
     goals_checkpoint(level->goals, level->player);
@@ -653,16 +347,8 @@ struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct E
 
         return eval_success(NIL(gc));
     } else if (strcmp(target, "edit") == 0) {
-        level->edit_mode = !level->edit_mode;
-        SDL_SetRelativeMouseMode(level->edit_mode);
         return eval_success(NIL(gc));
     }
 
     return unknown_target(gc, "level", target);
-}
-
-bool level_edit_mode(const Level *level)
-{
-    trace_assert(level);
-    return level->edit_mode;
 }
