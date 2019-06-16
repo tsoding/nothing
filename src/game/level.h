@@ -11,7 +11,10 @@
 
 typedef struct Broadcast Broadcast;
 typedef struct Level Level;
+typedef struct LevelEditor LevelEditor;
 
+Level *create_level_from_level_editor(const LevelEditor *level_editor,
+                                      Broadcast *broadcast);
 Level *create_level_from_file(const char *file_name, Broadcast *broadcast);
 void destroy_level(Level *level);
 

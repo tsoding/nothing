@@ -239,6 +239,123 @@ Level *create_level_from_file(const char *file_name, Broadcast *broadcast)
     return level;
 }
 
+Level *create_level_from_level_editor(const LevelEditor *level_editor,
+                                      Broadcast *broadcast)
+{
+    trace_assert(level_editor);
+    trace_assert(broadcast);
+
+    Lt *lt = create_lt();
+
+    Level *level = PUSH_LT(
+        lt,
+        nth_calloc(1, sizeof(Level)),
+        free);
+    if (level == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    level->lt = lt;
+
+    level->background = PUSH_LT(
+        lt,
+        create_background(
+            level_editor_background_color(
+                level_editor)),
+        destroy_background);
+    if (level->background == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level->rigid_bodies = PUSH_LT(lt, create_rigid_bodies(1024), destroy_rigid_bodies);
+    if (level->rigid_bodies == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level->player = PUSH_LT(
+        lt,
+        create_player_from_player_layer(
+            level_editor->player_layer,
+            level->rigid_bodies,
+            broadcast),
+        destroy_player);
+    if (level->player == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level->platforms = PUSH_LT(
+        lt,
+        create_platforms_from_rect_layer(level_editor->platforms_layer),
+        destroy_platforms);
+    if (level->platforms == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level->goals = PUSH_LT(
+        lt,
+        create_goals_from_point_layer(level_editor->goals_layer),
+        destroy_goals);
+    if (level->goals == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level->lava = PUSH_LT(
+        lt,
+        create_lava_from_rect_layer(level_editor->lava_layer),
+        destroy_lava);
+    if (level->lava == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level->back_platforms = PUSH_LT(
+        lt,
+        create_platforms_from_rect_layer(level_editor->back_platforms_layer),
+        destroy_platforms);
+    if (level->back_platforms == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level->boxes = PUSH_LT(
+        lt,
+        create_boxes_from_rect_layer(level_editor->boxes_layer, level->rigid_bodies),
+        destroy_boxes);
+    if (level->boxes == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level->labels = PUSH_LT(
+        lt,
+        create_labels_from_label_layer(level_editor->label_layer),
+        destroy_labels);
+    if (level->labels == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level->regions = PUSH_LT(
+        lt,
+        create_regions_from_rect_layer(level_editor->regions_layer),
+        destroy_regions);
+    if (level->regions == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level->broadcast = broadcast;
+
+    level->supa_script = PUSH_LT(
+        lt,
+        create_script_from_string(
+            broadcast,
+            level_editor->supa_script_source),
+        destroy_script);
+    if (level->supa_script == NULL) {
+        log_fail("Could not construct Supa Script for the level\n");
+        RETURN_LT(lt, NULL);
+    }
+
+    level->edit_mode = false;
+
+    return level;
+}
+
 void destroy_level(Level *level)
 {
     trace_assert(level);
