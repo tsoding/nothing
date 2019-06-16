@@ -452,7 +452,14 @@ static int game_event_level_editor(Game *game, const SDL_Event *event)
             }
             game->state = GAME_STATE_RUNNING;
             SDL_SetRelativeMouseMode(false);
-        };
+        } break;
+
+        case SDLK_s: {
+            const char *level_filename = level_picker_selected_level(game->level_picker);
+            if (level_editor_dump(game->level_editor, level_filename) < 0) {
+                return -1;
+            }
+        } break;
         }
     } break;
     }

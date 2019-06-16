@@ -199,3 +199,26 @@ char **labels_layer_texts(const LabelLayer *label_layer)
 {
     return dynarray_data(label_layer->texts);
 }
+
+int label_layer_dump_stream(const LabelLayer *label_layer, FILE *filedump)
+{
+    trace_assert(label_layer);
+    trace_assert(filedump);
+
+    size_t n = dynarray_count(label_layer->ids);
+    char *ids = dynarray_data(label_layer->ids);
+    Point *positions = dynarray_data(label_layer->positions);
+    Color *colors = dynarray_data(label_layer->colors);
+    char **texts = dynarray_data(label_layer->texts);
+
+    fprintf(filedump, "%ld\n", n);
+    for (size_t i = 0; i < n; ++i) {
+        fprintf(filedump, "%s %f %f ",
+                ids + LABEL_LAYER_ID_MAX_SIZE * i,
+                positions[i].x, positions[i].y);
+        color_hex_to_stream(colors[i], filedump);
+        fprintf(filedump, "\n%s\n", texts[i]);
+    }
+
+    return 0;
+}

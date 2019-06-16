@@ -17,6 +17,8 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
 int rect_layer_add_rect(RectLayer *layer, Rect rect, Color color);
 int rect_layer_delete_rect_at(RectLayer *layer, Vec position);
 
+int rect_layer_dump_stream(const RectLayer *layer, FILE *filedump);
+
 size_t rect_layer_count(const RectLayer *layer);
 const Rect *rect_layer_rects(const RectLayer *layer);
 const Color *rect_layer_colors(const RectLayer *layer);

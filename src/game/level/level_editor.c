@@ -258,3 +258,33 @@ int level_editor_focus_camera(LevelEditor *level_editor,
     camera_scale(camera, level_editor->camera_scale);
     return 0;
 }
+
+int level_editor_dump(const LevelEditor *level_editor,
+                      const char *filename)
+{
+    trace_assert(level_editor);
+    trace_assert(filename);
+
+    FILE *filedump = PUSH_LT(
+        level_editor->lt,
+        fopen(filename, "w"),
+        fclose);
+
+    if (fprintf(filedump, "%s\n", level_metadata_title(level_editor->metadata)) < 0) {
+        return -1;
+    }
+
+    for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
+        if (layer_dump_stream(
+                level_editor->layers[i],
+                filedump) < 0) {
+            return -1;
+        }
+    }
+
+    fprintf(filedump, "%s", level_editor->supa_script_source);
+
+    fclose(RELEASE_LT(level_editor->lt, filedump));
+
+    return 0;
+}

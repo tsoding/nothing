@@ -45,5 +45,7 @@ int level_editor_event(LevelEditor *level_editor,
                        const Camera *camera);
 int level_editor_focus_camera(LevelEditor *level_editor,
                               Camera *camera);
+int level_editor_dump(const LevelEditor *level_editor,
+                      const char *filename);
 
 #endif  // LEVEL_EDITOR_H_

@@ -54,3 +54,28 @@ int layer_event(LayerPtr layer,
 
     return -1;
 }
+
+int layer_dump_stream(LayerPtr layer,
+                      FILE *stream)
+{
+    switch (layer.type) {
+    case LAYER_RECT:
+        return rect_layer_dump_stream(layer.ptr, stream);
+
+    case LAYER_POINT:
+        return point_layer_dump_stream(layer.ptr, stream);
+
+    case LAYER_PLAYER:
+        return player_layer_dump_stream(layer.ptr, stream);
+
+    case LAYER_COLOR_PICKER: {
+        color_hex_to_stream(((ColorPicker*)layer.ptr)->color, stream);
+        return fprintf(stream, "\n");
+    }
+
+    case LAYER_LABEL:
+        return label_layer_dump_stream(layer.ptr, stream);
+    }
+
+    return -1;
+}

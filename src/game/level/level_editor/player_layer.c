@@ -107,3 +107,16 @@ int player_layer_event(PlayerLayer *player_layer,
 
     return 0;
 }
+
+int player_layer_dump_stream(const PlayerLayer *player_layer,
+                             FILE *filedump)
+{
+    trace_assert(player_layer);
+    trace_assert(filedump);
+
+    fprintf(filedump, "%f %f ", player_layer->position.x, player_layer->position.y);
+    color_hex_to_stream(player_layer->color_picker.color, filedump);
+    fprintf(filedump, "\n");
+
+    return 0;
+}
