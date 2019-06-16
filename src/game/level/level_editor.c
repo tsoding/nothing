@@ -9,7 +9,6 @@
 #include "game/level/level_editor/point_layer.h"
 #include "game/level/level_editor/player_layer.h"
 #include "game/level/level_editor/label_layer.h"
-#include "game/level/level_editor/layer_picker.h"
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
 #include "system/lt.h"
@@ -18,28 +17,6 @@
 #include "level_editor.h"
 
 #define LEVEL_LINE_MAX_LENGTH 512
-
-struct LevelEditor
-{
-    Lt *lt;
-    Vec camera_position;
-    float camera_scale;
-    LayerPicker layer_picker;
-
-    LevelMetadata *metadata;
-    RectLayer *boxes_layer;
-    RectLayer *platforms_layer;
-    RectLayer *back_platforms_layer;
-    PointLayer *goals_layer;
-    PlayerLayer *player_layer;
-    RectLayer *lava_layer;
-    RectLayer *regions_layer;
-    ColorPicker background_layer;
-    LabelLayer *label_layer;
-    LayerPtr layers[LAYER_PICKER_N];
-
-    bool drag;
-};
 
 LevelEditor *create_level_editor(RectLayer *boxes_layer,
                                  RectLayer *platforms_layer,
@@ -205,6 +182,15 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
             create_rect_layer_from_line_stream(level_stream),
             destroy_rect_layer);
     if (level_editor->regions_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level_editor->supa_script_source =
+        PUSH_LT(
+            lt,
+            line_stream_collect_until_end(level_stream),
+            free);
+    if (level_editor->supa_script_source == NULL) {
         RETURN_LT(lt, NULL);
     }
 

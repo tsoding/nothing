@@ -1,10 +1,36 @@
 #ifndef LEVEL_EDITOR_H_
 #define LEVEL_EDITOR_H_
 
+#include "game/level/level_editor/layer.h"
+#include "game/level/level_editor/layer_picker.h"
+
 typedef struct LevelEditor LevelEditor;
 typedef struct RectLayer RectLayer;
 typedef struct PointLayer PointLayer;
 typedef struct LabelLayer LabelLayer;
+
+struct LevelEditor
+{
+    Lt *lt;
+    Vec camera_position;
+    float camera_scale;
+    LayerPicker layer_picker;
+
+    LevelMetadata *metadata;
+    RectLayer *boxes_layer;
+    RectLayer *platforms_layer;
+    RectLayer *back_platforms_layer;
+    PointLayer *goals_layer;
+    PlayerLayer *player_layer;
+    RectLayer *lava_layer;
+    RectLayer *regions_layer;
+    ColorPicker background_layer;
+    LabelLayer *label_layer;
+    char *supa_script_source;
+    LayerPtr layers[LAYER_PICKER_N];
+
+    bool drag;
+};
 
 // TODO(#820): LevelEditor cannot generate a level file
 
