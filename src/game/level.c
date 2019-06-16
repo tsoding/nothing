@@ -70,9 +70,7 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor,
 
     level->background = PUSH_LT(
         lt,
-        create_background(
-            level_editor_background_color(
-                level_editor)),
+        create_background(level_editor->background_layer.color),
         destroy_background);
     if (level->background == NULL) {
         RETURN_LT(lt, NULL);

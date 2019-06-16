@@ -36,15 +36,6 @@ struct LevelEditor
 // TODO(#820): LevelEditor cannot generate a level file
 
 LevelEditor *create_level_editor_from_file(const char *file_name);
-LevelEditor *create_level_editor(RectLayer *boxes_layer,
-                                 RectLayer *platforms_layer,
-                                 RectLayer *back_platforms_layer,
-                                 PointLayer *goals_layer,
-                                 PlayerLayer *player_layer_render,
-                                 RectLayer *lava_editor,
-                                 RectLayer *regions_layer,
-                                 Color background_color,
-                                 LabelLayer *label_layer);
 void destroy_level_editor(LevelEditor *level_editor);
 
 int level_editor_render(const LevelEditor *level_editor,
@@ -54,15 +45,5 @@ int level_editor_event(LevelEditor *level_editor,
                        const Camera *camera);
 int level_editor_focus_camera(LevelEditor *level_editor,
                               Camera *camera);
-
-const RectLayer *level_editor_boxes(const LevelEditor *level_editor);
-const RectLayer *level_editor_platforms(const LevelEditor *level_editor);
-const RectLayer *level_editor_back_platforms(const LevelEditor *level_editor);
-const PointLayer *level_editor_goals_layer(const LevelEditor *level_editor);
-const PlayerLayer *level_editor_player_layer(const LevelEditor *level_editor);
-const RectLayer *level_editor_lava_layer(const LevelEditor *level_editor);
-const RectLayer *level_editor_regions_layer(const LevelEditor *level_editor);
-Color level_editor_background_color(const LevelEditor *level_editor);
-const LabelLayer *level_editor_label_layer(const LevelEditor *level_editor);
 
 #endif  // LEVEL_EDITOR_H_
