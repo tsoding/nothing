@@ -41,7 +41,7 @@ int last_modified(const char *filepath, time_t *time)
         NULL
     );
     if (hFile == INVALID_HANDLE_VALUE) {
-        // TODO: convert GetLastError() to errno
+        // TODO(#900): convert GetLastError() to errno
         // for now let's just assume that file was not found.
         errno = ENOENT;
         return -1;
