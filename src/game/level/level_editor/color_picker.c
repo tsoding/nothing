@@ -3,6 +3,7 @@
 #include "game/level/boxes.h"
 #include "system/stacktrace.h"
 #include "system/line_stream.h"
+#include "system/log.h"
 #include "game/camera.h"
 #include "proto_rect.h"
 #include "color_picker.h"
@@ -35,6 +36,10 @@ int color_picker_read_from_line_stream(ColorPicker *color_picker,
     const char *line = line_stream_next(line_stream);
     if (line == NULL) {
         return -1;
+    }
+
+    if (sscanf(line, "%6s", color) == EOF) {
+        log_fail("Could not read color\n");
     }
 
     color_picker->color = hexstr(color);
