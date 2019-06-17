@@ -126,7 +126,7 @@ char *line_stream_collect_until_end(LineStream *line_stream)
     char *result = string_append(NULL, "");
     const char *line = line_stream_next(line_stream);
 
-    /* TODO: line_stream_collect_until_end does not distinguish between EOF and error during reading */
+    /* TODO(#906): line_stream_collect_until_end does not distinguish between EOF and error during reading */
     while (line != NULL) {
         result = string_append(result, line);
         line = line_stream_next(line_stream);
