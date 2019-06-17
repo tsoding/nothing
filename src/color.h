@@ -1,6 +1,7 @@
 #ifndef COLOR_H_
 #define COLOR_H_
 
+#include <stdio.h>
 #include <SDL.h>
 
 typedef struct Color {
