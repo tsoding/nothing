@@ -25,7 +25,7 @@ static void fclose_lt(void* file)
     fclose(file);
 }
 
-// TODO: create_line_stream probably does not need mode
+// TODO(#905): create_line_stream probably does not need mode
 //   Because LineStream interface doesn't even have anything
 //   for writing to files. So we can just hardcode the mode
 //   inside of the ctor.
