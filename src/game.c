@@ -455,6 +455,8 @@ static int game_event_level_editor(Game *game, const SDL_Event *event)
         } break;
 
         case SDLK_s: {
+            /* TODO: There is no indication that the level is saved when you press S in Level Editor */
+            /* TODO: Game in LevelEditor mode does not check that the saved level file is modified by external program */
             const char *level_filename = level_picker_selected_level(game->level_picker);
             if (level_editor_dump(game->level_editor, level_filename) < 0) {
                 return -1;
