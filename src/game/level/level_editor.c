@@ -318,7 +318,7 @@ int level_editor_event(LevelEditor *level_editor,
                 level_editor_dump(level_editor);
                 log_info("Saving level to `%s`\n", level_editor->file_name);
             } else {
-                /* TODO: Level Editor does not ask for the filename if it is no defined */
+                /* TODO(#915): Level Editor does not ask for the filename if it is no defined */
                 log_warn("Could not save level. File is not defined.\n");
             }
         } break;
