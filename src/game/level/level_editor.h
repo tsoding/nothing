@@ -33,7 +33,6 @@ struct LevelEditor
     bool drag;
 };
 
-// TODO(#820): LevelEditor cannot generate a level file
 
 LevelEditor *create_level_editor_from_file(const char *file_name);
 void destroy_level_editor(LevelEditor *level_editor);
