@@ -91,7 +91,7 @@ DIR *opendir(const char *dirpath)
 
     DIR *dir = nth_calloc(1, sizeof(DIR));
 
-    dir->hFind = FindFirstFile(name, &dir->data);
+    dir->hFind = FindFirstFile(dirpath, &dir->data);
     if (dir->hFind == INVALID_HANDLE_VALUE) {
         goto fail;
     }
@@ -120,7 +120,7 @@ struct dirent *readdir(DIR *dirp)
 
     strncpy(
         dirp->dirent->d_name,
-        dirp->data.cFilename,
+        dirp->data.cFileName,
         sizeof(dirp->dirent->d_name) - 1);
 
     return dirp->dirent;
