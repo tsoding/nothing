@@ -12,6 +12,7 @@ typedef struct {
     ColorPicker color_picker;
 } PlayerLayer;
 
+PlayerLayer *create_player_layer(Vec position, Color color);
 PlayerLayer *create_player_layer_from_line_stream(LineStream *line_stream);
 void destroy_player_layer(PlayerLayer *player_layer);
 

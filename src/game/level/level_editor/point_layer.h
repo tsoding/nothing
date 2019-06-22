@@ -12,6 +12,7 @@ typedef struct LineStream LineStream;
 typedef struct Camera Camera;
 
 LayerPtr point_layer_as_layer(PointLayer *point_layer);
+PointLayer *create_point_layer(void);
 PointLayer *create_point_layer_from_line_stream(LineStream *line_stream);
 void destroy_point_layer(PointLayer *point_layer);
 

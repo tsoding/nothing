@@ -43,10 +43,8 @@ LayerPtr point_layer_as_layer(PointLayer *point_layer)
     return layer;
 }
 
-PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
+PointLayer *create_point_layer(void)
 {
-    trace_assert(line_stream);
-
     Lt *lt = create_lt();
 
     PointLayer *point_layer = PUSH_LT(lt, nth_calloc(1, sizeof(PointLayer)), free);
@@ -72,13 +70,32 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
+    point_layer->edit_field = PUSH_LT(
+        lt,
+        create_edit_field(
+            vec(5.0f, 5.0f),
+            rgba(0.0f, 0.0f, 0.0f, 1.0f)),
+        destroy_edit_field);
+    if (point_layer->edit_field == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    return point_layer;
+}
+
+PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
+{
+    trace_assert(line_stream);
+
+    PointLayer *point_layer = create_point_layer();
+
     size_t count = 0;
     if (sscanf(
             line_stream_next(line_stream),
             "%lu",
             &count) == EOF) {
         log_fail("Could not read amount of points");
-        RETURN_LT(lt, NULL);
+        RETURN_LT(point_layer->lt, NULL);
     }
 
     char color_name[7];
@@ -90,7 +107,7 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
                 "%"STRINGIFY(ID_MAX_SIZE)"s%f%f%6s",
                 id, &x, &y, color_name) < 0) {
             log_fail("Could not read %dth goal\n", i);
-            RETURN_LT(lt, NULL);
+            RETURN_LT(point_layer->lt, NULL);
         }
         const Color color = hexstr(color_name);
         const Point point = vec(x, y);
@@ -98,16 +115,6 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
         dynarray_push(point_layer->colors, &color);
         dynarray_push(point_layer->points, &point);
         dynarray_push(point_layer->ids, id);
-    }
-
-    point_layer->edit_field = PUSH_LT(
-        point_layer->lt,
-        create_edit_field(
-            vec(5.0f, 5.0f),
-            rgba(0.0f, 0.0f, 0.0f, 1.0f)),
-        destroy_edit_field);
-    if (point_layer->edit_field == NULL) {
-        RETURN_LT(point_layer->lt, NULL);
     }
 
     point_layer->selected = -1;
