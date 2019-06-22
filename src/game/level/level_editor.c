@@ -13,10 +13,119 @@
 #include "system/nth_alloc.h"
 #include "system/lt.h"
 #include "system/log.h"
+#include "system/str.h"
 
 #include "level_editor.h"
 
 #define LEVEL_LINE_MAX_LENGTH 512
+
+static int level_editor_dump(const LevelEditor *level_editor);
+
+LevelEditor *create_level_editor(void)
+{
+    Lt *lt = create_lt();
+    LevelEditor *level_editor = PUSH_LT(
+        lt,
+        nth_calloc(1, sizeof(LevelEditor)),
+        free);
+    if (level_editor == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    level_editor->lt = lt;
+
+    level_editor->metadata = PUSH_LT(
+        lt,
+        create_level_metadata(""),
+        destroy_level_metadata);
+    if (level_editor->metadata == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level_editor->background_layer.color = hexstr("fffda5");
+
+    level_editor->player_layer = PUSH_LT(
+        lt,
+        create_player_layer(vec(0.0f, 0.0f), hexstr("ff8080")),
+        destroy_player_layer);
+    if (level_editor->player_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level_editor->platforms_layer = PUSH_LT(
+        lt,
+        create_rect_layer(),
+        destroy_rect_layer);
+    if (level_editor->platforms_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level_editor->goals_layer = PUSH_LT(
+        lt,
+        create_point_layer(),
+        destroy_point_layer);
+    if (level_editor->goals_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level_editor->lava_layer = PUSH_LT(
+        lt,
+        create_rect_layer(),
+        destroy_rect_layer);
+    if (level_editor->lava_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level_editor->back_platforms_layer = PUSH_LT(
+        lt,
+        create_rect_layer(),
+        destroy_rect_layer);
+    if (level_editor->back_platforms_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level_editor->boxes_layer = PUSH_LT(
+        lt,
+        create_rect_layer(),
+        destroy_rect_layer);
+    if (level_editor->boxes_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level_editor->label_layer = PUSH_LT(
+        lt,
+        create_label_layer(),
+        destroy_label_layer);
+    if (level_editor->label_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level_editor->regions_layer = PUSH_LT(
+        lt,
+        create_rect_layer(),
+        destroy_rect_layer);
+    if (level_editor->regions_layer == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    level_editor->supa_script_source =
+        PUSH_LT(lt, string_duplicate("", NULL), free);
+
+    level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(level_editor->boxes_layer);
+    level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
+    level_editor->layers[LAYER_PICKER_BACK_PLATFORMS] = rect_layer_as_layer(level_editor->back_platforms_layer);
+    level_editor->layers[LAYER_PICKER_GOALS] = point_layer_as_layer(level_editor->goals_layer);
+    level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(level_editor->player_layer);
+    level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(level_editor->lava_layer);
+    level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(level_editor->regions_layer);
+    level_editor->layers[LAYER_PICKER_BACKGROUND] = color_picker_as_layer(&level_editor->background_layer);
+    level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
+
+    level_editor->layer_picker = LAYER_PICKER_BOXES;
+
+    level_editor->drag = false;
+
+    return level_editor;
+}
 
 LevelEditor *create_level_editor_from_file(const char *file_name)
 {
@@ -31,6 +140,12 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
     level_editor->lt = lt;
+
+    level_editor->file_name =
+        PUSH_LT(
+            lt,
+            string_duplicate(file_name, NULL),
+            free);
 
     LineStream *level_stream = PUSH_LT(
         lt,
@@ -195,6 +310,21 @@ int level_editor_event(LevelEditor *level_editor,
     trace_assert(camera);
 
     switch (event->type) {
+    case SDL_KEYDOWN: {
+        switch(event-> key.keysym.sym) {
+        case SDLK_s: {
+            /* TODO(#903): There is no indication that the level is saved when you press S in Level Editor */
+            if (level_editor->file_name) {
+                level_editor_dump(level_editor);
+                log_info("Saving level to `%s`\n", level_editor->file_name);
+            } else {
+                /* TODO(#915): Level Editor does not ask for the filename if it is no defined */
+                log_warn("Could not save level. File is not defined.\n");
+            }
+        } break;
+        }
+    } break;
+
     case SDL_MOUSEWHEEL: {
         // TODO(#679): zooming in edit mode is not smooth enough
         if (event->wheel.y > 0) {
@@ -259,15 +389,14 @@ int level_editor_focus_camera(LevelEditor *level_editor,
     return 0;
 }
 
-int level_editor_dump(const LevelEditor *level_editor,
-                      const char *filename)
+/* TODO(#904): LevelEditor does not check that the saved level file is modified by external program */
+static int level_editor_dump(const LevelEditor *level_editor)
 {
     trace_assert(level_editor);
-    trace_assert(filename);
 
     FILE *filedump = PUSH_LT(
         level_editor->lt,
-        fopen(filename, "w"),
+        fopen(level_editor->file_name, "w"),
         fclose);
 
     if (fprintf(filedump, "%s\n", level_metadata_title(level_editor->metadata)) < 0) {

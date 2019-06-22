@@ -8,34 +8,44 @@
 #include "system/nth_alloc.h"
 #include "system/log.h"
 
-PlayerLayer *create_player_layer_from_line_stream(LineStream *line_stream)
+PlayerLayer *create_player_layer(Vec position, Color color)
 {
-    trace_assert(line_stream);
-
     Lt *lt = create_lt();
 
     PlayerLayer *player_layer = PUSH_LT(lt, nth_calloc(1, sizeof(PlayerLayer)), free);
     player_layer->lt = lt;
 
-    char colorstr[7];
+    player_layer->position = position;
+    player_layer->color_picker.color = color;
+
+    return player_layer;
+}
+
+PlayerLayer *create_player_layer_from_line_stream(LineStream *line_stream)
+{
+    trace_assert(line_stream);
+
+    PlayerLayer *player_layer = create_player_layer(
+        vec(0.0f, 0.0f), COLOR_BLACK);
 
     const char *line = line_stream_next(line_stream);
     if (line == NULL) {
         log_fail("Could not read Player Layer\n");
-        RETURN_LT(lt, NULL);
+        RETURN_LT(player_layer->lt, NULL);
     }
 
+    char colorstr[7];
+    Point position;
     if (sscanf(line,
                "%f%f%6s",
-               &player_layer->position.x,
-               &player_layer->position.y,
+               &position.x,
+               &position.y,
                colorstr) == EOF) {
         log_fail("Could not read Player Layer\n");
-        RETURN_LT(lt, NULL);
+        RETURN_LT(player_layer->lt, NULL);
     }
-    player_layer->color_picker.color = hexstr(colorstr);
 
-    return player_layer;
+    return create_player_layer(position, hexstr(colorstr));
 }
 
 void destroy_player_layer(PlayerLayer *player_layer)

@@ -28,13 +28,15 @@ struct LevelEditor
     ColorPicker background_layer;
     LabelLayer *label_layer;
     char *supa_script_source;
+
     LayerPtr layers[LAYER_PICKER_N];
 
     bool drag;
+
+    const char *file_name;
 };
 
-// TODO(#820): LevelEditor cannot generate a level file
-
+LevelEditor *create_level_editor(void);
 LevelEditor *create_level_editor_from_file(const char *file_name);
 void destroy_level_editor(LevelEditor *level_editor);
 
@@ -45,7 +47,5 @@ int level_editor_event(LevelEditor *level_editor,
                        const Camera *camera);
 int level_editor_focus_camera(LevelEditor *level_editor,
                               Camera *camera);
-int level_editor_dump(const LevelEditor *level_editor,
-                      const char *filename);
 
 #endif  // LEVEL_EDITOR_H_

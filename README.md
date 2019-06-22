@@ -110,7 +110,7 @@ $ ../build/nothing
 | `Enter`   | Evaluate the expression  |
 | `Up/Down` | Traverse console history |
 
-<!-- TODO: Level Editor is not documented -->
+<!-- TODO(#914): Level Editor is not documented -->
 
 ## Support
 

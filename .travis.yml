@@ -3,6 +3,7 @@ addons:
   homebrew:
     packages:
       - sdl2
+      - cmake
 os:
   - osx
 compiler:
