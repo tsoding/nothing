@@ -172,10 +172,6 @@ add_executable(nothing_test
   )
 target_link_libraries(nothing_test ${SDL2_LIBRARIES} system ebisp)
 
-if (UNIX)
-  add_subdirectory(devtools/svg2level)
-endif()
-
 if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "CLANG"))
   set(CMAKE_C_FLAGS
     "${CMAKE_C_FLAGS} \
