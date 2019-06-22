@@ -104,6 +104,8 @@ int level_picker_render(const LevelPicker *level_picker,
         return -1;
     }
 
+    /* TODO: there is no visual indication in Level Picker that you can create new level */
+
     return 0;
 }
 
