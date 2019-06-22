@@ -111,7 +111,9 @@ struct dirent *readdir(DIR *dirp)
     if (dirp->dirent == NULL) {
         dirp->dirent = nth_calloc(1, sizeof(struct dirent));
     } else {
-        FindNextFile(dirp->hFind, &dirp->data);
+        if(!FindNextFile(dirp->hFind, &dirp->data)) {
+            return NULL;
+        }
     }
 
     memset(dirp->dirent->d_name, 0, sizeof(dirp->dirent->d_name));
