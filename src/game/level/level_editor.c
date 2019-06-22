@@ -39,14 +39,11 @@ LevelEditor *create_level_editor(void)
         RETURN_LT(lt, NULL);
     }
 
-    level_editor->background_layer.color =
-        rgba(0.0f, 0.0f, 0.0f, 1.0f);
+    level_editor->background_layer.color = hexstr("fffda5");
 
     level_editor->player_layer = PUSH_LT(
         lt,
-        create_player_layer(
-            vec(0.0f, 0.0f),
-            rgba(0.0f, 0.0f, 0.0f, 1.0f)),
+        create_player_layer(vec(0.0f, 0.0f), hexstr("ff8080")),
         destroy_player_layer);
     if (level_editor->player_layer == NULL) {
         RETURN_LT(lt, NULL);
