@@ -52,7 +52,7 @@ LevelFolder *create_level_folder(const char *dirpath)
     }
 
     char path[LEVEL_FOLDER_MAX_LENGTH];
-    // TODO: we should get rid of meta.txt file
+    // TODO(#916): we should get rid of meta.txt file
     //   Just read directory directly through dirent API
     snprintf(path, LEVEL_FOLDER_MAX_LENGTH, "%s/meta.txt", dirpath);
 
