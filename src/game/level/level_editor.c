@@ -19,6 +19,8 @@
 
 #define LEVEL_LINE_MAX_LENGTH 512
 
+static int level_editor_dump(const LevelEditor *level_editor);
+
 LevelEditor *create_level_editor(void)
 {
     Lt *lt = create_lt();
@@ -138,6 +140,12 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
     level_editor->lt = lt;
+
+    level_editor->file_name =
+        PUSH_LT(
+            lt,
+            string_duplicate(file_name, NULL),
+            free);
 
     LineStream *level_stream = PUSH_LT(
         lt,
@@ -302,6 +310,18 @@ int level_editor_event(LevelEditor *level_editor,
     trace_assert(camera);
 
     switch (event->type) {
+    case SDL_KEYDOWN: {
+        switch(event-> key.keysym.sym) {
+        case SDLK_s: {
+            /* TODO(#903): There is no indication that the level is saved when you press S in Level Editor */
+            if (level_editor->file_name) {
+                level_editor_dump(level_editor);
+            }
+            /* TODO: Level Editor does not ask for the filename if it is no defined */
+        } break;
+        }
+    } break;
+
     case SDL_MOUSEWHEEL: {
         // TODO(#679): zooming in edit mode is not smooth enough
         if (event->wheel.y > 0) {
@@ -366,15 +386,14 @@ int level_editor_focus_camera(LevelEditor *level_editor,
     return 0;
 }
 
-int level_editor_dump(const LevelEditor *level_editor,
-                      const char *filename)
+/* TODO(#904): LevelEditor does not check that the saved level file is modified by external program */
+static int level_editor_dump(const LevelEditor *level_editor)
 {
     trace_assert(level_editor);
-    trace_assert(filename);
 
     FILE *filedump = PUSH_LT(
         level_editor->lt,
-        fopen(filename, "w"),
+        fopen(level_editor->file_name, "w"),
         fclose);
 
     if (fprintf(filedump, "%s\n", level_metadata_title(level_editor->metadata)) < 0) {
