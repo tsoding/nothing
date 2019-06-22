@@ -429,6 +429,52 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
     trace_assert(game);
     trace_assert(event);
 
+    switch (event->type) {
+    case SDL_KEYDOWN: {
+        switch(event->key.keysym.sym) {
+        case SDLK_n: {
+            if (game->level_editor == NULL) {
+                game->level_editor = PUSH_LT(
+                    game->lt,
+                    create_level_editor(),
+                    destroy_level_editor);
+            } else {
+                game->level_editor = RESET_LT(
+                    game->lt,
+                    game->level_editor,
+                    create_level_editor());
+            }
+
+            if (game->level_editor == NULL) {
+                return -1;
+            }
+
+            if (game->level == NULL) {
+                game->level = PUSH_LT(
+                    game->lt,
+                    create_level_from_level_editor(
+                        game->level_editor,
+                        game->broadcast),
+                    destroy_level);
+            } else {
+                game->level = RESET_LT(
+                    game->lt,
+                    game->level,
+                    create_level_from_level_editor(
+                        game->level_editor,
+                        game->broadcast));
+            }
+
+            if (game->level == NULL) {
+                return -1;
+            }
+
+            game->state = GAME_STATE_RUNNING;
+        } break;
+        }
+    } break;
+    }
+
     return level_picker_event(game->level_picker, event);
 }
 
