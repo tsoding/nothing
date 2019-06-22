@@ -89,3 +89,9 @@ Color color_scale(Color c, Color fc)
         fmaxf(fminf(c.b * fc.b, 1.0f), 0.0f),
         fmaxf(fminf(c.a * fc.a, 1.0f), 0.0f));
 }
+
+int color_hex_to_stream(Color color, FILE *stream)
+{
+    SDL_Color sdl = color_for_sdl(color);
+    return fprintf(stream, "%02x%02x%02x", sdl.r, sdl.g, sdl.b);
+}

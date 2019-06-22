@@ -363,3 +363,26 @@ const char *point_layer_ids(const PointLayer *point_layer)
     trace_assert(point_layer);
     return dynarray_data(point_layer->ids);
 }
+
+int point_layer_dump_stream(const PointLayer *point_layer,
+                            FILE *filedump)
+{
+    trace_assert(point_layer);
+    trace_assert(filedump);
+
+    size_t n = dynarray_count(point_layer->ids);
+    char *ids = dynarray_data(point_layer->ids);
+    Point *points = dynarray_data(point_layer->points);
+    Color *colors = dynarray_data(point_layer->colors);
+
+    fprintf(filedump, "%ld\n", n);
+    for (size_t i = 0; i < n; ++i) {
+        fprintf(filedump, "%s %f %f ",
+                ids + ID_MAX_SIZE * i,
+                points[i].x, points[i].y);
+        color_hex_to_stream(colors[i], filedump);
+        fprintf(filedump, "\n");
+    }
+
+    return 0;
+}

@@ -256,3 +256,25 @@ const char *rect_layer_ids(const RectLayer *layer)
 {
     return dynarray_data(layer->ids);
 }
+
+int rect_layer_dump_stream(const RectLayer *layer, FILE *filedump)
+{
+    trace_assert(layer);
+    trace_assert(filedump);
+
+    size_t n = dynarray_count(layer->ids);
+    char *ids = dynarray_data(layer->ids);
+    Rect *rects = dynarray_data(layer->rects);
+    Color *colors = dynarray_data(layer->colors);
+
+    fprintf(filedump, "%ld\n", n);
+    for (size_t i = 0; i < n; ++i) {
+        fprintf(filedump, "%s %f %f %f %f ",
+                ids + RECT_LAYER_ID_MAX_SIZE * i,
+                rects[i].x, rects[i].y, rects[i].w, rects[i].h);
+        color_hex_to_stream(colors[i], filedump);
+        fprintf(filedump, "\n");
+    }
+
+    return 0;
+}

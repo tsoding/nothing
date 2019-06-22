@@ -18,8 +18,6 @@ int script_eval(Script *script, struct Expr expr);
 
 bool script_has_scope_value(const Script *script, const char *name);
 
-const char *script_source_code(const Script *script);
-
 Gc *script_gc(const Script *script);
 
 #endif  // SCRIPT_H_

@@ -2,6 +2,8 @@
 
 #include "game/level/boxes.h"
 #include "system/stacktrace.h"
+#include "system/line_stream.h"
+#include "system/log.h"
 #include "game/camera.h"
 #include "proto_rect.h"
 #include "color_picker.h"
@@ -25,6 +27,24 @@ LayerPtr color_picker_as_layer(ColorPicker *color_picker)
         .type = LAYER_COLOR_PICKER
     };
     return layer;
+}
+
+int color_picker_read_from_line_stream(ColorPicker *color_picker,
+                                       LineStream *line_stream)
+{
+    char color[7];
+    const char *line = line_stream_next(line_stream);
+    if (line == NULL) {
+        return -1;
+    }
+
+    if (sscanf(line, "%6s", color) == EOF) {
+        log_fail("Could not read color\n");
+    }
+
+    color_picker->color = hexstr(color);
+
+    return 0;
 }
 
 int color_picker_render(const ColorPicker *color_picker,

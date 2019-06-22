@@ -25,6 +25,10 @@ static void fclose_lt(void* file)
     fclose(file);
 }
 
+// TODO(#905): create_line_stream probably does not need mode
+//   Because LineStream interface doesn't even have anything
+//   for writing to files. So we can just hardcode the mode
+//   inside of the ctor.
 LineStream *create_line_stream(const char *filename,
                                const char *mode,
                                size_t capacity)
@@ -122,7 +126,7 @@ char *line_stream_collect_until_end(LineStream *line_stream)
     char *result = string_append(NULL, "");
     const char *line = line_stream_next(line_stream);
 
-    /* TODO: line_stream_collect_until_end does not distinguish between EOF and error during reading */
+    /* TODO(#906): line_stream_collect_until_end does not distinguish between EOF and error during reading */
     while (line != NULL) {
         result = string_append(result, line);
         line = line_stream_next(line_stream);

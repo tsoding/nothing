@@ -22,6 +22,9 @@ int point_layer_event(PointLayer *point_layer,
                       const SDL_Event *event,
                       const Camera *camera);
 
+int point_layer_dump_stream(const PointLayer *point_layer,
+                            FILE *filedump);
+
 size_t point_layer_count(const PointLayer *point_layer);
 const Point *point_layer_points(const PointLayer *point_layer);
 const Color *point_layer_colors(const PointLayer *point_layer);

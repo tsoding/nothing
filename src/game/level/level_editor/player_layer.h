@@ -23,6 +23,7 @@ int player_layer_event(PlayerLayer *player_layer,
                        const SDL_Event *event,
                        const Camera *camera);
 
-
+int player_layer_dump_stream(const PlayerLayer *player_layer,
+                             FILE *filedump);
 
 #endif  // PLAYER_LAYER_H_

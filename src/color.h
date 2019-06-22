@@ -1,6 +1,7 @@
 #ifndef COLOR_H_
 #define COLOR_H_
 
+#include <stdio.h>
 #include <SDL.h>
 
 typedef struct Color {
@@ -10,6 +11,8 @@ typedef struct Color {
 Color rgba(float r, float g, float b, float a);
 Color hexstr(const char *hexstr);
 SDL_Color color_for_sdl(Color color);
+
+int color_hex_to_stream(Color color, FILE *stream);
 
 Color color_darker(Color color, float d);
 
