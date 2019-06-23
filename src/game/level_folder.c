@@ -6,6 +6,7 @@
 #include "system/nth_alloc.h"
 #include "system/line_stream.h"
 #include "system/str.h"
+#include "system/file.h"
 #include "dynarray.h"
 #include "game/level_metadata.h"
 
@@ -52,30 +53,22 @@ LevelFolder *create_level_folder(const char *dirpath)
     }
 
     char path[LEVEL_FOLDER_MAX_LENGTH];
-    // TODO(#916): we should get rid of meta.txt file
-    //   Just read directory directly through dirent API
-    snprintf(path, LEVEL_FOLDER_MAX_LENGTH, "%s/meta.txt", dirpath);
+    DIR *level_dir = PUSH_LT(lt, opendir(dirpath), closedir);
 
-    LineStream *meta = PUSH_LT(
-        lt,
-        create_line_stream(
-            path,
-            "r",
-            LEVEL_FOLDER_MAX_LENGTH),
-        destroy_line_stream);
-    if (meta == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    for (struct dirent *d = readdir(level_dir);
+         d != NULL;
+         d = readdir(level_dir)) {
+        if (*d->d_name == '.') {
+            continue;
+        }
 
-    const char *line = line_stream_next(meta);
-    while (line) {
-        snprintf(path, LEVEL_FOLDER_MAX_LENGTH, "%s/%s", dirpath, line);
-        line = PUSH_LT(lt, string_duplicate(trim_endline(path), NULL), free);
-        if (line == NULL) {
+        snprintf(path, LEVEL_FOLDER_MAX_LENGTH, "%s/%s", dirpath, d->d_name);
+        const char *filepath = PUSH_LT(lt, string_duplicate(trim_endline(path), NULL), free);
+        if (filepath == NULL) {
             RETURN_LT(lt, NULL);
         }
 
-        LevelMetadata *level_metadata = create_level_metadata_from_file(line);
+        LevelMetadata *level_metadata = create_level_metadata_from_file(filepath);
         if (level_metadata == NULL) {
             RETURN_LT(lt, NULL);
         }
@@ -86,12 +79,10 @@ LevelFolder *create_level_folder(const char *dirpath)
         destroy_level_metadata(level_metadata);
 
         dynarray_push(level_folder->titles, &title);
-        dynarray_push(level_folder->filenames, &line);
-
-        line = line_stream_next(meta);
+        dynarray_push(level_folder->filenames, &filepath);
     }
 
-    destroy_line_stream(RELEASE_LT(lt, meta));
+    closedir(RELEASE_LT(lt, level_dir));
 
     return level_folder;
 }
