@@ -19,6 +19,8 @@
 #include "level_editor.h"
 
 #define LEVEL_LINE_MAX_LENGTH 512
+#define LEVEL_EDITOR_EDIT_FIELD_SIZE vec(5.0f, 5.0f)
+#define LEVEL_EDITOR_EDIT_FIELD_COLOR COLOR_BLACK
 
 static int level_editor_dump(const LevelEditor *level_editor);
 
@@ -36,7 +38,9 @@ LevelEditor *create_level_editor(void)
 
     level_editor->edit_field_filename = PUSH_LT(
         lt,
-        create_edit_field(vec(3.0f, 3.0f), COLOR_BLACK),
+        create_edit_field(
+            LEVEL_EDITOR_EDIT_FIELD_SIZE,
+            LEVEL_EDITOR_EDIT_FIELD_COLOR),
         destroy_edit_field);
     if (level_editor->edit_field_filename == NULL) {
         RETURN_LT(lt, NULL);
@@ -152,7 +156,9 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
 
     level_editor->edit_field_filename = PUSH_LT(
         lt,
-        create_edit_field(vec(10.0f, 10.0f), COLOR_BLACK),
+        create_edit_field(
+            LEVEL_EDITOR_EDIT_FIELD_SIZE,
+            LEVEL_EDITOR_EDIT_FIELD_COLOR),
         destroy_edit_field);
     if (level_editor->edit_field_filename == NULL) {
         RETURN_LT(lt, NULL);
@@ -316,10 +322,27 @@ int level_editor_render(const LevelEditor *level_editor,
     }
 
     if (level_editor->state == LEVEL_EDITOR_SAVEAS) {
+        /* CSS */
+        const Point size = LEVEL_EDITOR_EDIT_FIELD_SIZE;
+        const char *save_as_text = "Save as: ";
+        const Point position = vec(200.0f, 200.0f);
+        const float save_as_width =
+            (float) strlen(save_as_text) * FONT_CHAR_WIDTH * size.x;
+
+        /* HTML */
+        if (camera_render_text_screen(
+                camera,
+                save_as_text,
+                LEVEL_EDITOR_EDIT_FIELD_SIZE,
+                LEVEL_EDITOR_EDIT_FIELD_COLOR,
+                position) < 0) {
+            return -1;
+        }
+
         if (edit_field_render(
                 level_editor->edit_field_filename,
                 camera,
-                vec(0.0f, 0.0f)) < 0) {
+                vec(position.x + save_as_width, position.y)) < 0) {
             return -1;
         }
     }
