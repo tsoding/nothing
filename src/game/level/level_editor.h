@@ -9,12 +9,20 @@ typedef struct LevelEditor LevelEditor;
 typedef struct RectLayer RectLayer;
 typedef struct PointLayer PointLayer;
 typedef struct LabelLayer LabelLayer;
+typedef struct Edit_field Edit_field;
+
+typedef enum {
+    LEVEL_EDITOR_EDITING = 0,
+    LEVEL_EDITOR_SAVEAS
+} LevelEditorState;
 
 struct LevelEditor
 {
     Lt *lt;
+    LevelEditorState state;
     Vec camera_position;
     float camera_scale;
+    Edit_field *edit_field_filename;
     LayerPicker layer_picker;
 
     LevelMetadata *metadata;
