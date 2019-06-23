@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include "system/nth_alloc.h"
 #ifdef __linux__
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -91,7 +92,7 @@ DIR *opendir(const char *dirpath)
 
     DIR *dir = nth_calloc(1, sizeof(DIR));
 
-    dir->hFind = FindFirstFile(dirpath, &dir->data);
+    dir->hFind = FindFirstFile(buffer, &dir->data);
     if (dir->hFind == INVALID_HANDLE_VALUE) {
         goto fail;
     }
@@ -108,6 +109,8 @@ fail:
 
 struct dirent *readdir(DIR *dirp)
 {
+    trace_assert(dirp);
+
     if (dirp->dirent == NULL) {
         dirp->dirent = nth_calloc(1, sizeof(struct dirent));
     } else {
