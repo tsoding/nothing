@@ -5,6 +5,7 @@
 #include <SDL.h>
 
 #define COLOR_BLACK rgba(0.0f, 0.0f, 0.0f, 1.0f)
+#define COLOR_WHITE rgba(1.0f, 1.0f, 1.0f, 1.0f)
 
 typedef struct Color {
     float r, g, b, a;

@@ -92,6 +92,8 @@ int level_picker_render(const LevelPicker *level_picker,
     trace_assert(level_picker);
     trace_assert(renderer);
 
+    const Rect viewport = camera_view_port_screen(camera);
+
     if (background_render(level_picker->background, camera) < 0) {
         return -1;
     }
@@ -104,7 +106,23 @@ int level_picker_render(const LevelPicker *level_picker,
         return -1;
     }
 
-    /* TODO(#917): there is no visual indication in Level Picker that you can create new level */
+    {
+        /* CSS */
+        const float padding = 20.0f;
+        const Point size = vec(3.0f, 3.0f);
+        const Point position = vec(0.0f, viewport.h - size.y * FONT_CHAR_HEIGHT);
+
+        /* HTML */
+        if (camera_render_text_screen(
+                camera,
+                "Press 'N' to create new level",
+                size,
+                COLOR_WHITE,
+                vec(position.x + padding,
+                    position.y - padding)) < 0) {
+            return -1;
+        }
+    }
 
     return 0;
 }
