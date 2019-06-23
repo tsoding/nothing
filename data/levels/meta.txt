@@ -1,2 +1,0 @@
-level-01.txt
-platforms.txt
