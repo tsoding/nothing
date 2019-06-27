@@ -48,7 +48,7 @@ Regions *create_regions_from_line_stream(LineStream *line_stream)
 
     if(sscanf(
            line_stream_next(line_stream),
-           "%lu",
+           "%zu",
            &regions->count) < 0) {
         log_fail("Could not read amount of script regions\n");
         RETURN_LT(lt, NULL);

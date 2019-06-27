@@ -270,7 +270,7 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
         return -1;
     }
 
-    snprintf(text_buffer, 256, "id: %ld", id);
+    snprintf(text_buffer, 256, "id: %zd", id);
 
     if (camera_render_debug_text(
             camera,

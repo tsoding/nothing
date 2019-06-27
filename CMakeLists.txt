@@ -214,10 +214,12 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     "${CMAKE_C_FLAGS} \
     /Wall \
     /WX \
+    /wd4127 \
     /wd4201 \
     /wd4204 \
     /wd4255 \
     /wd4668 \
+    /wd4702 \
     /wd4710 \
     /wd4777 \
     /wd4820 \

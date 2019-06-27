@@ -175,7 +175,7 @@ TEST(read_all_exprs_from_string_trailing_spaces_test)
 
     ASSERT_FALSE(result.is_error, {
             fprintf(stderr, "Parsing failed: %s\n", result.error_message);
-            fprintf(stderr, "Position: %ld\n", result.end - source_code);
+            fprintf(stderr, "Position: %zd\n", result.end - source_code);
     });
 
     return 0;

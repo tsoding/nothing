@@ -89,7 +89,7 @@ RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream)
     }
 
     size_t count = 0;
-    if (sscanf(line, "%lu", &count) < 0) {
+    if (sscanf(line, "%zu", &count) < 0) {
         RETURN_LT(layer->lt, NULL);
     }
 
@@ -267,7 +267,7 @@ int rect_layer_dump_stream(const RectLayer *layer, FILE *filedump)
     Rect *rects = dynarray_data(layer->rects);
     Color *colors = dynarray_data(layer->colors);
 
-    fprintf(filedump, "%ld\n", n);
+    fprintf(filedump, "%zd\n", n);
     for (size_t i = 0; i < n; ++i) {
         fprintf(filedump, "%s %f %f %f %f ",
                 ids + RECT_LAYER_ID_MAX_SIZE * i,

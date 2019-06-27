@@ -105,7 +105,7 @@ Line rect_side(Rect rect, Rect_side side)
     const float x2 = rect.x + rect.w;
     const float y2 = rect.y + rect.h;
 
-    Line result;
+    Line result = { 0 };
 
     switch (side) {
     case RECT_SIDE_LEFT:
