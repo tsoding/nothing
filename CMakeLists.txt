@@ -16,6 +16,11 @@ else()
   find_package(SDL2 REQUIRED)
 endif()
 
+if("${SDL2_LIBRARIES}" STREQUAL "")
+    message(WARNING "SDL2_LIBRARIES wasn't set, manually setting to SDL2::SDL2")
+    set(SDL2_LIBRARIES "SDL2::SDL2")
+endif()
+
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(src/)
 
