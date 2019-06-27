@@ -218,6 +218,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     /wd4201 \
     /wd4204 \
     /wd4255 \
+    /wd4389 \
     /wd4668 \
     /wd4702 \
     /wd4710 \
