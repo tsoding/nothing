@@ -73,7 +73,7 @@ int layer_picker_render(const LayerPicker *layer_picker,
     trace_assert(layer_picker);
     trace_assert(camera);
 
-    for (int i = 0; i < LAYER_PICKER_N; ++i) {
+    for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
         Vec position = layer_picker_position(camera);
         Color color = LAYER_CELL_BACKGROUND_COLORS[i];
 

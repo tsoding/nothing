@@ -308,7 +308,7 @@ int level_editor_render(const LevelEditor *level_editor,
         return -1;
     }
 
-    for (int i = 0; i < LAYER_PICKER_N; ++i) {
+    for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
         if (layer_render(
                 level_editor->layers[i],
                 camera,
