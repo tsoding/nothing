@@ -209,6 +209,23 @@ if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" ST
      -ggdb \
      -O3")
   target_link_libraries(nothing m)
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+  set(CMAKE_C_FLAGS
+    "${CMAKE_C_FLAGS} \
+    /Wall \
+    /WX \
+    /wd4127 \
+    /wd4201 \
+    /wd4204 \
+    /wd4255 \
+    /wd4389 \
+    /wd4668 \
+    /wd4702 \
+    /wd4710 \
+    /wd4777 \
+    /wd4820 \
+    /wd5045 \
+    /D \"_CRT_SECURE_NO_WARNINGS\"")
 endif()
 if(WIN32)
   target_link_libraries(nothing Imm32 Version winmm)

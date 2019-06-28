@@ -53,7 +53,7 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
     goals->count = 0;
     if (sscanf(
             line_stream_next(line_stream),
-            "%lu",
+            "%zu",
             &goals->count) == EOF) {
         log_fail("Could not read amount of goals\n");
         RETURN_LT(lt, NULL);

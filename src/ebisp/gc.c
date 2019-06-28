@@ -1,6 +1,7 @@
 #include "system/stacktrace.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "builtins.h"
@@ -19,12 +20,12 @@ struct Gc
     size_t capacity;
 };
 
-static long int value_of_expr(struct Expr expr)
+static intptr_t value_of_expr(struct Expr expr)
 {
     if (expr.type == EXPR_CONS) {
-        return (long int) expr.cons;
+        return (intptr_t) expr.cons;
     } else if (expr.type == EXPR_ATOM) {
-        return (long int) expr.atom;
+        return (intptr_t) expr.atom;
     } else {
         return 0;
     }
@@ -35,9 +36,9 @@ static int compare_exprs(const void *a, const void *b)
     trace_assert(a);
     trace_assert(b);
 
-    const long int ptr_a = value_of_expr(*(const struct Expr *)a);
-    const long int ptr_b = value_of_expr(*(const struct Expr *)b);
-    const long int d = ptr_b - ptr_a;
+    const intptr_t ptr_a = value_of_expr(*(const struct Expr *)a);
+    const intptr_t ptr_b = value_of_expr(*(const struct Expr *)b);
+    const intptr_t d = ptr_b - ptr_a;
 
     if (d < 0) {
         return -1;

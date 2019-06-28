@@ -122,7 +122,7 @@ static struct ParseResult parse_string(Gc *gc, struct Token current_token)
 static struct ParseResult parse_number(Gc *gc, struct Token current_token)
 {
     char *endptr = 0;
-    const long int x = strtoimax(current_token.begin, &endptr, 10);
+    const long int x = strtol(current_token.begin, &endptr, 10);
 
     if (current_token.begin == endptr || current_token.end != endptr) {
         return parse_failure("Expected number", current_token.begin);
