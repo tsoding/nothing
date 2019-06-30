@@ -87,7 +87,7 @@ int camera_fill_rect(Camera *camera,
     return 0;
 }
 
-int camera_draw_rect(Camera * camera,
+int camera_draw_rect(Camera *camera,
                      Rect rect,
                      Color color)
 {
@@ -96,6 +96,28 @@ int camera_draw_rect(Camera * camera,
     const SDL_Rect sdl_rect = rect_for_sdl(
         camera_rect(camera, rect));
 
+    const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
+
+    if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
+        log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());
+        return -1;
+    }
+
+    if (SDL_RenderDrawRect(camera->renderer, &sdl_rect) < 0) {
+        log_fail("SDL_RenderDrawRect: %s\n", SDL_GetError());
+        return -1;
+    }
+
+    return 0;
+}
+
+int camera_draw_rect_screen(Camera *camera,
+                            Rect rect,
+                            Color color)
+{
+    trace_assert(camera);
+
+    const SDL_Rect sdl_rect = rect_for_sdl(rect);
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
 
     if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {

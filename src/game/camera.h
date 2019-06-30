@@ -20,9 +20,13 @@ int camera_fill_rect(Camera *camera,
                      Rect rect,
                      Color color);
 
-int camera_draw_rect(Camera * camera,
+int camera_draw_rect(Camera *camera,
                      Rect rect,
                      Color color);
+
+int camera_draw_rect_screen(Camera *camera,
+                            Rect rect,
+                            Color color);
 
 int camera_draw_triangle(Camera *camera,
                          Triangle t,

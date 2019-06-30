@@ -139,6 +139,8 @@ add_executable(nothing
   src/ui/list_selector.c
   src/ui/menu_title.h
   src/ui/menu_title.c
+  src/ui/slider.h
+  src/ui/slider.c
   src/game/level_metadata.h
   src/game/level_metadata.c
   src/game/level/level_editor/proto_rect.h
