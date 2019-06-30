@@ -385,7 +385,6 @@ static int game_event_running(Game *game, const SDL_Event *event)
 
         case SDLK_TAB: {
             game->state = GAME_STATE_LEVEL_EDITOR;
-            SDL_SetRelativeMouseMode(true);
         } break;
         }
     } break;
@@ -497,7 +496,6 @@ static int game_event_level_editor(Game *game, const SDL_Event *event)
                 return -1;
             }
             game->state = GAME_STATE_RUNNING;
-            SDL_SetRelativeMouseMode(false);
         } break;
         }
     } break;
