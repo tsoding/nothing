@@ -128,7 +128,7 @@ void destroy_rect_layer(RectLayer *layer)
     RETURN_LT0(layer->lt);
 }
 
-int rect_layer_render(const RectLayer *layer, Camera *camera, float fa)
+int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
 {
     trace_assert(layer);
     trace_assert(camera);
@@ -143,7 +143,7 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, float fa)
                 rects[i],
                 color_scale(
                     colors[i],
-                    rgba(1.0f, 1.0f, 1.0f, fa))) < 0) {
+                    rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f))) < 0) {
             return -1;
         }
     }
@@ -152,7 +152,7 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, float fa)
         return -1;
     }
 
-    if (color_picker_render(&layer->color_picker, camera) < 0) {
+    if (active && color_picker_render(&layer->color_picker, camera) < 0) {
         return -1;
     }
 

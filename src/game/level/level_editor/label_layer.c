@@ -137,7 +137,7 @@ void destroy_label_layer(LabelLayer *label_layer)
 
 int label_layer_render(const LabelLayer *label_layer,
                        Camera *camera,
-                       float fa)
+                       int active)
 {
     trace_assert(label_layer);
     trace_assert(camera);
@@ -155,7 +155,7 @@ int label_layer_render(const LabelLayer *label_layer,
                 vec(2.0f, 2.0f),
                 color_scale(
                     colors[i],
-                    rgba(1.0f, 1.0f, 1.0f, fa)),
+                    rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f)),
                 positions[i]) < 0) {
             return -1;
         }

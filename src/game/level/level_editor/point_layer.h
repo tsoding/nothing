@@ -18,7 +18,7 @@ void destroy_point_layer(PointLayer *point_layer);
 
 int point_layer_render(const PointLayer *point_layer,
                        Camera *camera,
-                       float fa);
+                       int active);
 int point_layer_event(PointLayer *point_layer,
                       const SDL_Event *event,
                       const Camera *camera);

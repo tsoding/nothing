@@ -16,7 +16,7 @@ typedef struct {
 
 typedef struct Camera Camera;
 
-int layer_render(LayerPtr layer, Camera *camera, float fa);
+int layer_render(LayerPtr layer, Camera *camera, int active);
 int layer_event(LayerPtr layer, const SDL_Event *event, const Camera *camera);
 int layer_dump_stream(LayerPtr layer, FILE *stream);
 

@@ -17,7 +17,7 @@ void destroy_label_layer(LabelLayer *label_layer);
 
 int label_layer_render(const LabelLayer *label_layer,
                        Camera *camera,
-                       float fa);
+                       int active);
 int label_layer_event(LabelLayer *label_layer,
                       const SDL_Event *event,
                       const Camera *camera);

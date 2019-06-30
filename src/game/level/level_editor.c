@@ -194,6 +194,8 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
             level_stream) < 0) {
         RETURN_LT(lt, NULL);
     }
+    level_editor->background_layer.slider.value = 0.3f;
+    level_editor->background_layer.slider.max_value = 1.0f;
 
     level_editor->player_layer =
         PUSH_LT(
@@ -310,7 +312,7 @@ int level_editor_render(const LevelEditor *level_editor,
         if (layer_render(
                 level_editor->layers[i],
                 camera,
-                i == level_editor->layer_picker ? 1.0f : 0.5f) < 0) {
+                i == level_editor->layer_picker) < 0) {
             return -1;
         }
     }

@@ -65,7 +65,7 @@ LayerPtr player_layer_as_layer(PlayerLayer *player_layer)
 
 int player_layer_render(const PlayerLayer *player_layer,
                         Camera *camera,
-                        float fa)
+                        int active)
 {
     trace_assert(player_layer);
     trace_assert(camera);
@@ -77,7 +77,7 @@ int player_layer_render(const PlayerLayer *player_layer,
                 vec(25.0f, 25.0f)),
             color_scale(
                 player_layer->color_picker.color,
-                rgba(1.0f, 1.0f, 1.0f, fa))) < 0) {
+                rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.0f))) < 0) {
         return -1;
     }
 

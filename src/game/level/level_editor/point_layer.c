@@ -132,7 +132,7 @@ void destroy_point_layer(PointLayer *point_layer)
 
 int point_layer_render(const PointLayer *point_layer,
                        Camera *camera,
-                       float fa)
+                       int active)
 {
     trace_assert(point_layer);
     trace_assert(camera);
@@ -150,7 +150,7 @@ int point_layer_render(const PointLayer *point_layer,
 
         const Color color = color_scale(
             colors[i],
-            rgba(1.0f, 1.0f, 1.0f, fa));
+            rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f));
 
         if (i == point_layer->selected) {
             const Triangle t0 = triangle_mat3x3_product(
@@ -181,7 +181,7 @@ int point_layer_render(const PointLayer *point_layer,
         }
     }
 
-    if (color_picker_render(&point_layer->color_picker, camera) < 0) {
+    if (active && color_picker_render(&point_layer->color_picker, camera) < 0) {
         return -1;
     }
 
