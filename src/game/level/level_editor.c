@@ -133,8 +133,6 @@ LevelEditor *create_level_editor(void)
     level_editor->layers[LAYER_PICKER_BACKGROUND] = color_picker_as_layer(&level_editor->background_layer);
     level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
 
-    level_editor->layer_picker = LAYER_PICKER_BOXES;
-
     level_editor->drag = false;
 
     return level_editor;
@@ -284,8 +282,6 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(level_editor->regions_layer);
     level_editor->layers[LAYER_PICKER_BACKGROUND] = color_picker_as_layer(&level_editor->background_layer);
     level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
-
-    level_editor->layer_picker = LAYER_PICKER_BOXES;
 
     level_editor->drag = false;
 
