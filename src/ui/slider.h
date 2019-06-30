@@ -2,6 +2,7 @@
 #define SLIDER_H_
 
 typedef struct {
+    int drag;
     float value;
     float max_value;
 } Slider;
