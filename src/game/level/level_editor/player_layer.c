@@ -81,6 +81,10 @@ int player_layer_render(const PlayerLayer *player_layer,
         return -1;
     }
 
+    if (active && color_picker_render(&player_layer->color_picker, camera)) {
+        return -1;
+    }
+
     return 0;
 }
 
@@ -93,26 +97,22 @@ int player_layer_event(PlayerLayer *player_layer,
     trace_assert(event);
     trace_assert(camera);
 
-    switch (event->type) {
-    case SDL_MOUSEBUTTONDOWN:
-    case SDL_MOUSEBUTTONUP: {
-        bool selected = false;
-        if (color_picker_mouse_button(
-                &player_layer->color_picker,
-                &event->button,
-                &selected) < 0) {
-            return -1;
-        }
 
-        if (!selected &&
-            event->type == SDL_MOUSEBUTTONUP &&
-            event->button.button == SDL_BUTTON_LEFT) {
-            player_layer->position =
-                camera_map_screen(camera,
-                                  event->button.x,
-                                  event->button.y);
-        }
-    } break;
+    int selected = 0;
+    if (color_picker_event(
+            &player_layer->color_picker,
+            event,
+            &selected) < 0) {
+        return -1;
+    }
+
+    if (!selected &&
+        event->type == SDL_MOUSEBUTTONUP &&
+        event->button.button == SDL_BUTTON_LEFT) {
+        player_layer->position =
+            camera_map_screen(camera,
+                              event->button.x,
+                              event->button.y);
     }
 
     return 0;

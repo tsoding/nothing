@@ -164,31 +164,13 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
     trace_assert(layer);
     trace_assert(event);
 
-    switch(event->type) {
-    case SDL_MOUSEBUTTONDOWN:
-    case SDL_MOUSEBUTTONUP: {
-        bool selected = false;
-        if (color_picker_mouse_button(
-                &layer->color_picker,
-                &event->button,
-                &selected) < 0) {
-            return -1;
-        }
+    int selected = 0;
+    if (color_picker_event(&layer->color_picker, event, &selected) < 0) {
+        return -1;
+    }
 
-        if (!selected && proto_rect_mouse_button(
-                &layer->proto_rect,
-                &event->button,
-                camera) < 0) {
-            return -1;
-        }
-
-    } break;
-
-    case SDL_MOUSEMOTION: {
-        if (proto_rect_mouse_motion(&layer->proto_rect, &event->motion, camera) < 0) {
-            return -1;
-        }
-    } break;
+    if (!selected && proto_rect_event(&layer->proto_rect, event, camera) < 0) {
+        return -1;
     }
 
     return 0;

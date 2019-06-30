@@ -197,16 +197,7 @@ static int point_layer_mouse_button(PointLayer *point_layer,
     trace_assert(point_layer);
     trace_assert(event);
 
-    bool selected = false;
-    if (color_picker_mouse_button(
-            &point_layer->color_picker,
-            event,
-            &selected) < 0) {
-        return -1;
-    }
-
-    if (!selected &&
-        point_layer->state == POINT_LAYER_NORMAL_STATE &&
+    if (point_layer->state == POINT_LAYER_NORMAL_STATE &&
         event->type == SDL_MOUSEBUTTONDOWN &&
         event->button == SDL_BUTTON_LEFT) {
         const int n = (int) dynarray_count(point_layer->points);
@@ -323,6 +314,18 @@ int point_layer_event(PointLayer *point_layer,
     trace_assert(point_layer);
     trace_assert(event);
     trace_assert(camera);
+
+    int selected = 0;
+    if (color_picker_event(
+            &point_layer->color_picker,
+            event,
+            &selected) < 0) {
+        return -1;
+    }
+
+    if (selected) {
+        return 0;
+    }
 
     switch(event->type) {
     case SDL_MOUSEBUTTONDOWN:
