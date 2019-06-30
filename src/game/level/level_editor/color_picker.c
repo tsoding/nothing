@@ -64,6 +64,14 @@ int color_picker_render(const ColorPicker *color_picker,
         }
     }
 
+    if (slider_render(
+            &color_picker->slider,
+            camera,
+            rect(0.0f, COLOR_CELL_HEIGHT,
+                 300.0f, COLOR_CELL_HEIGHT)) < 0) {
+        return -1;
+    }
+
     return 0;
 }
 

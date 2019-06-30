@@ -3,9 +3,11 @@
 
 #include <stdbool.h>
 #include "layer.h"
+#include "ui/slider.h"
 
 typedef struct {
     Color color;
+    Slider slider;
 } ColorPicker;
 
 typedef struct LineStream LineStream;
