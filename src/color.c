@@ -15,6 +15,38 @@ Color rgba(float r, float g, float b, float a)
     return result;
 }
 
+/* TODO: hue is in degrees in 2019 */
+Color hsla(float h, float s, float l, float a)
+{
+    h = fmodf(h, 360.0f);
+
+    const float c = (1.0f - fabsf(2.0f * l - 1.0f)) * s;
+    const float x = c * (1 - fabsf(fmodf(h / 60.0f, 2.0f) - 1.0f));
+    const float m = l - c / 2.0f;
+
+    Color color;
+
+    if (0.0f <= h && h < 60.0f) {
+        color = rgba(c, x, 0.0f, a);
+    } else if (60.0f <= h && h < 120.0f) {
+        color = rgba(x, c, 0.0f, a);
+    } else if (120.0f <= h && h < 180.0f) {
+        color = rgba(0.0f, c, x, a);
+    } else if (180.0f <= h && h < 240.0f) {
+        color = rgba(0.0f, x, c, a);
+    } else if (240.0f <= h && h < 300.0f) {
+        color = rgba(x, 0.0f, c, a);
+    } else if (300.0f <= h && h < 360.0f) {
+        color = rgba(c, 0.0f, x, a);
+    }
+
+    color.r += m;
+    color.g += m;
+    color.b += m;
+
+    return color;
+}
+
 static Uint8 hex2dec_digit(char c)
 {
     if (c >= '0' && c <= '9') {

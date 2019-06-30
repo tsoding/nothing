@@ -13,6 +13,7 @@ typedef struct Color {
 } Color;
 
 Color rgba(float r, float g, float b, float a);
+Color hsla(float h, float s, float l, float a);
 Color hexstr(const char *hexstr);
 SDL_Color color_for_sdl(Color color);
 
