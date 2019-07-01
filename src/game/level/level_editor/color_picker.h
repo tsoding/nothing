@@ -6,7 +6,7 @@
 #include "ui/slider.h"
 
 typedef struct {
-    // TODO: ColorPicker should use array of sliders
+    // TODO(#933): ColorPicker should use array of sliders
     Slider hue;
     Slider saturation;
     Slider lightness;
