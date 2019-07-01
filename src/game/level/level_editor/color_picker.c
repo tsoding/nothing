@@ -50,7 +50,7 @@ int color_picker_read_from_line_stream(ColorPicker *color_picker,
     return 0;
 }
 
-// TODO: Color Picker doesn't have any visual indication about the current color
+// TODO(#930): Color Picker doesn't have any visual indication about the current color
 int color_picker_render(const ColorPicker *color_picker,
                         Camera *camera)
 {
