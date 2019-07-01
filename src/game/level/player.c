@@ -75,7 +75,7 @@ Player *create_player_from_player_layer(const PlayerLayer *player_layer,
     player->dying_body = PUSH_LT(
         lt,
         create_explosion(
-            player_layer->color_picker.color,
+            color_picker_rgba(&player_layer->color_picker),
             PLAYER_DEATH_DURATION),
         destroy_explosion);
     if (player->dying_body == NULL) {
@@ -83,7 +83,7 @@ Player *create_player_from_player_layer(const PlayerLayer *player_layer,
     }
 
     player->jump_threshold = 0;
-    player->color = player_layer->color_picker.color;
+    player->color = color_picker_rgba(&player_layer->color_picker);
     player->checkpoint = player_layer->position;
     player->play_die_cue = 0;
     player->state = PLAYER_STATE_ALIVE;

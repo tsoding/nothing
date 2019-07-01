@@ -54,7 +54,7 @@ LevelEditor *create_level_editor(void)
         RETURN_LT(lt, NULL);
     }
 
-    level_editor->background_layer.color = hexstr("fffda5");
+    level_editor->background_layer = create_color_picker_from_rgba(hexstr("fffda5"));
 
     level_editor->player_layer = PUSH_LT(
         lt,
@@ -300,7 +300,7 @@ int level_editor_render(const LevelEditor *level_editor,
     trace_assert(level_editor);
     trace_assert(camera);
 
-    if (camera_clear_background(camera, level_editor->background_layer.color) < 0) {
+    if (camera_clear_background(camera, color_picker_rgba(&level_editor->background_layer)) < 0) {
         return -1;
     }
 

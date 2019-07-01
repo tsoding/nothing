@@ -119,7 +119,7 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
 
     point_layer->selected = -1;
 
-    point_layer->color_picker.color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
+    point_layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
 
     return point_layer;
 }
@@ -203,6 +203,7 @@ static int point_layer_mouse_button(PointLayer *point_layer,
         const int n = (int) dynarray_count(point_layer->points);
         const Point *points = dynarray_data(point_layer->points);
         const Point point = camera_map_screen(camera, event->x, event->y);
+        const Color color = color_picker_rgba(&point_layer->color_picker);
 
         for (int i = 0; i < n; ++i) {
             if (vec_length(vec_sub(points[i], point)) < POINT_LAYER_ELEMENT_RADIUS) {
@@ -219,7 +220,7 @@ static int point_layer_mouse_button(PointLayer *point_layer,
         id[ID_MAX_SIZE - 1] = '\0';
 
         dynarray_push(point_layer->points, &point);
-        dynarray_push(point_layer->colors, &point_layer->color_picker.color);
+        dynarray_push(point_layer->colors, &color);
         dynarray_push(point_layer->ids, id);
     }
 

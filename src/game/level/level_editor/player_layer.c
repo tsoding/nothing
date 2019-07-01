@@ -16,7 +16,7 @@ PlayerLayer *create_player_layer(Vec position, Color color)
     player_layer->lt = lt;
 
     player_layer->position = position;
-    player_layer->color_picker.color = color;
+    player_layer->color_picker = create_color_picker_from_rgba(color);
 
     return player_layer;
 }
@@ -76,7 +76,7 @@ int player_layer_render(const PlayerLayer *player_layer,
                 player_layer->position,
                 vec(25.0f, 25.0f)),
             color_scale(
-                player_layer->color_picker.color,
+                color_picker_rgba(&player_layer->color_picker),
                 rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.0f))) < 0) {
         return -1;
     }
@@ -125,7 +125,7 @@ int player_layer_dump_stream(const PlayerLayer *player_layer,
     trace_assert(filedump);
 
     fprintf(filedump, "%f %f ", player_layer->position.x, player_layer->position.y);
-    color_hex_to_stream(player_layer->color_picker.color, filedump);
+    color_hex_to_stream(color_picker_rgba(&player_layer->color_picker), filedump);
     fprintf(filedump, "\n");
 
     return 0;

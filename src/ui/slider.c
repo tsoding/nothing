@@ -34,7 +34,7 @@ int slider_render(const Slider *slider, Camera *camera, Rect boundary)
     return 0;
 }
 
-int slider_event(Slider *slider, const SDL_Event *event, Rect boundary)
+int slider_event(Slider *slider, const SDL_Event *event, Rect boundary, int *selected)
 {
     trace_assert(slider);
     trace_assert(event);
@@ -44,11 +44,17 @@ int slider_event(Slider *slider, const SDL_Event *event, Rect boundary)
         Point position = vec((float) event->button.x, (float) event->button.y);
         if (rect_contains_point(boundary, position)) {
             slider->drag = 1;
+            if (selected) {
+                *selected = 1;
+            }
         }
     } break;
 
     case SDL_MOUSEBUTTONUP: {
         slider->drag = 0;
+        if (selected) {
+            *selected = 1;
+        }
     } break;
 
     case SDL_MOUSEMOTION: {
@@ -56,6 +62,9 @@ int slider_event(Slider *slider, const SDL_Event *event, Rect boundary)
             const float x = fminf(fmaxf((float) event->button.x - boundary.x, 0.0f), (float) boundary.w);
             const float ratio = x / (float) boundary.w;
             slider->value = ratio * slider->max_value;
+            if (selected) {
+                *selected = 1;
+            }
         }
     } break;
     }

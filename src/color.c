@@ -127,3 +127,29 @@ int color_hex_to_stream(Color color, FILE *stream)
     SDL_Color sdl = color_for_sdl(color);
     return fprintf(stream, "%02x%02x%02x", sdl.r, sdl.g, sdl.b);
 }
+
+Color rgba_to_hsla(Color color)
+{
+    const float max = fmaxf(color.r, fmaxf(color.g, color.b));
+    const float min = fminf(color.r, fminf(color.g, color.b));
+    const float c = max - min;
+    float hue = 0.0f;
+    float saturation = 0.0f;
+    const float lightness = (max + min) * 0.5f;
+
+    if (fabsf(c) > 1e-6) {
+        if (fabs(max - color.r) <= 1e-6) {
+            hue = 60.0f * fmodf((color.g - color.b) / c, 6.0f);
+        } else if (fabs(max - color.g) <= 1e-6) {
+            hue = 60.0f * ((color.b - color.r) / c + 2.0f);
+        } else {
+            hue = 60.0f * ((color.r - color.g) / c + 4.0f);
+        }
+
+        saturation = c / (1.0f - fabsf(2.0f * lightness - 1.0f));
+    }
+
+    // TODO: Color struct is used not only for RGBA
+    //   But also for HSLA. We should make another similar struct but for HSLA
+    return rgba(hue, saturation, lightness, color.a);
+}

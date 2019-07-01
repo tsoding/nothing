@@ -9,16 +9,8 @@
 #include "color_picker.h"
 #include "color.h"
 
-#define COLOR_CELL_WIDTH 50.0f
-#define COLOR_CELL_HEIGHT 50.0f
-
-// TODO(#788): Colors of ColorPicker are poor
-static Color colors[] = {
-    {1.0f, 0.0f, 0.0f, 1.0f},
-    {0.0f, 1.0f, 0.0f, 1.0f},
-    {0.0f, 0.0f, 1.0f, 1.0f}
-};
-static const size_t colors_count = sizeof(colors) / sizeof(Color);
+#define COLOR_SLIDER_HEIGHT 50.0f
+#define COLOR_SLIDER_WIDTH 300.0f
 
 LayerPtr color_picker_as_layer(ColorPicker *color_picker)
 {
@@ -27,6 +19,17 @@ LayerPtr color_picker_as_layer(ColorPicker *color_picker)
         .type = LAYER_COLOR_PICKER
     };
     return layer;
+}
+
+ColorPicker create_color_picker_from_rgba(Color color)
+{
+    Color color_hsla = rgba_to_hsla(color);
+    ColorPicker color_picker = {
+        .hue = {0, color_hsla.r, 360.0f},
+        .saturation = {0, color_hsla.g, 1.0f},
+        .lightness = {0, color_hsla.b, 1.0f}
+    };
+    return color_picker;
 }
 
 int color_picker_read_from_line_stream(ColorPicker *color_picker,
@@ -42,14 +45,7 @@ int color_picker_read_from_line_stream(ColorPicker *color_picker,
         log_fail("Could not read color\n");
     }
 
-    color_picker->color = hexstr(color);
-
-    color_picker->hue.value = 0.0f;
-    color_picker->hue.max_value = 360.0f;
-    color_picker->saturation.value = 0.0f;
-    color_picker->saturation.max_value = 1.0f;
-    color_picker->lightness.value = 0.0f;
-    color_picker->lightness.max_value = 1.0f;
+    *color_picker = create_color_picker_from_rgba(hexstr(color));
 
     return 0;
 }
@@ -60,40 +56,29 @@ int color_picker_render(const ColorPicker *color_picker,
     trace_assert(color_picker);
     trace_assert(camera);
 
-    for (size_t i = 0; i < colors_count; ++i) {
-        if (camera_fill_rect_screen(
-                camera,
-                rect(COLOR_CELL_WIDTH * (float) i, 0,
-                     COLOR_CELL_WIDTH,
-                     COLOR_CELL_HEIGHT),
-                colors[i]) < 0) {
-            return -1;
-        }
-    }
-
     /* TODO: Color Picker sliders don't have any labels */
 
     if (slider_render(
             &color_picker->hue,
             camera,
-            rect(0.0f, COLOR_CELL_HEIGHT,
-                 300.0f, COLOR_CELL_HEIGHT)) < 0) {
+            rect(0.0f, COLOR_SLIDER_HEIGHT,
+                 COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT)) < 0) {
         return -1;
     }
 
     if (slider_render(
             &color_picker->saturation,
             camera,
-            rect(0.0f, COLOR_CELL_HEIGHT * 2.0f,
-                 300.0f, COLOR_CELL_HEIGHT)) < 0) {
+            rect(0.0f, COLOR_SLIDER_HEIGHT * 2.0f,
+                 COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT)) < 0) {
         return -1;
     }
 
     if (slider_render(
             &color_picker->lightness,
             camera,
-            rect(0.0f, COLOR_CELL_HEIGHT * 3.0f,
-                 300.0f, COLOR_CELL_HEIGHT)) < 0) {
+            rect(0.0f, COLOR_SLIDER_HEIGHT * 3.0f,
+                 COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT)) < 0) {
         return -1;
     }
 
@@ -101,60 +86,54 @@ int color_picker_render(const ColorPicker *color_picker,
     return 0;
 }
 
-int color_picker_event(ColorPicker *color_picker, const SDL_Event *event, int *selected)
+// TODO: the `selected` event propagation control is cumbersome
+int color_picker_event(ColorPicker *color_picker, const SDL_Event *event, int *selected_out)
 {
     trace_assert(color_picker);
     trace_assert(event);
 
+    int selected = 0;
+
     if (slider_event(&color_picker->hue,
                      event,
-                     rect(0.0f, COLOR_CELL_HEIGHT,
-                          300.0f, COLOR_CELL_HEIGHT)) < 0) {
+                     rect(0.0f, COLOR_SLIDER_HEIGHT,
+                          COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT),
+                     &selected) < 0) {
         return -1;
     }
 
-    if (slider_event(&color_picker->saturation,
-                     event,
-                     rect(0.0f, COLOR_CELL_HEIGHT * 2.0f,
-                          300.0f, COLOR_CELL_HEIGHT)) < 0) {
-        return -1;
+    if (!selected) {
+        if (slider_event(&color_picker->saturation,
+                         event,
+                         rect(0.0f, COLOR_SLIDER_HEIGHT * 2.0f,
+                              COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT),
+                         &selected) < 0) {
+            return -1;
+        }
     }
 
-    if (slider_event(&color_picker->lightness,
-                     event,
-                     rect(0.0f, COLOR_CELL_HEIGHT * 3.0f,
-                          300.0f, COLOR_CELL_HEIGHT)) < 0) {
-        return -1;
+    if (!selected) {
+        if (slider_event(&color_picker->lightness,
+                         event,
+                         rect(0.0f, COLOR_SLIDER_HEIGHT * 3.0f,
+                              COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT),
+                         &selected) < 0) {
+            return -1;
+        }
     }
 
-    color_picker->color = hsla(
+    if (selected_out) {
+        *selected_out = selected;
+    }
+
+    return 0;
+}
+
+Color color_picker_rgba(const ColorPicker *color_picker)
+{
+    return hsla(
         color_picker->hue.value,
         color_picker->saturation.value,
         color_picker->lightness.value,
         1.0f);
-
-    switch (event->type) {
-    case SDL_MOUSEBUTTONDOWN: {
-        switch (event->button.button) {
-        case SDL_BUTTON_LEFT: {
-            for (size_t i = 0; i < colors_count; ++i) {
-                const Vec mouse_position = vec((float) event->button.x, (float) event->button.y);
-                const Rect color_cell =
-                    rect(COLOR_CELL_WIDTH * (float) i, 0,
-                         COLOR_CELL_WIDTH,
-                         COLOR_CELL_HEIGHT);
-                if (rect_contains_point(color_cell, mouse_position)) {
-                    color_picker->color = colors[i];
-                    if (selected) {
-                        *selected = true;
-                    }
-                    return 0;
-                }
-            }
-        } break;
-        }
-    } break;
-    }
-
-    return 0;
 }

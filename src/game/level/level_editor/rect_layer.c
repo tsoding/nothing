@@ -67,9 +67,7 @@ RectLayer *create_rect_layer(void)
         RETURN_LT(lt, NULL);
     }
 
-    layer->color_picker.color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
-    layer->proto_rect.color_current = &layer->color_picker.color;
-    layer->proto_rect.layer_current = layer;
+    layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
 
     return layer;
 }
@@ -148,7 +146,10 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
         }
     }
 
-    if (proto_rect_render(&layer->proto_rect, camera) < 0) {
+    if (proto_rect_render(
+            &layer->proto_rect,
+            camera,
+            color_picker_rgba(&layer->color_picker)) < 0) {
         return -1;
     }
 
@@ -169,7 +170,13 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
         return -1;
     }
 
-    if (!selected && proto_rect_event(&layer->proto_rect, event, camera) < 0) {
+    if (!selected &&
+        proto_rect_event(
+            &layer->proto_rect,
+            event,
+            camera,
+            color_picker_rgba(&layer->color_picker),
+            layer) < 0) {
         return -1;
     }
 

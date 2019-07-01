@@ -65,7 +65,7 @@ int layer_dump_stream(LayerPtr layer,
         return player_layer_dump_stream(layer.ptr, stream);
 
     case LAYER_COLOR_PICKER: {
-        color_hex_to_stream(((ColorPicker*)layer.ptr)->color, stream);
+        color_hex_to_stream(color_picker_rgba(layer.ptr), stream);
         return fprintf(stream, "\n");
     }
 

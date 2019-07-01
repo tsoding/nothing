@@ -12,10 +12,10 @@
 #define PROTO_AREA_THRESHOLD 10.0
 
 int proto_rect_render(const ProtoRect *proto_rect,
-                      Camera *camera)
+                      Camera *camera,
+                      Color color)
 {
     trace_assert(proto_rect);
-    trace_assert(proto_rect->color_current);
     trace_assert(camera);
 
     if (proto_rect->active) {
@@ -24,7 +24,7 @@ int proto_rect_render(const ProtoRect *proto_rect,
                 rect_from_points(
                     proto_rect->begin,
                     proto_rect->end),
-                *proto_rect->color_current) < 0) {
+                color) < 0) {
             return -1;
         }
     }
@@ -34,13 +34,14 @@ int proto_rect_render(const ProtoRect *proto_rect,
 
 int proto_rect_event(ProtoRect *proto_rect,
                      const SDL_Event *event,
-                     const Camera *camera)
+                     const Camera *camera,
+                     Color color,
+                     RectLayer *layer)
 {
     trace_assert(proto_rect);
-    trace_assert(proto_rect->color_current);
-    trace_assert(proto_rect->layer_current);
     trace_assert(event);
     trace_assert(camera);
+    trace_assert(layer);
 
     if (proto_rect->active) {
         // Active
@@ -55,7 +56,7 @@ int proto_rect_event(ProtoRect *proto_rect,
                 const float area = real_rect.w * real_rect.h;
 
                 if (area >= PROTO_AREA_THRESHOLD) {
-                    rect_layer_add_rect(proto_rect->layer_current, real_rect, *proto_rect->color_current);
+                    rect_layer_add_rect(layer, real_rect, color);
                 } else {
                     log_info("The area is too small %f. Such small box won't be created.\n", area);
                 }
