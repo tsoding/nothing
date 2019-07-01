@@ -57,7 +57,7 @@ int color_picker_render(const ColorPicker *color_picker,
     trace_assert(color_picker);
     trace_assert(camera);
 
-    /* TODO: Color Picker sliders don't have any labels */
+    /* TODO(#931): Color Picker sliders don't have any labels */
 
     if (slider_render(
             &color_picker->hue,
