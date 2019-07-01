@@ -26,7 +26,7 @@ int slider_render(const Slider *slider, Camera *camera, Rect boundary)
         boundary.y,
         cursor_width,
         boundary.h);
-    const Color cursor_color = rgba(1.0f, 0.0f, 0.0f, 0.5f);
+    const Color cursor_color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
     if (camera_fill_rect_screen(camera, cursor, cursor_color) < 0) {
         return -1;
     }
