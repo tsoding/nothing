@@ -4,7 +4,6 @@
 typedef struct RectLayer RectLayer;
 
 typedef struct {
-    // TODO: ProtoRect cannot be deactivated after unpressed
     bool active;
     Sint32 x, y;
     Vec begin, end;
