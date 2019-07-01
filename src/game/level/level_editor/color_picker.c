@@ -87,7 +87,7 @@ int color_picker_render(const ColorPicker *color_picker,
     return 0;
 }
 
-// TODO: the `selected` event propagation control is cumbersome
+// TODO(#932): the `selected` event propagation control is cumbersome
 int color_picker_event(ColorPicker *color_picker, const SDL_Event *event, int *selected_out)
 {
     trace_assert(color_picker);
