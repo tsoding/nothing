@@ -15,7 +15,7 @@ Color rgba(float r, float g, float b, float a)
     return result;
 }
 
-/* TODO: hue is in degrees in 2019 */
+/* TODO: Should the Hue in HSLA representation be in degrees? */
 Color hsla(float h, float s, float l, float a)
 {
     h = fmodf(h, 360.0f);
