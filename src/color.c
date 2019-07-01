@@ -24,7 +24,7 @@ Color hsla(float h, float s, float l, float a)
     const float x = c * (1 - fabsf(fmodf(h / 60.0f, 2.0f) - 1.0f));
     const float m = l - c / 2.0f;
 
-    Color color;
+    Color color = {0.0f, 0.0f, 0.0f, a};
 
     if (0.0f <= h && h < 60.0f) {
         color = rgba(c, x, 0.0f, a);
