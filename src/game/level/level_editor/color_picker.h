@@ -8,6 +8,7 @@
 typedef struct {
     // TODO: ColorPicker should use array of sliders
     Slider hue;
+    // TODO: After dragging saturation or lightness sliders it's impossible to undrag them
     Slider saturation;
     Slider lightness;
 } ColorPicker;
