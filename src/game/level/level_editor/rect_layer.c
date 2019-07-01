@@ -67,9 +67,7 @@ RectLayer *create_rect_layer(void)
         RETURN_LT(lt, NULL);
     }
 
-    layer->color_picker.color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
-    layer->proto_rect.color_current = &layer->color_picker.color;
-    layer->proto_rect.layer_current = layer;
+    layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
 
     return layer;
 }
@@ -128,7 +126,7 @@ void destroy_rect_layer(RectLayer *layer)
     RETURN_LT0(layer->lt);
 }
 
-int rect_layer_render(const RectLayer *layer, Camera *camera, float fa)
+int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
 {
     trace_assert(layer);
     trace_assert(camera);
@@ -143,16 +141,19 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, float fa)
                 rects[i],
                 color_scale(
                     colors[i],
-                    rgba(1.0f, 1.0f, 1.0f, fa))) < 0) {
+                    rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f))) < 0) {
             return -1;
         }
     }
 
-    if (proto_rect_render(&layer->proto_rect, camera) < 0) {
+    if (proto_rect_render(
+            &layer->proto_rect,
+            camera,
+            color_picker_rgba(&layer->color_picker)) < 0) {
         return -1;
     }
 
-    if (color_picker_render(&layer->color_picker, camera) < 0) {
+    if (active && color_picker_render(&layer->color_picker, camera) < 0) {
         return -1;
     }
 
@@ -164,31 +165,19 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
     trace_assert(layer);
     trace_assert(event);
 
-    switch(event->type) {
-    case SDL_MOUSEBUTTONDOWN:
-    case SDL_MOUSEBUTTONUP: {
-        bool selected = false;
-        if (color_picker_mouse_button(
-                &layer->color_picker,
-                &event->button,
-                &selected) < 0) {
-            return -1;
-        }
+    int selected = 0;
+    if (color_picker_event(&layer->color_picker, event, &selected) < 0) {
+        return -1;
+    }
 
-        if (!selected && proto_rect_mouse_button(
-                &layer->proto_rect,
-                &event->button,
-                camera) < 0) {
-            return -1;
-        }
-
-    } break;
-
-    case SDL_MOUSEMOTION: {
-        if (proto_rect_mouse_motion(&layer->proto_rect, &event->motion, camera) < 0) {
-            return -1;
-        }
-    } break;
+    if (!selected &&
+        proto_rect_event(
+            &layer->proto_rect,
+            event,
+            camera,
+            color_picker_rgba(&layer->color_picker),
+            layer) < 0) {
+        return -1;
     }
 
     return 0;

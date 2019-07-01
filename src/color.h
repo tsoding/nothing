@@ -6,12 +6,15 @@
 
 #define COLOR_BLACK rgba(0.0f, 0.0f, 0.0f, 1.0f)
 #define COLOR_WHITE rgba(1.0f, 1.0f, 1.0f, 1.0f)
+#define COLOR_RED rgba(1.0f, 0.0f, 0.0f, 1.0f)
 
 typedef struct Color {
     float r, g, b, a;
 } Color;
 
 Color rgba(float r, float g, float b, float a);
+Color hsla(float h, float s, float l, float a);
+Color rgba_to_hsla(Color color);
 Color hexstr(const char *hexstr);
 SDL_Color color_for_sdl(Color color);
 

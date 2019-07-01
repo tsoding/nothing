@@ -119,7 +119,7 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
 
     point_layer->selected = -1;
 
-    point_layer->color_picker.color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
+    point_layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
 
     return point_layer;
 }
@@ -132,7 +132,7 @@ void destroy_point_layer(PointLayer *point_layer)
 
 int point_layer_render(const PointLayer *point_layer,
                        Camera *camera,
-                       float fa)
+                       int active)
 {
     trace_assert(point_layer);
     trace_assert(camera);
@@ -150,7 +150,7 @@ int point_layer_render(const PointLayer *point_layer,
 
         const Color color = color_scale(
             colors[i],
-            rgba(1.0f, 1.0f, 1.0f, fa));
+            rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f));
 
         if (i == point_layer->selected) {
             const Triangle t0 = triangle_mat3x3_product(
@@ -181,7 +181,7 @@ int point_layer_render(const PointLayer *point_layer,
         }
     }
 
-    if (color_picker_render(&point_layer->color_picker, camera) < 0) {
+    if (active && color_picker_render(&point_layer->color_picker, camera) < 0) {
         return -1;
     }
 
@@ -197,21 +197,13 @@ static int point_layer_mouse_button(PointLayer *point_layer,
     trace_assert(point_layer);
     trace_assert(event);
 
-    bool selected = false;
-    if (color_picker_mouse_button(
-            &point_layer->color_picker,
-            event,
-            &selected) < 0) {
-        return -1;
-    }
-
-    if (!selected &&
-        point_layer->state == POINT_LAYER_NORMAL_STATE &&
+    if (point_layer->state == POINT_LAYER_NORMAL_STATE &&
         event->type == SDL_MOUSEBUTTONDOWN &&
         event->button == SDL_BUTTON_LEFT) {
         const int n = (int) dynarray_count(point_layer->points);
         const Point *points = dynarray_data(point_layer->points);
         const Point point = camera_map_screen(camera, event->x, event->y);
+        const Color color = color_picker_rgba(&point_layer->color_picker);
 
         for (int i = 0; i < n; ++i) {
             if (vec_length(vec_sub(points[i], point)) < POINT_LAYER_ELEMENT_RADIUS) {
@@ -228,7 +220,7 @@ static int point_layer_mouse_button(PointLayer *point_layer,
         id[ID_MAX_SIZE - 1] = '\0';
 
         dynarray_push(point_layer->points, &point);
-        dynarray_push(point_layer->colors, &point_layer->color_picker.color);
+        dynarray_push(point_layer->colors, &color);
         dynarray_push(point_layer->ids, id);
     }
 
@@ -323,6 +315,18 @@ int point_layer_event(PointLayer *point_layer,
     trace_assert(point_layer);
     trace_assert(event);
     trace_assert(camera);
+
+    int selected = 0;
+    if (color_picker_event(
+            &point_layer->color_picker,
+            event,
+            &selected) < 0) {
+        return -1;
+    }
+
+    if (selected) {
+        return 0;
+    }
 
     switch(event->type) {
     case SDL_MOUSEBUTTONDOWN:

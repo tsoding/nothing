@@ -11,7 +11,7 @@ RectLayer *create_rect_layer(void);
 RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream);
 void destroy_rect_layer(RectLayer *layer);
 
-int rect_layer_render(const RectLayer *layer, Camera *camera, float fa);
+int rect_layer_render(const RectLayer *layer, Camera *camera, int active);
 int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *camera);
 
 int rect_layer_add_rect(RectLayer *layer, Rect rect, Color color);

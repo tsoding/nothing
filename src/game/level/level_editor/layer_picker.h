@@ -5,7 +5,7 @@ typedef struct RectLayer RectLayer;
 typedef struct Camera Camera;
 
 typedef enum {
-    LAYER_PICKER_BACKGROUND,
+    LAYER_PICKER_BACKGROUND = 0,
     LAYER_PICKER_PLAYER,
     LAYER_PICKER_PLATFORMS,
     LAYER_PICKER_GOALS,

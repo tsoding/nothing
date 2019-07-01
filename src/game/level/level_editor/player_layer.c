@@ -16,7 +16,7 @@ PlayerLayer *create_player_layer(Vec position, Color color)
     player_layer->lt = lt;
 
     player_layer->position = position;
-    player_layer->color_picker.color = color;
+    player_layer->color_picker = create_color_picker_from_rgba(color);
 
     return player_layer;
 }
@@ -65,7 +65,7 @@ LayerPtr player_layer_as_layer(PlayerLayer *player_layer)
 
 int player_layer_render(const PlayerLayer *player_layer,
                         Camera *camera,
-                        float fa)
+                        int active)
 {
     trace_assert(player_layer);
     trace_assert(camera);
@@ -76,8 +76,12 @@ int player_layer_render(const PlayerLayer *player_layer,
                 player_layer->position,
                 vec(25.0f, 25.0f)),
             color_scale(
-                player_layer->color_picker.color,
-                rgba(1.0f, 1.0f, 1.0f, fa))) < 0) {
+                color_picker_rgba(&player_layer->color_picker),
+                rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.0f))) < 0) {
+        return -1;
+    }
+
+    if (active && color_picker_render(&player_layer->color_picker, camera)) {
         return -1;
     }
 
@@ -93,26 +97,22 @@ int player_layer_event(PlayerLayer *player_layer,
     trace_assert(event);
     trace_assert(camera);
 
-    switch (event->type) {
-    case SDL_MOUSEBUTTONDOWN:
-    case SDL_MOUSEBUTTONUP: {
-        bool selected = false;
-        if (color_picker_mouse_button(
-                &player_layer->color_picker,
-                &event->button,
-                &selected) < 0) {
-            return -1;
-        }
 
-        if (!selected &&
-            event->type == SDL_MOUSEBUTTONUP &&
-            event->button.button == SDL_BUTTON_LEFT) {
-            player_layer->position =
-                camera_map_screen(camera,
-                                  event->button.x,
-                                  event->button.y);
-        }
-    } break;
+    int selected = 0;
+    if (color_picker_event(
+            &player_layer->color_picker,
+            event,
+            &selected) < 0) {
+        return -1;
+    }
+
+    if (!selected &&
+        event->type == SDL_MOUSEBUTTONUP &&
+        event->button.button == SDL_BUTTON_LEFT) {
+        player_layer->position =
+            camera_map_screen(camera,
+                              event->button.x,
+                              event->button.y);
     }
 
     return 0;
@@ -125,7 +125,7 @@ int player_layer_dump_stream(const PlayerLayer *player_layer,
     trace_assert(filedump);
 
     fprintf(filedump, "%f %f ", player_layer->position.x, player_layer->position.y);
-    color_hex_to_stream(player_layer->color_picker.color, filedump);
+    color_hex_to_stream(color_picker_rgba(&player_layer->color_picker), filedump);
     fprintf(filedump, "\n");
 
     return 0;

@@ -54,7 +54,7 @@ LevelEditor *create_level_editor(void)
         RETURN_LT(lt, NULL);
     }
 
-    level_editor->background_layer.color = hexstr("fffda5");
+    level_editor->background_layer = create_color_picker_from_rgba(hexstr("fffda5"));
 
     level_editor->player_layer = PUSH_LT(
         lt,
@@ -132,8 +132,6 @@ LevelEditor *create_level_editor(void)
     level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(level_editor->regions_layer);
     level_editor->layers[LAYER_PICKER_BACKGROUND] = color_picker_as_layer(&level_editor->background_layer);
     level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
-
-    level_editor->layer_picker = LAYER_PICKER_BOXES;
 
     level_editor->drag = false;
 
@@ -285,8 +283,6 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->layers[LAYER_PICKER_BACKGROUND] = color_picker_as_layer(&level_editor->background_layer);
     level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
 
-    level_editor->layer_picker = LAYER_PICKER_BOXES;
-
     level_editor->drag = false;
 
     return level_editor;
@@ -304,7 +300,7 @@ int level_editor_render(const LevelEditor *level_editor,
     trace_assert(level_editor);
     trace_assert(camera);
 
-    if (camera_clear_background(camera, level_editor->background_layer.color) < 0) {
+    if (camera_clear_background(camera, color_picker_rgba(&level_editor->background_layer)) < 0) {
         return -1;
     }
 
@@ -312,7 +308,7 @@ int level_editor_render(const LevelEditor *level_editor,
         if (layer_render(
                 level_editor->layers[i],
                 camera,
-                i == level_editor->layer_picker ? 1.0f : 0.5f) < 0) {
+                i == level_editor->layer_picker) < 0) {
             return -1;
         }
     }

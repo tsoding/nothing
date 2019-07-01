@@ -5,23 +5,23 @@
 #include "label_layer.h"
 #include "./layer.h"
 
-int layer_render(LayerPtr layer, Camera *camera, float fa)
+int layer_render(LayerPtr layer, Camera *camera, int active)
 {
     switch (layer.type) {
     case LAYER_RECT:
-        return rect_layer_render(layer.ptr, camera, fa);
+        return rect_layer_render(layer.ptr, camera, active);
 
     case LAYER_POINT:
-        return point_layer_render(layer.ptr, camera, fa);
+        return point_layer_render(layer.ptr, camera, active);
 
     case LAYER_PLAYER:
-        return player_layer_render(layer.ptr, camera, fa);
+        return player_layer_render(layer.ptr, camera, active);
 
     case LAYER_COLOR_PICKER:
-        return color_picker_render(layer.ptr, camera);
+        return active ? color_picker_render(layer.ptr, camera) : 0;
 
     case LAYER_LABEL:
-        return label_layer_render(layer.ptr, camera, fa);
+        return label_layer_render(layer.ptr, camera, active);
     }
 
     return -1;
@@ -41,13 +41,9 @@ int layer_event(LayerPtr layer,
     case LAYER_PLAYER:
         return player_layer_event(layer.ptr, event, camera);
 
-    case LAYER_COLOR_PICKER: {
-        if (event->type == SDL_MOUSEBUTTONUP || event->type == SDL_MOUSEBUTTONDOWN) {
-            return color_picker_mouse_button(layer.ptr, &event->button, NULL);
-        } else {
-            return 0;
-        }
-    } break;
+    case LAYER_COLOR_PICKER:
+        return color_picker_event(layer.ptr, event, NULL);
+
     case LAYER_LABEL:
         return label_layer_event(layer.ptr, event, camera);
     }
@@ -69,7 +65,7 @@ int layer_dump_stream(LayerPtr layer,
         return player_layer_dump_stream(layer.ptr, stream);
 
     case LAYER_COLOR_PICKER: {
-        color_hex_to_stream(((ColorPicker*)layer.ptr)->color, stream);
+        color_hex_to_stream(color_picker_rgba(layer.ptr), stream);
         return fprintf(stream, "\n");
     }
 
