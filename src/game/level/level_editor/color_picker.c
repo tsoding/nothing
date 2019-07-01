@@ -50,8 +50,6 @@ int color_picker_read_from_line_stream(ColorPicker *color_picker,
     color_picker->saturation.max_value = 1.0f;
     color_picker->lightness.value = 0.0f;
     color_picker->lightness.max_value = 1.0f;
-    color_picker->aness.value = 0.0f;
-    color_picker->aness.max_value = 1.0f;
 
     return 0;
 }
@@ -99,14 +97,6 @@ int color_picker_render(const ColorPicker *color_picker,
         return -1;
     }
 
-    if (slider_render(
-            &color_picker->aness,
-            camera,
-            rect(0.0f, COLOR_CELL_HEIGHT * 4.0f,
-                 300.0f, COLOR_CELL_HEIGHT)) < 0) {
-        return -1;
-    }
-
 
     return 0;
 }
@@ -137,18 +127,11 @@ int color_picker_event(ColorPicker *color_picker, const SDL_Event *event, int *s
         return -1;
     }
 
-    if (slider_event(&color_picker->aness,
-                     event,
-                     rect(0.0f, COLOR_CELL_HEIGHT * 4.0f,
-                          300.0f, COLOR_CELL_HEIGHT)) < 0) {
-        return -1;
-    }
-
     color_picker->color = hsla(
         color_picker->hue.value,
         color_picker->saturation.value,
         color_picker->lightness.value,
-        color_picker->aness.value);
+        1.0f);
 
     switch (event->type) {
     case SDL_MOUSEBUTTONDOWN: {
