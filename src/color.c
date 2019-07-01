@@ -149,7 +149,7 @@ Color rgba_to_hsla(Color color)
         saturation = c / (1.0f - fabsf(2.0f * lightness - 1.0f));
     }
 
-    // TODO: Color struct is used not only for RGBA
+    // TODO(#929): Color struct is used not only for RGBA
     //   But also for HSLA. We should make another similar struct but for HSLA
     return rgba(hue, saturation, lightness, color.a);
 }
