@@ -8,10 +8,6 @@ int slider_render(const Slider *slider, Camera *camera, Rect boundary)
     trace_assert(slider);
     trace_assert(camera);
 
-    if (camera_draw_rect_screen(camera, boundary, COLOR_RED) < 0) {
-        return -1;
-    }
-
     const Color core_color = rgba(0.0f, 0.0f, 0.0f, 1.0f);
     const float core_height = boundary.h * 0.33f;
     const Rect core = rect(

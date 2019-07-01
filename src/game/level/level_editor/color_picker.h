@@ -7,7 +7,11 @@
 
 typedef struct {
     Color color;
-    Slider slider;
+    // TODO: ColorPicker should use array of sliders
+    Slider hue;
+    Slider saturation;
+    Slider lightness;
+    Slider aness;
 } ColorPicker;
 
 typedef struct LineStream LineStream;

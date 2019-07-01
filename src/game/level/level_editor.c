@@ -55,8 +55,6 @@ LevelEditor *create_level_editor(void)
     }
 
     level_editor->background_layer.color = hexstr("fffda5");
-    level_editor->background_layer.slider.value = 0.0f;
-    level_editor->background_layer.slider.max_value = 1.0f;
 
     level_editor->player_layer = PUSH_LT(
         lt,
@@ -194,8 +192,6 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
             level_stream) < 0) {
         RETURN_LT(lt, NULL);
     }
-    level_editor->background_layer.slider.value = 0.3f;
-    level_editor->background_layer.slider.max_value = 1.0f;
 
     level_editor->player_layer =
         PUSH_LT(
