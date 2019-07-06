@@ -66,6 +66,13 @@ int color_picker_render(const ColorPicker *color_picker,
     trace_assert(camera);
 
     /* TODO(#931): Color Picker sliders don't have any labels */
+    if (camera_fill_rect_screen(
+            camera,
+            rect(0.0f, 0.0f, COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT),
+            color_picker_rgba(color_picker)) < 0) {
+        return -1;
+    }
+
     for (ColorPickerSlider index = 0; index < COLOR_SLIDER_N; ++index) {
         const Rect slider_rect =
             rect(0.0f, COLOR_SLIDER_HEIGHT * (float) (index + 1),
