@@ -7,6 +7,7 @@
 
 #include "line_stream.h"
 #include "lt.h"
+#include "lt_adapters.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
 #include "system/str.h"
@@ -19,11 +20,6 @@ struct LineStream
     size_t capacity;
     bool unfinished;
 };
-
-static void fclose_lt(void* file)
-{
-    fclose(file);
-}
 
 // TODO(#905): create_line_stream probably does not need mode
 //   Because LineStream interface doesn't even have anything

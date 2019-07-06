@@ -1,5 +1,5 @@
 with import <nixpkgs> {}; {
-    nothingEnv = stdenv.mkDerivation {
+    nothingEnv = gcc8Stdenv.mkDerivation {
         name = "nothing-env";
         buildInputs = [ stdenv
                         gcc
@@ -8,10 +8,6 @@ with import <nixpkgs> {}; {
                         pkgconfig
                         cmake
                         valgrind
-                        racket
-                        inotifyTools
-                        libxml2
-                        ninja
                       ];
     };
 }

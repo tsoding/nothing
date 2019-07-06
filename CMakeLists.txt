@@ -34,6 +34,8 @@ add_library(system STATIC
   src/system/log_script.c
   src/system/log_script.h
   src/system/lt.h
+  src/system/lt_adapters.h
+  src/system/lt_adapters.c
   src/system/nth_alloc.c
   src/system/nth_alloc.h
   src/system/stacktrace.c
@@ -44,6 +46,8 @@ add_library(system STATIC
   src/dynarray.c
   src/hashset.h
   src/hashset.c
+  src/system/file.h
+  src/system/file.c
   )
 
 add_library(ebisp STATIC
@@ -161,8 +165,6 @@ add_executable(nothing
   src/game/level/level_editor/layer.c
   src/game/level/level_editor/label_layer.c
   src/game/level/level_editor/label_layer.h
-  src/system/file.h
-  src/system/file.c
 )
 target_link_libraries(nothing ${SDL2_LIBRARIES} system ebisp)
 
@@ -179,7 +181,7 @@ add_executable(nothing_test
   )
 target_link_libraries(nothing_test ${SDL2_LIBRARIES} system ebisp)
 
-if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "CLANG"))
+if(("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"))
   set(CMAKE_C_FLAGS
     "${CMAKE_C_FLAGS} \
      -Wall \

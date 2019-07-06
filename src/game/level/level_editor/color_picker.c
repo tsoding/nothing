@@ -25,9 +25,11 @@ ColorPicker create_color_picker_from_rgba(Color color)
 {
     Color color_hsla = rgba_to_hsla(color);
     ColorPicker color_picker = {
-        .hue = {0, color_hsla.r, 360.0f},
-        .saturation = {0, color_hsla.g, 1.0f},
-        .lightness = {0, color_hsla.b, 1.0f}
+        .sliders = {
+            {0, color_hsla.r, 360.0f},
+            {0, color_hsla.g, 1.0f},
+            {0, color_hsla.b, 1.0f}
+        }
     };
     return color_picker;
 }
@@ -58,31 +60,15 @@ int color_picker_render(const ColorPicker *color_picker,
     trace_assert(camera);
 
     /* TODO(#931): Color Picker sliders don't have any labels */
-
-    if (slider_render(
-            &color_picker->hue,
-            camera,
-            rect(0.0f, COLOR_SLIDER_HEIGHT,
-                 COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT)) < 0) {
-        return -1;
+    for (ColorPickerSlider index = 0; index < COLOR_SLIDER_N; ++index) {
+        if (slider_render(
+                &color_picker->sliders[index],
+                camera,
+                rect(0.0f, COLOR_SLIDER_HEIGHT * (float) (index + 1),
+                     COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT)) < 0) {
+            return -1;
+        }
     }
-
-    if (slider_render(
-            &color_picker->saturation,
-            camera,
-            rect(0.0f, COLOR_SLIDER_HEIGHT * 2.0f,
-                 COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT)) < 0) {
-        return -1;
-    }
-
-    if (slider_render(
-            &color_picker->lightness,
-            camera,
-            rect(0.0f, COLOR_SLIDER_HEIGHT * 3.0f,
-                 COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT)) < 0) {
-        return -1;
-    }
-
 
     return 0;
 }
@@ -95,30 +81,15 @@ int color_picker_event(ColorPicker *color_picker, const SDL_Event *event, int *s
 
     int selected = 0;
 
-    if (slider_event(&color_picker->hue,
-                     event,
-                     rect(0.0f, COLOR_SLIDER_HEIGHT,
-                          COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT),
-                     &selected) < 0) {
-        return -1;
-    }
-
-    if (!selected) {
-        if (slider_event(&color_picker->saturation,
-                         event,
-                         rect(0.0f, COLOR_SLIDER_HEIGHT * 2.0f,
-                              COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT),
-                         &selected) < 0) {
-            return -1;
-        }
-    }
-
-    if (!selected) {
-        if (slider_event(&color_picker->lightness,
-                         event,
-                         rect(0.0f, COLOR_SLIDER_HEIGHT * 3.0f,
-                              COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT),
-                         &selected) < 0) {
+    for (ColorPickerSlider index = 0;
+         !selected && index < COLOR_SLIDER_N;
+         ++index) {
+        if (slider_event(
+                &color_picker->sliders[index],
+                event,
+                rect(0.0f, COLOR_SLIDER_HEIGHT * (float) (index + 1),
+                     COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT),
+                &selected) < 0) {
             return -1;
         }
     }
@@ -133,8 +104,8 @@ int color_picker_event(ColorPicker *color_picker, const SDL_Event *event, int *s
 Color color_picker_rgba(const ColorPicker *color_picker)
 {
     return hsla(
-        color_picker->hue.value,
-        color_picker->saturation.value,
-        color_picker->lightness.value,
+        color_picker->sliders[COLOR_SLIDER_HUE].value,
+        color_picker->sliders[COLOR_SLIDER_SAT].value,
+        color_picker->sliders[COLOR_SLIDER_LIT].value,
         1.0f);
 }
