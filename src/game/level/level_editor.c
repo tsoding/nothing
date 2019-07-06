@@ -13,6 +13,7 @@
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
 #include "system/lt.h"
+#include "system/lt_adapters.h"
 #include "system/log.h"
 #include "system/str.h"
 

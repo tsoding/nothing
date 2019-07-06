@@ -10,13 +10,9 @@
 #include "ebisp/builtins.h"
 #include "ebisp/parser.h"
 #include "system/lt.h"
+#include "system/lt_adapters.h"
 
 #define MAX_BUFFER_LENGTH (5 * 1000 * 1000)
-
-static void fclose_lt(void* file)
-{
-    fclose(file);
-}
 
 static struct ParseResult parse_expr(Gc *gc, struct Token current_token);
 

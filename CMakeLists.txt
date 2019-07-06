@@ -34,6 +34,8 @@ add_library(system STATIC
   src/system/log_script.c
   src/system/log_script.h
   src/system/lt.h
+  src/system/lt_adapters.h
+  src/system/lt_adapters.c
   src/system/nth_alloc.c
   src/system/nth_alloc.h
   src/system/stacktrace.c

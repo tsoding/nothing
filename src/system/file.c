@@ -13,6 +13,7 @@
 
 #include "system/stacktrace.h"
 #include "file.h"
+#include "lt_adapters.h"
 
 int last_modified(const char *filepath, time_t *time)
 {
