@@ -101,7 +101,6 @@ int boxes_update(Boxes *boxes,
                  float delta_time)
 {
     trace_assert(boxes);
-    trace_assert(delta_time);
 
     const size_t count = dynarray_count(boxes->body_ids);
     RigidBodyId *body_ids = dynarray_data(boxes->body_ids);
