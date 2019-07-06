@@ -11,6 +11,7 @@
 
 #define COLOR_SLIDER_HEIGHT 50.0f
 #define COLOR_SLIDER_WIDTH 300.0f
+#define COLOR_SLIDER_PADDING_BOTTOM 10.0f
 
 const char *slider_labels[COLOR_SLIDER_N] = {
     "Hue",
@@ -75,7 +76,7 @@ int color_picker_render(const ColorPicker *color_picker,
 
     for (ColorPickerSlider index = 0; index < COLOR_SLIDER_N; ++index) {
         const Rect slider_rect =
-            rect(0.0f, COLOR_SLIDER_HEIGHT * (float) (index + 1),
+            rect(0.0f, (COLOR_SLIDER_HEIGHT + COLOR_SLIDER_PADDING_BOTTOM) * (float) (index + 1),
                  COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT);
         const Point label_size = vec(2.5f, 2.5f);
 
@@ -114,7 +115,7 @@ int color_picker_event(ColorPicker *color_picker, const SDL_Event *event, int *s
         if (slider_event(
                 &color_picker->sliders[index],
                 event,
-                rect(0.0f, COLOR_SLIDER_HEIGHT * (float) (index + 1),
+                rect(0.0f, (COLOR_SLIDER_HEIGHT + COLOR_SLIDER_PADDING_BOTTOM) * (float) (index + 1),
                      COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT),
                 &selected) < 0) {
             return -1;
