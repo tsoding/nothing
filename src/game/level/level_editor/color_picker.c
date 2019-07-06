@@ -70,6 +70,7 @@ int color_picker_render(const ColorPicker *color_picker,
         const Rect slider_rect =
             rect(0.0f, COLOR_SLIDER_HEIGHT * (float) (index + 1),
                  COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT);
+        const Point label_size = vec(2.5f, 2.5f);
 
         if (slider_render(
                 &color_picker->sliders[index],
@@ -81,10 +82,10 @@ int color_picker_render(const ColorPicker *color_picker,
         if (camera_render_text_screen(
                 camera,
                 slider_labels[index],
-                vec(2.5f, 2.5f),
+                label_size,
                 COLOR_BLACK,
                 vec(slider_rect.x + COLOR_SLIDER_WIDTH,
-                    slider_rect.y + COLOR_SLIDER_HEIGHT * 0.5f - 2.5f * (float) FONT_CHAR_HEIGHT * 0.5f)) < 0) {
+                    slider_rect.y + COLOR_SLIDER_HEIGHT * 0.5f - label_size.y * (float) FONT_CHAR_HEIGHT * 0.5f)) < 0) {
             return -1;
         }
     }
