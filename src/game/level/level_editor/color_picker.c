@@ -12,6 +12,12 @@
 #define COLOR_SLIDER_HEIGHT 50.0f
 #define COLOR_SLIDER_WIDTH 300.0f
 
+const char *slider_labels[COLOR_SLIDER_N] = {
+    "Hue",
+    "Saturation",
+    "Lightness"
+};
+
 LayerPtr color_picker_as_layer(ColorPicker *color_picker)
 {
     LayerPtr layer = {
@@ -61,11 +67,24 @@ int color_picker_render(const ColorPicker *color_picker,
 
     /* TODO(#931): Color Picker sliders don't have any labels */
     for (ColorPickerSlider index = 0; index < COLOR_SLIDER_N; ++index) {
+        const Rect slider_rect =
+            rect(0.0f, COLOR_SLIDER_HEIGHT * (float) (index + 1),
+                 COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT);
+
         if (slider_render(
                 &color_picker->sliders[index],
                 camera,
-                rect(0.0f, COLOR_SLIDER_HEIGHT * (float) (index + 1),
-                     COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT)) < 0) {
+                slider_rect) < 0) {
+            return -1;
+        }
+
+        if (camera_render_text_screen(
+                camera,
+                slider_labels[index],
+                vec(2.5f, 2.5f),
+                COLOR_BLACK,
+                vec(slider_rect.x + COLOR_SLIDER_WIDTH,
+                    slider_rect.y + COLOR_SLIDER_HEIGHT * 0.5f - 2.5f * (float) FONT_CHAR_HEIGHT * 0.5f)) < 0) {
             return -1;
         }
     }
