@@ -1,5 +1,5 @@
 with import <nixpkgs> {}; {
-    nothingEnv = stdenv.mkDerivation {
+    nothingEnv = gcc8Stdenv.mkDerivation {
         name = "nothing-env";
         buildInputs = [ stdenv
                         gcc
