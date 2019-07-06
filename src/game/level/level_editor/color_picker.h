@@ -5,11 +5,16 @@
 #include "layer.h"
 #include "ui/slider.h"
 
+typedef enum {
+    COLOR_SLIDER_HUE = 0,
+    COLOR_SLIDER_SAT,
+    COLOR_SLIDER_LIT,
+    COLOR_SLIDER_N
+} ColorPickerSlider;
+
 typedef struct {
     // TODO(#933): ColorPicker should use array of sliders
-    Slider hue;
-    Slider saturation;
-    Slider lightness;
+    Slider sliders[COLOR_SLIDER_N];
 } ColorPicker;
 
 typedef struct LineStream LineStream;
