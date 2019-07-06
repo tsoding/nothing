@@ -8,10 +8,6 @@ with import <nixpkgs> {}; {
                         pkgconfig
                         cmake
                         valgrind
-                        racket
-                        inotifyTools
-                        libxml2
-                        ninja
                       ];
     };
 }
