@@ -179,7 +179,7 @@ add_executable(nothing_test
   )
 target_link_libraries(nothing_test ${SDL2_LIBRARIES} system ebisp)
 
-if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "CLANG"))
+if(("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"))
   set(CMAKE_C_FLAGS
     "${CMAKE_C_FLAGS} \
      -Wall \
