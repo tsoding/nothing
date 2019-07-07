@@ -12,6 +12,7 @@
 #include "system/str.h"
 
 #define RECT_LAYER_ID_MAX_SIZE 36
+#define RECT_LAYER_SELECTION_THICCNESS 10.0f
 #define PROTO_AREA_THRESHOLD 10.0
 
 typedef enum {
@@ -205,6 +206,16 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
     Color *colors = dynarray_data(layer->colors);
 
     for (size_t i = 0; i < n; ++i) {
+        if (layer->selection == (int) i) {
+            if (active && camera_fill_rect(
+                    camera,
+                    // TODO: thiccness of RectLayer selection should be probably based on zoom
+                    rect_scale(rects[i], RECT_LAYER_SELECTION_THICCNESS),
+                    color_invert(colors[i])) < 0) {
+                return -1;
+            }
+        }
+
         if (camera_fill_rect(
                 camera,
                 rects[i],
@@ -214,12 +225,6 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
             return -1;
         }
 
-        // TODO: the selection is barely visible
-        if (layer->selection == (int) i) {
-            if (active && camera_draw_rect(camera, rects[i], COLOR_RED) < 0) {
-                return -1;
-            }
-        }
     }
 
     const Color color = color_picker_rgba(&layer->color_picker);
