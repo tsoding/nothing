@@ -30,6 +30,15 @@ Rect rect_from_sdl(const SDL_Rect *rect);
 
 Rect rects_overlap_area(Rect rect1, Rect rect2);
 
+static inline Rect rect_scale(Rect rect, float d)
+{
+    rect.x -= d;
+    rect.y -= d;
+    rect.w += d * 2.0f;
+    rect.h += d * 2.0f;
+    return rect;
+}
+
 int rect_contains_point(Rect rect, Point p);
 
 int rects_overlap(Rect rect1, Rect rect2);

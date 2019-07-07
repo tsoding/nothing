@@ -5,7 +5,6 @@
 #include "system/line_stream.h"
 #include "system/log.h"
 #include "game/camera.h"
-#include "proto_rect.h"
 #include "color_picker.h"
 #include "color.h"
 
