@@ -29,9 +29,10 @@ struct RectLayer {
     ColorPicker color_picker;
     Vec proto_begin;
     Vec proto_end;
+    int selection;
 };
 
-static int rect_layer_delete_rect_at(RectLayer *layer, Vec position)
+static int rect_layer_rect_at(RectLayer *layer, Vec position)
 {
     trace_assert(layer);
 
@@ -40,10 +41,22 @@ static int rect_layer_delete_rect_at(RectLayer *layer, Vec position)
 
     for (size_t i = 0; i < n; ++i) {
         if (rect_contains_point(rects[i], position)) {
-            dynarray_delete_at(layer->rects, i);
-            dynarray_delete_at(layer->colors, i);
-            return 0;
+            return (int) i;
         }
+    }
+
+    return -1;
+}
+
+static int rect_layer_delete_rect_at(RectLayer *layer, Vec position)
+{
+    trace_assert(layer);
+
+    int i = rect_layer_rect_at(layer, position);
+    if (i >= 0) {
+        dynarray_delete_at(layer->rects, (size_t)i);
+        dynarray_delete_at(layer->colors, (size_t)i);
+        dynarray_delete_at(layer->ids, (size_t)i);
     }
 
     return 0;
@@ -123,6 +136,7 @@ RectLayer *create_rect_layer(void)
     }
 
     layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
+    layer->selection = 0;
 
     return layer;
 }
@@ -199,6 +213,13 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
                     rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f))) < 0) {
             return -1;
         }
+
+        // TODO: the selection is barely visible
+        if (layer->selection == (int) i) {
+            if (active && camera_draw_rect(camera, rects[i], COLOR_RED) < 0) {
+                return -1;
+            }
+        }
     }
 
     const Color color = color_picker_rgba(&layer->color_picker);
@@ -262,12 +283,18 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
             case SDL_MOUSEBUTTONDOWN: {
                 switch (event->button.button) {
                 case SDL_BUTTON_LEFT: {
-                    layer->state = RECT_LAYER_PROTO;
-                    layer->proto_begin = camera_map_screen(
+                    Point position = camera_map_screen(
                         camera,
                         event->button.x,
                         event->button.y);
-                    layer->proto_end = layer->proto_begin;
+
+                    layer->selection = rect_layer_rect_at(layer, position);
+
+                    if (layer->selection < 0) {
+                        layer->state = RECT_LAYER_PROTO;
+                        layer->proto_begin = position;
+                        layer->proto_end = position;
+                    }
                 } break;
                 }
             } break;
