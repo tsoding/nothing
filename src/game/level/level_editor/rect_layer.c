@@ -49,16 +49,13 @@ static int rect_layer_rect_at(RectLayer *layer, Vec position)
     return -1;
 }
 
-static int rect_layer_delete_rect_at(RectLayer *layer, Vec position)
+static int rect_layer_delete_rect_at(RectLayer *layer, size_t i)
 {
     trace_assert(layer);
 
-    int i = rect_layer_rect_at(layer, position);
-    if (i >= 0) {
-        dynarray_delete_at(layer->rects, (size_t)i);
-        dynarray_delete_at(layer->colors, (size_t)i);
-        dynarray_delete_at(layer->ids, (size_t)i);
-    }
+    dynarray_delete_at(layer->rects, i);
+    dynarray_delete_at(layer->colors, i);
+    dynarray_delete_at(layer->ids, i);
 
     return 0;
 }
@@ -137,7 +134,7 @@ RectLayer *create_rect_layer(void)
     }
 
     layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
-    layer->selection = 0;
+    layer->selection = -1;
 
     return layer;
 }
@@ -299,6 +296,17 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
                         layer->state = RECT_LAYER_PROTO;
                         layer->proto_begin = position;
                         layer->proto_end = position;
+                    }
+                } break;
+                }
+            } break;
+
+            case SDL_KEYDOWN: {
+                switch (event->key.keysym.sym) {
+                case SDLK_DELETE: {
+                    if (layer->selection >= 0) {
+                        rect_layer_delete_rect_at(layer, (size_t) layer->selection);
+                        layer->selection = -1;
                     }
                 } break;
                 }
