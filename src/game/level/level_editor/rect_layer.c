@@ -8,20 +8,26 @@
 #include "rect_layer.h"
 #include "dynarray.h"
 #include "system/line_stream.h"
-#include "proto_rect.h"
 #include "color_picker.h"
 #include "system/str.h"
 
 #define RECT_LAYER_ID_MAX_SIZE 36
+#define PROTO_AREA_THRESHOLD 10.0
+
+typedef enum {
+    RECT_LAYER_IDLE = 0,
+    RECT_LAYER_PROTO
+} RectLayerState;
 
 /* TODO(#886): RectLayer does not allow to modify ids of Rects */
 struct RectLayer {
     Lt *lt;
+    RectLayerState state;
     Dynarray *ids;
     Dynarray *rects;
     Dynarray *colors;
-    ProtoRect proto_rect;
     ColorPicker color_picker;
+    Vec begin, end;
 };
 
 LayerPtr rect_layer_as_layer(RectLayer *rect_layer)
@@ -146,11 +152,11 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
         }
     }
 
-    if (proto_rect_render(
-            &layer->proto_rect,
-            camera,
-            color_picker_rgba(&layer->color_picker)) < 0) {
-        return -1;
+    const Color color = color_picker_rgba(&layer->color_picker);
+    if (layer->state == RECT_LAYER_PROTO) {
+        if (camera_fill_rect(camera, rect_from_points(layer->begin, layer->end), color) < 0) {
+            return -1;
+        }
     }
 
     if (active && color_picker_render(&layer->color_picker, camera) < 0) {
@@ -170,14 +176,54 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
         return -1;
     }
 
-    if (!selected &&
-        proto_rect_event(
-            &layer->proto_rect,
-            event,
-            camera,
-            color_picker_rgba(&layer->color_picker),
-            layer) < 0) {
-        return -1;
+    if (!selected) {
+        const Color color = color_picker_rgba(&layer->color_picker);
+        if (layer->state == RECT_LAYER_PROTO) {
+            // Active
+            switch (event->type) {
+            case SDL_MOUSEBUTTONUP: {
+                switch (event->button.button) {
+                case SDL_BUTTON_LEFT: {
+                    const Rect real_rect =
+                        rect_from_points(
+                            layer->begin,
+                            layer->end);
+                    const float area = real_rect.w * real_rect.h;
+
+                    if (area >= PROTO_AREA_THRESHOLD) {
+                        rect_layer_add_rect(layer, real_rect, color);
+                    } else {
+                        log_info("The area is too small %f. Such small box won't be created.\n", area);
+                    }
+                    layer->state = RECT_LAYER_IDLE;
+                } break;
+                }
+            } break;
+
+            case SDL_MOUSEMOTION: {
+                layer->end = camera_map_screen(
+                    camera,
+                    event->motion.x,
+                    event->motion.y);
+            } break;
+            }
+        } else {
+            // Inactive
+            switch (event->type) {
+            case SDL_MOUSEBUTTONDOWN: {
+                switch (event->button.button) {
+                case SDL_BUTTON_LEFT: {
+                    layer->state = RECT_LAYER_PROTO;
+                    layer->begin = camera_map_screen(
+                        camera,
+                        event->button.x,
+                        event->button.y);
+                    layer->end = layer->begin;
+                } break;
+                }
+            } break;
+            }
+        }
     }
 
     return 0;
