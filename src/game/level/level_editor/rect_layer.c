@@ -27,7 +27,8 @@ struct RectLayer {
     Dynarray *rects;
     Dynarray *colors;
     ColorPicker color_picker;
-    Vec begin, end;
+    Vec proto_begin;
+    Vec proto_end;
 };
 
 LayerPtr rect_layer_as_layer(RectLayer *rect_layer)
@@ -154,7 +155,7 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
 
     const Color color = color_picker_rgba(&layer->color_picker);
     if (layer->state == RECT_LAYER_PROTO) {
-        if (camera_fill_rect(camera, rect_from_points(layer->begin, layer->end), color) < 0) {
+        if (camera_fill_rect(camera, rect_from_points(layer->proto_begin, layer->proto_end), color) < 0) {
             return -1;
         }
     }
@@ -186,8 +187,8 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
                 case SDL_BUTTON_LEFT: {
                     const Rect real_rect =
                         rect_from_points(
-                            layer->begin,
-                            layer->end);
+                            layer->proto_begin,
+                            layer->proto_end);
                     const float area = real_rect.w * real_rect.h;
 
                     if (area >= PROTO_AREA_THRESHOLD) {
@@ -201,7 +202,7 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
             } break;
 
             case SDL_MOUSEMOTION: {
-                layer->end = camera_map_screen(
+                layer->proto_end = camera_map_screen(
                     camera,
                     event->motion.x,
                     event->motion.y);
@@ -214,11 +215,11 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
                 switch (event->button.button) {
                 case SDL_BUTTON_LEFT: {
                     layer->state = RECT_LAYER_PROTO;
-                    layer->begin = camera_map_screen(
+                    layer->proto_begin = camera_map_screen(
                         camera,
                         event->button.x,
                         event->button.y);
-                    layer->end = layer->begin;
+                    layer->proto_end = layer->proto_begin;
                 } break;
                 }
             } break;
