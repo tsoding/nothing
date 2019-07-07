@@ -14,10 +14,6 @@ void destroy_rect_layer(RectLayer *layer);
 int rect_layer_render(const RectLayer *layer, Camera *camera, int active);
 int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *camera);
 
-// TODO: rect_layer_add_rect and rect_layer_delete_rect_at should be probably not exposed
-int rect_layer_add_rect(RectLayer *layer, Rect rect, Color color);
-int rect_layer_delete_rect_at(RectLayer *layer, Vec position);
-
 int rect_layer_dump_stream(const RectLayer *layer, FILE *filedump);
 
 size_t rect_layer_count(const RectLayer *layer);
