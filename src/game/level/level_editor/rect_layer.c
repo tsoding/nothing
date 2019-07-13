@@ -10,17 +10,18 @@
 #include "system/line_stream.h"
 #include "color_picker.h"
 #include "system/str.h"
+#include "ui/edit_field.h"
 
 #define RECT_LAYER_ID_MAX_SIZE 36
 #define RECT_LAYER_SELECTION_THICCNESS 5.0f
 #define CREATE_AREA_THRESHOLD 10.0
 
-// TODO(#942): RectLayer does not allow to move rectangle arround
 typedef enum {
     RECT_LAYER_IDLE = 0,
     RECT_LAYER_CREATE,
     RECT_LAYER_RESIZE,
-    RECT_LAYER_MOVE
+    RECT_LAYER_MOVE,
+    RECT_LAYER_ID_RENAME
 } RectLayerState;
 
 /* TODO(#886): RectLayer does not allow to modify ids of Rects */
@@ -35,6 +36,7 @@ struct RectLayer {
     Vec create_end;
     int selection;
     Vec move_anchor;
+    Edit_field *id_edit_field;
 };
 
 static int rect_layer_rect_at(RectLayer *layer, Vec position)
@@ -142,6 +144,16 @@ RectLayer *create_rect_layer(void)
         RETURN_LT(lt, NULL);
     }
 
+    layer->id_edit_field = PUSH_LT(
+        lt,
+        create_edit_field(
+            vec(3.0f, 3.0f),
+            COLOR_BLACK),
+        destroy_edit_field);
+    if (layer->id_edit_field == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
     layer->selection = -1;
 
@@ -210,6 +222,7 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
     const size_t n = dynarray_count(layer->rects);
     Rect *rects = dynarray_data(layer->rects);
     Color *colors = dynarray_data(layer->colors);
+    const char *ids = dynarray_data(layer->ids);
 
     for (size_t i = 0; i < n; ++i) {
         if (layer->selection == (int) i) {
@@ -242,11 +255,25 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
             return -1;
         }
 
+        if (camera_render_text(
+                camera,
+                ids + i * RECT_LAYER_ID_MAX_SIZE,
+                vec(3.0f, 3.0f),
+                color_invert(colors[i]),
+                rect_position(rects[i])) < 0) {
+            return -1;
+        }
     }
 
     const Color color = color_picker_rgba(&layer->color_picker);
     if (layer->state == RECT_LAYER_CREATE) {
         if (camera_fill_rect(camera, rect_from_points(layer->create_begin, layer->create_end), color) < 0) {
+            return -1;
+        }
+    }
+
+    if (layer->state == RECT_LAYER_ID_RENAME) {
+        if (edit_field_render(layer->id_edit_field, camera, vec(400.0f, 400.0f)) < 0) {
             return -1;
         }
     }
@@ -274,6 +301,7 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
 
     const Color color = color_picker_rgba(&layer->color_picker);
 
+    // TODO(#948): rect_layer_event FSM is too big
     switch (layer->state) {
     case RECT_LAYER_CREATE: {
         switch (event->type) {
@@ -376,6 +404,17 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
                     layer->selection = -1;
                 }
             } break;
+
+            case SDLK_F2: {
+                if (layer->selection >= 0) {
+                    const char *ids = dynarray_data(layer->ids);
+                    layer->state = RECT_LAYER_ID_RENAME;
+                    edit_field_replace(
+                        layer->id_edit_field,
+                        ids + layer->selection * RECT_LAYER_ID_MAX_SIZE);
+                    SDL_StartTextInput();
+                }
+            } break;
             }
         } break;
         }
@@ -401,6 +440,38 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
 
         case SDL_MOUSEBUTTONUP: {
             layer->state = RECT_LAYER_IDLE;
+        } break;
+        }
+    } break;
+
+    case RECT_LAYER_ID_RENAME: {
+        switch (event->type) {
+        case SDL_TEXTINPUT: {
+            if (edit_field_text_input(layer->id_edit_field, &event->text) < 0) {
+                return -1;
+            }
+        } break;
+
+        case SDL_KEYDOWN: {
+            switch (event->key.keysym.sym) {
+            case SDLK_RETURN: {
+                char *id =
+                    (char *)dynarray_data(layer->ids) + layer->selection * RECT_LAYER_ID_MAX_SIZE;
+                memset(id, 0, RECT_LAYER_ID_MAX_SIZE);
+                memcpy(id, edit_field_as_text(layer->id_edit_field), RECT_LAYER_ID_MAX_SIZE - 1);
+                layer->state = RECT_LAYER_IDLE;
+            } break;
+            }
+
+            if (edit_field_keyboard(layer->id_edit_field, &event->key) < 0) {
+                return -1;
+            }
+        } break;
+
+        case SDL_KEYUP: {
+            if (edit_field_keyboard(layer->id_edit_field, &event->key) < 0) {
+                return -1;
+            }
         } break;
         }
     } break;

@@ -54,9 +54,6 @@ LevelFolder *create_level_folder(const char *dirpath)
     }
 
     char path[LEVEL_FOLDER_MAX_LENGTH];
-    // TODO(#920): Level Picker is probably broken on Windows
-    //   We have never tested our dirent implementation on Windows. So
-    //   it's probably broken. We need to check it.
     DIR *level_dir = PUSH_LT(lt, opendir(dirpath), closedir_lt);
 
     for (struct dirent *d = readdir(level_dir);

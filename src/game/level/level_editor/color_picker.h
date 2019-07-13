@@ -13,7 +13,6 @@ typedef enum {
 } ColorPickerSlider;
 
 typedef struct {
-    // TODO(#933): ColorPicker should use array of sliders
     Slider sliders[COLOR_SLIDER_N];
 } ColorPicker;
 

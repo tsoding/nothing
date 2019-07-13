@@ -58,14 +58,12 @@ int color_picker_read_from_line_stream(ColorPicker *color_picker,
     return 0;
 }
 
-// TODO(#930): Color Picker doesn't have any visual indication about the current color
 int color_picker_render(const ColorPicker *color_picker,
                         Camera *camera)
 {
     trace_assert(color_picker);
     trace_assert(camera);
 
-    /* TODO(#931): Color Picker sliders don't have any labels */
     if (camera_fill_rect_screen(
             camera,
             rect(0.0f, 0.0f, COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT),
