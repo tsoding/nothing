@@ -19,7 +19,8 @@
 typedef enum {
     RECT_LAYER_IDLE = 0,
     RECT_LAYER_PROTO,
-    RECT_LAYER_RESIZE
+    RECT_LAYER_RESIZE,
+    RECT_LAYER_MOVE
 } RectLayerState;
 
 /* TODO(#886): RectLayer does not allow to modify ids of Rects */
@@ -33,6 +34,7 @@ struct RectLayer {
     Vec proto_begin;
     Vec proto_end;
     int selection;
+    Vec move_anchor;
 };
 
 static int rect_layer_rect_at(RectLayer *layer, Vec position)
@@ -271,7 +273,9 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
     }
 
     const Color color = color_picker_rgba(&layer->color_picker);
-    if (layer->state == RECT_LAYER_PROTO) {
+
+    switch (layer->state) {
+    case RECT_LAYER_PROTO: {
         switch (event->type) {
         case SDL_MOUSEBUTTONUP: {
             switch (event->button.button) {
@@ -299,7 +303,9 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
                 event->motion.y);
         } break;
         }
-    } else if (layer->state == RECT_LAYER_RESIZE) {
+    } break;
+
+    case RECT_LAYER_RESIZE: {
         switch (event->type) {
         case SDL_MOUSEMOTION: {
             Rect *rects = dynarray_data(layer->rects);
@@ -319,7 +325,9 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
             layer->state = RECT_LAYER_IDLE;
         } break;
         }
-    } else {
+    } break;
+
+    case RECT_LAYER_IDLE: {
         switch (event->type) {
         case SDL_MOUSEBUTTONDOWN: {
             switch (event->button.button) {
@@ -329,13 +337,31 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
                     event->button.x,
                     event->button.y);
 
-                if (layer->selection >= 0 &&
-                    rect_contains_point(
-                        rect_layer_resize_anchor(
-                            layer,
-                            (size_t)layer->selection),
-                        position)) {
-                    layer->state = RECT_LAYER_RESIZE;
+                if (layer->selection >= 0) {
+                    if (rect_contains_point(
+                            rect_layer_resize_anchor(
+                                layer,
+                                (size_t)layer->selection),
+                            position)) {
+                        layer->state = RECT_LAYER_RESIZE;
+                    } else if (layer->selection == rect_layer_rect_at(layer, position)) {
+                        Rect *rects = dynarray_data(layer->rects);
+                        layer->state = RECT_LAYER_MOVE;
+                        layer->move_anchor =
+                            vec_sub(
+                                position,
+                                vec(
+                                    rects[layer->selection].x,
+                                    rects[layer->selection].y));
+                    } else {
+                        layer->selection = rect_layer_rect_at(layer, position);
+
+                        if (layer->selection < 0) {
+                            layer->state = RECT_LAYER_PROTO;
+                            layer->proto_begin = position;
+                            layer->proto_end = position;
+                        }
+                    }
                 } else {
                     layer->selection = rect_layer_rect_at(layer, position);
 
@@ -360,8 +386,32 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
             }
         } break;
         }
-    }
+    } break;
 
+    case RECT_LAYER_MOVE: {
+        switch (event->type) {
+        case SDL_MOUSEMOTION: {
+            Point position = vec_sub(
+                camera_map_screen(
+                    camera,
+                    event->button.x,
+                    event->button.y),
+                layer->move_anchor);
+
+            Rect *rects = dynarray_data(layer->rects);
+
+            trace_assert(layer->selection >= 0);
+
+            rects[layer->selection].x = position.x;
+            rects[layer->selection].y = position.y;
+        } break;
+
+        case SDL_MOUSEBUTTONUP: {
+            layer->state = RECT_LAYER_IDLE;
+        } break;
+        }
+    } break;
+    }
 
     return 0;
 }
