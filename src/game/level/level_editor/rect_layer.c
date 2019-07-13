@@ -15,7 +15,6 @@
 #define RECT_LAYER_SELECTION_THICCNESS 5.0f
 #define CREATE_AREA_THRESHOLD 10.0
 
-// TODO(#942): RectLayer does not allow to move rectangle arround
 typedef enum {
     RECT_LAYER_IDLE = 0,
     RECT_LAYER_CREATE,
