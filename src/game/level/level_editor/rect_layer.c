@@ -209,6 +209,7 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
     const size_t n = dynarray_count(layer->rects);
     Rect *rects = dynarray_data(layer->rects);
     Color *colors = dynarray_data(layer->colors);
+    const char *ids = dynarray_data(layer->ids);
 
     for (size_t i = 0; i < n; ++i) {
         if (layer->selection == (int) i) {
@@ -241,6 +242,14 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
             return -1;
         }
 
+        if (camera_render_text(
+                camera,
+                ids + i * RECT_LAYER_ID_MAX_SIZE,
+                vec(3.0f, 3.0f),
+                color_invert(colors[i]),
+                rect_position(rects[i])) < 0) {
+            return -1;
+        }
     }
 
     const Color color = color_picker_rgba(&layer->color_picker);
