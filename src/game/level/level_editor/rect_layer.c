@@ -13,12 +13,12 @@
 
 #define RECT_LAYER_ID_MAX_SIZE 36
 #define RECT_LAYER_SELECTION_THICCNESS 5.0f
-#define PROTO_AREA_THRESHOLD 10.0
+#define CREATE_AREA_THRESHOLD 10.0
 
 // TODO(#942): RectLayer does not allow to move rectangle arround
 typedef enum {
     RECT_LAYER_IDLE = 0,
-    RECT_LAYER_PROTO,
+    RECT_LAYER_CREATE,
     RECT_LAYER_RESIZE,
     RECT_LAYER_MOVE
 } RectLayerState;
@@ -31,8 +31,8 @@ struct RectLayer {
     Dynarray *rects;
     Dynarray *colors;
     ColorPicker color_picker;
-    Vec proto_begin;
-    Vec proto_end;
+    Vec create_begin;
+    Vec create_end;
     int selection;
     Vec move_anchor;
 };
@@ -245,8 +245,8 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
     }
 
     const Color color = color_picker_rgba(&layer->color_picker);
-    if (layer->state == RECT_LAYER_PROTO) {
-        if (camera_fill_rect(camera, rect_from_points(layer->proto_begin, layer->proto_end), color) < 0) {
+    if (layer->state == RECT_LAYER_CREATE) {
+        if (camera_fill_rect(camera, rect_from_points(layer->create_begin, layer->create_end), color) < 0) {
             return -1;
         }
     }
@@ -275,18 +275,18 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
     const Color color = color_picker_rgba(&layer->color_picker);
 
     switch (layer->state) {
-    case RECT_LAYER_PROTO: {
+    case RECT_LAYER_CREATE: {
         switch (event->type) {
         case SDL_MOUSEBUTTONUP: {
             switch (event->button.button) {
             case SDL_BUTTON_LEFT: {
                 const Rect real_rect =
                     rect_from_points(
-                        layer->proto_begin,
-                        layer->proto_end);
+                        layer->create_begin,
+                        layer->create_end);
                 const float area = real_rect.w * real_rect.h;
 
-                if (area >= PROTO_AREA_THRESHOLD) {
+                if (area >= CREATE_AREA_THRESHOLD) {
                     rect_layer_add_rect(layer, real_rect, color);
                 } else {
                     log_info("The area is too small %f. Such small box won't be created.\n", area);
@@ -297,7 +297,7 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
         } break;
 
         case SDL_MOUSEMOTION: {
-            layer->proto_end = camera_map_screen(
+            layer->create_end = camera_map_screen(
                 camera,
                 event->motion.x,
                 event->motion.y);
@@ -336,39 +336,32 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
                     camera,
                     event->button.x,
                     event->button.y);
+                int rect_at_position =
+                    rect_layer_rect_at(layer, position);
 
-                if (layer->selection >= 0) {
-                    if (rect_contains_point(
-                            rect_layer_resize_anchor(
-                                layer,
-                                (size_t)layer->selection),
-                            position)) {
-                        layer->state = RECT_LAYER_RESIZE;
-                    } else if (layer->selection == rect_layer_rect_at(layer, position)) {
-                        Rect *rects = dynarray_data(layer->rects);
-                        layer->state = RECT_LAYER_MOVE;
-                        layer->move_anchor =
-                            vec_sub(
-                                position,
-                                vec(
-                                    rects[layer->selection].x,
-                                    rects[layer->selection].y));
-                    } else {
-                        layer->selection = rect_layer_rect_at(layer, position);
-
-                        if (layer->selection < 0) {
-                            layer->state = RECT_LAYER_PROTO;
-                            layer->proto_begin = position;
-                            layer->proto_end = position;
-                        }
-                    }
+                if (rect_at_position >= 0) {
+                    Rect *rects = dynarray_data(layer->rects);
+                    layer->selection = rect_at_position;
+                    layer->state = RECT_LAYER_MOVE;
+                    layer->move_anchor =
+                        vec_sub(
+                            position,
+                            vec(
+                                rects[layer->selection].x,
+                                rects[layer->selection].y));
+                } else if (layer->selection >= 0 && rect_contains_point(
+                               rect_layer_resize_anchor(
+                                   layer,
+                                   (size_t)layer->selection),
+                               position)) {
+                    layer->state = RECT_LAYER_RESIZE;
                 } else {
-                    layer->selection = rect_layer_rect_at(layer, position);
+                    layer->selection = rect_at_position;
 
                     if (layer->selection < 0) {
-                        layer->state = RECT_LAYER_PROTO;
-                        layer->proto_begin = position;
-                        layer->proto_end = position;
+                        layer->state = RECT_LAYER_CREATE;
+                        layer->create_begin = position;
+                        layer->create_end = position;
                     }
                 }
             } break;
