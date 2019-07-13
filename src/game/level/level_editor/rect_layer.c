@@ -336,34 +336,27 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
                     camera,
                     event->button.x,
                     event->button.y);
+                int rect_at_position =
+                    rect_layer_rect_at(layer, position);
 
-                if (layer->selection >= 0) {
-                    if (rect_contains_point(
-                            rect_layer_resize_anchor(
-                                layer,
-                                (size_t)layer->selection),
-                            position)) {
-                        layer->state = RECT_LAYER_RESIZE;
-                    } else if (layer->selection == rect_layer_rect_at(layer, position)) {
-                        Rect *rects = dynarray_data(layer->rects);
-                        layer->state = RECT_LAYER_MOVE;
-                        layer->move_anchor =
-                            vec_sub(
-                                position,
-                                vec(
-                                    rects[layer->selection].x,
-                                    rects[layer->selection].y));
-                    } else {
-                        layer->selection = rect_layer_rect_at(layer, position);
-
-                        if (layer->selection < 0) {
-                            layer->state = RECT_LAYER_PROTO;
-                            layer->proto_begin = position;
-                            layer->proto_end = position;
-                        }
-                    }
+                if (rect_at_position >= 0) {
+                    Rect *rects = dynarray_data(layer->rects);
+                    layer->selection = rect_at_position;
+                    layer->state = RECT_LAYER_MOVE;
+                    layer->move_anchor =
+                        vec_sub(
+                            position,
+                            vec(
+                                rects[layer->selection].x,
+                                rects[layer->selection].y));
+                } else if (layer->selection >= 0 && rect_contains_point(
+                               rect_layer_resize_anchor(
+                                   layer,
+                                   (size_t)layer->selection),
+                               position)) {
+                    layer->state = RECT_LAYER_RESIZE;
                 } else {
-                    layer->selection = rect_layer_rect_at(layer, position);
+                    layer->selection = rect_at_position;
 
                     if (layer->selection < 0) {
                         layer->state = RECT_LAYER_PROTO;
