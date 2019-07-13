@@ -301,7 +301,7 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
 
     const Color color = color_picker_rgba(&layer->color_picker);
 
-    // TODO: rect_layer_event FSM is too big
+    // TODO(#948): rect_layer_event FSM is too big
     switch (layer->state) {
     case RECT_LAYER_CREATE: {
         switch (event->type) {
