@@ -65,7 +65,6 @@ int color_picker_render(const ColorPicker *color_picker,
     trace_assert(color_picker);
     trace_assert(camera);
 
-    /* TODO(#931): Color Picker sliders don't have any labels */
     if (camera_fill_rect_screen(
             camera,
             rect(0.0f, 0.0f, COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT),
