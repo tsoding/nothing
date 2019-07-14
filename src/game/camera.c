@@ -22,8 +22,6 @@ struct Camera {
 
 static Vec effective_ratio(const SDL_Rect *view_port);
 static Vec effective_scale(const SDL_Rect *view_port);
-static Rect camera_rect(const Camera *camera,
-                        const Rect rect);
 static Triangle camera_triangle(const Camera *camera,
                                 const Triangle t);
 
@@ -376,8 +374,7 @@ static Triangle camera_triangle(const Camera *camera,
         camera_point(camera, t.p3));
 }
 
-static Rect camera_rect(const Camera *camera,
-                        const Rect rect)
+Rect camera_rect(const Camera *camera, const Rect rect)
 {
     return rect_from_points(
         camera_point(

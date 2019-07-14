@@ -189,7 +189,7 @@ Vec rect_snap(Rect pivot, Rect *r)
         return vec(0.0f, 1.0f);
     } else {
         *r = rect(r->x, cy - r->h * 0.5f, r->w, r->h);
-        return vec(1.0f, 0.0f);;
+        return vec(1.0f, 0.0f);
     }
 }
 
@@ -221,4 +221,34 @@ Vec rect_impulse(Rect *r1, Rect *r2)
         r2->y = cy2 - r2->h * 0.5f;
         return vec(1.0f, 0.0f);
     }
+}
+
+Rect horizontal_thicc_line(float x1, float x2, float y, float thiccness)
+{
+    if (x1 > x2) {
+        float t = x1;
+        x1 = x2;
+        x2 = t;
+    }
+
+    return rect(
+        x1 - thiccness * 0.5f,
+        y - thiccness * 0.5f,
+        x2 - x1 + thiccness,
+        thiccness);
+}
+
+Rect vertical_thicc_line(float y1, float y2, float x, float thiccness)
+{
+    if (y1 > y2) {
+        float t = y1;
+        y1 = y2;
+        y2 = t;
+    }
+
+    return rect(
+        x - thiccness * 0.5f,
+        y1 - thiccness * 0.5f,
+        thiccness,
+        y2 - y1 + thiccness);
 }

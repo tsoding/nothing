@@ -13,7 +13,7 @@
 #include "ui/edit_field.h"
 
 #define RECT_LAYER_ID_MAX_SIZE 36
-#define RECT_LAYER_SELECTION_THICCNESS 5.0f
+#define RECT_LAYER_SELECTION_THICCNESS 10.0f
 #define CREATE_AREA_THRESHOLD 10.0
 
 typedef enum {
@@ -81,13 +81,19 @@ static int rect_layer_rect_at(RectLayer *layer, Vec position)
     return -1;
 }
 
-static Rect rect_layer_resize_anchor(const RectLayer *layer, size_t i)
+static Rect rect_layer_resize_anchor(const RectLayer *layer, const Camera *camera, size_t i)
 {
     Rect *rects = dynarray_data(layer->rects);
-    return rect(rects[i].x + rects[i].w,
-                rects[i].y + rects[i].h,
-                RECT_LAYER_SELECTION_THICCNESS * 2.0f,
-                RECT_LAYER_SELECTION_THICCNESS * 2.0f);
+    const Rect overlay_rect =
+        rect_scale(
+            camera_rect(camera, rects[i]),
+            RECT_LAYER_SELECTION_THICCNESS * 0.5f);
+
+    return rect(
+        overlay_rect.x + overlay_rect.w,
+        overlay_rect.y + overlay_rect.h,
+        RECT_LAYER_SELECTION_THICCNESS * 2.0f,
+        RECT_LAYER_SELECTION_THICCNESS * 2.0f);
 }
 
 static int rect_layer_delete_rect_at(RectLayer *layer, size_t i)
@@ -131,8 +137,11 @@ static int rect_layer_event_idle(RectLayer *layer, const SDL_Event *event, const
             } else if (layer->selection >= 0 && rect_contains_point(
                            rect_layer_resize_anchor(
                                layer,
+                               camera,
                                (size_t)layer->selection),
-                           position)) {
+                           vec(
+                               (float) event->button.x,
+                               (float) event->button.y))) {
                 layer->state = RECT_LAYER_RESIZE;
             } else {
                 layer->selection = rect_at_position;
@@ -461,15 +470,11 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
 
     // Selection Overlay
     if (active && layer->selection >= 0) {
+        const Rect overlay_rect =
+            rect_scale(
+                camera_rect(camera, rects[layer->selection]),
+                RECT_LAYER_SELECTION_THICCNESS * 0.5f);
         const Color overlay_color = color_invert(colors[layer->selection]);
-
-        // Overlay Rectanglea
-        if (camera_fill_rect(
-                camera,
-                rect_scale(rects[layer->selection], RECT_LAYER_SELECTION_THICCNESS),
-                overlay_color) < 0) {
-            return -1;
-        }
 
         // Main Rectangle
         if (camera_fill_rect(
@@ -478,6 +483,50 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
                 color_scale(
                     colors[layer->selection],
                     rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f))) < 0) {
+            return -1;
+        }
+
+        if (camera_fill_rect_screen(
+                camera,
+                horizontal_thicc_line(
+                    overlay_rect.x,
+                    overlay_rect.x + overlay_rect.w,
+                    overlay_rect.y,
+                    RECT_LAYER_SELECTION_THICCNESS),
+                overlay_color) < 0) {
+            return -1;
+        }
+
+        if (camera_fill_rect_screen(
+                camera,
+                horizontal_thicc_line(
+                    overlay_rect.x,
+                    overlay_rect.x + overlay_rect.w,
+                    overlay_rect.y + overlay_rect.h,
+                    RECT_LAYER_SELECTION_THICCNESS),
+                overlay_color) < 0) {
+            return -1;
+        }
+
+        if (camera_fill_rect_screen(
+                camera,
+                vertical_thicc_line(
+                    overlay_rect.y,
+                    overlay_rect.y + overlay_rect.h,
+                    overlay_rect.x,
+                    RECT_LAYER_SELECTION_THICCNESS),
+                overlay_color) < 0) {
+            return -1;
+        }
+
+        if (camera_fill_rect_screen(
+                camera,
+                vertical_thicc_line(
+                    overlay_rect.y,
+                    overlay_rect.y + overlay_rect.h,
+                    overlay_rect.x + overlay_rect.w,
+                    RECT_LAYER_SELECTION_THICCNESS),
+                overlay_color) < 0) {
             return -1;
         }
 
@@ -492,9 +541,9 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
         }
 
         // Resize Anchor
-        if (camera_fill_rect(
+        if (camera_fill_rect_screen(
                 camera,
-                rect_layer_resize_anchor(layer, (size_t) layer->selection),
+                rect_layer_resize_anchor(layer, camera, (size_t) layer->selection),
                 overlay_color) < 0) {
             return -1;
         }
