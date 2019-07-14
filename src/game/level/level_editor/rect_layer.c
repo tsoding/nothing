@@ -24,7 +24,6 @@ typedef enum {
     RECT_LAYER_ID_RENAME
 } RectLayerState;
 
-/* TODO(#886): RectLayer does not allow to modify ids of Rects */
 struct RectLayer {
     Lt *lt;
     RectLayerState state;
