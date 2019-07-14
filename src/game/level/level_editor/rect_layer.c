@@ -22,8 +22,6 @@ typedef enum {
     RECT_LAYER_RESIZE,
     RECT_LAYER_MOVE,
     RECT_LAYER_ID_RENAME,
-
-    RECT_LAYER_N
 } RectLayerState;
 
 struct RectLayer {
@@ -311,14 +309,6 @@ static int rect_layer_event_id_rename(RectLayer *layer, const SDL_Event *event, 
     return 0;
 }
 
-static const EventHandler event_handlers[RECT_LAYER_N] = {
-    rect_layer_event_idle,
-    rect_layer_event_create,
-    rect_layer_event_resize,
-    rect_layer_event_move,
-    rect_layer_event_id_rename,
-};
-
 LayerPtr rect_layer_as_layer(RectLayer *rect_layer)
 {
     LayerPtr layer = {
@@ -516,7 +506,22 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
         return 0;
     }
 
-    event_handlers[layer->state](layer, event, camera);
+    switch (layer->state) {
+    case RECT_LAYER_IDLE:
+        return rect_layer_event_idle(layer, event, camera);
+
+    case RECT_LAYER_CREATE:
+        return rect_layer_event_create(layer, event, camera);
+
+    case RECT_LAYER_RESIZE:
+        return rect_layer_event_resize(layer, event, camera);
+
+    case RECT_LAYER_MOVE:
+        return rect_layer_event_move(layer, event, camera);
+
+    case RECT_LAYER_ID_RENAME:
+        return rect_layer_event_id_rename(layer, event, camera);
+    }
 
     return 0;
 }
