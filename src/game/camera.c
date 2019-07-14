@@ -475,3 +475,61 @@ int camera_render_text_screen(Camera *camera,
         color,
         text);
 }
+
+int camera_draw_thicc_rect_screen(Camera *camera,
+                                  Rect rect,
+                                  Color color,
+                                  float thiccness)
+{
+    trace_assert(camera);
+
+    // Top
+    if (camera_fill_rect_screen(
+            camera,
+            horizontal_thicc_line(
+               rect.x,
+               rect.x + rect.w,
+               rect.y,
+               thiccness),
+            color) < 0) {
+        return -1;
+    }
+
+    // Bottom
+    if (camera_fill_rect_screen(
+            camera,
+            horizontal_thicc_line(
+                rect.x,
+                rect.x + rect.w,
+                rect.y + rect.h,
+                thiccness),
+            color) < 0) {
+        return -1;
+    }
+
+    // Left
+    if (camera_fill_rect_screen(
+            camera,
+            vertical_thicc_line(
+                rect.y,
+                rect.y + rect.h,
+                rect.x,
+                thiccness),
+            color) < 0) {
+        return -1;
+    }
+
+    // Right
+    if (camera_fill_rect_screen(
+            camera,
+            vertical_thicc_line(
+                rect.y,
+                rect.y + rect.h,
+                rect.x + rect.w,
+                thiccness),
+            color) < 0) {
+        return -1;
+    }
+
+    return 0;
+}

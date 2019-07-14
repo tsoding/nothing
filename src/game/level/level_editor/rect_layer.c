@@ -486,47 +486,11 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
             return -1;
         }
 
-        if (camera_fill_rect_screen(
+        if (camera_draw_thicc_rect_screen(
                 camera,
-                horizontal_thicc_line(
-                    overlay_rect.x,
-                    overlay_rect.x + overlay_rect.w,
-                    overlay_rect.y,
-                    RECT_LAYER_SELECTION_THICCNESS),
-                overlay_color) < 0) {
-            return -1;
-        }
-
-        if (camera_fill_rect_screen(
-                camera,
-                horizontal_thicc_line(
-                    overlay_rect.x,
-                    overlay_rect.x + overlay_rect.w,
-                    overlay_rect.y + overlay_rect.h,
-                    RECT_LAYER_SELECTION_THICCNESS),
-                overlay_color) < 0) {
-            return -1;
-        }
-
-        if (camera_fill_rect_screen(
-                camera,
-                vertical_thicc_line(
-                    overlay_rect.y,
-                    overlay_rect.y + overlay_rect.h,
-                    overlay_rect.x,
-                    RECT_LAYER_SELECTION_THICCNESS),
-                overlay_color) < 0) {
-            return -1;
-        }
-
-        if (camera_fill_rect_screen(
-                camera,
-                vertical_thicc_line(
-                    overlay_rect.y,
-                    overlay_rect.y + overlay_rect.h,
-                    overlay_rect.x + overlay_rect.w,
-                    RECT_LAYER_SELECTION_THICCNESS),
-                overlay_color) < 0) {
+                overlay_rect,
+                overlay_color,
+                RECT_LAYER_SELECTION_THICCNESS) < 0) {
             return -1;
         }
 

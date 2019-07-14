@@ -28,6 +28,11 @@ int camera_draw_rect_screen(Camera *camera,
                             Rect rect,
                             Color color);
 
+int camera_draw_thicc_rect_screen(Camera *camera,
+                                  Rect rect,
+                                  Color color,
+                                  float thiccness);
+
 int camera_draw_triangle(Camera *camera,
                          Triangle t,
                          Color color);
