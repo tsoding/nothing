@@ -231,7 +231,6 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
 
                 if (camera_fill_rect(
                         camera,
-                        // TODO(#943): thiccness of RectLayer selection should be probably based on zoom
                         rect_scale(rects[i], RECT_LAYER_SELECTION_THICCNESS),
                         color) < 0) {
                     return -1;
