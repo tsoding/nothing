@@ -432,27 +432,8 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
     Color *colors = dynarray_data(layer->colors);
     const char *ids = dynarray_data(layer->ids);
 
+    // The Rectangles
     for (size_t i = 0; i < n; ++i) {
-        if (layer->selection == (int) i) {
-            if (active) {
-                const Color color = color_invert(colors[i]);
-
-                if (camera_fill_rect(
-                        camera,
-                        rect_scale(rects[i], RECT_LAYER_SELECTION_THICCNESS),
-                        color) < 0) {
-                    return -1;
-                }
-
-                if (camera_fill_rect(
-                        camera,
-                        rect_layer_resize_anchor(layer, i),
-                        color) < 0) {
-                    return -1;
-                }
-            }
-        }
-
         if (camera_fill_rect(
                 camera,
                 rects[i],
@@ -461,17 +442,9 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
                     rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f))) < 0) {
             return -1;
         }
-
-        if (camera_render_text(
-                camera,
-                ids + i * RECT_LAYER_ID_MAX_SIZE,
-                vec(3.0f, 3.0f),
-                color_invert(colors[i]),
-                rect_position(rects[i])) < 0) {
-            return -1;
-        }
     }
 
+    // Proto Rectangle
     const Color color = color_picker_rgba(&layer->color_picker);
     if (layer->state == RECT_LAYER_CREATE) {
         if (camera_fill_rect(camera, rect_from_points(layer->create_begin, layer->create_end), color) < 0) {
@@ -479,8 +452,50 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
         }
     }
 
+    // ID renaming Edit Field
     if (layer->state == RECT_LAYER_ID_RENAME) {
         if (edit_field_render(layer->id_edit_field, camera, vec(400.0f, 400.0f)) < 0) {
+            return -1;
+        }
+    }
+
+    // Selection Overlay
+    if (active && layer->selection >= 0) {
+        const Color overlay_color = color_invert(colors[layer->selection]);
+
+        // Overlay Rectanglea
+        if (camera_fill_rect(
+                camera,
+                rect_scale(rects[layer->selection], RECT_LAYER_SELECTION_THICCNESS),
+                overlay_color) < 0) {
+            return -1;
+        }
+
+        // Main Rectangle
+        if (camera_fill_rect(
+                camera,
+                rects[layer->selection],
+                color_scale(
+                    colors[layer->selection],
+                    rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f))) < 0) {
+            return -1;
+        }
+
+        // Rectangle Id
+        if (camera_render_text(
+                camera,
+                ids + layer->selection * RECT_LAYER_ID_MAX_SIZE,
+                vec(3.0f, 3.0f),
+                color_invert(colors[layer->selection]),
+                rect_position(rects[layer->selection])) < 0) {
+            return -1;
+        }
+
+        // Resize Anchor
+        if (camera_fill_rect(
+                camera,
+                rect_layer_resize_anchor(layer, (size_t) layer->selection),
+                overlay_color) < 0) {
             return -1;
         }
     }
