@@ -19,6 +19,7 @@
 typedef enum {
     RECT_LAYER_IDLE = 0,
     RECT_LAYER_CREATE,
+    // TODO: Rectangles in Level Editor have only one resize anchor to work with
     RECT_LAYER_RESIZE,
     RECT_LAYER_MOVE,
     RECT_LAYER_ID_RENAME,
@@ -65,6 +66,7 @@ static int rect_layer_add_rect(RectLayer *layer, Rect rect, Color color)
     return 0;
 }
 
+// TODO: rect_layer_rect_at doesn't return rectangles according to some z-order
 static int rect_layer_rect_at(RectLayer *layer, Vec position)
 {
     trace_assert(layer);
