@@ -22,8 +22,6 @@ struct Camera {
 
 static Vec effective_ratio(const SDL_Rect *view_port);
 static Vec effective_scale(const SDL_Rect *view_port);
-static Rect camera_rect(const Camera *camera,
-                        const Rect rect);
 static Triangle camera_triangle(const Camera *camera,
                                 const Triangle t);
 
@@ -376,8 +374,7 @@ static Triangle camera_triangle(const Camera *camera,
         camera_point(camera, t.p3));
 }
 
-static Rect camera_rect(const Camera *camera,
-                        const Rect rect)
+Rect camera_rect(const Camera *camera, const Rect rect)
 {
     return rect_from_points(
         camera_point(
@@ -477,4 +474,62 @@ int camera_render_text_screen(Camera *camera,
         size,
         color,
         text);
+}
+
+int camera_draw_thicc_rect_screen(Camera *camera,
+                                  Rect rect,
+                                  Color color,
+                                  float thiccness)
+{
+    trace_assert(camera);
+
+    // Top
+    if (camera_fill_rect_screen(
+            camera,
+            horizontal_thicc_line(
+               rect.x,
+               rect.x + rect.w,
+               rect.y,
+               thiccness),
+            color) < 0) {
+        return -1;
+    }
+
+    // Bottom
+    if (camera_fill_rect_screen(
+            camera,
+            horizontal_thicc_line(
+                rect.x,
+                rect.x + rect.w,
+                rect.y + rect.h,
+                thiccness),
+            color) < 0) {
+        return -1;
+    }
+
+    // Left
+    if (camera_fill_rect_screen(
+            camera,
+            vertical_thicc_line(
+                rect.y,
+                rect.y + rect.h,
+                rect.x,
+                thiccness),
+            color) < 0) {
+        return -1;
+    }
+
+    // Right
+    if (camera_fill_rect_screen(
+            camera,
+            vertical_thicc_line(
+                rect.y,
+                rect.y + rect.h,
+                rect.x + rect.w,
+                thiccness),
+            color) < 0) {
+        return -1;
+    }
+
+    return 0;
 }

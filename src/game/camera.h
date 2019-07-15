@@ -28,6 +28,11 @@ int camera_draw_rect_screen(Camera *camera,
                             Rect rect,
                             Color color);
 
+int camera_draw_thicc_rect_screen(Camera *camera,
+                                  Rect rect,
+                                  Color color,
+                                  float thiccness);
+
 int camera_draw_triangle(Camera *camera,
                          Triangle t,
                          Color color);
@@ -78,6 +83,8 @@ Vec camera_map_screen(const Camera *camera,
                       Sint32 x, Sint32 y);
 
 Vec camera_point(const Camera *camera, const Vec p);
+Rect camera_rect(const Camera *camera, const Rect rect);
+
 
 int camera_fill_rect_screen(Camera *camera,
                             Rect rect,

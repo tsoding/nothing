@@ -23,6 +23,9 @@ typedef struct Line {
     Point p2;
 } Line;
 
+Rect horizontal_thicc_line(float x1, float x2, float y, float thiccness);
+Rect vertical_thicc_line(float y1, float y2, float x, float thiccness);
+
 Rect rect(float x, float y, float w, float h);
 Rect rect_from_vecs(Point position, Vec size);
 Rect rect_from_points(Point p1, Point p2);
