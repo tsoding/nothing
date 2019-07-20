@@ -343,7 +343,12 @@ static int game_event_running(Game *game, const SDL_Event *event)
     case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
         case SDLK_r: {
-            const char *level_filename = level_picker_selected_level(game->level_picker);
+            const char *level_filename = game->level_editor->file_name;
+
+            if (!level_filename) {
+                log_warn("Could not reload the level. There is no associated file.\n");
+                return 0;
+            }
 
             log_info("Reloading the level from '%s'...\n", level_filename);
 
