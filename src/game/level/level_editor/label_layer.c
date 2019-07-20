@@ -16,6 +16,7 @@
 #include "color_picker.h"
 
 #define LABEL_LAYER_ID_MAX_SIZE 36
+#define LABEL_LAYER_SELECTION_THICCNESS 5.0f
 
 typedef enum {
     LABEL_LAYER_IDLE = 0,
@@ -23,7 +24,6 @@ typedef enum {
 } LabelLayerState;
 
 // TODO: LabelLayer cannot specify the color of the labels
-// TODO: LabelLayer cannot selection
 // TODO: LabelLayer cannot add the labels
 // TODO: LabelLayer cannot modify the labels' text
 // TODO: LabelLayer cannot modify the labels' id
@@ -179,6 +179,29 @@ int label_layer_render(const LabelLayer *label_layer,
                     colors[i],
                     rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f)),
                 positions[i]) < 0) {
+            return -1;
+        }
+    }
+
+    if (label_layer->selected >= 0) {
+
+        Rect selection =
+            rect_scale(
+                camera_rect(
+                    camera,
+                    sprite_font_boundary_box(
+                        camera_font(camera),
+                        positions[label_layer->selected],
+                        LABELS_SIZE,
+                        texts[label_layer->selected])),
+                LABEL_LAYER_SELECTION_THICCNESS * 0.5f);
+
+
+        if (camera_draw_thicc_rect_screen(
+                camera,
+                selection,
+                colors[label_layer->selected],
+                LABEL_LAYER_SELECTION_THICCNESS) < 0) {
             return -1;
         }
     }
