@@ -304,6 +304,10 @@ static int rect_layer_event_id_rename(RectLayer *layer, const SDL_Event *event, 
             memcpy(id, edit_field_as_text(layer->id_edit_field), RECT_LAYER_ID_MAX_SIZE - 1);
             layer->state = RECT_LAYER_IDLE;
         } break;
+
+        case SDLK_ESCAPE: {
+            layer->state = RECT_LAYER_IDLE;
+        } break;
         }
 
         if (edit_field_keyboard(layer->id_edit_field, &event->key) < 0) {
