@@ -31,7 +31,7 @@ struct LabelLayer {
     Dynarray *ids;
     Dynarray *positions;
     Dynarray *colors;
-    Dynarray *texts_;
+    Dynarray *texts;
     int selected;
     ColorPicker color_picker;
     Point move_anchor;
@@ -75,11 +75,11 @@ LabelLayer *create_label_layer(void)
         RETURN_LT(lt, NULL);
     }
 
-    label_layer->texts_ = PUSH_LT(
+    label_layer->texts = PUSH_LT(
         lt,
         create_dynarray(sizeof(char) * LABEL_LAYER_TEXT_MAX_SIZE),
         destroy_dynarray);
-    if (label_layer->texts_ == NULL) {
+    if (label_layer->texts == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -143,7 +143,7 @@ LabelLayer *create_label_layer_from_line_stream(LineStream *line_stream)
         char label_text[LABEL_LAYER_TEXT_MAX_SIZE] = {0};
         memcpy(label_text, line, LABEL_LAYER_TEXT_MAX_SIZE - 1);
         trim_endline(label_text);
-        dynarray_push(label_layer->texts_, &label_text);
+        dynarray_push(label_layer->texts, &label_text);
     }
 
     return label_layer;
@@ -169,7 +169,7 @@ int label_layer_render(const LabelLayer *label_layer,
     size_t n = dynarray_count(label_layer->ids);
     Point *positions = dynarray_data(label_layer->positions);
     Color *colors = dynarray_data(label_layer->colors);
-    char *texts = dynarray_data(label_layer->texts_);
+    char *texts = dynarray_data(label_layer->texts);
 
     /* TODO(#891): LabelLayer doesn't show the final position of Label after the animation */
     for (size_t i = 0; i < n; ++i) {
@@ -218,8 +218,8 @@ int label_layer_element_at(LabelLayer *label_layer,
 {
     trace_assert(label_layer);
 
-    const size_t n = dynarray_count(label_layer->texts_);
-    char *texts = dynarray_data(label_layer->texts_);
+    const size_t n = dynarray_count(label_layer->texts);
+    char *texts = dynarray_data(label_layer->texts);
     Point *positions = dynarray_data(label_layer->positions);
 
     for (size_t i = 0; i < n; ++i) {
@@ -369,7 +369,7 @@ Color *label_layer_colors(const LabelLayer *label_layer)
 
 char *labels_layer_texts(const LabelLayer *label_layer)
 {
-    return dynarray_data(label_layer->texts_);
+    return dynarray_data(label_layer->texts);
 }
 
 int label_layer_dump_stream(const LabelLayer *label_layer, FILE *filedump)
@@ -381,7 +381,7 @@ int label_layer_dump_stream(const LabelLayer *label_layer, FILE *filedump)
     char *ids = dynarray_data(label_layer->ids);
     Point *positions = dynarray_data(label_layer->positions);
     Color *colors = dynarray_data(label_layer->colors);
-    char *texts = dynarray_data(label_layer->texts_);
+    char *texts = dynarray_data(label_layer->texts);
 
     fprintf(filedump, "%zd\n", n);
     for (size_t i = 0; i < n; ++i) {
