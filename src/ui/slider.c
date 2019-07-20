@@ -39,28 +39,36 @@ int slider_event(Slider *slider, const SDL_Event *event, Rect boundary, int *sel
     trace_assert(slider);
     trace_assert(event);
 
-    switch (event->type) {
-    case SDL_MOUSEBUTTONDOWN: {
-        Point position = vec((float) event->button.x, (float) event->button.y);
-        if (rect_contains_point(boundary, position)) {
-            slider->drag = 1;
+    if (!slider->drag) {
+        switch (event->type) {
+        case SDL_MOUSEBUTTONDOWN: {
+            Point position = vec((float) event->button.x, (float) event->button.y);
+            if (rect_contains_point(boundary, position)) {
+                slider->drag = 1;
+                if (selected) {
+                    *selected = 1;
+                }
+            }
+        } break;
+        }
+    } else {
+        switch (event->type) {
+        case SDL_MOUSEBUTTONUP: {
+            slider->drag = 0;
             if (selected) {
                 *selected = 1;
             }
-        }
-    } break;
+        } break;
 
-    case SDL_MOUSEBUTTONUP: {
-        slider->drag = 0;
-    } break;
-
-    case SDL_MOUSEMOTION: {
-        if (slider->drag) {
+        case SDL_MOUSEMOTION: {
             const float x = fminf(fmaxf((float) event->button.x - boundary.x, 0.0f), (float) boundary.w);
             const float ratio = x / (float) boundary.w;
             slider->value = ratio * slider->max_value;
+            if (selected) {
+                *selected = 1;
+            }
+        } break;
         }
-    } break;
     }
 
     return 0;
