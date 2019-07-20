@@ -184,7 +184,7 @@ int label_layer_render(const LabelLayer *label_layer,
     /* TODO(#891): LabelLayer doesn't show the final position of Label after the animation */
     for (size_t i = 0; i < n; ++i) {
         if (label_layer->state == LABEL_LAYER_EDIT_TEXT) {
-            // TODO: LabelLayer Edit Field should be rendered inside of the world
+            // TODO(#965): LabelLayer Edit Field should be rendered inside of the world
             if (edit_field_render(
                     label_layer->edit_field,
                     camera,
