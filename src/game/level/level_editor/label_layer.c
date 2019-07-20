@@ -13,6 +13,7 @@
 #include "dynarray.h"
 #include "color.h"
 #include "game/camera.h"
+#include "color_picker.h"
 
 #define LABEL_LAYER_ID_MAX_SIZE 36
 
@@ -33,6 +34,7 @@ struct LabelLayer {
     Dynarray *colors;
     Dynarray *texts;
     int selected;
+    ColorPicker color_picker;
 };
 
 LayerPtr label_layer_as_layer(LabelLayer *label_layer)
@@ -78,6 +80,7 @@ LabelLayer *create_label_layer(void)
         RETURN_LT(lt, NULL);
     }
 
+    label_layer->color_picker = create_color_picker_from_rgba(COLOR_RED);
     label_layer->selected = -1;
 
     return label_layer;
@@ -154,6 +157,10 @@ int label_layer_render(const LabelLayer *label_layer,
 {
     trace_assert(label_layer);
     trace_assert(camera);
+
+    if (active && color_picker_render(&label_layer->color_picker, camera) < 0) {
+        return -1;
+    }
 
     size_t n = dynarray_count(label_layer->ids);
     Point *positions = dynarray_data(label_layer->positions);
