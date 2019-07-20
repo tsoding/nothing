@@ -24,8 +24,7 @@ typedef enum {
     LABEL_LAYER_EDIT_TEXT
 } LabelLayerState;
 
-// TODO: LabelLayer cannot modify the labels' text
-// TODO: LabelLayer cannot add the labels
+// TODO(#963): LabelLayer cannot add the labels
 // TODO: LabelLayer cannot modify the labels' id
 struct LabelLayer {
     Lt *lt;
