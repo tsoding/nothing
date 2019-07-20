@@ -23,6 +23,7 @@ typedef enum {
 } LabelLayerState;
 
 // TODO: LabelLayer cannot specify the color of the labels
+// TODO: LabelLayer cannot selection
 // TODO: LabelLayer cannot add the labels
 // TODO: LabelLayer cannot modify the labels' text
 // TODO: LabelLayer cannot modify the labels' id
@@ -35,6 +36,7 @@ struct LabelLayer {
     Dynarray *texts;
     int selected;
     ColorPicker color_picker;
+    Point move_anchor;
 };
 
 LayerPtr label_layer_as_layer(LabelLayer *label_layer)
@@ -234,6 +236,9 @@ int label_layer_idle_event(LabelLayer *label_layer,
                 position);
 
             if (element >= 0) {
+                Point *positions = dynarray_data(label_layer->positions);
+
+                label_layer->move_anchor = vec_sub(position, positions[element]);
                 label_layer->selected = element;
                 label_layer->state = LABEL_LAYER_MOVE;
             }
@@ -259,10 +264,12 @@ int label_layer_move_event(LabelLayer *label_layer,
     case SDL_MOUSEMOTION: {
         Point *positions = dynarray_data(label_layer->positions);
         positions[label_layer->selected] =
-            camera_map_screen(
-                camera,
-                event->motion.x,
-                event->motion.y);
+            vec_sub(
+                camera_map_screen(
+                    camera,
+                    event->motion.x,
+                    event->motion.y),
+                label_layer->move_anchor);
     } break;
 
     case SDL_MOUSEBUTTONUP: {
