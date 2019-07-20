@@ -23,7 +23,6 @@ typedef enum {
     LABEL_LAYER_MOVE
 } LabelLayerState;
 
-// TODO: LabelLayer cannot specify the color of the labels
 // TODO: LabelLayer cannot add the labels
 // TODO: LabelLayer cannot modify the labels' text
 // TODO: LabelLayer cannot modify the labels' id
@@ -260,10 +259,14 @@ int label_layer_idle_event(LabelLayer *label_layer,
 
             if (element >= 0) {
                 Point *positions = dynarray_data(label_layer->positions);
+                Color *colors = dynarray_data(label_layer->colors);
 
                 label_layer->move_anchor = vec_sub(position, positions[element]);
                 label_layer->selected = element;
                 label_layer->state = LABEL_LAYER_MOVE;
+
+                label_layer->color_picker =
+                    create_color_picker_from_rgba(colors[element]);
             }
         } break;
         }
@@ -314,6 +317,21 @@ int label_layer_event(LabelLayer *label_layer,
     trace_assert(label_layer);
     trace_assert(event);
     trace_assert(camera);
+
+    int changed = 0;
+
+    if (color_picker_event(
+            &label_layer->color_picker,
+            event,
+            &changed) < 0) {
+        return -1;
+    }
+
+    if (changed && label_layer->selected >= 0) {
+        Color *colors = dynarray_data(label_layer->colors);
+        colors[label_layer->selected] =
+            color_picker_rgba(&label_layer->color_picker);
+    }
 
     switch (label_layer->state) {
     case LABEL_LAYER_IDLE:
