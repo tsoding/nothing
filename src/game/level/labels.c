@@ -170,11 +170,11 @@ Labels *create_labels_from_label_layer(const LabelLayer *label_layer)
         RETURN_LT(lt, NULL);
     }
 
-    char **texts = labels_layer_texts(label_layer);
+    char *texts = labels_layer_texts(label_layer);
     for (size_t i = 0; i < labels->count; ++i) {
         labels->texts[i] = PUSH_LT(
             labels->lt,
-            string_duplicate(texts[i], NULL),
+            string_duplicate(texts + i * LABEL_LAYER_TEXT_MAX_SIZE, NULL),
             free);
     }
 

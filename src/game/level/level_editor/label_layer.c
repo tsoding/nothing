@@ -15,7 +15,6 @@
 #include "game/camera.h"
 #include "color_picker.h"
 
-#define LABEL_LAYER_ID_MAX_SIZE 36
 #define LABEL_LAYER_SELECTION_THICCNESS 5.0f
 
 typedef enum {
@@ -23,8 +22,8 @@ typedef enum {
     LABEL_LAYER_MOVE
 } LabelLayerState;
 
-// TODO: LabelLayer cannot add the labels
 // TODO: LabelLayer cannot modify the labels' text
+// TODO: LabelLayer cannot add the labels
 // TODO: LabelLayer cannot modify the labels' id
 struct LabelLayer {
     Lt *lt;
@@ -32,7 +31,7 @@ struct LabelLayer {
     Dynarray *ids;
     Dynarray *positions;
     Dynarray *colors;
-    Dynarray *texts;
+    Dynarray *texts_;
     int selected;
     ColorPicker color_picker;
     Point move_anchor;
@@ -76,8 +75,11 @@ LabelLayer *create_label_layer(void)
         RETURN_LT(lt, NULL);
     }
 
-    label_layer->texts = PUSH_LT(lt, create_dynarray(sizeof(char*)), destroy_dynarray);
-    if (label_layer->texts == NULL) {
+    label_layer->texts_ = PUSH_LT(
+        lt,
+        create_dynarray(sizeof(char) * LABEL_LAYER_TEXT_MAX_SIZE),
+        destroy_dynarray);
+    if (label_layer->texts_ == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -138,9 +140,10 @@ LabelLayer *create_label_layer_from_line_stream(LineStream *line_stream)
             log_fail("Could not read label text\n");
         }
 
-        char *label_text = PUSH_LT(label_layer->lt, string_duplicate(line, NULL), free);
+        char label_text[LABEL_LAYER_TEXT_MAX_SIZE] = {0};
+        memcpy(label_text, line, LABEL_LAYER_TEXT_MAX_SIZE - 1);
         trim_endline(label_text);
-        dynarray_push(label_layer->texts, &label_text);
+        dynarray_push(label_layer->texts_, &label_text);
     }
 
     return label_layer;
@@ -166,13 +169,13 @@ int label_layer_render(const LabelLayer *label_layer,
     size_t n = dynarray_count(label_layer->ids);
     Point *positions = dynarray_data(label_layer->positions);
     Color *colors = dynarray_data(label_layer->colors);
-    char **texts = dynarray_data(label_layer->texts);
+    char *texts = dynarray_data(label_layer->texts_);
 
     /* TODO(#891): LabelLayer doesn't show the final position of Label after the animation */
     for (size_t i = 0; i < n; ++i) {
         if (camera_render_text(
                 camera,
-                texts[i],
+                texts + i * LABEL_LAYER_TEXT_MAX_SIZE,
                 LABELS_SIZE,
                 color_scale(
                     colors[i],
@@ -192,7 +195,7 @@ int label_layer_render(const LabelLayer *label_layer,
                         camera_font(camera),
                         positions[label_layer->selected],
                         LABELS_SIZE,
-                        texts[label_layer->selected])),
+                        texts + label_layer->selected * LABEL_LAYER_TEXT_MAX_SIZE)),
                 LABEL_LAYER_SELECTION_THICCNESS * 0.5f);
 
 
@@ -215,8 +218,8 @@ int label_layer_element_at(LabelLayer *label_layer,
 {
     trace_assert(label_layer);
 
-    const size_t n = dynarray_count(label_layer->texts);
-    char **texts = dynarray_data(label_layer->texts);
+    const size_t n = dynarray_count(label_layer->texts_);
+    char *texts = dynarray_data(label_layer->texts_);
     Point *positions = dynarray_data(label_layer->positions);
 
     for (size_t i = 0; i < n; ++i) {
@@ -224,7 +227,7 @@ int label_layer_element_at(LabelLayer *label_layer,
             font,
             positions[i],
             LABELS_SIZE,
-            texts[i]);
+            texts + i * LABEL_LAYER_TEXT_MAX_SIZE);
 
         if (rect_contains_point(boundary, position)) {
             return (int) i;
@@ -364,9 +367,9 @@ Color *label_layer_colors(const LabelLayer *label_layer)
     return dynarray_data(label_layer->colors);
 }
 
-char **labels_layer_texts(const LabelLayer *label_layer)
+char *labels_layer_texts(const LabelLayer *label_layer)
 {
-    return dynarray_data(label_layer->texts);
+    return dynarray_data(label_layer->texts_);
 }
 
 int label_layer_dump_stream(const LabelLayer *label_layer, FILE *filedump)
@@ -378,7 +381,7 @@ int label_layer_dump_stream(const LabelLayer *label_layer, FILE *filedump)
     char *ids = dynarray_data(label_layer->ids);
     Point *positions = dynarray_data(label_layer->positions);
     Color *colors = dynarray_data(label_layer->colors);
-    char **texts = dynarray_data(label_layer->texts);
+    char *texts = dynarray_data(label_layer->texts_);
 
     fprintf(filedump, "%zd\n", n);
     for (size_t i = 0; i < n; ++i) {
@@ -386,7 +389,7 @@ int label_layer_dump_stream(const LabelLayer *label_layer, FILE *filedump)
                 ids + LABEL_LAYER_ID_MAX_SIZE * i,
                 positions[i].x, positions[i].y);
         color_hex_to_stream(colors[i], filedump);
-        fprintf(filedump, "\n%s\n", texts[i]);
+        fprintf(filedump, "\n%s\n", texts + i * LABEL_LAYER_TEXT_MAX_SIZE);
     }
 
     return 0;
