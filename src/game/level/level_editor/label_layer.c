@@ -14,12 +14,14 @@
 #include "color.h"
 #include "game/camera.h"
 #include "color_picker.h"
+#include "ui/edit_field.h"
 
 #define LABEL_LAYER_SELECTION_THICCNESS 5.0f
 
 typedef enum {
     LABEL_LAYER_IDLE = 0,
-    LABEL_LAYER_MOVE
+    LABEL_LAYER_MOVE,
+    LABEL_LAYER_EDIT_TEXT
 } LabelLayerState;
 
 // TODO: LabelLayer cannot modify the labels' text
@@ -35,6 +37,7 @@ struct LabelLayer {
     int selected;
     ColorPicker color_picker;
     Point move_anchor;
+    Edit_field *edit_field;
 };
 
 LayerPtr label_layer_as_layer(LabelLayer *label_layer)
@@ -85,6 +88,14 @@ LabelLayer *create_label_layer(void)
 
     label_layer->color_picker = create_color_picker_from_rgba(COLOR_RED);
     label_layer->selected = -1;
+
+    label_layer->edit_field = PUSH_LT(
+        lt,
+        create_edit_field(LABELS_SIZE, COLOR_RED),
+        destroy_edit_field);
+    if (label_layer->edit_field == NULL) {
+        RETURN_LT(lt, NULL);
+    }
 
     return label_layer;
 }
@@ -173,15 +184,25 @@ int label_layer_render(const LabelLayer *label_layer,
 
     /* TODO(#891): LabelLayer doesn't show the final position of Label after the animation */
     for (size_t i = 0; i < n; ++i) {
-        if (camera_render_text(
-                camera,
-                texts + i * LABEL_LAYER_TEXT_MAX_SIZE,
-                LABELS_SIZE,
-                color_scale(
-                    colors[i],
-                    rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f)),
-                positions[i]) < 0) {
-            return -1;
+        if (label_layer->state == LABEL_LAYER_EDIT_TEXT) {
+            // TODO: LabelLayer Edit Field should be rendered inside of the world
+            if (edit_field_render(
+                    label_layer->edit_field,
+                    camera,
+                    camera_point(camera, positions[i])) < 0) {
+                return -1;
+            }
+        } else {
+            if (camera_render_text(
+                    camera,
+                    texts + i * LABEL_LAYER_TEXT_MAX_SIZE,
+                    LABELS_SIZE,
+                    color_scale(
+                        colors[i],
+                        rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f)),
+                    positions[i]) < 0) {
+                return -1;
+            }
         }
     }
 
@@ -274,6 +295,21 @@ int label_layer_idle_event(LabelLayer *label_layer,
         } break;
         }
     } break;
+
+    case SDL_KEYDOWN: {
+        switch (event->key.keysym.sym) {
+        case SDLK_F2: {
+            if (label_layer->selected >= 0) {
+                char *texts = dynarray_data(label_layer->texts);
+                label_layer->state = LABEL_LAYER_EDIT_TEXT;
+                edit_field_replace(
+                    label_layer->edit_field,
+                    texts + label_layer->selected * LABEL_LAYER_TEXT_MAX_SIZE);
+                SDL_StartTextInput();
+            }
+        } break;
+        }
+    } break;
     }
 
     return 0;
@@ -313,6 +349,46 @@ int label_layer_move_event(LabelLayer *label_layer,
     return 0;
 }
 
+static
+int label_layer_edit_text_event(LabelLayer *label_layer,
+                                const SDL_Event *event,
+                                const Camera *camera)
+{
+    trace_assert(label_layer);
+    trace_assert(event);
+    trace_assert(camera);
+    trace_assert(label_layer->selected >= 0);
+
+    switch (event->type) {
+    case SDL_TEXTINPUT: {
+        if (edit_field_text_input(
+                label_layer->edit_field,
+                &event->text) < 0) {
+            return -1;
+        }
+    } break;
+
+    case SDL_KEYDOWN:
+    case SDL_KEYUP: {
+        if (edit_field_keyboard(
+                label_layer->edit_field,
+                &event->key) < 0) {
+            return -1;
+        }
+
+        if (event->key.keysym.sym == SDLK_RETURN) {
+            char *text =
+                (char*)dynarray_data(label_layer->texts) + label_layer->selected * LABEL_LAYER_TEXT_MAX_SIZE;
+            memset(text, 0, LABEL_LAYER_TEXT_MAX_SIZE);
+            memcpy(text, edit_field_as_text(label_layer->edit_field), LABEL_LAYER_TEXT_MAX_SIZE - 1);
+            label_layer->state = LABEL_LAYER_IDLE;
+        }
+    } break;
+    }
+
+    return 0;
+}
+
 int label_layer_event(LabelLayer *label_layer,
                       const SDL_Event *event,
                       const Camera *camera)
@@ -342,6 +418,9 @@ int label_layer_event(LabelLayer *label_layer,
 
     case LABEL_LAYER_MOVE:
         return label_layer_move_event(label_layer, event, camera);
+
+    case LABEL_LAYER_EDIT_TEXT:
+        return label_layer_edit_text_event(label_layer, event, camera);
     }
 
     return 0;
