@@ -533,3 +533,8 @@ int camera_draw_thicc_rect_screen(Camera *camera,
 
     return 0;
 }
+
+const Sprite_font *camera_font(const Camera *camera)
+{
+    return camera->font;
+}

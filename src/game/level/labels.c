@@ -214,7 +214,7 @@ int labels_render(const Labels *label,
 
         if (camera_render_text(camera,
                                label->texts[i],
-                               vec(2.0f, 2.0f),
+                               LABELS_SIZE,
                                rgba(label->colors[i].r,
                                     label->colors[i].g,
                                     label->colors[i].b,

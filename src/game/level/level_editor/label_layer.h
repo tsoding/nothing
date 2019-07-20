@@ -5,6 +5,8 @@
 #include "color.h"
 #include "math/point.h"
 
+#define LABELS_SIZE vec(2.0f, 2.0f)
+
 typedef struct LabelLayer LabelLayer;
 typedef struct Camera Camera;
 typedef struct LineStream LineStream;

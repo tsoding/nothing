@@ -16,12 +16,23 @@
 
 #define LABEL_LAYER_ID_MAX_SIZE 36
 
+typedef enum {
+    LABEL_LAYER_IDLE = 0,
+    LABEL_LAYER_MOVE
+} LabelLayerState;
+
+// TODO: LabelLayer cannot specify the color of the labels
+// TODO: LabelLayer cannot add the labels
+// TODO: LabelLayer cannot modify the labels' text
+// TODO: LabelLayer cannot modify the labels' id
 struct LabelLayer {
     Lt *lt;
+    LabelLayerState state;
     Dynarray *ids;
     Dynarray *positions;
     Dynarray *colors;
     Dynarray *texts;
+    int selected;
 };
 
 LayerPtr label_layer_as_layer(LabelLayer *label_layer)
@@ -66,6 +77,8 @@ LabelLayer *create_label_layer(void)
     if (label_layer->texts == NULL) {
         RETURN_LT(lt, NULL);
     }
+
+    label_layer->selected = -1;
 
     return label_layer;
 }
@@ -152,13 +165,106 @@ int label_layer_render(const LabelLayer *label_layer,
         if (camera_render_text(
                 camera,
                 texts[i],
-                vec(2.0f, 2.0f),
+                LABELS_SIZE,
                 color_scale(
                     colors[i],
                     rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f)),
                 positions[i]) < 0) {
             return -1;
         }
+    }
+
+    return 0;
+}
+
+static
+int label_layer_element_at(LabelLayer *label_layer,
+                           const Sprite_font *font,
+                           Point position)
+{
+    trace_assert(label_layer);
+
+    const size_t n = dynarray_count(label_layer->texts);
+    char **texts = dynarray_data(label_layer->texts);
+    Point *positions = dynarray_data(label_layer->positions);
+
+    for (size_t i = 0; i < n; ++i) {
+        Rect boundary = sprite_font_boundary_box(
+            font,
+            positions[i],
+            LABELS_SIZE,
+            texts[i]);
+
+        if (rect_contains_point(boundary, position)) {
+            return (int) i;
+        }
+    }
+
+    return -1;
+}
+
+static
+int label_layer_idle_event(LabelLayer *label_layer,
+                           const SDL_Event *event,
+                           const Camera *camera)
+{
+    trace_assert(label_layer);
+    trace_assert(event);
+    trace_assert(camera);
+
+    switch (event->type) {
+    case SDL_MOUSEBUTTONDOWN: {
+        switch (event->button.button) {
+        case SDL_BUTTON_LEFT: {
+            const Point position = camera_map_screen(
+                camera,
+                event->button.x,
+                event->button.y);
+
+            const int element = label_layer_element_at(
+                label_layer,
+                camera_font(camera),
+                position);
+
+            if (element >= 0) {
+                label_layer->selected = element;
+                label_layer->state = LABEL_LAYER_MOVE;
+            }
+        } break;
+        }
+    } break;
+    }
+
+    return 0;
+}
+
+static
+int label_layer_move_event(LabelLayer *label_layer,
+                           const SDL_Event *event,
+                           const Camera *camera)
+{
+    trace_assert(label_layer);
+    trace_assert(event);
+    trace_assert(camera);
+    trace_assert(label_layer->selected >= 0);
+
+    switch (event->type) {
+    case SDL_MOUSEMOTION: {
+        Point *positions = dynarray_data(label_layer->positions);
+        positions[label_layer->selected] =
+            camera_map_screen(
+                camera,
+                event->motion.x,
+                event->motion.y);
+    } break;
+
+    case SDL_MOUSEBUTTONUP: {
+        switch (event->button.button) {
+        case SDL_BUTTON_LEFT: {
+            label_layer->state = LABEL_LAYER_IDLE;
+        } break;
+        }
+    } break;
     }
 
     return 0;
@@ -171,7 +277,15 @@ int label_layer_event(LabelLayer *label_layer,
     trace_assert(label_layer);
     trace_assert(event);
     trace_assert(camera);
-    /* TODO(#892): LabelLayer doesn't allow to modify and add labels */
+
+    switch (label_layer->state) {
+    case LABEL_LAYER_IDLE:
+        return label_layer_idle_event(label_layer, event, camera);
+
+    case LABEL_LAYER_MOVE:
+        return label_layer_move_event(label_layer, event, camera);
+    }
+
     return 0;
 }
 
