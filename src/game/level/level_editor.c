@@ -335,7 +335,7 @@ int level_editor_render(const LevelEditor *level_editor,
             return -1;
         }
 
-        if (edit_field_render(
+        if (edit_field_render_screen(
                 level_editor->edit_field_filename,
                 camera,
                 vec(position.x + save_as_width, position.y)) < 0) {

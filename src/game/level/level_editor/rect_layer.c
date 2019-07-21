@@ -454,7 +454,7 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
 
     // ID renaming Edit Field
     if (layer->state == RECT_LAYER_ID_RENAME) {
-        if (edit_field_render(layer->id_edit_field, camera, vec(400.0f, 400.0f)) < 0) {
+        if (edit_field_render_screen(layer->id_edit_field, camera, vec(400.0f, 400.0f)) < 0) {
             return -1;
         }
     }

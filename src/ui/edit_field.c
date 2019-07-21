@@ -58,9 +58,9 @@ void destroy_edit_field(Edit_field *edit_field)
     RETURN_LT0(edit_field->lt);
 }
 
-int edit_field_render(const Edit_field *edit_field,
-                      Camera *camera,
-                      Point screen_position)
+int edit_field_render_screen(const Edit_field *edit_field,
+                             Camera *camera,
+                             Point screen_position)
 {
     trace_assert(edit_field);
     trace_assert(camera);
@@ -82,6 +82,38 @@ int edit_field_render(const Edit_field *edit_field,
             camera,
             rect(screen_position.x + (float) edit_field->cursor * (float) FONT_CHAR_WIDTH * edit_field->font_size.x,
                  screen_position.y - cursor_y_overflow,
+                 cursor_width,
+                 FONT_CHAR_HEIGHT * edit_field->font_size.y + cursor_y_overflow * 2.0f),
+            edit_field->font_color) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
+int edit_field_render_world(const Edit_field *edit_field,
+                            Camera *camera,
+                            Point world_position)
+{
+    trace_assert(edit_field);
+    trace_assert(camera);
+
+    const float cursor_y_overflow = 10.0f;
+    const float cursor_width = 2.0f;
+
+    if (camera_render_text(
+            camera,
+            edit_field->buffer,
+            edit_field->font_size,
+            edit_field->font_color,
+            world_position) < 0) {
+        return -1;
+    }
+
+    if (camera_fill_rect(
+            camera,
+            rect(world_position.x + (float) edit_field->cursor * (float) FONT_CHAR_WIDTH * edit_field->font_size.x,
+                 world_position.y - cursor_y_overflow,
                  cursor_width,
                  FONT_CHAR_HEIGHT * edit_field->font_size.y + cursor_y_overflow * 2.0f),
             edit_field->font_color) < 0) {

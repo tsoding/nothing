@@ -13,9 +13,13 @@ Edit_field *create_edit_field(Vec font_size,
                               Color font_color);
 void destroy_edit_field(Edit_field *edit_field);
 
-int edit_field_render(const Edit_field *edit_field,
-                      Camera *camera,
-                      Point screen_position);
+int edit_field_render_screen(const Edit_field *edit_field,
+                             Camera *camera,
+                             Point screen_position);
+
+int edit_field_render_world(const Edit_field *edit_field,
+                            Camera *camera,
+                            Point world_position);
 
 int edit_field_event(Edit_field *edit_field, const SDL_Event *event);
 
