@@ -359,33 +359,19 @@ int label_layer_edit_text_event(LabelLayer *label_layer,
     trace_assert(label_layer->selected >= 0);
 
     switch (event->type) {
-    case SDL_TEXTINPUT: {
-        if (edit_field_text_input(
-                label_layer->edit_field,
-                &event->text) < 0) {
-            return -1;
-        }
-    } break;
-
-    case SDL_KEYDOWN:
-    case SDL_KEYUP: {
-        if (edit_field_keyboard(
-                label_layer->edit_field,
-                &event->key) < 0) {
-            return -1;
-        }
-
+    case SDL_KEYDOWN: {
         if (event->key.keysym.sym == SDLK_RETURN) {
             char *text =
                 (char*)dynarray_data(label_layer->texts) + label_layer->selected * LABEL_LAYER_TEXT_MAX_SIZE;
             memset(text, 0, LABEL_LAYER_TEXT_MAX_SIZE);
             memcpy(text, edit_field_as_text(label_layer->edit_field), LABEL_LAYER_TEXT_MAX_SIZE - 1);
             label_layer->state = LABEL_LAYER_IDLE;
+            return 0;
         }
     } break;
     }
 
-    return 0;
+    return edit_field_event(label_layer->edit_field, event);
 }
 
 int label_layer_event(LabelLayer *label_layer,
