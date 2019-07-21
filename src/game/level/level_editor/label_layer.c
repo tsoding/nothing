@@ -185,7 +185,7 @@ int label_layer_render(const LabelLayer *label_layer,
     for (size_t i = 0; i < n; ++i) {
         if (label_layer->state == LABEL_LAYER_EDIT_TEXT) {
             // TODO(#965): LabelLayer Edit Field should be rendered inside of the world
-            if (edit_field_render(
+            if (edit_field_render_screen(
                     label_layer->edit_field,
                     camera,
                     camera_point(camera, positions[i])) < 0) {

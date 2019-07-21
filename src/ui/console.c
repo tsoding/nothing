@@ -230,14 +230,14 @@ int console_render(const Console *console,
     }
 
     if (console_log_render(console->console_log,
-                   renderer,
-                   vec(0.0f, y)) < 0) {
+                           renderer,
+                           vec(0.0f, y)) < 0) {
         return -1;
     }
 
-    if (edit_field_render(console->edit_field,
-                          camera,
-                          vec(0.0f, y + CONSOLE_LOG_HEIGHT)) < 0) {
+    if (edit_field_render_screen(console->edit_field,
+                                 camera,
+                                 vec(0.0f, y + CONSOLE_LOG_HEIGHT)) < 0) {
         return -1;
     }
 

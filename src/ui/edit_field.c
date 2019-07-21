@@ -58,9 +58,9 @@ void destroy_edit_field(Edit_field *edit_field)
     RETURN_LT0(edit_field->lt);
 }
 
-int edit_field_render(const Edit_field *edit_field,
-                      Camera *camera,
-                      Point screen_position)
+int edit_field_render_screen(const Edit_field *edit_field,
+                             Camera *camera,
+                             Point screen_position)
 {
     trace_assert(edit_field);
     trace_assert(camera);
@@ -87,6 +87,17 @@ int edit_field_render(const Edit_field *edit_field,
             edit_field->font_color) < 0) {
         return -1;
     }
+
+    return 0;
+}
+
+int edit_field_render_world(const Edit_field *edit_field,
+                            Camera *camera,
+                            Point world_position)
+{
+    trace_assert(edit_field);
+    trace_assert(camera);
+    (void) world_position;
 
     return 0;
 }
