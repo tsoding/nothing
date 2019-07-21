@@ -13,15 +13,30 @@
 #include "dynarray.h"
 #include "color.h"
 #include "game/camera.h"
+#include "color_picker.h"
+#include "ui/edit_field.h"
 
-#define LABEL_LAYER_ID_MAX_SIZE 36
+#define LABEL_LAYER_SELECTION_THICCNESS 5.0f
 
+typedef enum {
+    LABEL_LAYER_IDLE = 0,
+    LABEL_LAYER_MOVE,
+    LABEL_LAYER_EDIT_TEXT
+} LabelLayerState;
+
+// TODO(#963): LabelLayer cannot add the labels
+// TODO(#964): LabelLayer cannot modify the labels' id
 struct LabelLayer {
     Lt *lt;
+    LabelLayerState state;
     Dynarray *ids;
     Dynarray *positions;
     Dynarray *colors;
     Dynarray *texts;
+    int selected;
+    ColorPicker color_picker;
+    Point move_anchor;
+    Edit_field *edit_field;
 };
 
 LayerPtr label_layer_as_layer(LabelLayer *label_layer)
@@ -62,8 +77,22 @@ LabelLayer *create_label_layer(void)
         RETURN_LT(lt, NULL);
     }
 
-    label_layer->texts = PUSH_LT(lt, create_dynarray(sizeof(char*)), destroy_dynarray);
+    label_layer->texts = PUSH_LT(
+        lt,
+        create_dynarray(sizeof(char) * LABEL_LAYER_TEXT_MAX_SIZE),
+        destroy_dynarray);
     if (label_layer->texts == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    label_layer->color_picker = create_color_picker_from_rgba(COLOR_RED);
+    label_layer->selected = -1;
+
+    label_layer->edit_field = PUSH_LT(
+        lt,
+        create_edit_field(LABELS_SIZE, COLOR_RED),
+        destroy_edit_field);
+    if (label_layer->edit_field == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -121,7 +150,8 @@ LabelLayer *create_label_layer_from_line_stream(LineStream *line_stream)
             log_fail("Could not read label text\n");
         }
 
-        char *label_text = PUSH_LT(label_layer->lt, string_duplicate(line, NULL), free);
+        char label_text[LABEL_LAYER_TEXT_MAX_SIZE] = {0};
+        memcpy(label_text, line, LABEL_LAYER_TEXT_MAX_SIZE - 1);
         trim_endline(label_text);
         dynarray_push(label_layer->texts, &label_text);
     }
@@ -142,23 +172,217 @@ int label_layer_render(const LabelLayer *label_layer,
     trace_assert(label_layer);
     trace_assert(camera);
 
+    if (active && color_picker_render(&label_layer->color_picker, camera) < 0) {
+        return -1;
+    }
+
     size_t n = dynarray_count(label_layer->ids);
     Point *positions = dynarray_data(label_layer->positions);
     Color *colors = dynarray_data(label_layer->colors);
-    char **texts = dynarray_data(label_layer->texts);
+    char *texts = dynarray_data(label_layer->texts);
 
     /* TODO(#891): LabelLayer doesn't show the final position of Label after the animation */
     for (size_t i = 0; i < n; ++i) {
-        if (camera_render_text(
+        if (label_layer->state == LABEL_LAYER_EDIT_TEXT) {
+            // TODO(#965): LabelLayer Edit Field should be rendered inside of the world
+            if (edit_field_render(
+                    label_layer->edit_field,
+                    camera,
+                    camera_point(camera, positions[i])) < 0) {
+                return -1;
+            }
+        } else {
+            if (camera_render_text(
+                    camera,
+                    texts + i * LABEL_LAYER_TEXT_MAX_SIZE,
+                    LABELS_SIZE,
+                    color_scale(
+                        colors[i],
+                        rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f)),
+                    positions[i]) < 0) {
+                return -1;
+            }
+        }
+    }
+
+    if (label_layer->selected >= 0) {
+
+        Rect selection =
+            rect_scale(
+                camera_rect(
+                    camera,
+                    sprite_font_boundary_box(
+                        camera_font(camera),
+                        positions[label_layer->selected],
+                        LABELS_SIZE,
+                        texts + label_layer->selected * LABEL_LAYER_TEXT_MAX_SIZE)),
+                LABEL_LAYER_SELECTION_THICCNESS * 0.5f);
+
+
+        if (camera_draw_thicc_rect_screen(
                 camera,
-                texts[i],
-                vec(2.0f, 2.0f),
-                color_scale(
-                    colors[i],
-                    rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f)),
-                positions[i]) < 0) {
+                selection,
+                colors[label_layer->selected],
+                LABEL_LAYER_SELECTION_THICCNESS) < 0) {
             return -1;
         }
+    }
+
+    return 0;
+}
+
+static
+int label_layer_element_at(LabelLayer *label_layer,
+                           const Sprite_font *font,
+                           Point position)
+{
+    trace_assert(label_layer);
+
+    const size_t n = dynarray_count(label_layer->texts);
+    char *texts = dynarray_data(label_layer->texts);
+    Point *positions = dynarray_data(label_layer->positions);
+
+    for (size_t i = 0; i < n; ++i) {
+        Rect boundary = sprite_font_boundary_box(
+            font,
+            positions[i],
+            LABELS_SIZE,
+            texts + i * LABEL_LAYER_TEXT_MAX_SIZE);
+
+        if (rect_contains_point(boundary, position)) {
+            return (int) i;
+        }
+    }
+
+    return -1;
+}
+
+static
+int label_layer_idle_event(LabelLayer *label_layer,
+                           const SDL_Event *event,
+                           const Camera *camera)
+{
+    trace_assert(label_layer);
+    trace_assert(event);
+    trace_assert(camera);
+
+    switch (event->type) {
+    case SDL_MOUSEBUTTONDOWN: {
+        switch (event->button.button) {
+        case SDL_BUTTON_LEFT: {
+            const Point position = camera_map_screen(
+                camera,
+                event->button.x,
+                event->button.y);
+
+            const int element = label_layer_element_at(
+                label_layer,
+                camera_font(camera),
+                position);
+
+            if (element >= 0) {
+                Point *positions = dynarray_data(label_layer->positions);
+                Color *colors = dynarray_data(label_layer->colors);
+
+                label_layer->move_anchor = vec_sub(position, positions[element]);
+                label_layer->selected = element;
+                label_layer->state = LABEL_LAYER_MOVE;
+
+                label_layer->color_picker =
+                    create_color_picker_from_rgba(colors[element]);
+            }
+        } break;
+        }
+    } break;
+
+    case SDL_KEYDOWN: {
+        switch (event->key.keysym.sym) {
+        case SDLK_F2: {
+            if (label_layer->selected >= 0) {
+                char *texts = dynarray_data(label_layer->texts);
+                label_layer->state = LABEL_LAYER_EDIT_TEXT;
+                edit_field_replace(
+                    label_layer->edit_field,
+                    texts + label_layer->selected * LABEL_LAYER_TEXT_MAX_SIZE);
+                SDL_StartTextInput();
+            }
+        } break;
+        }
+    } break;
+    }
+
+    return 0;
+}
+
+static
+int label_layer_move_event(LabelLayer *label_layer,
+                           const SDL_Event *event,
+                           const Camera *camera)
+{
+    trace_assert(label_layer);
+    trace_assert(event);
+    trace_assert(camera);
+    trace_assert(label_layer->selected >= 0);
+
+    switch (event->type) {
+    case SDL_MOUSEMOTION: {
+        Point *positions = dynarray_data(label_layer->positions);
+        positions[label_layer->selected] =
+            vec_sub(
+                camera_map_screen(
+                    camera,
+                    event->motion.x,
+                    event->motion.y),
+                label_layer->move_anchor);
+    } break;
+
+    case SDL_MOUSEBUTTONUP: {
+        switch (event->button.button) {
+        case SDL_BUTTON_LEFT: {
+            label_layer->state = LABEL_LAYER_IDLE;
+        } break;
+        }
+    } break;
+    }
+
+    return 0;
+}
+
+static
+int label_layer_edit_text_event(LabelLayer *label_layer,
+                                const SDL_Event *event,
+                                const Camera *camera)
+{
+    trace_assert(label_layer);
+    trace_assert(event);
+    trace_assert(camera);
+    trace_assert(label_layer->selected >= 0);
+
+    switch (event->type) {
+    case SDL_TEXTINPUT: {
+        if (edit_field_text_input(
+                label_layer->edit_field,
+                &event->text) < 0) {
+            return -1;
+        }
+    } break;
+
+    case SDL_KEYDOWN:
+    case SDL_KEYUP: {
+        if (edit_field_keyboard(
+                label_layer->edit_field,
+                &event->key) < 0) {
+            return -1;
+        }
+
+        if (event->key.keysym.sym == SDLK_RETURN) {
+            char *text =
+                (char*)dynarray_data(label_layer->texts) + label_layer->selected * LABEL_LAYER_TEXT_MAX_SIZE;
+            memset(text, 0, LABEL_LAYER_TEXT_MAX_SIZE);
+            memcpy(text, edit_field_as_text(label_layer->edit_field), LABEL_LAYER_TEXT_MAX_SIZE - 1);
+            label_layer->state = LABEL_LAYER_IDLE;
+        }
+    } break;
     }
 
     return 0;
@@ -171,7 +395,33 @@ int label_layer_event(LabelLayer *label_layer,
     trace_assert(label_layer);
     trace_assert(event);
     trace_assert(camera);
-    /* TODO(#892): LabelLayer doesn't allow to modify and add labels */
+
+    int changed = 0;
+
+    if (color_picker_event(
+            &label_layer->color_picker,
+            event,
+            &changed) < 0) {
+        return -1;
+    }
+
+    if (changed && label_layer->selected >= 0) {
+        Color *colors = dynarray_data(label_layer->colors);
+        colors[label_layer->selected] =
+            color_picker_rgba(&label_layer->color_picker);
+    }
+
+    switch (label_layer->state) {
+    case LABEL_LAYER_IDLE:
+        return label_layer_idle_event(label_layer, event, camera);
+
+    case LABEL_LAYER_MOVE:
+        return label_layer_move_event(label_layer, event, camera);
+
+    case LABEL_LAYER_EDIT_TEXT:
+        return label_layer_edit_text_event(label_layer, event, camera);
+    }
+
     return 0;
 }
 
@@ -195,7 +445,7 @@ Color *label_layer_colors(const LabelLayer *label_layer)
     return dynarray_data(label_layer->colors);
 }
 
-char **labels_layer_texts(const LabelLayer *label_layer)
+char *labels_layer_texts(const LabelLayer *label_layer)
 {
     return dynarray_data(label_layer->texts);
 }
@@ -209,7 +459,7 @@ int label_layer_dump_stream(const LabelLayer *label_layer, FILE *filedump)
     char *ids = dynarray_data(label_layer->ids);
     Point *positions = dynarray_data(label_layer->positions);
     Color *colors = dynarray_data(label_layer->colors);
-    char **texts = dynarray_data(label_layer->texts);
+    char *texts = dynarray_data(label_layer->texts);
 
     fprintf(filedump, "%zd\n", n);
     for (size_t i = 0; i < n; ++i) {
@@ -217,7 +467,7 @@ int label_layer_dump_stream(const LabelLayer *label_layer, FILE *filedump)
                 ids + LABEL_LAYER_ID_MAX_SIZE * i,
                 positions[i].x, positions[i].y);
         color_hex_to_stream(colors[i], filedump);
-        fprintf(filedump, "\n%s\n", texts[i]);
+        fprintf(filedump, "\n%s\n", texts + i * LABEL_LAYER_TEXT_MAX_SIZE);
     }
 
     return 0;

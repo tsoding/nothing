@@ -17,6 +17,7 @@ int edit_field_render(const Edit_field *edit_field,
                       Camera *camera,
                       Point screen_position);
 
+// TODO(#966): merge edit_field_keyboard and edit_field_text_input together
 int edit_field_keyboard(Edit_field *edit_field,
                         const SDL_KeyboardEvent *event);
 int edit_field_text_input(Edit_field *edit_field,
