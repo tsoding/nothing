@@ -150,11 +150,13 @@ int level_picker_event(LevelPicker *level_picker, const SDL_Event *event)
     switch (event->type) {
     case SDL_WINDOWEVENT: {
         switch (event->window.event) {
+        case SDL_WINDOWEVENT_SHOWN:
         case SDL_WINDOWEVENT_RESIZED: {
             const Vec font_scale = vec(5.0f, 5.0f);
             const float padding_bottom = 50.0f;
 
-            const float width = (float) event->window.data1;
+            int width;
+            SDL_GetWindowSize(SDL_GetWindowFromID(event->window.windowID), &width, NULL);
 
             const Vec title_size = menu_title_size(level_picker->menu_title);
             const float title_margin_top = 100.0f;
@@ -162,7 +164,7 @@ int level_picker_event(LevelPicker *level_picker, const SDL_Event *event)
 
             menu_title_move(
                 level_picker->menu_title,
-                vec(width * 0.5f - title_size.x * 0.5f, title_margin_top));
+                vec((float)width * 0.5f - title_size.x * 0.5f, title_margin_top));
 
             const Vec selector_size = list_selector_size(
                 level_picker->list_selector,
@@ -171,7 +173,7 @@ int level_picker_event(LevelPicker *level_picker, const SDL_Event *event)
 
             list_selector_move(
                 level_picker->list_selector,
-                vec(width * 0.5f - selector_size.x * 0.5f,
+                vec((float)width * 0.5f - selector_size.x * 0.5f,
                     title_margin_top + title_size.y + title_margin_bottom));
         } break;
         }
