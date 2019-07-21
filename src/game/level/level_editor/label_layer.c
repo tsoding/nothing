@@ -234,11 +234,19 @@ int label_layer_render(const LabelLayer *label_layer,
             rect_scale(
                 camera_rect(
                     camera,
-                    sprite_font_boundary_box(
-                        camera_font(camera),
-                        positions[label_layer->selected],
-                        LABELS_SIZE,
-                        texts + label_layer->selected * LABEL_LAYER_TEXT_MAX_SIZE)),
+                    rect_boundary2(
+                        sprite_font_boundary_box(
+                            camera_font(camera),
+                            positions[label_layer->selected],
+                            LABELS_SIZE,
+                            texts + label_layer->selected * LABEL_LAYER_TEXT_MAX_SIZE),
+                        sprite_font_boundary_box(
+                            camera_font(camera),
+                            vec_sub(
+                                positions[label_layer->selected],
+                                vec(0.0f, FONT_CHAR_HEIGHT)),
+                            vec(1.0f, 1.0f),
+                            ids + label_layer->selected * LABEL_LAYER_ID_MAX_SIZE))),
                 LABEL_LAYER_SELECTION_THICCNESS * 0.5f);
 
 
