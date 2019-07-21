@@ -48,7 +48,6 @@ struct Console
     char *eval_result;
 };
 
-/* TODO(#355): Console does not support Emacs keybindings */
 /* TODO(#356): Console does not support autocompletion */
 /* TODO(#357): Console does not show the state of the GC of the script */
 /* TODO(#358): Console does not support copy, cut, paste operations */
