@@ -12,6 +12,6 @@ compiler:
 script:
   - mkdir build/
   - cd build/
-  - cmake ..
+  - cmake -DSDL2_INCLUDE_DIR=/usr/local/include ..
   - make -k
   - ./nothing_test
