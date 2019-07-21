@@ -4,6 +4,7 @@ addons:
     packages:
       - sdl2
       - cmake
+    update: true
 os:
   - osx
 compiler:
