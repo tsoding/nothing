@@ -22,6 +22,8 @@ struct Edit_field
 
 static void edit_field_left(Edit_field *edit_field);
 static void edit_field_right(Edit_field *edit_field);
+static void edit_field_home(Edit_field *edit_field);
+static void edit_field_end(Edit_field *edit_field);
 static void edit_field_backspace(Edit_field *edit_field);
 static void edit_field_delete(Edit_field *edit_field);
 static void edit_field_insert_char(Edit_field *edit_field, char c);
@@ -131,9 +133,22 @@ const char *edit_field_as_text(const Edit_field *edit_field)
 
 static void edit_field_left(Edit_field *edit_field)
 {
+    trace_assert(edit_field);
     if (edit_field->cursor > 0) {
         edit_field->cursor--;
     }
+}
+
+static void edit_field_home(Edit_field *edit_field)
+{
+    trace_assert(edit_field);
+    edit_field->cursor = 0;
+}
+
+static void edit_field_end(Edit_field *edit_field)
+{
+    trace_assert(edit_field);
+    edit_field->cursor  = edit_field->buffer_size;
 }
 
 static void edit_field_right(Edit_field *edit_field)
@@ -230,6 +245,14 @@ int edit_field_event(Edit_field *edit_field, const SDL_Event *event)
 
         case SDLK_RIGHT:
             edit_field_right(edit_field);
+            break;
+
+        case SDLK_HOME:
+            edit_field_home(edit_field);
+            break;
+
+        case SDLK_END:
+            edit_field_end(edit_field);
             break;
 
         case SDLK_BACKSPACE:
