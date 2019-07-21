@@ -11,9 +11,8 @@ compiler:
   - clang
   - gcc
 script:
-  - brew info sdl2 # for debug test
   - mkdir build/
   - cd build/
-  - cmake -DSDL2_INCLUDE_DIR=/usr/local/include ..
+  - cmake ..
   - make -k
   - ./nothing_test
