@@ -21,7 +21,8 @@
 typedef enum {
     LABEL_LAYER_IDLE = 0,
     LABEL_LAYER_MOVE,
-    LABEL_LAYER_EDIT_TEXT
+    LABEL_LAYER_EDIT_TEXT,
+    LABEL_LAYER_EDIT_ID
 } LabelLayerState;
 
 // TODO(#963): LabelLayer cannot add the labels
@@ -204,15 +205,26 @@ int label_layer_render(const LabelLayer *label_layer,
             }
         }
 
-        if (camera_render_text(
-                camera,
-                ids + i * LABEL_LAYER_ID_MAX_SIZE,
-                vec(1.0f, 1.0f),
-                color_scale(
-                    color_invert(colors[i]),
-                    rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f)),
-                vec_sub(positions[i], vec(0.0f, FONT_CHAR_HEIGHT))) < 0) {
-            return -1;
+        if (label_layer->state == LABEL_LAYER_EDIT_ID) {
+            if (edit_field_render_world(
+                    label_layer->edit_field,
+                    camera,
+                    vec_sub(
+                        positions[i],
+                        vec(0.0f, FONT_CHAR_HEIGHT))) < 0) {
+                return -1;
+            }
+        } else {
+            if (camera_render_text(
+                    camera,
+                    ids + i * LABEL_LAYER_ID_MAX_SIZE,
+                    vec(1.0f, 1.0f),
+                    color_scale(
+                        color_invert(colors[i]),
+                        rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f)),
+                    vec_sub(positions[i], vec(0.0f, FONT_CHAR_HEIGHT))) < 0) {
+                return -1;
+            }
         }
     }
 
@@ -277,6 +289,11 @@ int label_layer_idle_event(LabelLayer *label_layer,
     trace_assert(event);
     trace_assert(camera);
 
+    Color *colors = dynarray_data(label_layer->colors);
+    Point *positions = dynarray_data(label_layer->positions);
+    char *ids = dynarray_data(label_layer->ids);
+    char *texts = dynarray_data(label_layer->texts);
+
     switch (event->type) {
     case SDL_MOUSEBUTTONDOWN: {
         switch (event->button.button) {
@@ -292,9 +309,6 @@ int label_layer_idle_event(LabelLayer *label_layer,
                 position);
 
             if (element >= 0) {
-                Point *positions = dynarray_data(label_layer->positions);
-                Color *colors = dynarray_data(label_layer->colors);
-
                 label_layer->move_anchor = vec_sub(position, positions[element]);
                 label_layer->selected = element;
                 label_layer->state = LABEL_LAYER_MOVE;
@@ -310,11 +324,28 @@ int label_layer_idle_event(LabelLayer *label_layer,
         switch (event->key.keysym.sym) {
         case SDLK_F2: {
             if (label_layer->selected >= 0) {
-                char *texts = dynarray_data(label_layer->texts);
                 label_layer->state = LABEL_LAYER_EDIT_TEXT;
                 edit_field_replace(
                     label_layer->edit_field,
                     texts + label_layer->selected * LABEL_LAYER_TEXT_MAX_SIZE);
+                edit_field_restyle(
+                    label_layer->edit_field,
+                    LABELS_SIZE,
+                    colors[label_layer->selected]);
+                SDL_StartTextInput();
+            }
+        } break;
+
+        case SDLK_F3: {
+            if (label_layer->selected >= 0) {
+                label_layer->state = LABEL_LAYER_EDIT_ID;
+                edit_field_replace(
+                    label_layer->edit_field,
+                    ids + label_layer->selected * LABEL_LAYER_ID_MAX_SIZE);
+                edit_field_restyle(
+                    label_layer->edit_field,
+                    vec(1.0f, 1.0f),
+                    color_invert(colors[label_layer->selected]));
                 SDL_StartTextInput();
             }
         } break;
@@ -385,6 +416,34 @@ int label_layer_edit_text_event(LabelLayer *label_layer,
     return edit_field_event(label_layer->edit_field, event);
 }
 
+static
+int label_layer_edit_id_event(LabelLayer *label_layer,
+                              const SDL_Event *event,
+                              const Camera *camera)
+{
+    trace_assert(label_layer);
+    trace_assert(event);
+    trace_assert(camera);
+    trace_assert(label_layer->selected >= 0);
+
+
+    switch (event->type) {
+    case SDL_KEYDOWN: {
+        if (event->key.keysym.sym == SDLK_RETURN) {
+            char *id =
+                (char*)dynarray_data(label_layer->ids) + label_layer->selected * LABEL_LAYER_ID_MAX_SIZE;
+            memset(id, 0, LABEL_LAYER_ID_MAX_SIZE);
+            memcpy(id, edit_field_as_text(label_layer->edit_field), LABEL_LAYER_ID_MAX_SIZE - 1);
+            label_layer->state = LABEL_LAYER_IDLE;
+            return 0;
+        }
+    } break;
+    }
+
+
+    return edit_field_event(label_layer->edit_field, event);
+}
+
 int label_layer_event(LabelLayer *label_layer,
                       const SDL_Event *event,
                       const Camera *camera)
@@ -417,6 +476,9 @@ int label_layer_event(LabelLayer *label_layer,
 
     case LABEL_LAYER_EDIT_TEXT:
         return label_layer_edit_text_event(label_layer, event, camera);
+
+    case LABEL_LAYER_EDIT_ID:
+        return label_layer_edit_id_event(label_layer, event, camera);
     }
 
     return 0;
