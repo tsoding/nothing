@@ -177,6 +177,7 @@ int label_layer_render(const LabelLayer *label_layer,
     }
 
     size_t n = dynarray_count(label_layer->ids);
+    char *ids = dynarray_data(label_layer->ids);
     Point *positions = dynarray_data(label_layer->positions);
     Color *colors = dynarray_data(label_layer->colors);
     char *texts = dynarray_data(label_layer->texts);
@@ -201,6 +202,17 @@ int label_layer_render(const LabelLayer *label_layer,
                     positions[i]) < 0) {
                 return -1;
             }
+        }
+
+        if (camera_render_text(
+                camera,
+                ids + i * LABEL_LAYER_ID_MAX_SIZE,
+                vec(1.0f, 1.0f),
+                color_scale(
+                    color_invert(colors[i]),
+                    rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f)),
+                vec_sub(positions[i], vec(0.0f, FONT_CHAR_HEIGHT))) < 0) {
+            return -1;
         }
     }
 
