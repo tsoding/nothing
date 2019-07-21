@@ -356,14 +356,6 @@ int level_editor_event(LevelEditor *level_editor,
 
     if (level_editor->state == LEVEL_EDITOR_SAVEAS) {
         switch (event->type) {
-        case SDL_TEXTINPUT: {
-            if (edit_field_text_input(
-                    level_editor->edit_field_filename,
-                    &event->text) < 0) {
-                return -1;
-            }
-        } break;
-        case SDL_KEYUP:
         case SDL_KEYDOWN: {
             if (event->key.keysym.sym == SDLK_RETURN) {
                 trace_assert(level_editor->file_name == NULL);
@@ -377,17 +369,12 @@ int level_editor_event(LevelEditor *level_editor,
                 level_editor_dump(level_editor);
                 SDL_StopTextInput();
                 level_editor->state = LEVEL_EDITOR_EDITING;
-            } else {
-                if (edit_field_keyboard(
-                        level_editor->edit_field_filename,
-                        &event->key) < 0) {
-                    return -1;
-                }
+                return 0;
             }
         } break;
         }
 
-        return 0;
+        return edit_field_event(level_editor->edit_field_filename, event);
     } else {
         switch (event->type) {
         case SDL_KEYDOWN: {

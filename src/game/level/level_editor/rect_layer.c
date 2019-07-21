@@ -289,12 +289,6 @@ static int rect_layer_event_id_rename(RectLayer *layer, const SDL_Event *event, 
     trace_assert(camera);
 
     switch (event->type) {
-    case SDL_TEXTINPUT: {
-        if (edit_field_text_input(layer->id_edit_field, &event->text) < 0) {
-            return -1;
-        }
-    } break;
-
     case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
         case SDLK_RETURN: {
@@ -309,19 +303,10 @@ static int rect_layer_event_id_rename(RectLayer *layer, const SDL_Event *event, 
             layer->state = RECT_LAYER_IDLE;
         } break;
         }
-
-        if (edit_field_keyboard(layer->id_edit_field, &event->key) < 0) {
-            return -1;
-        }
-    } break;
-
-    case SDL_KEYUP: {
-        if (edit_field_keyboard(layer->id_edit_field, &event->key) < 0) {
-            return -1;
-        }
     } break;
     }
-    return 0;
+
+    return edit_field_event(layer->id_edit_field, event);
 }
 
 LayerPtr rect_layer_as_layer(RectLayer *rect_layer)

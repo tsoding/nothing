@@ -204,17 +204,10 @@ int console_handle_event(Console *console,
             history_next(console->history);
             return 0;
         }
-
-        return edit_field_keyboard(console->edit_field, &event->key);
     } break;
-
-    case SDL_TEXTINPUT:
-        return edit_field_text_input(console->edit_field, &event->text);
-
-    default: {}
     }
 
-    return 0;
+    return edit_field_event(console->edit_field, event);
 }
 
 int console_render(const Console *console,

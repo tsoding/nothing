@@ -184,14 +184,14 @@ void edit_field_replace(Edit_field *edit_field, const char *text)
     }
 }
 
-int edit_field_keyboard(Edit_field *edit_field,
-                        const SDL_KeyboardEvent *key)
+int edit_field_event(Edit_field *edit_field, const SDL_Event *event)
 {
     trace_assert(edit_field);
-    trace_assert(key);
+    trace_assert(event);
 
-    if (key->type == SDL_KEYDOWN) {
-        switch (key->keysym.sym) {
+    switch (event->type) {
+    case SDL_KEYDOWN: {
+        switch (event->key.keysym.sym) {
         case SDLK_LEFT:
             edit_field_left(edit_field);
             break;
@@ -207,23 +207,15 @@ int edit_field_keyboard(Edit_field *edit_field,
         case SDLK_DELETE:
             edit_field_delete(edit_field);
             break;
-
-        default: {}
         }
-    }
+    } break;
 
-    return 0;
-}
-
-int edit_field_text_input(Edit_field *edit_field,
-                          const SDL_TextInputEvent *text_input)
-{
-    trace_assert(edit_field);
-    trace_assert(text_input);
-
-    size_t n = strlen(text_input->text);
-    for (size_t i = 0; i < n; ++i) {
-        edit_field_insert_char(edit_field, text_input->text[i]);
+    case SDL_TEXTINPUT: {
+        size_t n = strlen(event->text.text);
+        for (size_t i = 0; i < n; ++i) {
+            edit_field_insert_char(edit_field, event->text.text[i]);
+        }
+    } break;
     }
 
     return 0;
