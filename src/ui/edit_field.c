@@ -252,3 +252,12 @@ int edit_field_event(Edit_field *edit_field, const SDL_Event *event)
 
     return 0;
 }
+
+void edit_field_restyle(Edit_field *edit_field,
+                        Vec font_size,
+                        Color font_color)
+{
+    trace_assert(edit_field);
+    edit_field->font_size = font_size;
+    edit_field->font_color = font_color;
+}
