@@ -4,3 +4,6 @@
     - sounds/something.mp3
 - Fonts:
   - https://opengameart.org/content/ascii-bitmap-font-oldschool
+  - https://opengameart.org/content/ascii-bitmap-font-futuristic
+  - https://opengameart.org/content/ascii-bitmap-font-cellphone
+  - https://opengameart.org/content/ascii-bitmap-font-pixel-simplicity-grey
