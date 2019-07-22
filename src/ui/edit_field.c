@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <string.h>
 
 #include "edit_field.h"
 #include "game/camera.h"
@@ -46,9 +47,8 @@ static void edit_field_insert_char(Edit_field *edit_field, char c)
         return;
     }
 
-    for (int64_t i = (int64_t) edit_field->buffer_size - 1; i >= (int64_t) edit_field->cursor; --i) {
-        edit_field->buffer[i + 1] = edit_field->buffer[i];
-    }
+    char *dest = edit_field->buffer + edit_field->cursor + 1;
+    memmove(dest, dest - 1, edit_field->buffer_size - edit_field->cursor);
 
     edit_field->buffer[edit_field->cursor++] = c;
     edit_field->buffer[++edit_field->buffer_size] = 0;
@@ -138,9 +138,8 @@ static void delete_char(Edit_field *edit_field)
         return;
     }
 
-    for (size_t i = edit_field->cursor; i < edit_field->buffer_size; ++i) {
-        edit_field->buffer[i] = edit_field->buffer[i + 1];
-    }
+    char *dest = edit_field->buffer + edit_field->cursor;
+    memmove(dest, dest + 1, edit_field->buffer_size - edit_field->cursor - 1);
 
     edit_field->buffer[--edit_field->buffer_size] = 0;
 }
@@ -152,9 +151,8 @@ static void delete_backward_char(Edit_field *edit_field)
         return;
     }
 
-    for (size_t i = edit_field->cursor; i < edit_field->buffer_size; ++i) {
-        edit_field->buffer[i - 1] = edit_field->buffer[i];
-    }
+    char *dest = edit_field->buffer + edit_field->cursor - 1;
+    memmove(dest, dest + 1, edit_field->buffer_size - edit_field->cursor);
 
     edit_field->cursor--;
     edit_field->buffer[--edit_field->buffer_size] = 0;
