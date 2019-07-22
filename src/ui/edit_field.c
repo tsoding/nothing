@@ -59,17 +59,12 @@ static void edit_field_insert_char(Edit_field *edit_field, char c)
 
 static bool is_emacs_word(char c)
 {
-#define IN_RANGE(start, end) (c >= start && c <= end)
-
     // Word syntax table retrieved from Fundamental Mode, "C-h s"
     // (This is not the complete syntax table)
-    return IN_RANGE('$', '%')
-        || IN_RANGE('0', '9')
-        || IN_RANGE('A', 'Z')
-        || IN_RANGE('a', 'z')
-        ;
-
-#undef IN_RANGE
+    return (c >= '$' && c <= '%')
+        || (c >= '0' && c <= '9')
+        || (c >= 'A' && c <= 'Z')
+        || (c >= 'a' && c <= 'z');
 }
 
 static void forward_char(Edit_field *edit_field)
@@ -193,29 +188,29 @@ static void backward_kill_word(Edit_field *edit_field)
 static void handle_keydown(Edit_field *edit_field, const SDL_Event *event)
 {
     switch (event->key.keysym.sym) {
-    case SDLK_HOME:
+    case SDLK_HOME: {
         move_beginning_of_line(edit_field);
-        break;
+    } break;
 
-    case SDLK_END:
+    case SDLK_END: {
         move_end_of_line(edit_field);
-        break;
+    } break;
 
-    case SDLK_BACKSPACE:
+    case SDLK_BACKSPACE: {
         delete_backward_char(edit_field);
-        break;
+    } break;
 
-    case SDLK_DELETE:
+    case SDLK_DELETE: {
         delete_char(edit_field);
-        break;
+    } break;
 
-    case SDLK_RIGHT:
+    case SDLK_RIGHT: {
         forward_char(edit_field);
-        break;
+    } break;
 
-    case SDLK_LEFT:
+    case SDLK_LEFT: {
         backward_char(edit_field);
-        break;
+    } break;
     }
 }
 
@@ -223,64 +218,64 @@ static void handle_keydown_alt(Edit_field *edit_field, const SDL_Event *event)
 {
     switch (event->key.keysym.sym) {
     case SDLK_BACKSPACE:
-    case SDLK_DELETE:
+    case SDLK_DELETE: {
         backward_kill_word(edit_field);
-        break;
+    } break;
 
     case SDLK_RIGHT:
-    case SDLK_f:
+    case SDLK_f: {
         forward_word(edit_field);
-        break;
+    } break;
 
     case SDLK_LEFT:
-    case SDLK_b:
+    case SDLK_b: {
         backward_word(edit_field);
-        break;
+    } break;
 
-    case SDLK_d:
+    case SDLK_d: {
         kill_word(edit_field);
-        break;
+    } break;
     }
 }
 
 static void handle_keydown_ctrl(Edit_field *edit_field, const SDL_Event *event)
 {
     switch (event->key.keysym.sym) {
-    case SDLK_BACKSPACE:
+    case SDLK_BACKSPACE: {
         backward_kill_word(edit_field);
-        break;
+    } break;
 
-    case SDLK_DELETE:
+    case SDLK_DELETE: {
         kill_word(edit_field);
-        break;
+    } break;
 
-    case SDLK_RIGHT:
+    case SDLK_RIGHT: {
         forward_word(edit_field);
-        break;
+    } break;
 
-    case SDLK_LEFT:
+    case SDLK_LEFT: {
         backward_word(edit_field);
-        break;
+    } break;
 
-    case SDLK_a:
+    case SDLK_a: {
         move_beginning_of_line(edit_field);
-        break;
+    } break;
 
-    case SDLK_e:
+    case SDLK_e: {
         move_end_of_line(edit_field);
-        break;
+    } break;
 
-    case SDLK_f:
+    case SDLK_f: {
         forward_char(edit_field);
-        break;
+    } break;
 
-    case SDLK_b:
+    case SDLK_b: {
         backward_char(edit_field);
-        break;
+    } break;
 
-    case SDLK_d:
+    case SDLK_d: {
         delete_char(edit_field);
-        break;
+    } break;
     }
 }
 

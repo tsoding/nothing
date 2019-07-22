@@ -196,14 +196,14 @@ int console_handle_event(Console *console,
             history_prev(console->history);
             return 0;
 
-        case SDLK_p:
+        case SDLK_p: {
             if (event->key.keysym.mod & KMOD_CTRL) {
                 edit_field_replace(
                     console->edit_field, history_current(console->history));
                 history_prev(console->history);
                 return 0;
             }
-            break;
+        } break;
 
         case SDLK_DOWN:
             edit_field_replace(
@@ -212,14 +212,14 @@ int console_handle_event(Console *console,
             history_next(console->history);
             return 0;
 
-        case SDLK_n:
+        case SDLK_n: {
             if (event->key.keysym.mod & KMOD_CTRL) {
                 edit_field_replace(
                     console->edit_field, history_current(console->history));
                 history_next(console->history);
                 return 0;
             }
-            break;
+        } break;
         }
     } break;
     }
