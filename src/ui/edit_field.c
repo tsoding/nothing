@@ -32,6 +32,7 @@ static void move_beginning_of_line(Edit_field *edit_field);
 static void move_end_of_line(Edit_field *edit_field);
 static void forward_word(Edit_field *edit_field);
 static void backward_word(Edit_field *edit_field);
+static void kill_region_and_move_cursor(Edit_field *edit_field, size_t start, size_t end);
 static void delete_char(Edit_field *edit_field);
 static void delete_backward_char(Edit_field *edit_field);
 static void kill_word(Edit_field *edit_field);
@@ -131,6 +132,28 @@ static void backward_word(Edit_field *edit_field)
     }
 }
 
+static void kill_region_and_move_cursor(Edit_field *edit_field, size_t start, size_t end) {
+    trace_assert(end <= edit_field->buffer_size);
+
+    if (end <= start) {
+        // Nothing to delete
+        return;
+    }
+
+    size_t to_delete = end - start;
+    size_t to_move = edit_field->buffer_size - end;
+
+    if (to_move > 0) {
+        char *dest = edit_field->buffer + start;
+        memmove(dest, dest + to_delete, to_move);
+    }
+
+    edit_field->buffer[start + to_move] = 0;
+    edit_field->buffer_size -= to_delete;
+
+    edit_field->cursor = start;
+}
+
 static void delete_char(Edit_field *edit_field)
 {
     // "C-d" or "<Delete>"
@@ -138,10 +161,7 @@ static void delete_char(Edit_field *edit_field)
         return;
     }
 
-    char *dest = edit_field->buffer + edit_field->cursor;
-    memmove(dest, dest + 1, edit_field->buffer_size - edit_field->cursor - 1);
-
-    edit_field->buffer[--edit_field->buffer_size] = 0;
+    kill_region_and_move_cursor(edit_field, edit_field->cursor, edit_field->cursor + 1);
 }
 
 static void delete_backward_char(Edit_field *edit_field)
@@ -151,11 +171,7 @@ static void delete_backward_char(Edit_field *edit_field)
         return;
     }
 
-    char *dest = edit_field->buffer + edit_field->cursor - 1;
-    memmove(dest, dest + 1, edit_field->buffer_size - edit_field->cursor);
-
-    edit_field->cursor--;
-    edit_field->buffer[--edit_field->buffer_size] = 0;
+    kill_region_and_move_cursor(edit_field, edit_field->cursor - 1, edit_field->cursor);
 }
 
 static void kill_word(Edit_field *edit_field)
@@ -164,11 +180,8 @@ static void kill_word(Edit_field *edit_field)
     size_t start = edit_field->cursor;
     forward_word(edit_field);
     size_t end = edit_field->cursor;
-    edit_field->cursor = start;
 
-    for (size_t i = start; i < end; ++i) {
-        delete_char(edit_field);
-    }
+    kill_region_and_move_cursor(edit_field, start, end);
 }
 
 static void backward_kill_word(Edit_field *edit_field)
@@ -178,9 +191,7 @@ static void backward_kill_word(Edit_field *edit_field)
     backward_word(edit_field);
     size_t start = edit_field->cursor;
 
-    for (size_t i = start; i < end; ++i) {
-        delete_char(edit_field);
-    }
+    kill_region_and_move_cursor(edit_field, start, end);
 }
 
 static void handle_keydown(Edit_field *edit_field, const SDL_Event *event)
