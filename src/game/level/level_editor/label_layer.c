@@ -185,7 +185,7 @@ int label_layer_render(const LabelLayer *label_layer,
 
     /* TODO(#891): LabelLayer doesn't show the final position of Label after the animation */
     for (size_t i = 0; i < n; ++i) {
-        if (label_layer->state == LABEL_LAYER_EDIT_TEXT) {
+        if (label_layer->state == LABEL_LAYER_EDIT_TEXT && label_layer->selected == (int) i) {
             if (edit_field_render_world(
                     label_layer->edit_field,
                     camera,
@@ -205,7 +205,7 @@ int label_layer_render(const LabelLayer *label_layer,
             }
         }
 
-        if (label_layer->state == LABEL_LAYER_EDIT_ID) {
+        if (label_layer->state == LABEL_LAYER_EDIT_ID && label_layer->selected == (int)i) {
             if (edit_field_render_world(
                     label_layer->edit_field,
                     camera,
