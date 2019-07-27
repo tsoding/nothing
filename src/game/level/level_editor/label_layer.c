@@ -493,8 +493,6 @@ int label_layer_edit_text_event(LabelLayer *label_layer,
     return edit_field_event(label_layer->edit_field, event);
 }
 
-// TODO: LabelLayer does not support cancelling the editing of ids
-
 static
 int label_layer_edit_id_event(LabelLayer *label_layer,
                               const SDL_Event *event,
@@ -505,10 +503,10 @@ int label_layer_edit_id_event(LabelLayer *label_layer,
     trace_assert(camera);
     trace_assert(label_layer->selected >= 0);
 
-
     switch (event->type) {
     case SDL_KEYDOWN: {
-        if (event->key.keysym.sym == SDLK_RETURN) {
+        switch (event->key.keysym.sym) {
+        case SDLK_RETURN: {
             char *id =
                 (char*)dynarray_data(label_layer->ids) + label_layer->selected * LABEL_LAYER_ID_MAX_SIZE;
             memset(id, 0, LABEL_LAYER_ID_MAX_SIZE);
@@ -516,10 +514,16 @@ int label_layer_edit_id_event(LabelLayer *label_layer,
             label_layer->state = LABEL_LAYER_IDLE;
             SDL_StopTextInput();
             return 0;
+        } break;
+
+        case SDLK_ESCAPE: {
+            label_layer->state = LABEL_LAYER_IDLE;
+            SDL_StopTextInput();
+            return 0;
+        } break;
         }
     } break;
     }
-
 
     return edit_field_event(label_layer->edit_field, event);
 }
