@@ -16,6 +16,8 @@
 #include "./color_picker.h"
 
 #define POINT_LAYER_ELEMENT_RADIUS 10.0f
+#define POINT_LAYER_ID_TEXT_SIZE vec(2.0f, 2.0f)
+#define POINT_LAYER_ID_TEXT_COLOR COLOR_BLACK
 
 typedef enum {
     POINT_LAYER_IDLE = 0,
@@ -26,6 +28,7 @@ struct PointLayer
 {
     Lt *lt;
     PointLayerState state;
+    // TODO: PointLayer.points should be called PointLayer.positions
     Dynarray/*<Point>*/ *points;
     Dynarray/*<Color>*/ *colors;
     Dynarray/*<char[ID_MAX_SIZE]>*/ *ids;
@@ -140,6 +143,7 @@ int point_layer_render(const PointLayer *point_layer,
     const int n = (int) dynarray_count(point_layer->points);
     Point *points = dynarray_data(point_layer->points);
     Color *colors = dynarray_data(point_layer->colors);
+    char *ids = dynarray_data(point_layer->ids);
 
     for (int i = 0; i < n; ++i) {
         const Triangle t = triangle_mat3x3_product(
@@ -162,13 +166,22 @@ int point_layer_render(const PointLayer *point_layer,
             if (camera_fill_triangle(camera, t0, color_invert(color)) < 0) {
                 return -1;
             }
+
+            // TODO: PointLayer id text should not be rendering in id editing state
+            if (camera_render_text(
+                    camera,
+                    ids + ID_MAX_SIZE * i,
+                    POINT_LAYER_ID_TEXT_SIZE,
+                    POINT_LAYER_ID_TEXT_COLOR,
+                    points[i]) < 0) {
+                return -1;
+            }
         }
 
         if (camera_fill_triangle(camera, t, color) < 0) {
             return -1;
         }
 
-        /* TODO(#854): The ids of PointLayer are not displayed constantly */
     }
 
     if (point_layer->state == POINT_LAYER_EDIT_ID) {
