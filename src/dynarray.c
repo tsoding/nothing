@@ -153,4 +153,4 @@ int dynarray_push_empty(Dynarray *dynarray)
     return 0;
 }
 
-// TODO: dynarray_push and dynarray_push_empty have duplicate codez
+// TODO(#980): dynarray_push and dynarray_push_empty have duplicate codez
