@@ -270,16 +270,24 @@ int label_layer_element_at(LabelLayer *label_layer,
     trace_assert(label_layer);
 
     const size_t n = dynarray_count(label_layer->texts);
+    char *ids = dynarray_data(label_layer->ids);
     char *texts = dynarray_data(label_layer->texts);
     Point *positions = dynarray_data(label_layer->positions);
 
     for (size_t i = 0; i < n; ++i) {
-        // TODO: the boundary of label_layer_element_at does not include the id
-        Rect boundary = sprite_font_boundary_box(
-            font,
-            positions[i],
-            LABELS_SIZE,
-            texts + i * LABEL_LAYER_TEXT_MAX_SIZE);
+        Rect boundary = rect_boundary2(
+            sprite_font_boundary_box(
+                font,
+                positions[i],
+                LABELS_SIZE,
+                texts + i * LABEL_LAYER_TEXT_MAX_SIZE),
+            sprite_font_boundary_box(
+                font,
+                vec_sub(
+                    positions[i],
+                    vec(0.0f, FONT_CHAR_HEIGHT)),
+                vec(1.0f, 1.0f),
+                ids + i * LABEL_LAYER_ID_MAX_SIZE));
 
         if (rect_contains_point(boundary, position)) {
             return (int) i;
