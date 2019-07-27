@@ -289,6 +289,17 @@ int label_layer_element_at(LabelLayer *label_layer,
 }
 
 static
+void label_layer_delete_nth_label(LabelLayer *label_layer,
+                                  size_t i)
+{
+    trace_assert(label_layer);
+    dynarray_delete_at(label_layer->ids, i);
+    dynarray_delete_at(label_layer->positions, i);
+    dynarray_delete_at(label_layer->colors, i);
+    dynarray_delete_at(label_layer->texts, i);
+}
+
+static
 int label_layer_idle_event(LabelLayer *label_layer,
                            const SDL_Event *event,
                            const Camera *camera)
@@ -355,6 +366,14 @@ int label_layer_idle_event(LabelLayer *label_layer,
                     vec(1.0f, 1.0f),
                     color_invert(colors[label_layer->selected]));
                 SDL_StartTextInput();
+            }
+        } break;
+
+        case SDLK_DELETE: {
+            if (label_layer->selected >= 0) {
+                label_layer_delete_nth_label(
+                    label_layer,
+                    (size_t) label_layer->selected);
             }
         } break;
         }
