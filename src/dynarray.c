@@ -122,3 +122,35 @@ void dynarray_delete_at(Dynarray *dynarray, size_t index)
         dynarray->element_size * (dynarray->count - index - 1));
     dynarray->count--;
 }
+
+int dynarray_push_empty(Dynarray *dynarray)
+{
+    trace_assert(dynarray);
+
+    if (dynarray->count >= dynarray->capacity) {
+        void *new_data = nth_realloc(
+            dynarray->data,
+            dynarray->capacity * dynarray->element_size * 2);
+        if (new_data == NULL) {
+            return -1;
+        }
+
+        dynarray->data = REPLACE_LT(dynarray->lt, dynarray->data, new_data);
+        if (dynarray->data == NULL) {
+            return -1;
+        }
+
+        dynarray->capacity *= 2;
+    }
+
+    memset(
+        (char*) dynarray->data + dynarray->count * dynarray->element_size,
+        0,
+        dynarray->element_size);
+
+    dynarray->count++;
+
+    return 0;
+}
+
+// TODO(#980): dynarray_push and dynarray_push_empty have duplicate codez
