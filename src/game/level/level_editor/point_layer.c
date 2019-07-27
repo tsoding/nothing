@@ -76,8 +76,8 @@ PointLayer *create_point_layer(void)
     point_layer->edit_field = PUSH_LT(
         lt,
         create_edit_field(
-            vec(5.0f, 5.0f),
-            rgba(0.0f, 0.0f, 0.0f, 1.0f)),
+            POINT_LAYER_ID_TEXT_SIZE,
+            POINT_LAYER_ID_TEXT_COLOR),
         destroy_edit_field);
     if (point_layer->edit_field == NULL) {
         RETURN_LT(lt, NULL);
@@ -186,10 +186,10 @@ int point_layer_render(const PointLayer *point_layer,
 
     if (point_layer->state == POINT_LAYER_EDIT_ID) {
         /* TODO(#855): PointLayer edit field is not scaled on zoom */
-        if (edit_field_render_screen(
+        if (edit_field_render_world(
                 point_layer->edit_field,
                 camera,
-                camera_point(camera, positions[point_layer->selected])) < 0) {
+                positions[point_layer->selected]) < 0) {
             return -1;
         }
     }
