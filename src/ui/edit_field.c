@@ -225,6 +225,7 @@ void edit_field_replace(Edit_field *edit_field, const char *text)
         return;
     }
 
+    // TODO: edit_field_replace should probably use memcpy
     size_t n = strlen(text);
     for (size_t i = 0; i < n; ++i) {
         edit_field_insert_char(edit_field, text[i]);

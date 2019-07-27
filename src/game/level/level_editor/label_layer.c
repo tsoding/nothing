@@ -274,6 +274,7 @@ int label_layer_element_at(LabelLayer *label_layer,
     Point *positions = dynarray_data(label_layer->positions);
 
     for (size_t i = 0; i < n; ++i) {
+        // TODO: the boundary of label_layer_element_at does not include the id
         Rect boundary = sprite_font_boundary_box(
             font,
             positions[i],
@@ -297,6 +298,30 @@ void label_layer_delete_nth_label(LabelLayer *label_layer,
     dynarray_delete_at(label_layer->positions, i);
     dynarray_delete_at(label_layer->colors, i);
     dynarray_delete_at(label_layer->texts, i);
+}
+
+static
+int label_layer_add_label(LabelLayer *label_layer,
+                           Point position,
+                           Color color)
+{
+    trace_assert(label_layer);
+
+    // TODO: id generation code is duplicated
+    char id[LABEL_LAYER_ID_MAX_SIZE];
+    for (size_t i = 0; i < LABEL_LAYER_ID_MAX_SIZE - 1; ++i) {
+        id[i] = (char) ('a' + rand() % ('z' - 'a' + 1));
+    }
+    id[LABEL_LAYER_ID_MAX_SIZE - 1] = '\0';
+
+    size_t n = dynarray_count(label_layer->ids);
+
+    dynarray_push(label_layer->ids, id);
+    dynarray_push(label_layer->positions, &position);
+    dynarray_push(label_layer->colors, &color);
+    dynarray_push_empty(label_layer->texts);
+
+    return (int) n;
 }
 
 static
@@ -334,6 +359,21 @@ int label_layer_idle_event(LabelLayer *label_layer,
 
                 label_layer->color_picker =
                     create_color_picker_from_rgba(colors[element]);
+            } else {
+                label_layer->selected = label_layer_add_label(
+                    label_layer,
+                    position,
+                    color_picker_rgba(
+                        &label_layer->color_picker));
+                label_layer->state = LABEL_LAYER_EDIT_TEXT;
+                edit_field_replace(
+                    label_layer->edit_field,
+                    texts + label_layer->selected * LABEL_LAYER_TEXT_MAX_SIZE);
+                edit_field_restyle(
+                    label_layer->edit_field,
+                    LABELS_SIZE,
+                    colors[label_layer->selected]);
+                SDL_StartTextInput();
             }
         } break;
         }
@@ -369,6 +409,7 @@ int label_layer_idle_event(LabelLayer *label_layer,
             }
         } break;
 
+        // TODO: label is not deselected after deletion
         case SDLK_DELETE: {
             if (label_layer->selected >= 0) {
                 label_layer_delete_nth_label(
@@ -416,6 +457,8 @@ int label_layer_move_event(LabelLayer *label_layer,
 
     return 0;
 }
+
+// TODO: LabelLayer does not support cancelling the editing of ids and texts
 
 static
 int label_layer_edit_text_event(LabelLayer *label_layer,
