@@ -315,7 +315,7 @@ int label_layer_add_label(LabelLayer *label_layer,
 {
     trace_assert(label_layer);
 
-    // TODO: id generation code is duplicated in label_layer, point_layer and rect_layer
+    // TODO(#982): id generation code is duplicated in label_layer, point_layer and rect_layer
     char id[LABEL_LAYER_ID_MAX_SIZE];
     for (size_t i = 0; i < LABEL_LAYER_ID_MAX_SIZE - 1; ++i) {
         id[i] = (char) ('a' + rand() % ('z' - 'a' + 1));
