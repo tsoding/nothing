@@ -22,7 +22,8 @@
 // TODO(#985): PointLayer cannot move its points
 typedef enum {
     POINT_LAYER_IDLE = 0,
-    POINT_LAYER_EDIT_ID
+    POINT_LAYER_EDIT_ID,
+    POINT_LAYER_MOVE
 } PointLayerState;
 
 struct PointLayer
@@ -167,7 +168,7 @@ int point_layer_render(const PointLayer *point_layer,
                 return -1;
             }
 
-            if (point_layer->state == POINT_LAYER_IDLE &&
+            if (point_layer->state != POINT_LAYER_EDIT_ID &&
                 camera_render_text(
                     camera,
                     ids + ID_MAX_SIZE * i,
@@ -203,6 +204,54 @@ int point_layer_render(const PointLayer *point_layer,
 }
 
 static
+int point_layer_element_at(const PointLayer *point_layer,
+                           Point position)
+{
+    trace_assert(point_layer);
+
+    int n = (int) dynarray_count(point_layer->positions);
+    Point *positions = dynarray_data(point_layer->positions);
+
+    for (int i = 0; i < n; ++i) {
+        if (vec_length(vec_sub(positions[i], position)) < POINT_LAYER_ELEMENT_RADIUS) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+static
+int point_layer_add_element(PointLayer *point_layer,
+                            Point position,
+                            Color color)
+{
+    trace_assert(point_layer);
+
+    char id[ID_MAX_SIZE];
+    for (size_t i = 0; i < ID_MAX_SIZE - 1; ++i) {
+        id[i] = (char) ('a' + rand() % ('z' - 'a' + 1));
+    }
+    id[ID_MAX_SIZE - 1] = '\0';
+
+    dynarray_push(point_layer->positions, &position);
+    dynarray_push(point_layer->colors, &color);
+    dynarray_push(point_layer->ids, id);
+
+    return 0;
+}
+
+static
+void point_layer_delete_nth_element(PointLayer *point_layer,
+                                    size_t i)
+{
+    trace_assert(point_layer);
+    dynarray_delete_at(point_layer->positions, i);
+    dynarray_delete_at(point_layer->colors, i);
+    dynarray_delete_at(point_layer->ids, i);
+}
+
+static
 int point_layer_idle_event(PointLayer *point_layer,
                            const SDL_Event *event,
                            const Camera *camera)
@@ -227,28 +276,17 @@ int point_layer_idle_event(PointLayer *point_layer,
     case SDL_MOUSEBUTTONDOWN: {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
-            const int n = (int) dynarray_count(point_layer->positions);
-            const Point *positions = dynarray_data(point_layer->positions);
-            const Point point = camera_map_screen(camera, event->button.x, event->button.y);
+            const Point position = camera_map_screen(camera, event->button.x, event->button.y);
             const Color color = color_picker_rgba(&point_layer->color_picker);
 
-            for (int i = 0; i < n; ++i) {
-                if (vec_length(vec_sub(positions[i], point)) < POINT_LAYER_ELEMENT_RADIUS) {
-                    point_layer->selected = i;
-                    return 0;
-                }
+            point_layer->selected = point_layer_element_at(
+                point_layer, position);
+
+            if (point_layer->selected < 0) {
+                point_layer_add_element(point_layer, position, color);
+            } else {
+                point_layer->state = POINT_LAYER_MOVE;
             }
-
-            char id[ID_MAX_SIZE];
-
-            for (size_t i = 0; i < ID_MAX_SIZE - 1; ++i) {
-                id[i] = (char) ('a' + rand() % ('z' - 'a' + 1));
-            }
-            id[ID_MAX_SIZE - 1] = '\0';
-
-            dynarray_push(point_layer->positions, &point);
-            dynarray_push(point_layer->colors, &color);
-            dynarray_push(point_layer->ids, id);
         } break;
         }
     } break;
@@ -257,11 +295,9 @@ int point_layer_idle_event(PointLayer *point_layer,
         switch (event->key.keysym.sym) {
         case SDLK_DELETE: {
             if (0 <= point_layer->selected && point_layer->selected < (int) dynarray_count(point_layer->positions)) {
-                dynarray_delete_at(point_layer->positions, (size_t) point_layer->selected);
-                dynarray_delete_at(point_layer->colors, (size_t) point_layer->selected);
-                dynarray_delete_at(point_layer->ids, (size_t) point_layer->selected);
+                point_layer_delete_nth_element(point_layer, (size_t)point_layer->selected);
+                point_layer->selected = -1;
             }
-            point_layer->selected = -1;
         } break;
 
         case SDLK_F2: {
@@ -316,6 +352,35 @@ int point_layer_edit_id_event(PointLayer *point_layer,
     return edit_field_event(point_layer->edit_field, event);
 }
 
+static
+int point_layer_move_event(PointLayer *point_layer,
+                           const SDL_Event *event,
+                           const Camera *camera)
+{
+    trace_assert(point_layer);
+    trace_assert(event);
+    trace_assert(camera);
+    trace_assert(point_layer->selected >= 0);
+
+    switch (event->type) {
+    case SDL_MOUSEBUTTONUP: {
+        switch (event->button.button) {
+        case SDL_BUTTON_LEFT: {
+            point_layer->state = POINT_LAYER_IDLE;
+        } break;
+        }
+    } break;
+
+    case SDL_MOUSEMOTION: {
+        Point *positions = dynarray_data(point_layer->positions);
+        positions[point_layer->selected] =
+            camera_map_screen(camera, event->motion.x, event->motion.y);
+    } break;
+    }
+
+    return 0;
+}
+
 int point_layer_event(PointLayer *point_layer,
                       const SDL_Event *event,
                       const Camera *camera)
@@ -330,6 +395,9 @@ int point_layer_event(PointLayer *point_layer,
 
     case POINT_LAYER_EDIT_ID:
         return point_layer_edit_id_event(point_layer, event, camera);
+
+    case POINT_LAYER_MOVE:
+        return point_layer_move_event(point_layer, event, camera);
     }
 
     return 0;
