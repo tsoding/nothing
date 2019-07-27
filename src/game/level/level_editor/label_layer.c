@@ -458,8 +458,6 @@ int label_layer_move_event(LabelLayer *label_layer,
     return 0;
 }
 
-// TODO: LabelLayer does not support cancelling the editing of ids and texts
-
 static
 int label_layer_edit_text_event(LabelLayer *label_layer,
                                 const SDL_Event *event,
@@ -472,19 +470,30 @@ int label_layer_edit_text_event(LabelLayer *label_layer,
 
     switch (event->type) {
     case SDL_KEYDOWN: {
-        if (event->key.keysym.sym == SDLK_RETURN) {
+        switch (event->key.keysym.sym) {
+        case SDLK_RETURN: {
             char *text =
                 (char*)dynarray_data(label_layer->texts) + label_layer->selected * LABEL_LAYER_TEXT_MAX_SIZE;
             memset(text, 0, LABEL_LAYER_TEXT_MAX_SIZE);
             memcpy(text, edit_field_as_text(label_layer->edit_field), LABEL_LAYER_TEXT_MAX_SIZE - 1);
             label_layer->state = LABEL_LAYER_IDLE;
+            SDL_StopTextInput();
             return 0;
+        } break;
+
+        case SDLK_ESCAPE: {
+            label_layer->state = LABEL_LAYER_IDLE;
+            SDL_StopTextInput();
+            return 0;
+        } break;
         }
     } break;
     }
 
     return edit_field_event(label_layer->edit_field, event);
 }
+
+// TODO: LabelLayer does not support cancelling the editing of ids
 
 static
 int label_layer_edit_id_event(LabelLayer *label_layer,
@@ -505,6 +514,7 @@ int label_layer_edit_id_event(LabelLayer *label_layer,
             memset(id, 0, LABEL_LAYER_ID_MAX_SIZE);
             memcpy(id, edit_field_as_text(label_layer->edit_field), LABEL_LAYER_ID_MAX_SIZE - 1);
             label_layer->state = LABEL_LAYER_IDLE;
+            SDL_StopTextInput();
             return 0;
         }
     } break;
