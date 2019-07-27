@@ -30,7 +30,7 @@ typedef enum Cue_state {
 struct Goals {
     Lt *lt;
     char **ids;
-    Point *points;
+    Point *positions;
     Color *colors;
     Cue_state *cue_states;
     bool *visible;
@@ -73,8 +73,8 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
         }
     }
 
-    goals->points = PUSH_LT(lt, nth_calloc(1, sizeof(Point) * goals->count), free);
-    if (goals->points == NULL) {
+    goals->positions = PUSH_LT(lt, nth_calloc(1, sizeof(Point) * goals->count), free);
+    if (goals->positions == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -99,8 +99,8 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
                 line_stream_next(line_stream),
                 "%" STRINGIFY(GOAL_MAX_ID_SIZE) "s%f%f%6s",
                 goals->ids[i],
-                &goals->points[i].x,
-                &goals->points[i].y,
+                &goals->positions[i].x,
+                &goals->positions[i].y,
                 color) < 0) {
             log_fail("Could not read %dth goal\n", i);
             RETURN_LT(lt, NULL);
@@ -143,8 +143,8 @@ Goals *create_goals_from_point_layer(const PointLayer *point_layer)
         }
     }
 
-    goals->points = PUSH_LT(lt, nth_calloc(1, sizeof(Point) * goals->count), free);
-    if (goals->points == NULL) {
+    goals->positions = PUSH_LT(lt, nth_calloc(1, sizeof(Point) * goals->count), free);
+    if (goals->positions == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -163,13 +163,13 @@ Goals *create_goals_from_point_layer(const PointLayer *point_layer)
         RETURN_LT(lt, NULL);
     }
 
-    const Point *points = point_layer_points(point_layer);
+    const Point *positions = point_layer_positions(point_layer);
     const Color *colors = point_layer_colors(point_layer);
     const char *ids = point_layer_ids(point_layer);
 
     // TODO(#835): we could use memcpy in create_goals_from_point_layer
     for (size_t i = 0; i < goals->count; ++i) {
-        goals->points[i] = points[i];
+        goals->positions[i] = positions[i];
         goals->colors[i] = colors[i];
         memcpy(goals->ids[i], ids + ID_MAX_SIZE * i, ID_MAX_SIZE);
         goals->cue_states[i] = CUE_STATE_VIRGIN;
@@ -196,7 +196,7 @@ static int goals_render_core(const Goals *goals,
     trace_assert(camera);
 
     const Point position = vec_sum(
-        goals->points[goal_index],
+        goals->positions[goal_index],
         vec(0.0f, sinf(goals->angle) * 10.0f));
 
     if (camera_fill_triangle(
@@ -276,14 +276,14 @@ void goals_cue(Goals *goals,
     for (size_t i = 0; i < goals->count; ++i) {
         switch (goals->cue_states[i]) {
         case CUE_STATE_VIRGIN:
-            if (goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, goals->points[i])) {
+            if (goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, goals->positions[i])) {
                 goals->cue_states[i] = CUE_STATE_HIT_NOTHING;
             }
 
             break;
 
         case CUE_STATE_SEEN_NOTHING:
-            if (!goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, goals->points[i])) {
+            if (!goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, goals->positions[i])) {
                 goals->cue_states[i] = CUE_STATE_VIRGIN;
             }
             break;
@@ -301,7 +301,7 @@ void goals_checkpoint(const Goals *goals,
 
     for (size_t i = 0; i < goals->count; ++i) {
         if (goals->cue_states[i] == CUE_STATE_HIT_NOTHING) {
-            player_checkpoint(player, goals->points[i]);
+            player_checkpoint(player, goals->positions[i]);
         }
     }
 }

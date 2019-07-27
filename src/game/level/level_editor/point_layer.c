@@ -29,8 +29,7 @@ struct PointLayer
 {
     Lt *lt;
     PointLayerState state;
-    // TODO: PointLayer.points should be called PointLayer.positions
-    Dynarray/*<Point>*/ *points;
+    Dynarray/*<Point>*/ *positions;
     Dynarray/*<Color>*/ *colors;
     Dynarray/*<char[ID_MAX_SIZE]>*/ *ids;
     Edit_field *edit_field;
@@ -59,8 +58,8 @@ PointLayer *create_point_layer(void)
 
     point_layer->state = POINT_LAYER_IDLE;
 
-    point_layer->points = PUSH_LT(lt, create_dynarray(sizeof(Point)), destroy_dynarray);
-    if (point_layer->points == NULL) {
+    point_layer->positions = PUSH_LT(lt, create_dynarray(sizeof(Point)), destroy_dynarray);
+    if (point_layer->positions == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -117,7 +116,7 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
         const Point point = vec(x, y);
 
         dynarray_push(point_layer->colors, &color);
-        dynarray_push(point_layer->points, &point);
+        dynarray_push(point_layer->positions, &point);
         dynarray_push(point_layer->ids, id);
     }
 
@@ -141,8 +140,8 @@ int point_layer_render(const PointLayer *point_layer,
     trace_assert(point_layer);
     trace_assert(camera);
 
-    const int n = (int) dynarray_count(point_layer->points);
-    Point *points = dynarray_data(point_layer->points);
+    const int n = (int) dynarray_count(point_layer->positions);
+    Point *positions = dynarray_data(point_layer->positions);
     Color *colors = dynarray_data(point_layer->colors);
     char *ids = dynarray_data(point_layer->ids);
 
@@ -150,7 +149,7 @@ int point_layer_render(const PointLayer *point_layer,
         const Triangle t = triangle_mat3x3_product(
             equilateral_triangle(),
             mat3x3_product(
-                trans_mat(points[i].x, points[i].y),
+                trans_mat(positions[i].x, positions[i].y),
                 scale_mat(POINT_LAYER_ELEMENT_RADIUS)));
 
         const Color color = color_scale(
@@ -161,7 +160,7 @@ int point_layer_render(const PointLayer *point_layer,
             const Triangle t0 = triangle_mat3x3_product(
                 equilateral_triangle(),
                 mat3x3_product(
-                    trans_mat(points[i].x, points[i].y),
+                    trans_mat(positions[i].x, positions[i].y),
                     scale_mat(15.0f)));
 
             if (camera_fill_triangle(camera, t0, color_invert(color)) < 0) {
@@ -174,7 +173,7 @@ int point_layer_render(const PointLayer *point_layer,
                     ids + ID_MAX_SIZE * i,
                     POINT_LAYER_ID_TEXT_SIZE,
                     POINT_LAYER_ID_TEXT_COLOR,
-                    points[i]) < 0) {
+                    positions[i]) < 0) {
                 return -1;
             }
         }
@@ -190,7 +189,7 @@ int point_layer_render(const PointLayer *point_layer,
         if (edit_field_render_screen(
                 point_layer->edit_field,
                 camera,
-                camera_point(camera, points[point_layer->selected])) < 0) {
+                camera_point(camera, positions[point_layer->selected])) < 0) {
             return -1;
         }
     }
@@ -228,13 +227,13 @@ int point_layer_idle_event(PointLayer *point_layer,
     case SDL_MOUSEBUTTONDOWN: {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
-            const int n = (int) dynarray_count(point_layer->points);
-            const Point *points = dynarray_data(point_layer->points);
+            const int n = (int) dynarray_count(point_layer->positions);
+            const Point *positions = dynarray_data(point_layer->positions);
             const Point point = camera_map_screen(camera, event->button.x, event->button.y);
             const Color color = color_picker_rgba(&point_layer->color_picker);
 
             for (int i = 0; i < n; ++i) {
-                if (vec_length(vec_sub(points[i], point)) < POINT_LAYER_ELEMENT_RADIUS) {
+                if (vec_length(vec_sub(positions[i], point)) < POINT_LAYER_ELEMENT_RADIUS) {
                     point_layer->selected = i;
                     return 0;
                 }
@@ -247,7 +246,7 @@ int point_layer_idle_event(PointLayer *point_layer,
             }
             id[ID_MAX_SIZE - 1] = '\0';
 
-            dynarray_push(point_layer->points, &point);
+            dynarray_push(point_layer->positions, &point);
             dynarray_push(point_layer->colors, &color);
             dynarray_push(point_layer->ids, id);
         } break;
@@ -257,8 +256,8 @@ int point_layer_idle_event(PointLayer *point_layer,
     case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
         case SDLK_DELETE: {
-            if (0 <= point_layer->selected && point_layer->selected < (int) dynarray_count(point_layer->points)) {
-                dynarray_delete_at(point_layer->points, (size_t) point_layer->selected);
+            if (0 <= point_layer->selected && point_layer->selected < (int) dynarray_count(point_layer->positions)) {
+                dynarray_delete_at(point_layer->positions, (size_t) point_layer->selected);
                 dynarray_delete_at(point_layer->colors, (size_t) point_layer->selected);
                 dynarray_delete_at(point_layer->ids, (size_t) point_layer->selected);
             }
@@ -339,13 +338,13 @@ int point_layer_event(PointLayer *point_layer,
 size_t point_layer_count(const PointLayer *point_layer)
 {
     trace_assert(point_layer);
-    return dynarray_count(point_layer->points);
+    return dynarray_count(point_layer->positions);
 }
 
-const Point *point_layer_points(const PointLayer *point_layer)
+const Point *point_layer_positions(const PointLayer *point_layer)
 {
     trace_assert(point_layer);
-    return dynarray_data(point_layer->points);
+    return dynarray_data(point_layer->positions);
 }
 
 const Color *point_layer_colors(const PointLayer *point_layer)
@@ -368,14 +367,14 @@ int point_layer_dump_stream(const PointLayer *point_layer,
 
     size_t n = dynarray_count(point_layer->ids);
     char *ids = dynarray_data(point_layer->ids);
-    Point *points = dynarray_data(point_layer->points);
+    Point *positions = dynarray_data(point_layer->positions);
     Color *colors = dynarray_data(point_layer->colors);
 
     fprintf(filedump, "%zd\n", n);
     for (size_t i = 0; i < n; ++i) {
         fprintf(filedump, "%s %f %f ",
                 ids + ID_MAX_SIZE * i,
-                points[i].x, points[i].y);
+                positions[i].x, positions[i].y);
         color_hex_to_stream(colors[i], filedump);
         fprintf(filedump, "\n");
     }
