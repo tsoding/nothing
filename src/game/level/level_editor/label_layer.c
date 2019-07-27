@@ -417,12 +417,12 @@ int label_layer_idle_event(LabelLayer *label_layer,
             }
         } break;
 
-        // TODO: label is not deselected after deletion
         case SDLK_DELETE: {
             if (label_layer->selected >= 0) {
                 label_layer_delete_nth_label(
                     label_layer,
                     (size_t) label_layer->selected);
+                label_layer->selected = -1;
             }
         } break;
         }
