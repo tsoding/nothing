@@ -553,10 +553,13 @@ int label_layer_event(LabelLayer *label_layer,
         return -1;
     }
 
-    if (changed && label_layer->selected >= 0) {
-        Color *colors = dynarray_data(label_layer->colors);
-        colors[label_layer->selected] =
-            color_picker_rgba(&label_layer->color_picker);
+    if (changed) {
+        if (label_layer->selected >= 0) {
+            Color *colors = dynarray_data(label_layer->colors);
+            colors[label_layer->selected] =
+                color_picker_rgba(&label_layer->color_picker);
+        }
+        return 0;
     }
 
     switch (label_layer->state) {
