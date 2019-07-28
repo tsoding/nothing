@@ -357,7 +357,7 @@ int level_editor_event(LevelEditor *level_editor,
                     free);
                 level_editor_dump(level_editor);
                 SDL_StopTextInput();
-                level_editor->state = LEVEL_EDITOR_EDITING;
+                level_editor->state = LEVEL_EDITOR_IDLE;
                 return 0;
             }
         } break;

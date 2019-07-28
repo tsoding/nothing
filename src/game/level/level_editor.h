@@ -12,7 +12,7 @@ typedef struct LabelLayer LabelLayer;
 typedef struct Edit_field Edit_field;
 
 typedef enum {
-    LEVEL_EDITOR_EDITING = 0,
+    LEVEL_EDITOR_IDLE = 0,
     LEVEL_EDITOR_SAVEAS
 } LevelEditorState;
 
