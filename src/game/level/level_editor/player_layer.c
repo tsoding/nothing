@@ -39,12 +39,6 @@ PlayerLayer create_player_layer_from_line_stream(LineStream *line_stream)
     return create_player_layer(position, hexstr(colorstr));
 }
 
-void destroy_player_layer(PlayerLayer *player_layer)
-{
-    trace_assert(player_layer);
-    destroy_lt(player_layer->lt);
-}
-
 LayerPtr player_layer_as_layer(PlayerLayer *player_layer)
 {
     LayerPtr layer = {

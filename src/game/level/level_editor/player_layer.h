@@ -13,7 +13,6 @@ typedef struct {
 
 PlayerLayer create_player_layer(Vec position, Color color);
 PlayerLayer create_player_layer_from_line_stream(LineStream *line_stream);
-void destroy_player_layer(PlayerLayer *player_layer);
 
 LayerPtr player_layer_as_layer(PlayerLayer *player_layer);
 int player_layer_render(const PlayerLayer *player_layer,
