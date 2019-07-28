@@ -56,13 +56,8 @@ LevelEditor *create_level_editor(void)
 
     level_editor->background_layer = create_color_picker_from_rgba(hexstr("fffda5"));
 
-    level_editor->player_layer = PUSH_LT(
-        lt,
-        create_player_layer(vec(0.0f, 0.0f), hexstr("ff8080")),
-        destroy_player_layer);
-    if (level_editor->player_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    level_editor->player_layer =
+        create_player_layer(vec(0.0f, 0.0f), hexstr("ff8080"));
 
     level_editor->platforms_layer = PUSH_LT(
         lt,
@@ -127,7 +122,7 @@ LevelEditor *create_level_editor(void)
     level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
     level_editor->layers[LAYER_PICKER_BACK_PLATFORMS] = rect_layer_as_layer(level_editor->back_platforms_layer);
     level_editor->layers[LAYER_PICKER_GOALS] = point_layer_as_layer(level_editor->goals_layer);
-    level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(level_editor->player_layer);
+    level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(&level_editor->player_layer);
     level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(level_editor->lava_layer);
     level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(level_editor->regions_layer);
     level_editor->layers[LAYER_PICKER_BACKGROUND] = color_picker_as_layer(&level_editor->background_layer);
@@ -194,13 +189,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     }
 
     level_editor->player_layer =
-        PUSH_LT(
-            lt,
-            create_player_layer_from_line_stream(level_stream),
-            destroy_player_layer);
-    if (level_editor->player_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+        create_player_layer_from_line_stream(level_stream);
 
     level_editor->platforms_layer =
         PUSH_LT(
@@ -277,7 +266,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
     level_editor->layers[LAYER_PICKER_BACK_PLATFORMS] = rect_layer_as_layer(level_editor->back_platforms_layer);
     level_editor->layers[LAYER_PICKER_GOALS] = point_layer_as_layer(level_editor->goals_layer);
-    level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(level_editor->player_layer);
+    level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(&level_editor->player_layer);
     level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(level_editor->lava_layer);
     level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(level_editor->regions_layer);
     level_editor->layers[LAYER_PICKER_BACKGROUND] = color_picker_as_layer(&level_editor->background_layer);

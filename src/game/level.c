@@ -83,7 +83,7 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor,
     level->player = PUSH_LT(
         lt,
         create_player_from_player_layer(
-            level_editor->player_layer,
+            &level_editor->player_layer,
             level->rigid_bodies,
             broadcast),
         destroy_player);

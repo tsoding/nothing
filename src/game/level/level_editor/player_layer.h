@@ -7,13 +7,12 @@
 #include "system/line_stream.h"
 
 typedef struct {
-    Lt *lt;
     Vec position;
     ColorPicker color_picker;
 } PlayerLayer;
 
-PlayerLayer *create_player_layer(Vec position, Color color);
-PlayerLayer *create_player_layer_from_line_stream(LineStream *line_stream);
+PlayerLayer create_player_layer(Vec position, Color color);
+PlayerLayer create_player_layer_from_line_stream(LineStream *line_stream);
 void destroy_player_layer(PlayerLayer *player_layer);
 
 LayerPtr player_layer_as_layer(PlayerLayer *player_layer);

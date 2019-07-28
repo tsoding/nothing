@@ -30,7 +30,7 @@ struct LevelEditor
     RectLayer *platforms_layer;
     RectLayer *back_platforms_layer;
     PointLayer *goals_layer;
-    PlayerLayer *player_layer;
+    PlayerLayer player_layer;
     RectLayer *lava_layer;
     RectLayer *regions_layer;
     ColorPicker background_layer;
