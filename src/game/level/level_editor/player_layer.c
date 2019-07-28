@@ -62,7 +62,7 @@ int player_layer_render(const PlayerLayer *player_layer,
                 vec(25.0f, 25.0f)),
             color_scale(
                 color_picker_rgba(&player_layer->color_picker),
-                rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.0f))) < 0) {
+                rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f))) < 0) {
         return -1;
     }
 
