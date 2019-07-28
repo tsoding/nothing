@@ -8,50 +8,35 @@
 #include "system/nth_alloc.h"
 #include "system/log.h"
 
-PlayerLayer *create_player_layer(Vec position, Color color)
+PlayerLayer create_player_layer(Vec position, Color color)
 {
-    Lt *lt = create_lt();
-
-    PlayerLayer *player_layer = PUSH_LT(lt, nth_calloc(1, sizeof(PlayerLayer)), free);
-    player_layer->lt = lt;
-
-    player_layer->position = position;
-    player_layer->color_picker = create_color_picker_from_rgba(color);
-
-    return player_layer;
+    return (PlayerLayer) {
+        .position = position,
+        .color_picker = create_color_picker_from_rgba(color),
+    };
 }
 
-PlayerLayer *create_player_layer_from_line_stream(LineStream *line_stream)
+PlayerLayer create_player_layer_from_line_stream(LineStream *line_stream)
 {
     trace_assert(line_stream);
 
-    PlayerLayer *player_layer = create_player_layer(
-        vec(0.0f, 0.0f), COLOR_BLACK);
-
     const char *line = line_stream_next(line_stream);
-    if (line == NULL) {
-        log_fail("Could not read Player Layer\n");
-        RETURN_LT(player_layer->lt, NULL);
-    }
+    trace_assert(line);
 
-    char colorstr[7];
-    Point position;
-    if (sscanf(line,
-               "%f%f%6s",
-               &position.x,
-               &position.y,
-               colorstr) == EOF) {
-        log_fail("Could not read Player Layer\n");
-        RETURN_LT(player_layer->lt, NULL);
+    char colorstr[7] = "000000";
+    Point position = vec(0.0f, 0.0f);
+
+    const int bound =
+        sscanf(line, "%f%f%6s", &position.x, &position.y, colorstr);
+
+#define BOUND_EXPECTED 3
+    if (bound != BOUND_EXPECTED) {
+        log_fail("Could not read Player Layer properly. Parsed tokens: %d. Expected: %d\n",
+                 bound, BOUND_EXPECTED);
     }
+#undef BOUND_EXPECTED
 
     return create_player_layer(position, hexstr(colorstr));
-}
-
-void destroy_player_layer(PlayerLayer *player_layer)
-{
-    trace_assert(player_layer);
-    destroy_lt(player_layer->lt);
 }
 
 LayerPtr player_layer_as_layer(PlayerLayer *player_layer)
@@ -77,7 +62,7 @@ int player_layer_render(const PlayerLayer *player_layer,
                 vec(25.0f, 25.0f)),
             color_scale(
                 color_picker_rgba(&player_layer->color_picker),
-                rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.0f))) < 0) {
+                rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f))) < 0) {
         return -1;
     }
 
@@ -107,7 +92,7 @@ int player_layer_event(PlayerLayer *player_layer,
     }
 
     if (!selected &&
-        event->type == SDL_MOUSEBUTTONUP &&
+        event->type == SDL_MOUSEBUTTONDOWN &&
         event->button.button == SDL_BUTTON_LEFT) {
         player_layer->position =
             camera_map_screen(camera,

@@ -56,13 +56,8 @@ LevelEditor *create_level_editor(void)
 
     level_editor->background_layer = create_color_picker_from_rgba(hexstr("fffda5"));
 
-    level_editor->player_layer = PUSH_LT(
-        lt,
-        create_player_layer(vec(0.0f, 0.0f), hexstr("ff8080")),
-        destroy_player_layer);
-    if (level_editor->player_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    level_editor->player_layer =
+        create_player_layer(vec(0.0f, 0.0f), hexstr("ff8080"));
 
     level_editor->platforms_layer = PUSH_LT(
         lt,
@@ -127,7 +122,7 @@ LevelEditor *create_level_editor(void)
     level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
     level_editor->layers[LAYER_PICKER_BACK_PLATFORMS] = rect_layer_as_layer(level_editor->back_platforms_layer);
     level_editor->layers[LAYER_PICKER_GOALS] = point_layer_as_layer(level_editor->goals_layer);
-    level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(level_editor->player_layer);
+    level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(&level_editor->player_layer);
     level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(level_editor->lava_layer);
     level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(level_editor->regions_layer);
     level_editor->layers[LAYER_PICKER_BACKGROUND] = color_picker_as_layer(&level_editor->background_layer);
@@ -194,13 +189,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     }
 
     level_editor->player_layer =
-        PUSH_LT(
-            lt,
-            create_player_layer_from_line_stream(level_stream),
-            destroy_player_layer);
-    if (level_editor->player_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+        create_player_layer_from_line_stream(level_stream);
 
     level_editor->platforms_layer =
         PUSH_LT(
@@ -277,7 +266,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
     level_editor->layers[LAYER_PICKER_BACK_PLATFORMS] = rect_layer_as_layer(level_editor->back_platforms_layer);
     level_editor->layers[LAYER_PICKER_GOALS] = point_layer_as_layer(level_editor->goals_layer);
-    level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(level_editor->player_layer);
+    level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(&level_editor->player_layer);
     level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(level_editor->lava_layer);
     level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(level_editor->regions_layer);
     level_editor->layers[LAYER_PICKER_BACKGROUND] = color_picker_as_layer(&level_editor->background_layer);
@@ -346,6 +335,119 @@ int level_editor_render(const LevelEditor *level_editor,
     return 0;
 }
 
+static
+int level_editor_saveas_event(LevelEditor *level_editor,
+                              const SDL_Event *event,
+                              const Camera *camera)
+{
+    trace_assert(level_editor);
+    trace_assert(event);
+    trace_assert(camera);
+
+    switch (event->type) {
+    case SDL_KEYDOWN: {
+        if (event->key.keysym.sym == SDLK_RETURN) {
+            trace_assert(level_editor->file_name == NULL);
+            level_editor->file_name = PUSH_LT(
+                level_editor->lt,
+                string_duplicate(
+                    edit_field_as_text(
+                        level_editor->edit_field_filename),
+                    NULL),
+                free);
+            level_editor_dump(level_editor);
+            SDL_StopTextInput();
+            level_editor->state = LEVEL_EDITOR_IDLE;
+            return 0;
+        }
+    } break;
+    }
+
+    return edit_field_event(level_editor->edit_field_filename, event);
+}
+
+static
+int level_editor_idle_event(LevelEditor *level_editor,
+                            const SDL_Event *event,
+                            const Camera *camera)
+{
+    trace_assert(level_editor);
+    trace_assert(event);
+    trace_assert(camera);
+
+    switch (event->type) {
+    case SDL_KEYDOWN: {
+        switch(event-> key.keysym.sym) {
+        case SDLK_s: {
+            /* TODO(#903): There is no indication that the level is saved when you press S in Level Editor */
+            if (level_editor->file_name) {
+                level_editor_dump(level_editor);
+                log_info("Saving level to `%s`\n", level_editor->file_name);
+            } else {
+                SDL_StartTextInput();
+                level_editor->state = LEVEL_EDITOR_SAVEAS;
+            }
+        } break;
+        }
+    } break;
+
+    case SDL_MOUSEWHEEL: {
+        // TODO(#679): zooming in edit mode is not smooth enough
+        if (event->wheel.y > 0) {
+            level_editor->camera_scale += 0.1f;
+        } else if (event->wheel.y < 0) {
+            level_editor->camera_scale = fmaxf(0.1f, level_editor->camera_scale - 0.1f);
+        }
+    } break;
+
+    case SDL_MOUSEBUTTONUP:
+    case SDL_MOUSEBUTTONDOWN: {
+        if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_MIDDLE) {
+            level_editor->drag = true;
+        }
+
+        if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_MIDDLE) {
+            level_editor->drag = false;
+        }
+    } break;
+
+    case SDL_MOUSEMOTION: {
+        if (level_editor->drag) {
+            const Vec next_position = camera_map_screen(camera, event->motion.x, event->motion.y);
+            const Vec prev_position = camera_map_screen(
+                camera,
+                event->motion.x + event->motion.xrel,
+                event->motion.y + event->motion.yrel);
+
+            vec_add(&level_editor->camera_position,
+                    vec_sub(next_position, prev_position));
+        }
+
+    } break;
+    }
+
+    bool selected = false;
+    if (layer_picker_event(
+            &level_editor->layer_picker,
+            event,
+            camera,
+            &selected) < 0) {
+        return -1;
+    }
+
+    if (!selected) {
+        if (layer_event(
+                level_editor->layers[level_editor->layer_picker],
+                event,
+                camera) < 0) {
+            return -1;
+        }
+    }
+
+
+    return 0;
+}
+
 int level_editor_event(LevelEditor *level_editor,
                        const SDL_Event *event,
                        const Camera *camera)
@@ -354,96 +456,12 @@ int level_editor_event(LevelEditor *level_editor,
     trace_assert(event);
     trace_assert(camera);
 
-    if (level_editor->state == LEVEL_EDITOR_SAVEAS) {
-        switch (event->type) {
-        case SDL_KEYDOWN: {
-            if (event->key.keysym.sym == SDLK_RETURN) {
-                trace_assert(level_editor->file_name == NULL);
-                level_editor->file_name = PUSH_LT(
-                    level_editor->lt,
-                    string_duplicate(
-                        edit_field_as_text(
-                            level_editor->edit_field_filename),
-                        NULL),
-                    free);
-                level_editor_dump(level_editor);
-                SDL_StopTextInput();
-                level_editor->state = LEVEL_EDITOR_EDITING;
-                return 0;
-            }
-        } break;
-        }
+    switch (level_editor->state) {
+    case LEVEL_EDITOR_IDLE:
+        return level_editor_idle_event(level_editor, event, camera);
 
-        return edit_field_event(level_editor->edit_field_filename, event);
-    } else {
-        switch (event->type) {
-        case SDL_KEYDOWN: {
-            switch(event-> key.keysym.sym) {
-            case SDLK_s: {
-                /* TODO(#903): There is no indication that the level is saved when you press S in Level Editor */
-                if (level_editor->file_name) {
-                    level_editor_dump(level_editor);
-                    log_info("Saving level to `%s`\n", level_editor->file_name);
-                } else {
-                    SDL_StartTextInput();
-                    level_editor->state = LEVEL_EDITOR_SAVEAS;
-                }
-            } break;
-            }
-        } break;
-
-        case SDL_MOUSEWHEEL: {
-            // TODO(#679): zooming in edit mode is not smooth enough
-            if (event->wheel.y > 0) {
-                level_editor->camera_scale += 0.1f;
-            } else if (event->wheel.y < 0) {
-                level_editor->camera_scale = fmaxf(0.1f, level_editor->camera_scale - 0.1f);
-            }
-        } break;
-
-        case SDL_MOUSEBUTTONUP:
-        case SDL_MOUSEBUTTONDOWN: {
-            if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_MIDDLE) {
-                level_editor->drag = true;
-            }
-
-            if (event->type == SDL_MOUSEBUTTONUP && event->button.button == SDL_BUTTON_MIDDLE) {
-                level_editor->drag = false;
-            }
-        } break;
-
-        case SDL_MOUSEMOTION: {
-            if (level_editor->drag) {
-                const Vec next_position = camera_map_screen(camera, event->motion.x, event->motion.y);
-                const Vec prev_position = camera_map_screen(
-                    camera,
-                    event->motion.x + event->motion.xrel,
-                    event->motion.y + event->motion.yrel);
-
-                vec_add(&level_editor->camera_position,
-                        vec_sub(next_position, prev_position));
-            }
-
-        } break;
-        }
-
-        bool selected = false;
-        if (layer_picker_event(
-                &level_editor->layer_picker,
-                event,
-                camera,
-                &selected) < 0) {
-            return -1;
-        }
-
-        if (!selected) {
-            if (layer_event(
-                    level_editor->layers[level_editor->layer_picker],
-                    event,
-                    camera) < 0) {
-                return -1;
-            }
-        }
+    case LEVEL_EDITOR_SAVEAS:
+        return level_editor_saveas_event(level_editor, event, camera);
     }
 
     return 0;
