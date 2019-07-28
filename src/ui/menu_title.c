@@ -9,52 +9,6 @@
 #include "system/str.h"
 #include "game/camera.h"
 
-struct MenuTitle
-{
-    Lt *lt;
-    const char *text;
-    Vec font_scale;
-    float angle;
-    Vec position;
-};
-
-MenuTitle *create_menu_title(const char *text,
-                             Vec font_scale)
-{
-    trace_assert(text);
-
-    Lt *lt = create_lt();
-
-    MenuTitle *menu_title = PUSH_LT(
-        lt,
-        nth_calloc(1, sizeof(MenuTitle)),
-        free);
-    if (menu_title == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    menu_title->lt = lt;
-
-    menu_title->text = PUSH_LT(
-        lt,
-        string_duplicate(text, NULL),
-        free);
-    if (menu_title->text == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    menu_title->font_scale = font_scale;
-    menu_title->angle = 0.0f;
-    menu_title->position = vec(0.0f, 0.0f);
-
-    return menu_title;
-}
-
-void destroy_menu_title(MenuTitle *menu_title)
-{
-    trace_assert(menu_title);
-    RETURN_LT0(menu_title->lt);
-}
-
 int menu_title_render(const MenuTitle *menu_title,
                       Camera *camera)
 {
@@ -102,10 +56,4 @@ Vec menu_title_size(const MenuTitle *menu_title, const Camera *camera)
         menu_title->text);
 
     return vec(boundary.w, boundary.h);
-}
-
-void menu_title_move(MenuTitle *menu_title,
-                     Vec position)
-{
-    menu_title->position = position;
 }

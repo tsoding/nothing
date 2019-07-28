@@ -18,7 +18,7 @@ struct LevelPicker
     Background *background;
     Vec camera_position;
     LevelFolder *level_folder;
-    MenuTitle *menu_title;
+    MenuTitle menu_title;
     ListSelector *list_selector;
 };
 
@@ -55,13 +55,10 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
         RETURN_LT(lt, NULL);
     }
 
-    level_picker->menu_title = PUSH_LT(
-        lt,
-        create_menu_title("Select Level", vec(10.0f, 10.0f)),
-        destroy_menu_title);
-    if (level_picker->menu_title == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    level_picker->menu_title = (MenuTitle) {
+        .text = "Select Level",
+        .font_scale = {10.0f, 10.0f},
+    };
 
     level_picker->list_selector = PUSH_LT(
         lt,
@@ -98,7 +95,7 @@ int level_picker_render(const LevelPicker *level_picker,
         return -1;
     }
 
-    if (menu_title_render(level_picker->menu_title, camera) < 0) {
+    if (menu_title_render(&level_picker->menu_title, camera) < 0) {
         return -1;
     }
 
@@ -135,7 +132,7 @@ int level_picker_update(LevelPicker *level_picker,
     vec_add(&level_picker->camera_position,
             vec(50.0f * delta_time, 0.0f));
 
-    if (menu_title_update(level_picker->menu_title, delta_time) < 0) {
+    if (menu_title_update(&level_picker->menu_title, delta_time) < 0) {
         return -1;
     }
 
@@ -160,13 +157,12 @@ int level_picker_event(LevelPicker *level_picker,
             int width;
             SDL_GetWindowSize(SDL_GetWindowFromID(event->window.windowID), &width, NULL);
 
-            const Vec title_size = menu_title_size(level_picker->menu_title, camera);
+            const Vec title_size = menu_title_size(&level_picker->menu_title, camera);
             const float title_margin_top = 100.0f;
             const float title_margin_bottom = 100.0f;
 
-            menu_title_move(
-                level_picker->menu_title,
-                vec((float)width * 0.5f - title_size.x * 0.5f, title_margin_top));
+            level_picker->menu_title.position =
+                vec((float)width * 0.5f - title_size.x * 0.5f, title_margin_top);
 
             const Vec selector_size = list_selector_size(
                 level_picker->list_selector,
