@@ -269,6 +269,12 @@ int point_layer_idle_event(PointLayer *point_layer,
     }
 
     if (selected) {
+        if (point_layer->selected >= 0) {
+            Color *colors = dynarray_data(point_layer->colors);
+            colors[point_layer->selected] =
+                color_picker_rgba(&point_layer->color_picker);
+        }
+
         return 0;
     }
 
@@ -277,15 +283,18 @@ int point_layer_idle_event(PointLayer *point_layer,
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
             const Point position = camera_map_screen(camera, event->button.x, event->button.y);
-            const Color color = color_picker_rgba(&point_layer->color_picker);
 
             point_layer->selected = point_layer_element_at(
                 point_layer, position);
 
             if (point_layer->selected < 0) {
-                point_layer_add_element(point_layer, position, color);
+                point_layer_add_element(
+                    point_layer, position, color_picker_rgba(&point_layer->color_picker));
             } else {
+                Color *colors = dynarray_data(point_layer->colors);
                 point_layer->state = POINT_LAYER_MOVE;
+                point_layer->color_picker =
+                    create_color_picker_from_rgba(colors[point_layer->selected]);
             }
         } break;
         }

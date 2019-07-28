@@ -128,6 +128,7 @@ static int rect_layer_event_idle(RectLayer *layer, const SDL_Event *event, const
 
             if (rect_at_position >= 0) {
                 Rect *rects = dynarray_data(layer->rects);
+                Color *colors = dynarray_data(layer->colors);
                 layer->selection = rect_at_position;
                 layer->state = RECT_LAYER_MOVE;
                 layer->move_anchor =
@@ -136,6 +137,8 @@ static int rect_layer_event_idle(RectLayer *layer, const SDL_Event *event, const
                         vec(
                             rects[layer->selection].x,
                             rects[layer->selection].y));
+                layer->color_picker =
+                    create_color_picker_from_rgba(colors[rect_at_position]);
             } else if (layer->selection >= 0 && rect_contains_point(
                            rect_layer_resize_anchor(
                                layer,
@@ -522,6 +525,11 @@ int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *cam
     }
 
     if (selected) {
+        if (layer->selection >= 0) {
+            Color *colors = dynarray_data(layer->colors);
+            colors[layer->selection] = color_picker_rgba(&layer->color_picker);
+        }
+
         return 0;
     }
 
