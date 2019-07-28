@@ -57,7 +57,7 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
 
     level_picker->wiggly_text = (WigglyText) {
         .text = "Select Level",
-        .font_scale = {10.0f, 10.0f},
+        .scale = {10.0f, 10.0f},
     };
 
     level_picker->list_selector = PUSH_LT(

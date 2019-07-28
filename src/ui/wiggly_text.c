@@ -24,12 +24,12 @@ int wiggly_text_render(const WigglyText *wiggly_text,
         if (camera_render_text_screen(
                 camera,
                 buf,
-                wiggly_text->font_scale,
+                wiggly_text->scale,
                 rgba(1.0f, 1.0f, 1.0f, 1.0f),
                 vec_sum(
                     wiggly_text->position,
                     vec(
-                        (float) (i * FONT_CHAR_WIDTH) * wiggly_text->font_scale.x,
+                        (float) (i * FONT_CHAR_WIDTH) * wiggly_text->scale.x,
                         sinf(wiggly_text->angle + (float) i / (float) n * 10.0f) * 20.0f))) < 0) {
             return -1;
         }
@@ -52,7 +52,7 @@ Vec wiggly_text_size(const WigglyText *wiggly_text, const Camera *camera)
     const Rect boundary = camera_text_boundary_box(
         camera,
         vec(0.0f, 0.0f),
-        wiggly_text->font_scale,
+        wiggly_text->scale,
         wiggly_text->text);
 
     return vec(boundary.w, boundary.h);

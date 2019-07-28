@@ -5,7 +5,7 @@ typedef struct Camera Camera;
 
 typedef struct {
     const char *text;
-    Vec font_scale;
+    Vec scale;
     float angle;
     Vec position;
 } WigglyText;
