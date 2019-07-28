@@ -285,6 +285,10 @@ static void handle_keydown_ctrl(Edit_field *edit_field, const SDL_Event *event)
     case SDLK_d: {
         delete_char(edit_field);
     } break;
+
+    case SDLK_k: {
+        edit_field_clean(edit_field);
+    } break;
     }
 }
 
