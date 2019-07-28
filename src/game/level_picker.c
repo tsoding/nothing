@@ -57,7 +57,7 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
 
     level_picker->menu_title = PUSH_LT(
         lt,
-        create_menu_title("Select Level", vec(10.0f, 10.0f), sprite_font),
+        create_menu_title("Select Level", vec(10.0f, 10.0f)),
         destroy_menu_title);
     if (level_picker->menu_title == NULL) {
         RETURN_LT(lt, NULL);
@@ -98,7 +98,7 @@ int level_picker_render(const LevelPicker *level_picker,
         return -1;
     }
 
-    if (menu_title_render(level_picker->menu_title, renderer) < 0) {
+    if (menu_title_render(level_picker->menu_title, camera) < 0) {
         return -1;
     }
 
@@ -142,7 +142,9 @@ int level_picker_update(LevelPicker *level_picker,
     return 0;
 }
 
-int level_picker_event(LevelPicker *level_picker, const SDL_Event *event)
+int level_picker_event(LevelPicker *level_picker,
+                       const SDL_Event *event,
+                       const Camera *camera)
 {
     trace_assert(level_picker);
     trace_assert(event);
@@ -158,7 +160,7 @@ int level_picker_event(LevelPicker *level_picker, const SDL_Event *event)
             int width;
             SDL_GetWindowSize(SDL_GetWindowFromID(event->window.windowID), &width, NULL);
 
-            const Vec title_size = menu_title_size(level_picker->menu_title);
+            const Vec title_size = menu_title_size(level_picker->menu_title, camera);
             const float title_margin_top = 100.0f;
             const float title_margin_bottom = 100.0f;
 
