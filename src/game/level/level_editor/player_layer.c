@@ -92,7 +92,7 @@ int player_layer_event(PlayerLayer *player_layer,
     }
 
     if (!selected &&
-        event->type == SDL_MOUSEBUTTONUP &&
+        event->type == SDL_MOUSEBUTTONDOWN &&
         event->button.button == SDL_BUTTON_LEFT) {
         player_layer->position =
             camera_map_screen(camera,
