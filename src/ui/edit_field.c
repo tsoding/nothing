@@ -37,6 +37,7 @@ static void delete_char(Edit_field *edit_field);
 static void delete_backward_char(Edit_field *edit_field);
 static void kill_word(Edit_field *edit_field);
 static void backward_kill_word(Edit_field *edit_field);
+static void kill_to_end_of_line(Edit_field *edit_field);
 
 static void handle_keydown(Edit_field *edit_field, const SDL_Event *event);
 static void handle_keydown_alt(Edit_field *edit_field, const SDL_Event *event);
@@ -194,6 +195,12 @@ static void backward_kill_word(Edit_field *edit_field)
     kill_region_and_move_cursor(edit_field, start, end);
 }
 
+static void kill_to_end_of_line(Edit_field *edit_field) {
+    // "C-k"
+    kill_region_and_move_cursor(edit_field, edit_field->cursor,
+                                edit_field->buffer_size);
+}
+
 static void handle_keydown(Edit_field *edit_field, const SDL_Event *event)
 {
     switch (event->key.keysym.sym) {
@@ -284,6 +291,10 @@ static void handle_keydown_ctrl(Edit_field *edit_field, const SDL_Event *event)
 
     case SDLK_d: {
         delete_char(edit_field);
+    } break;
+
+    case SDLK_k: {
+        kill_to_end_of_line(edit_field);
     } break;
     }
 }
