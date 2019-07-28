@@ -25,7 +25,7 @@ int wiggly_text_render(const WigglyText *wiggly_text,
                 camera,
                 buf,
                 wiggly_text->scale,
-                rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                wiggly_text->color,
                 vec_sum(
                     wiggly_text->position,
                     vec(
@@ -67,9 +67,9 @@ int fading_wiggly_text_render(const FadingWigglyText *fading_wiggle_text,
 }
 
 int fading_wiggly_text_update(FadingWigglyText *fading_wiggle_text,
-                              float detla_time)
+                              float delta_time)
 {
     trace_assert(fading_wiggle_text);
-    (void) detla_time;
+    (void) delta_time;
     return 0;
 }

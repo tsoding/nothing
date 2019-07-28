@@ -1,13 +1,16 @@
 #ifndef WIGGLY_TEXT_H_
 #define WIGGLY_TEXT_H_
 
+#include "color.h"
+
 typedef struct Camera Camera;
 
 typedef struct {
     const char *text;
     Vec scale;
-    float angle;
+    Color color;
     Vec position;
+    float angle;
 } WigglyText;
 
 int wiggly_text_render(const WigglyText *wiggly_text,
@@ -24,7 +27,6 @@ typedef struct {
 int fading_wiggly_text_render(const FadingWigglyText *fading_wiggle_text,
                               Camera *camera);
 int fading_wiggly_text_update(FadingWigglyText *fading_wiggle_text,
-                              float detla_time);
-
+                              float delta_time);
 
 #endif  // WIGGLY_TEXT_H_
