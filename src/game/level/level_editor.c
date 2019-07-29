@@ -130,6 +130,15 @@ LevelEditor *create_level_editor(void)
 
     level_editor->drag = false;
 
+    level_editor->notice = (FadingWigglyText) {
+        .wiggly_text = {
+            .text = "Test",
+            .color = COLOR_RED,
+            .scale = vec(10.0f, 10.0f)
+        },
+        .duration = 1.0f,
+    };
+
     return level_editor;
 }
 
@@ -274,6 +283,15 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
 
     level_editor->drag = false;
 
+    level_editor->notice = (FadingWigglyText) {
+        .wiggly_text = {
+            .text = "Test",
+            .color = COLOR_RED,
+            .scale = vec(10.0f, 10.0f)
+        },
+        .duration = 1.0f,
+    };
+
     return level_editor;
 }
 
@@ -331,6 +349,8 @@ int level_editor_render(const LevelEditor *level_editor,
             return -1;
         }
     }
+
+    fading_wiggly_text_render(&level_editor->notice, camera);
 
     return 0;
 }
@@ -456,6 +476,12 @@ int level_editor_event(LevelEditor *level_editor,
     trace_assert(event);
     trace_assert(camera);
 
+    switch (event->type) {
+    case SDL_MOUSEBUTTONDOWN: {
+        level_editor->notice.wiggly_text.color.a = 1.0f;
+    } break;
+    }
+
     switch (level_editor->state) {
     case LEVEL_EDITOR_IDLE:
         return level_editor_idle_event(level_editor, event, camera);
@@ -502,4 +528,9 @@ static int level_editor_dump(const LevelEditor *level_editor)
     fclose(RELEASE_LT(level_editor->lt, filedump));
 
     return 0;
+}
+
+int level_editor_update(LevelEditor *level_editor, float delta_time)
+{
+    return fading_wiggly_text_update(&level_editor->notice, delta_time);
 }

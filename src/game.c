@@ -299,6 +299,8 @@ int game_update(Game *game, float delta_time)
                 game->camera) < 0) {
             return -1;
         }
+
+        level_editor_update(game->level_editor, delta_time);
     } break;
 
     case GAME_STATE_PAUSE:

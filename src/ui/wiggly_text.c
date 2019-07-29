@@ -57,19 +57,3 @@ Vec wiggly_text_size(const WigglyText *wiggly_text, const Camera *camera)
 
     return vec(boundary.w, boundary.h);
 }
-
-int fading_wiggly_text_render(const FadingWigglyText *fading_wiggle_text,
-                              Camera *camera)
-{
-    trace_assert(fading_wiggle_text);
-    trace_assert(camera);
-    return 0;
-}
-
-int fading_wiggly_text_update(FadingWigglyText *fading_wiggle_text,
-                              float delta_time)
-{
-    trace_assert(fading_wiggle_text);
-    (void) delta_time;
-    return 0;
-}
