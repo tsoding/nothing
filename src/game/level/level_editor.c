@@ -22,7 +22,7 @@
 #define LEVEL_EDITOR_EDIT_FIELD_SIZE vec(5.0f, 5.0f)
 #define LEVEL_EDITOR_EDIT_FIELD_COLOR COLOR_BLACK
 
-static int level_editor_dump(const LevelEditor *level_editor);
+static int level_editor_dump(LevelEditor *level_editor);
 
 LevelEditor *create_level_editor(void)
 {
@@ -132,9 +132,9 @@ LevelEditor *create_level_editor(void)
 
     level_editor->notice = (FadingWigglyText) {
         .wiggly_text = {
-            .text = "Test",
-            .color = COLOR_RED,
-            .scale = vec(10.0f, 10.0f)
+            .text = "Level saved",
+            .color = rgba(0.0f, 0.0f, 0.0f, 0.0f),
+            .scale = vec(5.0f, 5.0f)
         },
         .duration = 1.0f,
     };
@@ -285,9 +285,9 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
 
     level_editor->notice = (FadingWigglyText) {
         .wiggly_text = {
-            .text = "Test",
-            .color = COLOR_RED,
-            .scale = vec(10.0f, 10.0f)
+            .text = "Level saved",
+            .color = rgba(0.0f, 0.0f, 0.0f, 0.0f),
+            .scale = vec(5.0f, 5.0f)
         },
         .duration = 1.0f,
     };
@@ -476,12 +476,6 @@ int level_editor_event(LevelEditor *level_editor,
     trace_assert(event);
     trace_assert(camera);
 
-    switch (event->type) {
-    case SDL_MOUSEBUTTONDOWN: {
-        level_editor->notice.wiggly_text.color.a = 1.0f;
-    } break;
-    }
-
     switch (level_editor->state) {
     case LEVEL_EDITOR_IDLE:
         return level_editor_idle_event(level_editor, event, camera);
@@ -502,7 +496,7 @@ int level_editor_focus_camera(LevelEditor *level_editor,
 }
 
 /* TODO(#904): LevelEditor does not check that the saved level file is modified by external program */
-static int level_editor_dump(const LevelEditor *level_editor)
+static int level_editor_dump(LevelEditor *level_editor)
 {
     trace_assert(level_editor);
 
@@ -526,6 +520,8 @@ static int level_editor_dump(const LevelEditor *level_editor)
     fprintf(filedump, "%s", level_editor->supa_script_source);
 
     fclose(RELEASE_LT(level_editor->lt, filedump));
+
+    fading_wiggly_text_reset(&level_editor->notice);
 
     return 0;
 }

@@ -46,5 +46,11 @@ int fading_wiggly_text_update(FadingWigglyText *fading_wiggly_text,
     return wiggly_text_update(&fading_wiggly_text->wiggly_text, delta_time);
 }
 
+static inline
+void fading_wiggly_text_reset(FadingWigglyText *fading_wiggly_text)
+{
+    trace_assert(fading_wiggly_text);
+    fading_wiggly_text->wiggly_text.color.a = 1.0f;
+}
 
 #endif  // WIGGLY_TEXT_H_
