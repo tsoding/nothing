@@ -28,7 +28,7 @@
 
 static int level_editor_dump(LevelEditor *level_editor);
 
-// TODO: too much duplicate code between create_level_editor and create_level_editor_from_file
+// TODO(#994): too much duplicate code between create_level_editor and create_level_editor_from_file
 
 LevelEditor *create_level_editor(void)
 {
