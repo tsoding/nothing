@@ -26,9 +26,10 @@ typedef struct {
 
 static inline
 int fading_wiggly_text_render(const FadingWigglyText *fading_wiggly_text,
-                              Camera *camera)
+                              Camera *camera,
+                              Vec position)
 {
-    return wiggly_text_render(&fading_wiggly_text->wiggly_text, camera, vec(0.0f, 0.0f));
+    return wiggly_text_render(&fading_wiggly_text->wiggly_text, camera, position);
 }
 
 static inline
@@ -51,6 +52,13 @@ void fading_wiggly_text_reset(FadingWigglyText *fading_wiggly_text)
 {
     trace_assert(fading_wiggly_text);
     fading_wiggly_text->wiggly_text.color.a = 1.0f;
+}
+
+static inline
+Vec fading_wiggly_text_size(const FadingWigglyText *fading_wiggly_text,
+                            const Camera *camera)
+{
+    return wiggly_text_size(&fading_wiggly_text->wiggly_text, camera);
 }
 
 #endif  // WIGGLY_TEXT_H_

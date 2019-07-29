@@ -22,6 +22,10 @@
 #define LEVEL_EDITOR_EDIT_FIELD_SIZE vec(5.0f, 5.0f)
 #define LEVEL_EDITOR_EDIT_FIELD_COLOR COLOR_BLACK
 
+#define LEVEL_EDITOR_NOTICE_SCALE vec(10.0f, 10.0f)
+#define LEVEL_EDITOR_NOTICE_DURATION 1.0f
+#define LEVEL_EDITOR_NOTICE_PADDING_TOP 100.0f
+
 static int level_editor_dump(LevelEditor *level_editor);
 
 // TODO: too much duplicate code between create_level_editor and create_level_editor_from_file
@@ -136,9 +140,9 @@ LevelEditor *create_level_editor(void)
         .wiggly_text = {
             .text = "Level saved",
             .color = rgba(0.0f, 0.0f, 0.0f, 0.0f),
-            .scale = vec(5.0f, 5.0f)
+            .scale = LEVEL_EDITOR_NOTICE_SCALE
         },
-        .duration = 1.0f,
+        .duration = LEVEL_EDITOR_NOTICE_DURATION,
     };
 
     return level_editor;
@@ -289,9 +293,9 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
         .wiggly_text = {
             .text = "Level saved",
             .color = rgba(0.0f, 0.0f, 0.0f, 0.0f),
-            .scale = vec(5.0f, 5.0f)
+            .scale = LEVEL_EDITOR_NOTICE_SCALE
         },
-        .duration = 1.0f,
+        .duration = LEVEL_EDITOR_NOTICE_DURATION,
     };
 
     return level_editor;
@@ -352,7 +356,15 @@ int level_editor_render(const LevelEditor *level_editor,
         }
     }
 
-    fading_wiggly_text_render(&level_editor->notice, camera);
+    const Rect viewport = camera_view_port_screen(camera);
+    const Vec text_size = fading_wiggly_text_size(
+        &level_editor->notice,
+        camera);
+
+    fading_wiggly_text_render(
+        &level_editor->notice, camera,
+        vec(viewport.w * 0.5f - text_size.x * 0.5f,
+            LEVEL_EDITOR_NOTICE_PADDING_TOP));
 
     return 0;
 }
