@@ -53,6 +53,11 @@ int camera_render_text_screen(Camera *camera,
                               Color color,
                               Vec position);
 
+Rect camera_text_boundary_box(const Camera *camera,
+                              Vec position,
+                              Vec scale,
+                              const char *text);
+
 int camera_render_debug_text(Camera *camera,
                              const char *text,
                              Vec position);

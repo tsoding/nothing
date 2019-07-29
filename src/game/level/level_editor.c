@@ -22,7 +22,13 @@
 #define LEVEL_EDITOR_EDIT_FIELD_SIZE vec(5.0f, 5.0f)
 #define LEVEL_EDITOR_EDIT_FIELD_COLOR COLOR_BLACK
 
-static int level_editor_dump(const LevelEditor *level_editor);
+#define LEVEL_EDITOR_NOTICE_SCALE vec(10.0f, 10.0f)
+#define LEVEL_EDITOR_NOTICE_DURATION 1.0f
+#define LEVEL_EDITOR_NOTICE_PADDING_TOP 100.0f
+
+static int level_editor_dump(LevelEditor *level_editor);
+
+// TODO(#994): too much duplicate code between create_level_editor and create_level_editor_from_file
 
 LevelEditor *create_level_editor(void)
 {
@@ -129,6 +135,15 @@ LevelEditor *create_level_editor(void)
     level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
 
     level_editor->drag = false;
+
+    level_editor->notice = (FadingWigglyText) {
+        .wiggly_text = {
+            .text = "Level saved",
+            .color = rgba(0.0f, 0.0f, 0.0f, 0.0f),
+            .scale = LEVEL_EDITOR_NOTICE_SCALE
+        },
+        .duration = LEVEL_EDITOR_NOTICE_DURATION,
+    };
 
     return level_editor;
 }
@@ -274,6 +289,15 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
 
     level_editor->drag = false;
 
+    level_editor->notice = (FadingWigglyText) {
+        .wiggly_text = {
+            .text = "Level saved",
+            .color = rgba(0.0f, 0.0f, 0.0f, 0.0f),
+            .scale = LEVEL_EDITOR_NOTICE_SCALE
+        },
+        .duration = LEVEL_EDITOR_NOTICE_DURATION,
+    };
+
     return level_editor;
 }
 
@@ -331,6 +355,16 @@ int level_editor_render(const LevelEditor *level_editor,
             return -1;
         }
     }
+
+    const Rect viewport = camera_view_port_screen(camera);
+    const Vec text_size = fading_wiggly_text_size(
+        &level_editor->notice,
+        camera);
+
+    fading_wiggly_text_render(
+        &level_editor->notice, camera,
+        vec(viewport.w * 0.5f - text_size.x * 0.5f,
+            LEVEL_EDITOR_NOTICE_PADDING_TOP));
 
     return 0;
 }
@@ -476,7 +510,7 @@ int level_editor_focus_camera(LevelEditor *level_editor,
 }
 
 /* TODO(#904): LevelEditor does not check that the saved level file is modified by external program */
-static int level_editor_dump(const LevelEditor *level_editor)
+static int level_editor_dump(LevelEditor *level_editor)
 {
     trace_assert(level_editor);
 
@@ -501,5 +535,12 @@ static int level_editor_dump(const LevelEditor *level_editor)
 
     fclose(RELEASE_LT(level_editor->lt, filedump));
 
+    fading_wiggly_text_reset(&level_editor->notice);
+
     return 0;
+}
+
+int level_editor_update(LevelEditor *level_editor, float delta_time)
+{
+    return fading_wiggly_text_update(&level_editor->notice, delta_time);
 }

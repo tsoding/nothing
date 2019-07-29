@@ -538,3 +538,15 @@ const Sprite_font *camera_font(const Camera *camera)
 {
     return camera->font;
 }
+
+Rect camera_text_boundary_box(const Camera *camera,
+                              Vec position,
+                              Vec scale,
+                              const char *text)
+{
+    trace_assert(camera);
+    trace_assert(text);
+
+    return sprite_font_boundary_box(
+        camera->font, position, scale, text);
+}

@@ -15,7 +15,9 @@ int level_picker_render(const LevelPicker *level_picker,
                         SDL_Renderer *renderer);
 int level_picker_update(LevelPicker *level,
                         float delta_time);
-int level_picker_event(LevelPicker *level_picker, const SDL_Event *event);
+int level_picker_event(LevelPicker *level_picker,
+                       const SDL_Event *event,
+                       const Camera *camera);
 int level_picker_input(LevelPicker *level_picker,
                        const Uint8 *const keyboard_state,
                        SDL_Joystick *the_stick_of_joy);
