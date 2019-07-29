@@ -10,7 +10,8 @@
 #include "game/camera.h"
 
 int wiggly_text_render(const WigglyText *wiggly_text,
-                      Camera *camera)
+                       Camera *camera,
+                       Vec position)
 {
     trace_assert(wiggly_text);
     trace_assert(camera);
@@ -27,7 +28,7 @@ int wiggly_text_render(const WigglyText *wiggly_text,
                 wiggly_text->scale,
                 wiggly_text->color,
                 vec_sum(
-                    wiggly_text->position,
+                    position,
                     vec(
                         (float) (i * FONT_CHAR_WIDTH) * wiggly_text->scale.x,
                         sinf(wiggly_text->angle + (float) i / (float) n * 10.0f) * 20.0f))) < 0) {

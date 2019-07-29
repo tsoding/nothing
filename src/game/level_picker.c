@@ -12,6 +12,9 @@
 #include "game/level_folder.h"
 #include "ui/wiggly_text.h"
 
+#define TITLE_MARGIN_TOP 100.0f
+#define TITLE_MARGIN_BOTTOM 100.0f
+
 struct LevelPicker
 {
     Lt *lt;
@@ -96,7 +99,12 @@ int level_picker_render(const LevelPicker *level_picker,
         return -1;
     }
 
-    if (wiggly_text_render(&level_picker->wiggly_text, camera) < 0) {
+    const Vec title_size = wiggly_text_size(&level_picker->wiggly_text, camera);
+
+    if (wiggly_text_render(
+            &level_picker->wiggly_text,
+            camera,
+            vec(viewport.w * 0.5f - title_size.x * 0.5f, TITLE_MARGIN_TOP)) < 0) {
         return -1;
     }
 
@@ -159,11 +167,6 @@ int level_picker_event(LevelPicker *level_picker,
             SDL_GetWindowSize(SDL_GetWindowFromID(event->window.windowID), &width, NULL);
 
             const Vec title_size = wiggly_text_size(&level_picker->wiggly_text, camera);
-            const float title_margin_top = 100.0f;
-            const float title_margin_bottom = 100.0f;
-
-            level_picker->wiggly_text.position =
-                vec((float)width * 0.5f - title_size.x * 0.5f, title_margin_top);
 
             const Vec selector_size = list_selector_size(
                 level_picker->list_selector,
@@ -173,7 +176,7 @@ int level_picker_event(LevelPicker *level_picker,
             list_selector_move(
                 level_picker->list_selector,
                 vec((float)width * 0.5f - selector_size.x * 0.5f,
-                    title_margin_top + title_size.y + title_margin_bottom));
+                    TITLE_MARGIN_TOP + title_size.y + TITLE_MARGIN_BOTTOM));
         } break;
         }
     } break;
