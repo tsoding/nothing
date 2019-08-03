@@ -25,7 +25,6 @@ typedef enum {
     LABEL_LAYER_EDIT_ID
 } LabelLayerState;
 
-// TODO(#963): LabelLayer cannot add the labels
 struct LabelLayer {
     Lt *lt;
     LabelLayerState state;
