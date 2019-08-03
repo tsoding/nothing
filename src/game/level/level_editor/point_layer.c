@@ -186,7 +186,6 @@ int point_layer_render(const PointLayer *point_layer,
     }
 
     if (point_layer->state == POINT_LAYER_EDIT_ID) {
-        /* TODO(#855): PointLayer edit field is not scaled on zoom */
         if (edit_field_render_world(
                 point_layer->edit_field,
                 camera,
