@@ -19,7 +19,6 @@
 #define POINT_LAYER_ID_TEXT_SIZE vec(2.0f, 2.0f)
 #define POINT_LAYER_ID_TEXT_COLOR COLOR_BLACK
 
-// TODO(#985): PointLayer cannot move its points
 typedef enum {
     POINT_LAYER_IDLE = 0,
     POINT_LAYER_EDIT_ID,
