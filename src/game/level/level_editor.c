@@ -145,6 +145,8 @@ LevelEditor *create_level_editor(void)
         .duration = LEVEL_EDITOR_NOTICE_DURATION,
     };
 
+    level_editor->camera_scale = 1.0f;
+
     return level_editor;
 }
 
@@ -297,6 +299,8 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
         },
         .duration = LEVEL_EDITOR_NOTICE_DURATION,
     };
+
+    level_editor->camera_scale = 1.0f;
 
     return level_editor;
 }
