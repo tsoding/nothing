@@ -54,7 +54,7 @@ int level_editor_render(const LevelEditor *level_editor,
                         Camera *camera);
 int level_editor_event(LevelEditor *level_editor,
                        const SDL_Event *event,
-                       const Camera *camera);
+                       Camera *camera);
 int level_editor_focus_camera(LevelEditor *level_editor,
                               Camera *camera);
 int level_editor_update(LevelEditor *level_editor, float delta_time);
