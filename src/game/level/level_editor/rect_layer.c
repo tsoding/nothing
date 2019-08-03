@@ -300,10 +300,12 @@ static int rect_layer_event_id_rename(RectLayer *layer, const SDL_Event *event, 
             memset(id, 0, RECT_LAYER_ID_MAX_SIZE);
             memcpy(id, edit_field_as_text(layer->id_edit_field), RECT_LAYER_ID_MAX_SIZE - 1);
             layer->state = RECT_LAYER_IDLE;
+            SDL_StopTextInput();
         } break;
 
         case SDLK_ESCAPE: {
             layer->state = RECT_LAYER_IDLE;
+            SDL_StopTextInput();
         } break;
         }
     } break;
