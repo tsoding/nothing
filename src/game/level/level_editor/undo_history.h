@@ -3,8 +3,18 @@
 
 #include "layer.h"
 
+#define CONTEXT_SIZE 32
+
+typedef struct {
+    char data[CONTEXT_SIZE];
+} Context;
+
+typedef void (*RevertAction)(LayerPtr layer, Context context);
+
 typedef struct {
     LayerPtr layer;
+    Context context;
+    RevertAction revert;
 } Action;
 
 typedef struct UndoHistory UndoHistory;

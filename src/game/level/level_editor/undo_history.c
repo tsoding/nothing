@@ -40,10 +40,16 @@ void destroy_undo_history(UndoHistory *undo_history)
 void undo_history_push(UndoHistory *undo_history, Action action)
 {
     trace_assert(undo_history);
-    (void) action;
+    dynarray_push(undo_history->actions, &action);
 }
 
 void undo_history_pop(UndoHistory *undo_history)
 {
     trace_assert(undo_history);
+
+    if (dynarray_count(undo_history->actions) > 0) {
+        Action action;
+        dynarray_pop(undo_history->actions, &action);
+        action.revert(action.layer, action.context);
+    }
 }
