@@ -15,6 +15,7 @@ void dynarray_clear(Dynarray *dynarray);
 // TODO(#981): dynarray_push should be called dynarray_push_copy
 int dynarray_push(Dynarray *dynarray, const void *element);
 int dynarray_push_empty(Dynarray *dynarray);
+void dynarray_pop(Dynarray *dynarray, void *element);
 bool dynarray_contains(const Dynarray *dynarray,
                        const void *element);
 // O(N)
