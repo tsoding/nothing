@@ -413,13 +413,14 @@ int level_editor_idle_event(LevelEditor *level_editor,
     case SDL_KEYDOWN: {
         switch(event-> key.keysym.sym) {
         case SDLK_s: {
-            /* TODO(#903): There is no indication that the level is saved when you press S in Level Editor */
-            if (level_editor->file_name) {
-                level_editor_dump(level_editor);
-                log_info("Saving level to `%s`\n", level_editor->file_name);
-            } else {
-                SDL_StartTextInput();
-                level_editor->state = LEVEL_EDITOR_SAVEAS;
+            if (!SDL_IsTextInputActive()) {
+                if (level_editor->file_name) {
+                    level_editor_dump(level_editor);
+                    log_info("Saving level to `%s`\n", level_editor->file_name);
+                } else {
+                    SDL_StartTextInput();
+                    level_editor->state = LEVEL_EDITOR_SAVEAS;
+                }
             }
         } break;
         }
