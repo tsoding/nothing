@@ -516,10 +516,14 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
     return 0;
 }
 
-int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *camera)
+int rect_layer_event(RectLayer *layer,
+                     const SDL_Event *event,
+                     const Camera *camera,
+                     UndoHistory *undo_history)
 {
     trace_assert(layer);
     trace_assert(event);
+    trace_assert(undo_history);
 
     int selected = 0;
     if (color_picker_event(&layer->color_picker, event, &selected) < 0) {

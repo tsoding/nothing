@@ -76,12 +76,13 @@ int player_layer_render(const PlayerLayer *player_layer,
 
 int player_layer_event(PlayerLayer *player_layer,
                        const SDL_Event *event,
-                       const Camera *camera)
+                       const Camera *camera,
+                       UndoHistory *undo_history)
 {
     trace_assert(player_layer);
     trace_assert(event);
     trace_assert(camera);
-
+    trace_assert(undo_history);
 
     int selected = 0;
     if (color_picker_event(

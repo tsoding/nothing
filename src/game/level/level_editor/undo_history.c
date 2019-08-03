@@ -22,6 +22,7 @@ UndoHistory *create_undo_history(void)
         lt,
         nth_calloc(1, sizeof(UndoHistory)),
         free);
+    undo_history->lt = lt;
 
     undo_history->actions = PUSH_LT(
         lt,

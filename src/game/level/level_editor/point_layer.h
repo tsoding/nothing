@@ -21,7 +21,8 @@ int point_layer_render(const PointLayer *point_layer,
                        int active);
 int point_layer_event(PointLayer *point_layer,
                       const SDL_Event *event,
-                      const Camera *camera);
+                      const Camera *camera,
+                      UndoHistory *undo_history);
 
 int point_layer_dump_stream(const PointLayer *point_layer,
                             FILE *filedump);

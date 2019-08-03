@@ -134,7 +134,10 @@ LevelEditor *create_level_editor(void)
     level_editor->layers[LAYER_PICKER_BACKGROUND] = color_picker_as_layer(&level_editor->background_layer);
     level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
 
-    level_editor->drag = false;
+    level_editor->undo_history = PUSH_LT(
+        lt,
+        create_undo_history(),
+        destroy_undo_history);
 
     level_editor->notice = (FadingWigglyText) {
         .wiggly_text = {
@@ -289,6 +292,11 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->layers[LAYER_PICKER_BACKGROUND] = color_picker_as_layer(&level_editor->background_layer);
     level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
 
+    level_editor->undo_history = PUSH_LT(
+        lt,
+        create_undo_history(),
+        destroy_undo_history);
+
     level_editor->drag = false;
 
     level_editor->notice = (FadingWigglyText) {
@@ -415,7 +423,7 @@ int level_editor_idle_event(LevelEditor *level_editor,
 
     switch (event->type) {
     case SDL_KEYDOWN: {
-        switch(event-> key.keysym.sym) {
+        switch(event->key.keysym.sym) {
         case SDLK_s: {
             if (!SDL_IsTextInputActive()) {
                 if (level_editor->file_name) {
@@ -425,6 +433,13 @@ int level_editor_idle_event(LevelEditor *level_editor,
                     SDL_StartTextInput();
                     level_editor->state = LEVEL_EDITOR_SAVEAS;
                 }
+            }
+        } break;
+
+        case SDLK_z: {
+            if (event->key.keysym.mod & KMOD_CTRL) {
+                log_info("Undo\n");
+                undo_history_pop(level_editor->undo_history);
             }
         } break;
         }
@@ -490,7 +505,8 @@ int level_editor_idle_event(LevelEditor *level_editor,
         if (layer_event(
                 level_editor->layers[level_editor->layer_picker],
                 event,
-                camera) < 0) {
+                camera,
+                level_editor->undo_history) < 0) {
             return -1;
         }
     }

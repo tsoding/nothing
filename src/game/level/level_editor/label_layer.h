@@ -24,7 +24,8 @@ int label_layer_render(const LabelLayer *label_layer,
                        int active);
 int label_layer_event(LabelLayer *label_layer,
                       const SDL_Event *event,
-                      const Camera *camera);
+                      const Camera *camera,
+                      UndoHistory *undo_history);
 
 size_t label_layer_count(const LabelLayer *label_layer);
 

@@ -14,6 +14,7 @@
 #include "./point_layer.h"
 #include "math/extrema.h"
 #include "./color_picker.h"
+#include "undo_history.h"
 
 #define POINT_LAYER_ELEMENT_RADIUS 10.0f
 #define POINT_LAYER_ID_TEXT_SIZE vec(2.0f, 2.0f)
@@ -220,11 +221,26 @@ int point_layer_element_at(const PointLayer *point_layer,
 }
 
 static
+void point_layer_pop_element(void *layer, Context context)
+{
+    trace_assert(layer);
+    (void) context;
+
+    PointLayer *point_layer = layer;
+
+    dynarray_pop(point_layer->positions, NULL);
+    dynarray_pop(point_layer->colors, NULL);
+    dynarray_pop(point_layer->ids, NULL);
+}
+
+static
 int point_layer_add_element(PointLayer *point_layer,
                             Point position,
-                            Color color)
+                            Color color,
+                            UndoHistory *undo_history)
 {
     trace_assert(point_layer);
+    trace_assert(undo_history);
 
     char id[ID_MAX_SIZE];
     for (size_t i = 0; i < ID_MAX_SIZE - 1; ++i) {
@@ -235,6 +251,12 @@ int point_layer_add_element(PointLayer *point_layer,
     dynarray_push(point_layer->positions, &position);
     dynarray_push(point_layer->colors, &color);
     dynarray_push(point_layer->ids, id);
+
+    Action action =  {
+        .revert = point_layer_pop_element,
+        .layer = point_layer
+    };
+    undo_history_push(undo_history, action);
 
     return 0;
 }
@@ -252,7 +274,8 @@ void point_layer_delete_nth_element(PointLayer *point_layer,
 static
 int point_layer_idle_event(PointLayer *point_layer,
                            const SDL_Event *event,
-                           const Camera *camera)
+                           const Camera *camera,
+                           UndoHistory *undo_history)
 {
     trace_assert(point_layer);
     trace_assert(event);
@@ -287,7 +310,10 @@ int point_layer_idle_event(PointLayer *point_layer,
 
             if (point_layer->selected < 0) {
                 point_layer_add_element(
-                    point_layer, position, color_picker_rgba(&point_layer->color_picker));
+                    point_layer,
+                    position,
+                    color_picker_rgba(&point_layer->color_picker),
+                    undo_history);
             } else {
                 Color *colors = dynarray_data(point_layer->colors);
                 point_layer->state = POINT_LAYER_MOVE;
@@ -390,15 +416,17 @@ int point_layer_move_event(PointLayer *point_layer,
 
 int point_layer_event(PointLayer *point_layer,
                       const SDL_Event *event,
-                      const Camera *camera)
+                      const Camera *camera,
+                      UndoHistory *undo_history)
 {
     trace_assert(point_layer);
     trace_assert(event);
     trace_assert(camera);
+    trace_assert(undo_history);
 
     switch (point_layer->state) {
     case POINT_LAYER_IDLE:
-        return point_layer_idle_event(point_layer, event, camera);
+        return point_layer_idle_event(point_layer, event, camera, undo_history);
 
     case POINT_LAYER_EDIT_ID:
         return point_layer_edit_id_event(point_layer, event, camera);

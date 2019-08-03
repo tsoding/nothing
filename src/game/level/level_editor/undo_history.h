@@ -9,10 +9,10 @@ typedef struct {
     char data[CONTEXT_SIZE];
 } Context;
 
-typedef void (*RevertAction)(LayerPtr layer, Context context);
+typedef void (*RevertAction)(void *layer, Context context);
 
 typedef struct {
-    LayerPtr layer;
+    void *layer;
     Context context;
     RevertAction revert;
 } Action;

@@ -12,7 +12,10 @@ RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream);
 void destroy_rect_layer(RectLayer *layer);
 
 int rect_layer_render(const RectLayer *layer, Camera *camera, int active);
-int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *camera);
+int rect_layer_event(RectLayer *layer,
+                     const SDL_Event *event,
+                     const Camera *camera,
+                     UndoHistory *undo_history);
 
 int rect_layer_dump_stream(const RectLayer *layer, FILE *filedump);
 
