@@ -26,6 +26,7 @@ void vec_add(Vec *v1, Vec v2);
 float vec_length(Vec v);
 float vec_sqr_norm(Vec v);
 Vec vec_scala_mult(Vec v, float scalar);
+#define vec_scale vec_scala_mult
 Vec vec_entry_mult(Vec v1, Vec v2);
 Vec vec_entry_div(Vec v1, Vec v2);
 Vec vec_norm(Vec v);

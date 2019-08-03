@@ -145,6 +145,8 @@ LevelEditor *create_level_editor(void)
         .duration = LEVEL_EDITOR_NOTICE_DURATION,
     };
 
+    level_editor->camera_scale = 1.0f;
+
     return level_editor;
 }
 
@@ -298,6 +300,8 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
         .duration = LEVEL_EDITOR_NOTICE_DURATION,
     };
 
+    level_editor->camera_scale = 1.0f;
+
     return level_editor;
 }
 
@@ -403,7 +407,7 @@ int level_editor_saveas_event(LevelEditor *level_editor,
 static
 int level_editor_idle_event(LevelEditor *level_editor,
                             const SDL_Event *event,
-                            const Camera *camera)
+                            Camera *camera)
 {
     trace_assert(level_editor);
     trace_assert(event);
@@ -427,12 +431,23 @@ int level_editor_idle_event(LevelEditor *level_editor,
     } break;
 
     case SDL_MOUSEWHEEL: {
-        // TODO(#679): zooming in edit mode is not smooth enough
+        int x, y;
+        SDL_GetMouseState(&x, &y);
+
+        Vec position = camera_map_screen(camera, x, y);
         if (event->wheel.y > 0) {
             level_editor->camera_scale += 0.1f;
         } else if (event->wheel.y < 0) {
             level_editor->camera_scale = fmaxf(0.1f, level_editor->camera_scale - 0.1f);
         }
+        camera_scale(camera, level_editor->camera_scale);
+        Vec zoomed_position = camera_map_screen(camera, x, y);
+
+        level_editor->camera_position =
+            vec_sum(
+                level_editor->camera_position,
+                vec_sub(position, zoomed_position));
+        camera_center_at(camera, level_editor->camera_position);
     } break;
 
     case SDL_MOUSEBUTTONUP:
@@ -456,6 +471,7 @@ int level_editor_idle_event(LevelEditor *level_editor,
 
             vec_add(&level_editor->camera_position,
                     vec_sub(next_position, prev_position));
+            camera_center_at(camera, level_editor->camera_position);
         }
 
     } break;
@@ -485,7 +501,7 @@ int level_editor_idle_event(LevelEditor *level_editor,
 
 int level_editor_event(LevelEditor *level_editor,
                        const SDL_Event *event,
-                       const Camera *camera)
+                       Camera *camera)
 {
     trace_assert(level_editor);
     trace_assert(event);
