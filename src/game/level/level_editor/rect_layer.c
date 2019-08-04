@@ -528,7 +528,7 @@ int rect_layer_event(RectLayer *layer,
     trace_assert(undo_history);
 
     int selected = 0;
-    if (color_picker_event(&layer->color_picker, event, &selected) < 0) {
+    if (color_picker_event(&layer->color_picker, event, &selected, undo_history) < 0) {
         return -1;
     }
 

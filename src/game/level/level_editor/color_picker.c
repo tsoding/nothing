@@ -7,6 +7,7 @@
 #include "game/camera.h"
 #include "color_picker.h"
 #include "color.h"
+#include "undo_history.h"
 
 #define COLOR_SLIDER_HEIGHT 50.0f
 #define COLOR_SLIDER_WIDTH 300.0f
@@ -98,11 +99,22 @@ int color_picker_render(const ColorPicker *color_picker,
     return 0;
 }
 
+static void color_picker_reset_color(void *layer, Context context)
+{
+    trace_assert(layer);
+    ColorPicker *color_picker = layer;
+    *color_picker = create_color_picker_from_rgba(*((Color*)context.data));
+}
+
 // TODO(#932): the `selected` event propagation control is cumbersome
-int color_picker_event(ColorPicker *color_picker, const SDL_Event *event, int *selected_out)
+int color_picker_event(ColorPicker *color_picker,
+                       const SDL_Event *event,
+                       int *selected_out,
+                       UndoHistory *undo_history)
 {
     trace_assert(color_picker);
     trace_assert(event);
+    trace_assert(undo_history);
 
     int selected = 0;
 
@@ -117,6 +129,19 @@ int color_picker_event(ColorPicker *color_picker, const SDL_Event *event, int *s
                 &selected) < 0) {
             return -1;
         }
+    }
+
+    // TODO: each and individual slider movement is pushed into the undo history
+    if (selected) {
+        trace_assert(sizeof(Color) <= CONTEXT_SIZE);
+
+        Action action = {
+            .layer = color_picker,
+            .revert = color_picker_reset_color
+        };
+        const Color color = color_picker_rgba(color_picker);
+        memcpy(action.context.data, &color, sizeof(Color));
+        undo_history_push(undo_history, action);
     }
 
     if (selected_out) {

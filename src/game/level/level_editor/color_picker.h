@@ -17,6 +17,7 @@ typedef struct {
 } ColorPicker;
 
 typedef struct LineStream LineStream;
+typedef struct UndoHistory UndoHistory;
 
 ColorPicker create_color_picker_from_rgba(Color color);
 
@@ -27,7 +28,10 @@ LayerPtr color_picker_as_layer(ColorPicker *color_picker);
 
 int color_picker_render(const ColorPicker *color_picker,
                         Camera *camera);
-int color_picker_event(ColorPicker *color_picker, const SDL_Event *event, int *selected);
+int color_picker_event(ColorPicker *color_picker,
+                       const SDL_Event *event,
+                       int *selected,
+                       UndoHistory *undo_history);
 
 Color color_picker_rgba(const ColorPicker *color_picker);
 
