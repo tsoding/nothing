@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <string.h>
 
 #include "game/level/boxes.h"
 #include "system/stacktrace.h"
