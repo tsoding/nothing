@@ -18,6 +18,8 @@
 
 #define LABEL_LAYER_SELECTION_THICCNESS 5.0f
 
+// TODO(#999): LabelLayer does not support UndoHistory
+
 typedef enum {
     LABEL_LAYER_IDLE = 0,
     LABEL_LAYER_MOVE,
