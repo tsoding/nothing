@@ -16,6 +16,8 @@
 #define RECT_LAYER_SELECTION_THICCNESS 10.0f
 #define CREATE_AREA_THRESHOLD 10.0
 
+// TODO(#1003): RectLayer does not support UndoHistory
+
 typedef enum {
     RECT_LAYER_IDLE = 0,
     RECT_LAYER_CREATE,
