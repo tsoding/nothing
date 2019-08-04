@@ -288,7 +288,7 @@ int point_layer_idle_event(PointLayer *point_layer,
             &point_layer->color_picker,
             event,
             &selected,
-            undo_history) < 0) {
+            NULL) < 0) {
         return -1;
     }
 

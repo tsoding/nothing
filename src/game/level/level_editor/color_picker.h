@@ -14,6 +14,7 @@ typedef enum {
 
 typedef struct {
     Slider sliders[COLOR_SLIDER_N];
+    Color color;
 } ColorPicker;
 
 typedef struct LineStream LineStream;

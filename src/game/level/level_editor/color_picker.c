@@ -36,7 +36,8 @@ ColorPicker create_color_picker_from_rgba(Color color)
             {0, color_hsla.r, 360.0f},
             {0, color_hsla.g, 1.0f},
             {0, color_hsla.b, 1.0f}
-        }
+        },
+        .color = color
     };
     return color_picker;
 }
@@ -99,11 +100,14 @@ int color_picker_render(const ColorPicker *color_picker,
     return 0;
 }
 
-static void color_picker_reset_color(void *layer, Context context)
+static void color_picker_revert(void *layer, Context context)
 {
     trace_assert(layer);
     ColorPicker *color_picker = layer;
-    *color_picker = create_color_picker_from_rgba(*((Color*)context.data));
+
+    log_info("color_picker_revert\n");
+
+    *color_picker = create_color_picker_from_rgba(*((Color *)context.data));
 }
 
 // TODO(#932): the `selected` event propagation control is cumbersome
@@ -114,7 +118,6 @@ int color_picker_event(ColorPicker *color_picker,
 {
     trace_assert(color_picker);
     trace_assert(event);
-    trace_assert(undo_history);
 
     int selected = 0;
 
@@ -129,19 +132,20 @@ int color_picker_event(ColorPicker *color_picker,
                 &selected) < 0) {
             return -1;
         }
-    }
 
-    // TODO: each and individual slider movement is pushed into the undo history
-    if (selected) {
-        trace_assert(sizeof(Color) <= CONTEXT_SIZE);
+        if (selected && !color_picker->sliders[index].drag) {
+            if (undo_history) {
+                trace_assert(sizeof(Color) <= CONTEXT_SIZE);
+                Action action = {
+                    .layer = color_picker,
+                    .revert = color_picker_revert,
+                };
+                memcpy(action.context.data, &color_picker->color, sizeof(Color));
+                undo_history_push(undo_history, action);
+            }
 
-        Action action = {
-            .layer = color_picker,
-            .revert = color_picker_reset_color
-        };
-        const Color color = color_picker_rgba(color_picker);
-        memcpy(action.context.data, &color, sizeof(Color));
-        undo_history_push(undo_history, action);
+            color_picker->color = color_picker_rgba(color_picker);
+        }
     }
 
     if (selected_out) {

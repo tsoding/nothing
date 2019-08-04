@@ -552,7 +552,7 @@ int label_layer_event(LabelLayer *label_layer,
             &label_layer->color_picker,
             event,
             &changed,
-            undo_history) < 0) {
+            NULL) < 0) {
         return -1;
     }
 
