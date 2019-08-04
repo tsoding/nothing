@@ -154,3 +154,18 @@ int dynarray_push_empty(Dynarray *dynarray)
 }
 
 // TODO(#980): dynarray_push and dynarray_push_empty have duplicate codez
+
+void dynarray_pop(Dynarray *dynarray, void *element)
+{
+    trace_assert(dynarray);
+    trace_assert(dynarray->count > 0);
+
+    dynarray->count--;
+
+    if (element) {
+        memcpy(
+            element,
+            dynarray->data + dynarray->count * dynarray->element_size,
+            dynarray->element_size);
+    }
+}

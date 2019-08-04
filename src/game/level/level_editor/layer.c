@@ -29,23 +29,25 @@ int layer_render(LayerPtr layer, Camera *camera, int active)
 
 int layer_event(LayerPtr layer,
                 const SDL_Event *event,
-                const Camera *camera)
+                const Camera *camera,
+                UndoHistory *undo_history)
 {
     switch (layer.type) {
     case LAYER_RECT:
-        return rect_layer_event(layer.ptr, event, camera);
+        return rect_layer_event(layer.ptr, event, camera, undo_history);
 
     case LAYER_POINT:
-        return point_layer_event(layer.ptr, event, camera);
+        return point_layer_event(layer.ptr, event, camera, undo_history);
 
     case LAYER_PLAYER:
-        return player_layer_event(layer.ptr, event, camera);
+        return player_layer_event(layer.ptr, event, camera, undo_history);
 
     case LAYER_COLOR_PICKER:
+        // TODO(#1000): undo history is not really applicable to color picker as layer
         return color_picker_event(layer.ptr, event, NULL);
 
     case LAYER_LABEL:
-        return label_layer_event(layer.ptr, event, camera);
+        return label_layer_event(layer.ptr, event, camera, undo_history);
     }
 
     return -1;

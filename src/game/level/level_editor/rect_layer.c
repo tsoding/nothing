@@ -16,6 +16,8 @@
 #define RECT_LAYER_SELECTION_THICCNESS 10.0f
 #define CREATE_AREA_THRESHOLD 10.0
 
+// TODO(#1003): RectLayer does not support UndoHistory
+
 typedef enum {
     RECT_LAYER_IDLE = 0,
     RECT_LAYER_CREATE,
@@ -300,10 +302,12 @@ static int rect_layer_event_id_rename(RectLayer *layer, const SDL_Event *event, 
             memset(id, 0, RECT_LAYER_ID_MAX_SIZE);
             memcpy(id, edit_field_as_text(layer->id_edit_field), RECT_LAYER_ID_MAX_SIZE - 1);
             layer->state = RECT_LAYER_IDLE;
+            SDL_StopTextInput();
         } break;
 
         case SDLK_ESCAPE: {
             layer->state = RECT_LAYER_IDLE;
+            SDL_StopTextInput();
         } break;
         }
     } break;
@@ -514,10 +518,14 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
     return 0;
 }
 
-int rect_layer_event(RectLayer *layer, const SDL_Event *event, const Camera *camera)
+int rect_layer_event(RectLayer *layer,
+                     const SDL_Event *event,
+                     const Camera *camera,
+                     UndoHistory *undo_history)
 {
     trace_assert(layer);
     trace_assert(event);
+    trace_assert(undo_history);
 
     int selected = 0;
     if (color_picker_event(&layer->color_picker, event, &selected) < 0) {

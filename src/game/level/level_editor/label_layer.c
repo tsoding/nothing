@@ -18,6 +18,8 @@
 
 #define LABEL_LAYER_SELECTION_THICCNESS 5.0f
 
+// TODO(#999): LabelLayer does not support UndoHistory
+
 typedef enum {
     LABEL_LAYER_IDLE = 0,
     LABEL_LAYER_MOVE,
@@ -536,11 +538,13 @@ int label_layer_edit_id_event(LabelLayer *label_layer,
 
 int label_layer_event(LabelLayer *label_layer,
                       const SDL_Event *event,
-                      const Camera *camera)
+                      const Camera *camera,
+                      UndoHistory *undo_history)
 {
     trace_assert(label_layer);
     trace_assert(event);
     trace_assert(camera);
+    trace_assert(undo_history);
 
     int changed = 0;
 

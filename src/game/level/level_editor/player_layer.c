@@ -8,6 +8,8 @@
 #include "system/nth_alloc.h"
 #include "system/log.h"
 
+// TODO(#1001): PlayerLayer does not support UndoHistory
+
 PlayerLayer create_player_layer(Vec position, Color color)
 {
     return (PlayerLayer) {
@@ -76,12 +78,13 @@ int player_layer_render(const PlayerLayer *player_layer,
 
 int player_layer_event(PlayerLayer *player_layer,
                        const SDL_Event *event,
-                       const Camera *camera)
+                       const Camera *camera,
+                       UndoHistory *undo_history)
 {
     trace_assert(player_layer);
     trace_assert(event);
     trace_assert(camera);
-
+    trace_assert(undo_history);
 
     int selected = 0;
     if (color_picker_event(

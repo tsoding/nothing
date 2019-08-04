@@ -20,7 +20,8 @@ int player_layer_render(const PlayerLayer *player_layer,
                         int active);
 int player_layer_event(PlayerLayer *player_layer,
                        const SDL_Event *event,
-                       const Camera *camera);
+                       const Camera *camera,
+                       UndoHistory *undo_history);
 
 int player_layer_dump_stream(const PlayerLayer *player_layer,
                              FILE *filedump);
