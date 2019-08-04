@@ -8,6 +8,8 @@
 #include "system/nth_alloc.h"
 #include "system/log.h"
 
+// TODO(#1001): PlayerLayer does not support UndoHistory
+
 PlayerLayer create_player_layer(Vec position, Color color)
 {
     return (PlayerLayer) {
