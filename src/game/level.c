@@ -30,6 +30,7 @@
 #include "game/level/script.h"
 
 #define LEVEL_GRAVITY 1500.0f
+#define JOYSTICK_THRESHOLD 1000
 
 struct Level
 {
@@ -274,9 +275,9 @@ int level_input(Level *level,
         player_move_left(level->player);
     } else if (keyboard_state[SDL_SCANCODE_D]) {
         player_move_right(level->player);
-    } else if (the_stick_of_joy && SDL_JoystickGetAxis(the_stick_of_joy, 0) < 0) {
+    } else if (the_stick_of_joy && SDL_JoystickGetAxis(the_stick_of_joy, 0) < -JOYSTICK_THRESHOLD) {
         player_move_left(level->player);
-    } else if (the_stick_of_joy && SDL_JoystickGetAxis(the_stick_of_joy, 0) > 0) {
+    } else if (the_stick_of_joy && SDL_JoystickGetAxis(the_stick_of_joy, 0) > JOYSTICK_THRESHOLD) {
         player_move_right(level->player);
     } else {
         player_stop(level->player);
