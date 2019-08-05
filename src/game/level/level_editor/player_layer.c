@@ -7,6 +7,7 @@
 #include "player_layer.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
+#include "undo_history.h"
 
 // TODO(#1001): PlayerLayer does not support UndoHistory
 
@@ -75,6 +76,13 @@ int player_layer_render(const PlayerLayer *player_layer,
     return 0;
 }
 
+static void player_layer_revert_position(void *layer, Context context)
+{
+    trace_assert(layer);
+
+    PlayerLayer *player_layer = layer;
+    player_layer->position = *((Point*)context.data);
+}
 
 int player_layer_event(PlayerLayer *player_layer,
                        const SDL_Event *event,
@@ -98,6 +106,14 @@ int player_layer_event(PlayerLayer *player_layer,
     if (!selected &&
         event->type == SDL_MOUSEBUTTONDOWN &&
         event->button.button == SDL_BUTTON_LEFT) {
+        Action action = {
+            .layer = player_layer,
+            .revert = player_layer_revert_position
+        };
+        trace_assert(sizeof(player_layer->position) <= CONTEXT_SIZE);
+        memcpy(action.context.data, &player_layer->position, sizeof(player_layer->position));
+        undo_history_push(undo_history, action);
+
         player_layer->position =
             camera_map_screen(camera,
                               event->button.x,
