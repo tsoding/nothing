@@ -90,7 +90,8 @@ int player_layer_event(PlayerLayer *player_layer,
     if (color_picker_event(
             &player_layer->color_picker,
             event,
-            &selected) < 0) {
+            &selected,
+            undo_history) < 0) {
         return -1;
     }
 

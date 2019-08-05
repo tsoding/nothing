@@ -551,7 +551,8 @@ int label_layer_event(LabelLayer *label_layer,
     if (color_picker_event(
             &label_layer->color_picker,
             event,
-            &changed) < 0) {
+            &changed,
+            NULL) < 0) {
         return -1;
     }
 

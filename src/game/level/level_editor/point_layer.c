@@ -287,7 +287,8 @@ int point_layer_idle_event(PointLayer *point_layer,
     if (color_picker_event(
             &point_layer->color_picker,
             event,
-            &selected) < 0) {
+            &selected,
+            NULL) < 0) {
         return -1;
     }
 
