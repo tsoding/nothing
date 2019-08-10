@@ -84,6 +84,8 @@ static void player_layer_revert_position(void *layer, Context context)
     player_layer->position = *((Point*)context.data);
 }
 
+// TODO: PlayerLayer does not support undo color
+
 int player_layer_event(PlayerLayer *player_layer,
                        const SDL_Event *event,
                        const Camera *camera,
@@ -98,8 +100,7 @@ int player_layer_event(PlayerLayer *player_layer,
     if (color_picker_event(
             &player_layer->color_picker,
             event,
-            &selected,
-            undo_history) < 0) {
+            &selected) < 0) {
         return -1;
     }
 

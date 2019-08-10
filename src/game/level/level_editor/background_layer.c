@@ -5,6 +5,8 @@
 #include "color.h"
 #include "background_layer.h"
 
+// TODO: UndoHistory is not support in BackgroundLayer
+
 int background_layer_render(BackgroundLayer *layer,
                             Camera *camera,
                             int active)
@@ -27,10 +29,11 @@ int background_layer_event(BackgroundLayer *layer,
     trace_assert(layer);
     trace_assert(event);
     trace_assert(camera);
+    trace_assert(undo_history);
 
     return color_picker_event(
         &layer->color_picker, event,
-        NULL, undo_history);
+        NULL);
 }
 
 int background_layer_dump_stream(BackgroundLayer *layer,
