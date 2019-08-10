@@ -8,6 +8,7 @@
 #include "game/level/level_editor/point_layer.h"
 #include "game/level/level_editor/player_layer.h"
 #include "game/level/level_editor/label_layer.h"
+#include "game/level/level_editor/background_layer.h"
 #include "ui/edit_field.h"
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
@@ -60,7 +61,9 @@ LevelEditor *create_level_editor(void)
         RETURN_LT(lt, NULL);
     }
 
-    level_editor->background_layer = create_color_picker_from_rgba(hexstr("fffda5"));
+    level_editor->background_layer = (BackgroundLayer) {
+        .color_picker = create_color_picker_from_rgba(hexstr("fffda5"))
+    };
 
     level_editor->player_layer =
         create_player_layer(vec(0.0f, 0.0f), hexstr("ff8080"));
@@ -131,7 +134,7 @@ LevelEditor *create_level_editor(void)
     level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(&level_editor->player_layer);
     level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(level_editor->lava_layer);
     level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(level_editor->regions_layer);
-    level_editor->layers[LAYER_PICKER_BACKGROUND] = color_picker_as_layer(&level_editor->background_layer);
+    level_editor->layers[LAYER_PICKER_BACKGROUND] = background_layer_as_layer(&level_editor->background_layer);
     level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
 
     level_editor->undo_history = PUSH_LT(
@@ -203,7 +206,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     }
 
     if (color_picker_read_from_line_stream(
-            &level_editor->background_layer,
+            &level_editor->background_layer.color_picker,
             level_stream) < 0) {
         RETURN_LT(lt, NULL);
     }
@@ -289,7 +292,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(&level_editor->player_layer);
     level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(level_editor->lava_layer);
     level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(level_editor->regions_layer);
-    level_editor->layers[LAYER_PICKER_BACKGROUND] = color_picker_as_layer(&level_editor->background_layer);
+    level_editor->layers[LAYER_PICKER_BACKGROUND] = background_layer_as_layer(&level_editor->background_layer);
     level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
 
     level_editor->undo_history = PUSH_LT(
@@ -325,7 +328,7 @@ int level_editor_render(const LevelEditor *level_editor,
     trace_assert(level_editor);
     trace_assert(camera);
 
-    if (camera_clear_background(camera, color_picker_rgba(&level_editor->background_layer)) < 0) {
+    if (camera_clear_background(camera, color_picker_rgba(&level_editor->background_layer.color_picker)) < 0) {
         return -1;
     }
 

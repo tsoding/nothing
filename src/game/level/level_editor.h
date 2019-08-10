@@ -36,7 +36,7 @@ struct LevelEditor
     PlayerLayer player_layer;
     RectLayer *lava_layer;
     RectLayer *regions_layer;
-    ColorPicker background_layer;
+    BackgroundLayer background_layer;
     LabelLayer *label_layer;
     char *supa_script_source;
 

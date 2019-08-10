@@ -15,6 +15,7 @@
 #include "ebisp/builtins.h"
 #include "broadcast.h"
 #include "sdl/texture.h"
+#include "game/level/level_editor/background_layer.h"
 #include "game/level/level_editor.h"
 
 static int game_render_cursor(const Game *game);

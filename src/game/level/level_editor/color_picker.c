@@ -20,15 +20,6 @@ const char *slider_labels[COLOR_SLIDER_N] = {
     "Lightness"
 };
 
-LayerPtr color_picker_as_layer(ColorPicker *color_picker)
-{
-    LayerPtr layer = {
-        .ptr = color_picker,
-        .type = LAYER_COLOR_PICKER
-    };
-    return layer;
-}
-
 ColorPicker create_color_picker_from_rgba(Color color)
 {
     Color color_hsla = rgba_to_hsla(color);

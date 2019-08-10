@@ -33,8 +33,8 @@ int background_layer_event(BackgroundLayer *layer,
         NULL, undo_history);
 }
 
-int background_dump_stream(BackgroundLayer *layer,
-                           FILE *stream)
+int background_layer_dump_stream(BackgroundLayer *layer,
+                                 FILE *stream)
 {
     trace_assert(layer);
     trace_assert(stream);
@@ -43,5 +43,5 @@ int background_dump_stream(BackgroundLayer *layer,
         color_picker_rgba(&layer->color_picker),
         stream);
 
-    return 0;
+    return fprintf(stream, "\n");;
 }
