@@ -38,6 +38,7 @@ struct PointLayer
     Edit_field *edit_field;
     int selected;
     ColorPicker color_picker;
+    Color prev_color;
 };
 
 LayerPtr point_layer_as_layer(PointLayer *point_layer)
@@ -125,7 +126,8 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
 
     point_layer->selected = -1;
 
-    point_layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
+    point_layer->color_picker = create_color_picker_from_rgba(COLOR_RED);
+    point_layer->prev_color = COLOR_RED;
 
     return point_layer;
 }
@@ -273,6 +275,29 @@ void point_layer_delete_nth_element(PointLayer *point_layer,
     dynarray_delete_at(point_layer->ids, i);
 }
 
+typedef struct {
+    size_t index;
+    Color color;
+} ColorContext;
+
+static
+void point_layer_revert_color(void *layer, Context context)
+{
+    log_info("point_layer_revert_color\n");
+
+    trace_assert(layer);
+    PointLayer *point_layer = layer;
+
+    trace_assert(sizeof(ColorContext) <= CONTEXT_SIZE);
+    ColorContext *color_context = (ColorContext*)context.data;
+
+    const size_t n = dynarray_count(point_layer->colors);
+    Color *colors = dynarray_data(point_layer->colors);
+    trace_assert(color_context->index < n);
+
+    colors[color_context->index] = color_context->color;
+}
+
 static
 int point_layer_idle_event(PointLayer *point_layer,
                            const SDL_Event *event,
@@ -294,6 +319,24 @@ int point_layer_idle_event(PointLayer *point_layer,
     if (selected) {
         if (point_layer->selected >= 0) {
             Color *colors = dynarray_data(point_layer->colors);
+
+            if (!color_picker_drag(&point_layer->color_picker)) {
+                Action action = {
+                    .layer = point_layer,
+                    .revert = point_layer_revert_color
+                };
+
+                *((ColorContext*)action.context.data) = (ColorContext) {
+                    .index = (size_t) point_layer->selected,
+                    .color = point_layer->prev_color
+                };
+
+                undo_history_push(undo_history, action);
+
+                point_layer->prev_color =
+                    color_picker_rgba(&point_layer->color_picker);
+            }
+
             colors[point_layer->selected] =
                 color_picker_rgba(&point_layer->color_picker);
         }
@@ -321,6 +364,7 @@ int point_layer_idle_event(PointLayer *point_layer,
                 point_layer->state = POINT_LAYER_MOVE;
                 point_layer->color_picker =
                     create_color_picker_from_rgba(colors[point_layer->selected]);
+                point_layer->prev_color = colors[point_layer->selected];
             }
         } break;
         }

@@ -31,4 +31,16 @@ int color_picker_event(ColorPicker *color_picker,
 
 Color color_picker_rgba(const ColorPicker *color_picker);
 
+static inline
+int color_picker_drag(const ColorPicker *color_picker)
+{
+    int result = 0;
+
+    for (int i = 0; i < COLOR_SLIDER_N; ++i) {
+        result = result || color_picker->sliders[i].drag;
+    }
+
+    return result;
+}
+
 #endif  // COLOR_PICKER_H_
