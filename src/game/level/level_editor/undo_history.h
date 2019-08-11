@@ -3,7 +3,10 @@
 
 #include "layer.h"
 
-#define CONTEXT_SIZE 32
+#define CONTEXT_SIZE 256
+
+#define ASSERT_CONTEXT_SIZE(context)               \
+    trace_assert(sizeof(context) <= CONTEXT_SIZE)
 
 typedef struct {
     char data[CONTEXT_SIZE];

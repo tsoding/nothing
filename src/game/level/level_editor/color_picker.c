@@ -20,15 +20,6 @@ const char *slider_labels[COLOR_SLIDER_N] = {
     "Lightness"
 };
 
-LayerPtr color_picker_as_layer(ColorPicker *color_picker)
-{
-    LayerPtr layer = {
-        .ptr = color_picker,
-        .type = LAYER_COLOR_PICKER
-    };
-    return layer;
-}
-
 ColorPicker create_color_picker_from_rgba(Color color)
 {
     Color color_hsla = rgba_to_hsla(color);
@@ -38,7 +29,6 @@ ColorPicker create_color_picker_from_rgba(Color color)
             {0, color_hsla.g, 1.0f},
             {0, color_hsla.b, 1.0f}
         },
-        .color = color
     };
     return color_picker;
 }
@@ -101,21 +91,10 @@ int color_picker_render(const ColorPicker *color_picker,
     return 0;
 }
 
-static void color_picker_revert(void *layer, Context context)
-{
-    trace_assert(layer);
-    ColorPicker *color_picker = layer;
-
-    log_info("color_picker_revert\n");
-
-    *color_picker = create_color_picker_from_rgba(*((Color *)context.data));
-}
-
 // TODO(#932): the `selected` event propagation control is cumbersome
 int color_picker_event(ColorPicker *color_picker,
                        const SDL_Event *event,
-                       int *selected_out,
-                       UndoHistory *undo_history)
+                       int *selected_out)
 {
     trace_assert(color_picker);
     trace_assert(event);
@@ -132,20 +111,6 @@ int color_picker_event(ColorPicker *color_picker,
                      COLOR_SLIDER_WIDTH, COLOR_SLIDER_HEIGHT),
                 &selected) < 0) {
             return -1;
-        }
-
-        if (selected && !color_picker->sliders[index].drag) {
-            if (undo_history) {
-                trace_assert(sizeof(Color) <= CONTEXT_SIZE);
-                Action action = {
-                    .layer = color_picker,
-                    .revert = color_picker_revert,
-                };
-                memcpy(action.context.data, &color_picker->color, sizeof(Color));
-                undo_history_push(undo_history, action);
-            }
-
-            color_picker->color = color_picker_rgba(color_picker);
         }
     }
 

@@ -64,25 +64,37 @@ void dynarray_clear(Dynarray *dynarray)
     dynarray->count = 0;
 }
 
+static
+int dynarray_grow(Dynarray *dynarray)
+{
+    if (dynarray->count < dynarray->capacity) {
+        return 0;
+    }
+
+    void *new_data = nth_realloc(
+        dynarray->data,
+        dynarray->capacity * dynarray->element_size * 2);
+    if (new_data == NULL) {
+        return -1;
+    }
+
+    dynarray->data = REPLACE_LT(dynarray->lt, dynarray->data, new_data);
+    if (dynarray->data == NULL) {
+        return -1;
+    }
+
+    dynarray->capacity *= 2;
+
+    return 0;
+}
+
 int dynarray_push(Dynarray *dynarray, const void *element)
 {
     trace_assert(dynarray);
     trace_assert(element);
 
-    if (dynarray->count >= dynarray->capacity) {
-        void *new_data = nth_realloc(
-            dynarray->data,
-            dynarray->capacity * dynarray->element_size * 2);
-        if (new_data == NULL) {
-            return -1;
-        }
-
-        dynarray->data = REPLACE_LT(dynarray->lt, dynarray->data, new_data);
-        if (dynarray->data == NULL) {
-            return -1;
-        }
-
-        dynarray->capacity *= 2;
+    if (dynarray_grow(dynarray) < 0) {
+        return -1;
     }
 
     memcpy(
@@ -123,24 +135,33 @@ void dynarray_delete_at(Dynarray *dynarray, size_t index)
     dynarray->count--;
 }
 
+void dynarray_insert_before(Dynarray *dynarray, size_t index, void *element)
+{
+    trace_assert(dynarray);
+    trace_assert(element);
+    trace_assert(index <= dynarray->count);
+
+    dynarray_grow(dynarray);
+
+    memmove(
+        dynarray->data + (index + 1) * dynarray->element_size,
+        dynarray->data + index * dynarray->element_size,
+        dynarray->element_size * (dynarray->count - index));
+
+    memcpy(
+        dynarray->data + index * dynarray->element_size,
+        element,
+        dynarray->element_size);
+
+    dynarray->count++;
+}
+
 int dynarray_push_empty(Dynarray *dynarray)
 {
     trace_assert(dynarray);
 
-    if (dynarray->count >= dynarray->capacity) {
-        void *new_data = nth_realloc(
-            dynarray->data,
-            dynarray->capacity * dynarray->element_size * 2);
-        if (new_data == NULL) {
-            return -1;
-        }
-
-        dynarray->data = REPLACE_LT(dynarray->lt, dynarray->data, new_data);
-        if (dynarray->data == NULL) {
-            return -1;
-        }
-
-        dynarray->capacity *= 2;
+    if (dynarray_grow(dynarray) < 0) {
+        return -1;
     }
 
     memset(

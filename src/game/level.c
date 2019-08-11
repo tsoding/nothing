@@ -21,6 +21,7 @@
 #include "game/level/level_editor/point_layer.h"
 #include "game/level/level_editor/player_layer.h"
 #include "game/level/level_editor/label_layer.h"
+#include "game/level/level_editor/background_layer.h"
 #include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
@@ -70,7 +71,9 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor,
 
     level->background = PUSH_LT(
         lt,
-        create_background(color_picker_rgba(&level_editor->background_layer)),
+        create_background(
+            color_picker_rgba(
+                &level_editor->background_layer.color_picker)),
         destroy_background);
     if (level->background == NULL) {
         RETURN_LT(lt, NULL);

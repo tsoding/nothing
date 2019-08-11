@@ -178,6 +178,8 @@ add_executable(nothing
   src/game/level/level_editor/layer.c
   src/game/level/level_editor/label_layer.c
   src/game/level/level_editor/label_layer.h
+  src/game/level/level_editor/background_layer.c
+  src/game/level/level_editor/background_layer.h
   src/game/level/level_editor/undo_history.h
   src/game/level/level_editor/undo_history.c
 )

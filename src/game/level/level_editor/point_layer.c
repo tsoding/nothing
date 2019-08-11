@@ -38,6 +38,8 @@ struct PointLayer
     Edit_field *edit_field;
     int selected;
     ColorPicker color_picker;
+    Color prev_color;
+    Point prev_position;
 };
 
 LayerPtr point_layer_as_layer(PointLayer *point_layer)
@@ -125,7 +127,8 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
 
     point_layer->selected = -1;
 
-    point_layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
+    point_layer->color_picker = create_color_picker_from_rgba(COLOR_RED);
+    point_layer->prev_color = COLOR_RED;
 
     return point_layer;
 }
@@ -263,14 +266,82 @@ int point_layer_add_element(PointLayer *point_layer,
     return 0;
 }
 
+typedef struct {
+    Point position;
+    Color color;
+    char id[ID_MAX_SIZE];
+    size_t index;
+} DeleteContext;
+
+static
+void point_layer_revert_delete(void *layer, Context context)
+{
+    trace_assert(layer);
+    PointLayer *point_layer = layer;
+
+    trace_assert(sizeof(DeleteContext) <= CONTEXT_SIZE);
+    DeleteContext *delete_context = (DeleteContext *)context.data;
+
+    dynarray_insert_before(point_layer->positions, delete_context->index, &delete_context->position);
+    dynarray_insert_before(point_layer->colors, delete_context->index, &delete_context->color);
+    dynarray_insert_before(point_layer->ids, delete_context->index, delete_context->id);
+}
+
 static
 void point_layer_delete_nth_element(PointLayer *point_layer,
-                                    size_t i)
+                                    size_t i,
+                                    UndoHistory *undo_history)
 {
     trace_assert(point_layer);
+
+    Action action = {
+        .revert = point_layer_revert_delete,
+        .layer = point_layer
+    };
+
+    trace_assert(sizeof(DeleteContext) <= CONTEXT_SIZE);
+    DeleteContext *delete_context = (DeleteContext *)action.context.data;
+
+    Point *positions = dynarray_data(point_layer->positions);
+    Color *colors = dynarray_data(point_layer->colors);
+    char *ids = dynarray_data(point_layer->ids);
+
+    delete_context->position = positions[i];
+    delete_context->color = colors[i];
+    memcpy(
+        delete_context->id,
+        ids + i * ID_MAX_SIZE,
+        ID_MAX_SIZE);
+    delete_context->index = i;
+
+    undo_history_push(undo_history, action);
+
     dynarray_delete_at(point_layer->positions, i);
     dynarray_delete_at(point_layer->colors, i);
     dynarray_delete_at(point_layer->ids, i);
+}
+
+typedef struct {
+    size_t index;
+    Color color;
+} ColorContext;
+
+static
+void point_layer_revert_color(void *layer, Context context)
+{
+    log_info("point_layer_revert_color\n");
+
+    trace_assert(layer);
+    PointLayer *point_layer = layer;
+
+    trace_assert(sizeof(ColorContext) <= CONTEXT_SIZE);
+    ColorContext *color_context = (ColorContext*)context.data;
+
+    const size_t n = dynarray_count(point_layer->colors);
+    Color *colors = dynarray_data(point_layer->colors);
+    trace_assert(color_context->index < n);
+
+    colors[color_context->index] = color_context->color;
 }
 
 static
@@ -287,14 +358,31 @@ int point_layer_idle_event(PointLayer *point_layer,
     if (color_picker_event(
             &point_layer->color_picker,
             event,
-            &selected,
-            NULL) < 0) {
+            &selected) < 0) {
         return -1;
     }
 
     if (selected) {
         if (point_layer->selected >= 0) {
             Color *colors = dynarray_data(point_layer->colors);
+
+            if (!color_picker_drag(&point_layer->color_picker)) {
+                Action action = {
+                    .layer = point_layer,
+                    .revert = point_layer_revert_color
+                };
+
+                *((ColorContext*)action.context.data) = (ColorContext) {
+                    .index = (size_t) point_layer->selected,
+                    .color = point_layer->prev_color
+                };
+
+                undo_history_push(undo_history, action);
+
+                point_layer->prev_color =
+                    color_picker_rgba(&point_layer->color_picker);
+            }
+
             colors[point_layer->selected] =
                 color_picker_rgba(&point_layer->color_picker);
         }
@@ -319,9 +407,14 @@ int point_layer_idle_event(PointLayer *point_layer,
                     undo_history);
             } else {
                 Color *colors = dynarray_data(point_layer->colors);
+                Point *positions = dynarray_data(point_layer->positions);
+
                 point_layer->state = POINT_LAYER_MOVE;
                 point_layer->color_picker =
                     create_color_picker_from_rgba(colors[point_layer->selected]);
+
+                point_layer->prev_color = colors[point_layer->selected];
+                point_layer->prev_position = positions[point_layer->selected];
             }
         } break;
         }
@@ -331,7 +424,10 @@ int point_layer_idle_event(PointLayer *point_layer,
         switch (event->key.keysym.sym) {
         case SDLK_DELETE: {
             if (0 <= point_layer->selected && point_layer->selected < (int) dynarray_count(point_layer->positions)) {
-                point_layer_delete_nth_element(point_layer, (size_t)point_layer->selected);
+                point_layer_delete_nth_element(
+                    point_layer,
+                    (size_t)point_layer->selected,
+                    undo_history);
                 point_layer->selected = -1;
             }
         } break;
@@ -353,10 +449,35 @@ int point_layer_idle_event(PointLayer *point_layer,
     return 0;
 }
 
+typedef struct {
+    size_t index;
+    char id[ID_MAX_SIZE];
+} RenameContext;
+
+static
+void point_layer_revert_rename(void *layer,
+                               Context context)
+{
+    trace_assert(layer);
+    PointLayer *point_layer = layer;
+
+    ASSERT_CONTEXT_SIZE(RenameContext);
+    RenameContext *rename_context = (RenameContext *)context.data;
+
+    trace_assert(rename_context->index < dynarray_count(point_layer->ids));
+
+    char *ids = dynarray_data(point_layer->ids);
+    memcpy(
+        ids + rename_context->index * ID_MAX_SIZE,
+        rename_context->id,
+        ID_MAX_SIZE);
+}
+
 static
 int point_layer_edit_id_event(PointLayer *point_layer,
                               const SDL_Event *event,
-                              const Camera *camera)
+                              const Camera *camera,
+                              UndoHistory *undo_history)
 {
     trace_assert(point_layer);
     trace_assert(event);
@@ -368,9 +489,27 @@ int point_layer_edit_id_event(PointLayer *point_layer,
         case SDLK_RETURN: {
             char *ids = dynarray_data(point_layer->ids);
             const char *text = edit_field_as_text(point_layer->edit_field);
+
+            Action action = {
+                .revert = point_layer_revert_rename,
+                .layer = point_layer
+            };
+
+            ASSERT_CONTEXT_SIZE(RenameContext);
+            RenameContext *rename_context = (RenameContext *)action.context.data;
+
+            memcpy(
+                rename_context->id,
+                ids + point_layer->selected * ID_MAX_SIZE,
+                ID_MAX_SIZE);
+            rename_context->index = (size_t) point_layer->selected;
+
+            undo_history_push(undo_history, action);
+
             size_t n = max_size_t(strlen(text), ID_MAX_SIZE - 1);
             memcpy(ids + point_layer->selected * ID_MAX_SIZE, text, n);
             *(ids + point_layer->selected * ID_MAX_SIZE + n) = '\0';
+
             point_layer->state = POINT_LAYER_IDLE;
             SDL_StopTextInput();
             return 0;
@@ -388,10 +527,30 @@ int point_layer_edit_id_event(PointLayer *point_layer,
     return edit_field_event(point_layer->edit_field, event);
 }
 
+typedef struct {
+    size_t index;
+    Point position;
+} MoveContext;
+
+static
+void point_layer_revert_move(void *layer, Context context)
+{
+    trace_assert(layer);
+    PointLayer *point_layer = layer;
+
+    ASSERT_CONTEXT_SIZE(MoveContext);
+    MoveContext *move_context = (MoveContext *)context.data;
+
+    trace_assert(move_context->index < dynarray_count(point_layer->positions));
+    Point *positions = dynarray_data(point_layer->positions);
+    positions[move_context->index] = move_context->position;
+}
+
 static
 int point_layer_move_event(PointLayer *point_layer,
                            const SDL_Event *event,
-                           const Camera *camera)
+                           const Camera *camera,
+                           UndoHistory *undo_history)
 {
     trace_assert(point_layer);
     trace_assert(event);
@@ -403,6 +562,20 @@ int point_layer_move_event(PointLayer *point_layer,
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
             point_layer->state = POINT_LAYER_IDLE;
+
+            Action action = {
+                .revert = point_layer_revert_move,
+                .layer = point_layer
+            };
+
+            MoveContext *context = (MoveContext *)action.context.data;
+            ASSERT_CONTEXT_SIZE(MoveContext);
+
+            context->index = (size_t) point_layer->selected;
+            context->position = point_layer->prev_position;
+
+            // TODO(#1014): just click (without moving) on the point creates an undo history entry
+            undo_history_push(undo_history, action);
         } break;
         }
     } break;
@@ -432,10 +605,10 @@ int point_layer_event(PointLayer *point_layer,
         return point_layer_idle_event(point_layer, event, camera, undo_history);
 
     case POINT_LAYER_EDIT_ID:
-        return point_layer_edit_id_event(point_layer, event, camera);
+        return point_layer_edit_id_event(point_layer, event, camera, undo_history);
 
     case POINT_LAYER_MOVE:
-        return point_layer_move_event(point_layer, event, camera);
+        return point_layer_move_event(point_layer, event, camera, undo_history);
     }
 
     return 0;
