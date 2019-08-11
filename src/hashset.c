@@ -79,7 +79,7 @@ int hashset_insert(HashSet *hashset, const void *element)
     trace_assert(element);
 
     const uint64_t hash = fnv1(element, hashset->element_size);
-    const size_t i = hash % hashset->n;
+    const size_t i = (size_t)(hash % hashset->n);
 
     if (!dynarray_contains(hashset->buckets[i], element)) {
         dynarray_push(hashset->buckets[i], element);
@@ -95,7 +95,7 @@ bool hashset_contains(HashSet *hashset, const void *element)
     trace_assert(element);
 
     const uint64_t hash = fnv1(element, hashset->element_size);
-    const size_t i = hash % hashset->n;
+    const size_t i = (size_t)(hash % hashset->n);
 
     return dynarray_contains(hashset->buckets[i], element);
 }

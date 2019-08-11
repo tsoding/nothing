@@ -1,5 +1,6 @@
 build/
 builkd/
+SDL2/
 *vscode*
 GPATH
 GRTAGS

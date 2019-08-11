@@ -2,6 +2,7 @@
 #include "system/stacktrace.h"
 #include <math.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #include "camera.h"
 #include "sdl/renderer.h"

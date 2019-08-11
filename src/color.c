@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <string.h>
+#include <math.h>
 
 #include "color.h"
 

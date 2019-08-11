@@ -1,17 +1,17 @@
 #include <stdlib.h>
 #include <stdio.h>
-#ifdef __GNUC__
+#if defined(__GNUC__) && defined(__linux__)
 #include <execinfo.h>
 #include <unistd.h>
+#define N 100
 #endif
 
 #include "./stacktrace.h"
 
-#define N 100
 
 void print_stacktrace(void)
 {
-#ifdef __GNUC__
+#if defined(__GNUC__) && defined(__linux__)
     void *array[N];
     int size;
 

@@ -2,6 +2,9 @@
 #define FILE_H_
 
 #include <time.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #ifndef _WIN32
 #include <dirent.h>
 #endif
@@ -11,7 +14,7 @@ int last_modified(const char *filepath, time_t *time);
 #ifdef _WIN32
 struct dirent
 {
-    char d_name[256];
+    char d_name[MAX_PATH+1];
 };
 
 typedef struct DIR DIR;

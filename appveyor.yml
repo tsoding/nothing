@@ -1,17 +1,44 @@
 image:
   - ubuntu1804
   - Visual Studio 2015
+environment: # enable mingw build on windows image
+  MSYSTEM: MINGW64
+  CHERE_INVOKING: 1
+  matrix:
+    - BUILD_TYPE: mingw
+    - BUILD_TYPE: other
+matrix:
+  exclude: # no mingw build on linux
+    - image: ubuntu1804
+      BUILD_TYPE: mingw
 install:
-  - sh: sudo apt-get update -qq
-  - sh: sudo apt-get install -qq cmake cmake-data libsdl2-dev libxml2-dev
-  - cmd: curl -fsSL -o SDL2-devel-2.0.9-VC.zip https://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip
-  - cmd: 7z x SDL2-devel-2.0.9-VC.zip
-  - cmd: move SDL2-2.0.9 SDL2
+  - ps: |
+       if ($isWindows) {
+          if ($env:BUILD_TYPE -eq 'mingw') {
+              cmd /C 'curl -fsSL -o SDL2-devel-2.0.10-mingw.tar.gz https://www.libsdl.org/release/SDL2-devel-2.0.10-mingw.tar.gz'
+              C:\msys64\usr\bin\bash.exe -lc "tar xzf SDL2-devel-2.0.10-mingw.tar.gz"
+              mv SDL2-2.0.10 SDL2
+          } else {
+              cmd /C 'curl -fsSL -o SDL2-devel-2.0.9-VC.zip https://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip'
+              7z x SDL2-devel-2.0.9-VC.zip
+              mv SDL2-2.0.9 SDL2
+          }
+       } else {
+           bash -c "sudo apt-get update -qq"
+           bash -c "sudo apt-get install -qq cmake cmake-data libsdl2-dev libxml2-dev"
+       }
 build_script:
   - mkdir build
   - cd build
-  - cmake ..
-  - cmake --build .
+  - ps: |
+       if ($isWindows -and $env:BUILD_TYPE -eq 'mingw') {
+           C:\msys64\usr\bin\bash.exe -lc "cmake .. -G 'MSYS Makefiles'"
+           C:\msys64\usr\bin\bash.exe -lc "cmake --build ."
+           ./nothing_test.exe
+       } else {
+           cmake ..
+           cmake --build .
+       }
   # TODO(#866): Unit Tests are not run on Windows CI build
   #   https://ci.appveyor.com/project/rexim/nothing/builds/24807772/job/nr36kt098djthl4l#L431
   - sh: ./nothing_test
