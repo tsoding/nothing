@@ -574,7 +574,7 @@ int point_layer_move_event(PointLayer *point_layer,
             context->index = (size_t) point_layer->selected;
             context->position = point_layer->prev_position;
 
-            // TODO: just click (without moving) on the point creates an undo history entry
+            // TODO(#1014): just click (without moving) on the point creates an undo history entry
             undo_history_push(undo_history, action);
         } break;
         }
