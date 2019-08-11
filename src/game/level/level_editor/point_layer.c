@@ -449,10 +449,35 @@ int point_layer_idle_event(PointLayer *point_layer,
     return 0;
 }
 
+typedef struct {
+    size_t index;
+    char id[ID_MAX_SIZE];
+} RenameContext;
+
+static
+void point_layer_revert_rename(void *layer,
+                               Context context)
+{
+    trace_assert(layer);
+    PointLayer *point_layer = layer;
+
+    ASSERT_CONTEXT_SIZE(RenameContext);
+    RenameContext *rename_context = (RenameContext *)context.data;
+
+    trace_assert(rename_context->index < dynarray_count(point_layer->ids));
+
+    char *ids = dynarray_data(point_layer->ids);
+    memcpy(
+        ids + rename_context->index * ID_MAX_SIZE,
+        rename_context->id,
+        ID_MAX_SIZE);
+}
+
 static
 int point_layer_edit_id_event(PointLayer *point_layer,
                               const SDL_Event *event,
-                              const Camera *camera)
+                              const Camera *camera,
+                              UndoHistory *undo_history)
 {
     trace_assert(point_layer);
     trace_assert(event);
@@ -464,9 +489,27 @@ int point_layer_edit_id_event(PointLayer *point_layer,
         case SDLK_RETURN: {
             char *ids = dynarray_data(point_layer->ids);
             const char *text = edit_field_as_text(point_layer->edit_field);
+
+            Action action = {
+                .revert = point_layer_revert_rename,
+                .layer = point_layer
+            };
+
+            ASSERT_CONTEXT_SIZE(RenameContext);
+            RenameContext *rename_context = (RenameContext *)action.context.data;
+
+            memcpy(
+                rename_context->id,
+                ids + point_layer->selected * ID_MAX_SIZE,
+                ID_MAX_SIZE);
+            rename_context->index = (size_t) point_layer->selected;
+
+            undo_history_push(undo_history, action);
+
             size_t n = max_size_t(strlen(text), ID_MAX_SIZE - 1);
             memcpy(ids + point_layer->selected * ID_MAX_SIZE, text, n);
             *(ids + point_layer->selected * ID_MAX_SIZE + n) = '\0';
+
             point_layer->state = POINT_LAYER_IDLE;
             SDL_StopTextInput();
             return 0;
@@ -531,6 +574,7 @@ int point_layer_move_event(PointLayer *point_layer,
             context->index = (size_t) point_layer->selected;
             context->position = point_layer->prev_position;
 
+            // TODO: just click (without moving) on the point creates an undo history entry
             undo_history_push(undo_history, action);
         } break;
         }
@@ -561,7 +605,7 @@ int point_layer_event(PointLayer *point_layer,
         return point_layer_idle_event(point_layer, event, camera, undo_history);
 
     case POINT_LAYER_EDIT_ID:
-        return point_layer_edit_id_event(point_layer, event, camera);
+        return point_layer_edit_id_event(point_layer, event, camera, undo_history);
 
     case POINT_LAYER_MOVE:
         return point_layer_move_event(point_layer, event, camera, undo_history);
