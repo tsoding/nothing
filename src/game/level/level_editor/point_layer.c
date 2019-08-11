@@ -39,6 +39,7 @@ struct PointLayer
     int selected;
     ColorPicker color_picker;
     Color prev_color;
+    Point prev_position;
 };
 
 LayerPtr point_layer_as_layer(PointLayer *point_layer)
@@ -406,10 +407,14 @@ int point_layer_idle_event(PointLayer *point_layer,
                     undo_history);
             } else {
                 Color *colors = dynarray_data(point_layer->colors);
+                Point *positions = dynarray_data(point_layer->positions);
+
                 point_layer->state = POINT_LAYER_MOVE;
                 point_layer->color_picker =
                     create_color_picker_from_rgba(colors[point_layer->selected]);
+
                 point_layer->prev_color = colors[point_layer->selected];
+                point_layer->prev_position = positions[point_layer->selected];
             }
         } break;
         }
@@ -479,10 +484,30 @@ int point_layer_edit_id_event(PointLayer *point_layer,
     return edit_field_event(point_layer->edit_field, event);
 }
 
+typedef struct {
+    size_t index;
+    Point position;
+} MoveContext;
+
+static
+void point_layer_revert_move(void *layer, Context context)
+{
+    trace_assert(layer);
+    PointLayer *point_layer = layer;
+
+    ASSERT_CONTEXT_SIZE(MoveContext);
+    MoveContext *move_context = (MoveContext *)context.data;
+
+    trace_assert(move_context->index < dynarray_count(point_layer->positions));
+    Point *positions = dynarray_data(point_layer->positions);
+    positions[move_context->index] = move_context->position;
+}
+
 static
 int point_layer_move_event(PointLayer *point_layer,
                            const SDL_Event *event,
-                           const Camera *camera)
+                           const Camera *camera,
+                           UndoHistory *undo_history)
 {
     trace_assert(point_layer);
     trace_assert(event);
@@ -494,6 +519,19 @@ int point_layer_move_event(PointLayer *point_layer,
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
             point_layer->state = POINT_LAYER_IDLE;
+
+            Action action = {
+                .revert = point_layer_revert_move,
+                .layer = point_layer
+            };
+
+            MoveContext *context = (MoveContext *)action.context.data;
+            ASSERT_CONTEXT_SIZE(MoveContext);
+
+            context->index = (size_t) point_layer->selected;
+            context->position = point_layer->prev_position;
+
+            undo_history_push(undo_history, action);
         } break;
         }
     } break;
@@ -526,7 +564,7 @@ int point_layer_event(PointLayer *point_layer,
         return point_layer_edit_id_event(point_layer, event, camera);
 
     case POINT_LAYER_MOVE:
-        return point_layer_move_event(point_layer, event, camera);
+        return point_layer_move_event(point_layer, event, camera, undo_history);
     }
 
     return 0;
