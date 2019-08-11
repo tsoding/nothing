@@ -44,7 +44,6 @@ int layer_event(LayerPtr layer,
         return player_layer_event(layer.ptr, event, camera, undo_history);
 
     case LAYER_BACKGROUND:
-        // TODO(#1000): undo history is not really applicable to color picker as layer
         return background_layer_event(layer.ptr, event, camera, undo_history);
 
     case LAYER_LABEL:
