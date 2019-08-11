@@ -2,6 +2,7 @@
 #define RECT_H_
 
 #include <SDL.h>
+#include <math.h>
 
 #include "math/point.h"
 

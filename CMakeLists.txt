@@ -2,16 +2,31 @@ cmake_minimum_required(VERSION 3.2)
 project(nothing)
 
 if(WIN32)
-  set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/include")
-
-  # Support both 32 and 64 bit builds
-  if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
-    set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/lib/x64/SDL2.lib;${CMAKE_SOURCE_DIR}/SDL2/lib/x64/SDL2main.lib")
+  if(MINGW)
+    add_compile_definitions(SDL_MAIN_HANDLED) # https://stackoverflow.com/a/25089610
+    add_compile_definitions(__USE_MINGW_ANSI_STDIO) # https://github.com/trink/symtseries/issues/49#issuecomment-160843756
+    # Support both 32 and 64 bit builds
+    if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
+      set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/x86_64-w64-mingw32/include/SDL2")
+      set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/x86_64-w64-mingw32/lib/libSDL2.a;${CMAKE_SOURCE_DIR}/SDL2/x86_64-w64-mingw32/lib/libSDL2main.a")
+    else()
+      set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/i686-w64-mingw32/include/SDL2")
+      set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/i686-w64-mingw32/lib/libSDL2.a;${CMAKE_SOURCE_DIR}/SDL2/i686-w64-mingw32/lib/libSDL2main.a")
+    endif()
+	  
   else()
-    set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/lib/x86/SDL2.lib;${CMAKE_SOURCE_DIR}/SDL2/lib/x86/SDL2main.lib")
-  endif()
+    set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/include")
 
+    # Support both 32 and 64 bit builds
+    if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
+      set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/lib/x64/SDL2.lib;${CMAKE_SOURCE_DIR}/SDL2/lib/x64/SDL2main.lib")
+    else()
+      set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/lib/x86/SDL2.lib;${CMAKE_SOURCE_DIR}/SDL2/lib/x86/SDL2main.lib")
+    endif()
+
+  endif()
   string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
+  
 else()
   find_package(SDL2 REQUIRED)
 endif()
@@ -208,6 +223,7 @@ if(("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" STREQU
      -Wswitch \
      -Wmissing-field-initializers \
      -fno-common \
+	   -fno-strict-aliasing \
      -pedantic \
      -std=c11 \
      -ggdb \
@@ -231,7 +247,9 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     /wd5045 \
     /D \"_CRT_SECURE_NO_WARNINGS\"")
 endif()
-if(WIN32)
+if(MINGW)
+  target_link_libraries(nothing hid setupapi Imm32 Version winmm)
+elseif(WIN32)
   target_link_libraries(nothing Imm32 Version winmm)
 endif()
 

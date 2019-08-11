@@ -2,6 +2,7 @@
 #define LT_H_
 
 #include <assert.h>
+#include <stdlib.h>
 #include <string.h>
 #include "system/stacktrace.h"
 

@@ -44,8 +44,14 @@ $ sudo pacman -S gcc cmake sdl2 inotify-tools libxml2
 
 ### Windows
 
+#### Visual Studio
+
 - [Visual Studio 2015+](https://visualstudio.microsoft.com/)
 - [SDL2 VC Development Libraries](https://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip)
+
+#### MinGW
+- [mingw-w64](https://mingw-w64.org)
+- [SDL2 MinGW Development Libraries](https://www.libsdl.org/release/SDL2-devel-2.0.10-mingw.tar.gz)
 
 ## Quick Start
 
@@ -62,6 +68,8 @@ $ ../build/nothing
 
 ### Windows
 
+#### Visual Studio
+
 - Enter the Visual Studio Command Line Development Environment https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line
   - Basically just find `vcvarsall.bat` and run `vcvarsall.bat x64` inside of cmd
 - Download [SDL2 VC Development Libraries](https://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip) and copy it to `path\to\nothing`
@@ -73,6 +81,37 @@ $ ../build/nothing
 > mkdir build
 > cd build
 > cmake ..
+> cmake --build .
+> cd ../data/
+> ..\build\nothing
+```
+
+#### MinGW (with MSYS)
+
+```console
+$ cd path/to/nothing
+$ wget https://www.libsdl.org/release/SDL2-devel-2.0.10-mingw.tar.gz
+$ tar xzf SDL2-devel-2.0.10-mingw.tar.gz
+$ mv SDL2-2.0.10 SDL2
+$ rm SDL2-devel-2.0.10-mingw.tar.gz
+$ mkdir build && cd build
+$ cmake .. -G "MSYS Makefiles"
+$ cmake --build .
+$ cd ../data/
+$ ../build/nothing
+```
+
+#### MinGW (without MSYS)
+- Download [SDL2 MinGW Development Libraries](https://www.libsdl.org/release/SDL2-devel-2.0.10-mingw.tar.gz) and copy it to `path\to\nothing`
+
+```console
+> cd path\to\nothing
+> 7z x SDL2-devel-2.0.10-mingw.tar.gz -so | 7z x -si -ttar
+> move SDL2-2.0.10 SDL2
+> del SDL2-devel-2.0.10-mingw.tar.gz
+> mkdir build
+> cd build
+> cmake .. -G "MinGW Makefiles"
 > cmake --build .
 > cd ../data/
 > ..\build\nothing

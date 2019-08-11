@@ -59,7 +59,7 @@ int last_modified(const char *filepath, time_t *time)
     mod_time <<= 32;
     mod_time |= filetime.dwLowDateTime;
     // Taken from https://stackoverflow.com/a/6161842/1901561
-    *time = mod_time / WINDOWS_TICK - SEC_TO_UNIX_EPOCH;
+    *time = (time_t)(mod_time / WINDOWS_TICK - SEC_TO_UNIX_EPOCH);
     return 0;
 
 #elif defined(__APPLE__)

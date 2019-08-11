@@ -1,6 +1,8 @@
 #ifndef WIGGLY_TEXT_H_
 #define WIGGLY_TEXT_H_
 
+#include <math.h>
+
 #include "color.h"
 #include "system/stacktrace.h"
 
