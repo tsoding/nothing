@@ -3,7 +3,7 @@
 
 #include "layer.h"
 
-#define CONTEXT_SIZE 32
+#define CONTEXT_SIZE 256
 
 typedef struct {
     char data[CONTEXT_SIZE];

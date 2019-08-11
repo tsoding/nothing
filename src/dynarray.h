@@ -20,5 +20,6 @@ bool dynarray_contains(const Dynarray *dynarray,
                        const void *element);
 // O(N)
 void dynarray_delete_at(Dynarray *dynarray, size_t index);
+void dynarray_insert_before(Dynarray *dynarray, size_t index, void *element);
 
 #endif  // DYNARRAY_H_

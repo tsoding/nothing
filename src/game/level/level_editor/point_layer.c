@@ -265,11 +265,56 @@ int point_layer_add_element(PointLayer *point_layer,
     return 0;
 }
 
+typedef struct {
+    Point position;
+    Color color;
+    char id[ID_MAX_SIZE];
+    size_t index;
+} DeleteContext;
+
+static
+void point_layer_revert_delete(void *layer, Context context)
+{
+    trace_assert(layer);
+    PointLayer *point_layer = layer;
+
+    trace_assert(sizeof(DeleteContext) <= CONTEXT_SIZE);
+    DeleteContext *delete_context = (DeleteContext *)context.data;
+
+    dynarray_insert_before(point_layer->positions, delete_context->index, &delete_context->position);
+    dynarray_insert_before(point_layer->colors, delete_context->index, &delete_context->color);
+    dynarray_insert_before(point_layer->ids, delete_context->index, delete_context->id);
+}
+
 static
 void point_layer_delete_nth_element(PointLayer *point_layer,
-                                    size_t i)
+                                    size_t i,
+                                    UndoHistory *undo_history)
 {
     trace_assert(point_layer);
+
+    Action action = {
+        .revert = point_layer_revert_delete,
+        .layer = point_layer
+    };
+
+    trace_assert(sizeof(DeleteContext) <= CONTEXT_SIZE);
+    DeleteContext *delete_context = (DeleteContext *)action.context.data;
+
+    Point *positions = dynarray_data(point_layer->positions);
+    Color *colors = dynarray_data(point_layer->colors);
+    char *ids = dynarray_data(point_layer->ids);
+
+    delete_context->position = positions[i];
+    delete_context->color = colors[i];
+    memcpy(
+        delete_context->id,
+        ids + i * ID_MAX_SIZE,
+        ID_MAX_SIZE);
+    delete_context->index = i;
+
+    undo_history_push(undo_history, action);
+
     dynarray_delete_at(point_layer->positions, i);
     dynarray_delete_at(point_layer->colors, i);
     dynarray_delete_at(point_layer->ids, i);
@@ -374,7 +419,10 @@ int point_layer_idle_event(PointLayer *point_layer,
         switch (event->key.keysym.sym) {
         case SDLK_DELETE: {
             if (0 <= point_layer->selected && point_layer->selected < (int) dynarray_count(point_layer->positions)) {
-                point_layer_delete_nth_element(point_layer, (size_t)point_layer->selected);
+                point_layer_delete_nth_element(
+                    point_layer,
+                    (size_t)point_layer->selected,
+                    undo_history);
                 point_layer->selected = -1;
             }
         } break;
