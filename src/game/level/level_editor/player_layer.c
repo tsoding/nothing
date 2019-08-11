@@ -84,7 +84,7 @@ static void player_layer_revert_position(void *layer, Context context)
     player_layer->position = *((Point*)context.data);
 }
 
-// TODO: PlayerLayer does not support undo color
+// TODO(#1013): PlayerLayer does not support undo color
 
 int player_layer_event(PlayerLayer *player_layer,
                        const SDL_Event *event,
