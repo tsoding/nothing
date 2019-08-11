@@ -24,7 +24,8 @@ int color_picker_read_from_line_stream(ColorPicker *color_picker,
                                        LineStream *line_stream);
 
 int color_picker_render(const ColorPicker *color_picker,
-                        Camera *camera);
+                        Camera *camera,
+                        Point position);
 int color_picker_event(ColorPicker *color_picker,
                        const SDL_Event *event,
                        int *selected);

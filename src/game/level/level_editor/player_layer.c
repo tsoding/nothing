@@ -68,7 +68,10 @@ int player_layer_render(const PlayerLayer *player_layer,
         return -1;
     }
 
-    if (active && color_picker_render(&player_layer->color_picker, camera)) {
+    if (active && color_picker_render(
+            &player_layer->color_picker,
+            camera,
+            vec(0.0f, 0.0f))) {
         return -1;
     }
 

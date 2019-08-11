@@ -15,7 +15,7 @@ int background_layer_render(BackgroundLayer *layer,
     trace_assert(camera);
 
     if (active) {
-        return color_picker_render(&layer->color_picker, camera);
+        return color_picker_render(&layer->color_picker, camera, vec(0.0f, 0.0f));
     }
 
     return 0;
