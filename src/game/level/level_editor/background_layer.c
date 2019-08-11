@@ -5,7 +5,7 @@
 #include "color.h"
 #include "background_layer.h"
 
-// TODO: UndoHistory is not support in BackgroundLayer
+// TODO(#1012): UndoHistory is not support in BackgroundLayer
 
 int background_layer_render(BackgroundLayer *layer,
                             Camera *camera,
