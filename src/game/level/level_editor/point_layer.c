@@ -199,7 +199,7 @@ int point_layer_render(const PointLayer *point_layer,
         }
     }
 
-    if (active && color_picker_render(&point_layer->color_picker, camera) < 0) {
+    if (active && color_picker_render(&point_layer->color_picker, camera, vec(0.0f, 0.0f)) < 0) {
         return -1;
     }
 

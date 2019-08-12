@@ -511,7 +511,7 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
         }
     }
 
-    if (active && color_picker_render(&layer->color_picker, camera) < 0) {
+    if (active && color_picker_render(&layer->color_picker, camera, vec(0.0f, 0.0f)) < 0) {
         return -1;
     }
 
