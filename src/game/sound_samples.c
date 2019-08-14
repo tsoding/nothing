@@ -23,33 +23,6 @@ struct Sound_samples
     int paused;
 };
 
-static int init_buffer_and_device(Sound_samples*, const char **);
-Sound_samples *create_sound_samples(const char *sample_files[],
-                                    size_t sample_files_count)
-{
-    trace_assert(sample_files);
-    trace_assert(sample_files_count > 0);
-
-    Lt *lt = create_lt();
-
-    Sound_samples *sound_samples = PUSH_LT(lt, nth_calloc(1, sizeof(Sound_samples)), free);
-    if (sound_samples == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    sound_samples->lt = lt;
-
-    sound_samples->samples_count = sample_files_count;
-    if (init_buffer_and_device(sound_samples, sample_files) < 0) {
-        log_fail("init_buffer_and_device failed\n");
-        RETURN_LT(lt, NULL);
-    }
-
-    sound_samples->paused = 0;
-    SDL_PauseAudioDevice(sound_samples->dev, 0);
-
-    return sound_samples;
-}
-
 static 
 int init_buffer_and_device(Sound_samples *sound_samples, 
                            const char *sample_files[]) 
@@ -136,6 +109,32 @@ int init_buffer_and_device(Sound_samples *sound_samples,
     return 0;
 }
 
+Sound_samples *create_sound_samples(const char *sample_files[],
+                                    size_t sample_files_count)
+{
+    trace_assert(sample_files);
+    trace_assert(sample_files_count > 0);
+
+    Lt *lt = create_lt();
+
+    Sound_samples *sound_samples = PUSH_LT(lt, nth_calloc(1, sizeof(Sound_samples)), free);
+    if (sound_samples == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    sound_samples->lt = lt;
+
+    sound_samples->samples_count = sample_files_count;
+    if (init_buffer_and_device(sound_samples, sample_files) < 0) {
+        log_fail("init_buffer_and_device failed\n");
+        RETURN_LT(lt, NULL);
+    }
+
+    sound_samples->paused = 0;
+    SDL_PauseAudioDevice(sound_samples->dev, 0);
+
+    return sound_samples;
+}
+
 void destroy_sound_samples(Sound_samples *sound_samples)
 {
     // TODO: Use a seperate callback function for processing audio
@@ -168,6 +167,7 @@ int sound_samples_toggle_pause(Sound_samples *sound_samples)
 {
     trace_assert(sound_samples);
     sound_samples->paused = !sound_samples->paused;
+    trace_assert(sound_samples->dev);
     SDL_PauseAudioDevice(sound_samples->dev, sound_samples->paused);
     return 0;
 }
