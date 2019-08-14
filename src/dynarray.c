@@ -46,6 +46,11 @@ void destroy_dynarray(Dynarray *dynarray)
     RETURN_LT0(dynarray->lt);
 }
 
+void *dynarray_pointer_at(Dynarray *dynarray, size_t index) {
+    trace_assert(index < dynarray->count);
+    return dynarray->data + index * dynarray->element_size;
+}
+
 size_t dynarray_count(const Dynarray *dynarray)
 {
     trace_assert(dynarray);
