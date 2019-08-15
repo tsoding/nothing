@@ -5,7 +5,6 @@
 
 #include "math/pi.h"
 #include "sound_samples.h"
-#include "dynarray.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
@@ -17,8 +16,8 @@ struct Sound_samples
 {
     Lt *lt;
     SDL_AudioDeviceID dev;
-    Dynarray *audio_buf_array;
-    Dynarray *audio_buf_size_array;
+    uint8_t **audio_buf_array;
+    uint32_t *audio_buf_size_array;
     size_t samples_count;
     int paused;
 };
@@ -40,12 +39,12 @@ int init_buffer_and_device(Sound_samples *sound_samples,
         return -1;
     }
     
-    sound_samples->audio_buf_array = PUSH_LT(sound_samples->lt, create_dynarray(sizeof(uint8_t*)), destroy_dynarray);
+    sound_samples->audio_buf_array = PUSH_LT(sound_samples->lt, nth_calloc(sound_samples->samples_count, sizeof(uint8_t*)), free);
     if (sound_samples->audio_buf_array == NULL) {
         log_fail("Failed to allocate memory for audio buffer pointer array\n");
         return -1;
     }
-    sound_samples->audio_buf_size_array = PUSH_LT(sound_samples->lt, create_dynarray(sizeof(uint32_t)), destroy_dynarray);
+    sound_samples->audio_buf_size_array = PUSH_LT(sound_samples->lt, nth_calloc(sound_samples->samples_count, sizeof(uint32_t)), free);
     if (sound_samples->audio_buf_size_array == NULL) {
         log_fail("Failed to allocate memory for audio buffer size array\n");
         return -1;
@@ -66,14 +65,8 @@ int init_buffer_and_device(Sound_samples *sound_samples,
             log_fail("SDL_BuildAudioCVT failed: %s\n", SDL_GetError());
             return -1;
         } else if (result == 0) { // no need to do conversion
-            if (dynarray_push(sound_samples->audio_buf_array, &wav_buf) != 0) {
-                log_fail("Failed to push to audio buffer pointer array\n");
-                return -1;
-            } 
-            if (dynarray_push(sound_samples->audio_buf_size_array, &wav_buf_len) != 0) {
-                log_fail("Failed to push to audio buffer size array\n");
-                return -1;
-            }
+            sound_samples->audio_buf_array[i] = wav_buf;
+            sound_samples->audio_buf_size_array[i] = wav_buf_len;
         } else {
             cvt.len = (int)wav_buf_len;
             cvt.buf = PUSH_LT(sound_samples->lt, malloc((size_t)(cvt.len * cvt.len_mult)), free);
@@ -88,14 +81,8 @@ int init_buffer_and_device(Sound_samples *sound_samples,
                 log_fail("SDL_ConvertAudio failed: %s\n", SDL_GetError());
                 return -1;
             }
-            if (dynarray_push(sound_samples->audio_buf_array, &cvt.buf) != 0) {
-                log_fail("Failed to push to audio buffer pointer array\n");
-                return -1;
-            } 
-            if (dynarray_push(sound_samples->audio_buf_size_array, &cvt.len_cvt) != 0) {
-                log_fail("Failed to push to audio buffer size array\n");
-                return -1;
-            }
+            sound_samples->audio_buf_array[i] = cvt.buf;
+            sound_samples->audio_buf_size_array[i] = (uint32_t)cvt.len_cvt;
         }
     }
     
@@ -151,11 +138,10 @@ int sound_samples_play_sound(Sound_samples *sound_samples,
 {
     trace_assert(sound_samples);
     trace_assert(sound_index < sound_samples->samples_count);
-    uint8_t *audio_buf = *(uint8_t**)dynarray_pointer_at(sound_samples->audio_buf_array, sound_index);
-    uint32_t audio_buf_size = *(uint32_t*)dynarray_pointer_at(sound_samples->audio_buf_size_array, sound_index);
     trace_assert(sound_samples->dev);
     SDL_ClearQueuedAudio(sound_samples->dev);
-    if (SDL_QueueAudio(sound_samples->dev, audio_buf, audio_buf_size) < 0) {
+    if (SDL_QueueAudio(sound_samples->dev, sound_samples->audio_buf_array[sound_index], 
+                sound_samples->audio_buf_size_array[sound_index]) < 0) {
         log_warn("Failed to queue audio data of sound index %zu to device: %s\n", sound_index, SDL_GetError());
         return -1;
     }
