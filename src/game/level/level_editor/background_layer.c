@@ -1,6 +1,7 @@
 #include <SDL.h>
 
 #include "system/stacktrace.h"
+#include "game/camera.h"
 #include "math/rect.h"
 #include "color.h"
 #include "background_layer.h"
@@ -15,7 +16,9 @@ int background_layer_render(BackgroundLayer *layer,
     trace_assert(camera);
 
     if (active) {
-        return color_picker_render(&layer->color_picker, camera, vec(0.0f, 0.0f));
+        return color_picker_render(
+            &layer->color_picker,
+            camera);
     }
 
     return 0;
@@ -32,7 +35,9 @@ int background_layer_event(BackgroundLayer *layer,
     trace_assert(undo_history);
 
     return color_picker_event(
-        &layer->color_picker, event,
+        &layer->color_picker,
+        event,
+        camera,
         NULL);
 }
 

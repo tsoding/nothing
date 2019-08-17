@@ -24,10 +24,10 @@ int color_picker_read_from_line_stream(ColorPicker *color_picker,
                                        LineStream *line_stream);
 
 int color_picker_render(const ColorPicker *color_picker,
-                        Camera *camera,
-                        Point position);
+                        Camera *camera);
 int color_picker_event(ColorPicker *color_picker,
                        const SDL_Event *event,
+                       const Camera *camera,
                        int *selected);
 
 Color color_picker_rgba(const ColorPicker *color_picker);
