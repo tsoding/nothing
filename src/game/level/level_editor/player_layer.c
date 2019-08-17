@@ -9,12 +9,11 @@
 #include "system/log.h"
 #include "undo_history.h"
 
-
 PlayerLayer create_player_layer(Vec position, Color color)
 {
     return (PlayerLayer) {
         .position = position,
-        .color_picker = create_color_picker_from_rgba(color),
+        .color_picker = create_color_picker_from_rgba(color)
     };
 }
 
@@ -70,8 +69,7 @@ int player_layer_render(const PlayerLayer *player_layer,
 
     if (active && color_picker_render(
             &player_layer->color_picker,
-            camera,
-            vec(0.0f, 0.0f))) {
+            camera)) {
         return -1;
     }
 
@@ -102,6 +100,7 @@ int player_layer_event(PlayerLayer *player_layer,
     if (color_picker_event(
             &player_layer->color_picker,
             event,
+            camera,
             &selected) < 0) {
         return -1;
     }

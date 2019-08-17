@@ -173,7 +173,7 @@ int label_layer_render(const LabelLayer *label_layer,
     trace_assert(label_layer);
     trace_assert(camera);
 
-    if (active && color_picker_render(&label_layer->color_picker, camera, vec(0.0f, 0.0f)) < 0) {
+    if (active && color_picker_render(&label_layer->color_picker, camera) < 0) {
         return -1;
     }
 
@@ -551,6 +551,7 @@ int label_layer_event(LabelLayer *label_layer,
     if (color_picker_event(
             &label_layer->color_picker,
             event,
+            camera,
             &changed) < 0) {
         return -1;
     }
