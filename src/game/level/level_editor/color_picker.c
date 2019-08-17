@@ -10,7 +10,7 @@
 #include "color.h"
 #include "undo_history.h"
 
-// TODO: ColorPicker doesn't have any padding between the sliders
+// TODO(#1021): ColorPicker doesn't have any padding between the sliders
 #define COLOR_SLIDER_HEIGHT 60.0f
 #define COLOR_PICKER_WIDTH 300.0f
 #define COLOR_PICKER_HEIGHT (COLOR_SLIDER_HEIGHT * COLOR_SLIDER_N)
