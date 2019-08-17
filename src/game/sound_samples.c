@@ -10,7 +10,7 @@
 #include "system/nth_alloc.h"
 
 // TODO(#863): Sound_samples is not implemented
-// TODO: Volume control?
+// TODO: Sound_samples does not implement volume control.
 
 struct Sound_samples
 {
@@ -26,8 +26,7 @@ static
 int init_buffer_and_device(Sound_samples *sound_samples, 
                            const char *sample_files[]) 
 {
-    // TODO: Select audio specification from a menu
-    // TODO: Use a seperate callback function
+    // TODO: init_buffer_and_device uses hard-coded audio specification
     SDL_AudioSpec destination_spec = { // stereo float32 44100Hz
         .format = AUDIO_F32,
         .channels = 2,
@@ -75,8 +74,7 @@ int init_buffer_and_device(Sound_samples *sound_samples,
                 return -1;
             }
             memcpy(cvt.buf, wav_buf, (size_t)cvt.len);
-            SDL_FreeWAV(wav_buf);
-            RELEASE_LT(sound_samples->lt, wav_buf);
+            SDL_FreeWAV(RELEASE_LT(sound_samples->lt, wav_buf));
             if (SDL_ConvertAudio(&cvt) < 0) {
                 log_fail("SDL_ConvertAudio failed: %s\n", SDL_GetError());
                 return -1;
@@ -124,11 +122,10 @@ Sound_samples *create_sound_samples(const char *sample_files[],
 
 void destroy_sound_samples(Sound_samples *sound_samples)
 {
-    // TODO: Use a seperate callback function for processing audio
+    // TODO: Use a seperate callback function for audio handling and pass that
+    // into SDL_OpenAudioDevice
     trace_assert(sound_samples);
     trace_assert(sound_samples->dev);
-    SDL_PauseAudioDevice(sound_samples->dev, 1);
-    SDL_ClearQueuedAudio(sound_samples->dev);
     SDL_CloseAudioDevice(sound_samples->dev);
     RETURN_LT0(sound_samples->lt);
 }
