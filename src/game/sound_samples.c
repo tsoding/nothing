@@ -31,7 +31,7 @@ int init_buffer_and_device(Sound_samples *sound_samples,
         .format = AUDIO_F32,
         .channels = 2,
         .freq = 44100
-    }, actual;
+    };
     // TODO: a return value by SDL_GetNumAudioDevices that is <= 0 may not indicate an error
     if (SDL_GetNumAudioDevices(0) <= 0) {
         log_fail("No audio in 2019 LULW\n");
@@ -84,7 +84,7 @@ int init_buffer_and_device(Sound_samples *sound_samples,
         }
     }
     
-    sound_samples->dev = SDL_OpenAudioDevice(NULL, 0, &destination_spec, &actual, 0);
+    sound_samples->dev = SDL_OpenAudioDevice(NULL, 0, &destination_spec, NULL, 0);
     if (sound_samples->dev == 0) {
         log_fail("SDL_OpenAudioDevice failed: %s\n", SDL_GetError());
         log_info("The audio device may not support the hardcoded format\n");
