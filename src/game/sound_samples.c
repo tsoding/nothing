@@ -140,7 +140,7 @@ int sound_samples_play_sound(Sound_samples *sound_samples,
     if (SDL_QueueAudio(sound_samples->dev, sound_samples->audio_buf_array[sound_index], 
                 sound_samples->audio_buf_size_array[sound_index]) < 0) {
         log_warn("Failed to queue audio data of sound index %zu to device: %s\n", sound_index, SDL_GetError());
-        return -1;
+        return 0;
     }
     SDL_PauseAudioDevice(sound_samples->dev, 0);
     return 0;
