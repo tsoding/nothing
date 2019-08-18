@@ -122,7 +122,7 @@ Sound_samples *create_sound_samples(const char *sample_files[],
 
 void destroy_sound_samples(Sound_samples *sound_samples)
 {
-    // TODO: Use a seperate callback function for audio handling and pass that into SDL_OpenAudioDevice
+    // TODO(#1025): Use a seperate callback function for audio handling and pass that into SDL_OpenAudioDevice
     trace_assert(sound_samples);
     trace_assert(sound_samples->dev);
     SDL_CloseAudioDevice(sound_samples->dev);
