@@ -9,6 +9,7 @@
 typedef struct {
     Vec position;
     ColorPicker color_picker;
+    Color prev_color;
 } PlayerLayer;
 
 PlayerLayer create_player_layer(Vec position, Color color);

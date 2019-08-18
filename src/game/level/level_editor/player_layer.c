@@ -13,7 +13,8 @@ PlayerLayer create_player_layer(Vec position, Color color)
 {
     return (PlayerLayer) {
         .position = position,
-        .color_picker = create_color_picker_from_rgba(color)
+        .color_picker = create_color_picker_from_rgba(color),
+        .prev_color = color
     };
 }
 
@@ -84,7 +85,18 @@ static void player_layer_revert_position(void *layer, Context context)
     player_layer->position = *((Point*)context.data);
 }
 
-// TODO(#1013): PlayerLayer does not support undo color
+static
+void player_layer_revert_color(void *layer, Context context)
+{
+    trace_assert(layer);
+    PlayerLayer *player_layer = layer;
+
+    trace_assert(sizeof(Color) <= CONTEXT_SIZE);
+    Color *color = (Color *)context.data;
+
+    player_layer->color_picker = create_color_picker_from_rgba(*color);
+    player_layer->prev_color = *color;
+}
 
 int player_layer_event(PlayerLayer *player_layer,
                        const SDL_Event *event,
@@ -105,16 +117,28 @@ int player_layer_event(PlayerLayer *player_layer,
         return -1;
     }
 
+    if (selected && !color_picker_drag(&player_layer->color_picker)) {
+        undo_history_push(
+            undo_history,
+            create_action(
+                player_layer,
+                player_layer_revert_color,
+                &player_layer->prev_color,
+                sizeof(player_layer->prev_color)));
+        player_layer->prev_color = color_picker_rgba(&player_layer->color_picker);
+    }
+
     if (!selected &&
         event->type == SDL_MOUSEBUTTONDOWN &&
         event->button.button == SDL_BUTTON_LEFT) {
-        Action action = {
-            .layer = player_layer,
-            .revert = player_layer_revert_position
-        };
-        trace_assert(sizeof(player_layer->position) <= CONTEXT_SIZE);
-        memcpy(action.context.data, &player_layer->position, sizeof(player_layer->position));
-        undo_history_push(undo_history, action);
+
+        undo_history_push(
+            undo_history,
+            create_action(
+                player_layer,
+                player_layer_revert_position,
+                &player_layer->position,
+                sizeof(player_layer->position)));
 
         player_layer->position =
             camera_map_screen(camera,
