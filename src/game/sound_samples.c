@@ -10,7 +10,7 @@
 #include "system/nth_alloc.h"
 
 // TODO(#863): Sound_samples is not implemented
-// TODO: Sound_samples does not implement volume control.
+// TODO(#1022): Sound_samples does not implement volume control.
 
 struct Sound_samples
 {
