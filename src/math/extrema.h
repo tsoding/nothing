@@ -6,7 +6,16 @@
 // WARNING! Any attempts to "generalize" or "improve" this translation
 // unit will result in an instantly closed Pull Request without any
 // further discussion.
-int64_t max_int64(int64_t a, int64_t b);
-size_t max_size_t(size_t a, size_t b);
+static inline
+int64_t max_int64(int64_t a, int64_t b)
+{
+    return a > b ? a : b;
+}
+
+static inline
+size_t max_size_t(size_t a, size_t b)
+{
+    return a > b ? a : b;
+}
 
 #endif  // EXTREMA_H_
