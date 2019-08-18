@@ -118,16 +118,14 @@ int player_layer_event(PlayerLayer *player_layer,
     }
 
     if (selected && !color_picker_drag(&player_layer->color_picker)) {
-        Action action = {
-            .layer = player_layer,
-            .revert = player_layer_revert_color
-        };
-
-        trace_assert(sizeof(Color) <= CONTEXT_SIZE);
-        *((Color *)action.context.data) = player_layer->prev_color;
+        undo_history_push(
+            undo_history,
+            create_action(
+                player_layer,
+                player_layer_revert_color,
+                &player_layer->prev_color,
+                sizeof(player_layer->prev_color)));
         player_layer->prev_color = color_picker_rgba(&player_layer->color_picker);
-
-        undo_history_push(undo_history, action);
     }
 
     if (!selected &&
