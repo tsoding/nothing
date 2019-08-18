@@ -26,7 +26,7 @@ static
 int init_buffer_and_device(Sound_samples *sound_samples, 
                            const char *sample_files[]) 
 {
-    // TODO: init_buffer_and_device uses hard-coded audio specification
+    // TODO(#1023): init_buffer_and_device uses hard-coded audio specification
     SDL_AudioSpec destination_spec = { // stereo float32 44100Hz
         .format = AUDIO_F32,
         .channels = 2,
