@@ -32,7 +32,7 @@ int init_buffer_and_device(Sound_samples *sound_samples,
         .channels = 2,
         .freq = 44100
     };
-    // TODO: a return value by SDL_GetNumAudioDevices that is <= 0 may not indicate an error
+    // TODO(#1024): a return value by SDL_GetNumAudioDevices that is <= 0 may not indicate an error
     if (SDL_GetNumAudioDevices(0) <= 0) {
         log_fail("No audio in 2019 LULW\n");
         return -1;
