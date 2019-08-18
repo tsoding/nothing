@@ -257,11 +257,12 @@ int point_layer_add_element(PointLayer *point_layer,
     dynarray_push(point_layer->colors, &color);
     dynarray_push(point_layer->ids, id);
 
-    Action action =  {
-        .revert = point_layer_pop_element,
-        .layer = point_layer
-    };
-    undo_history_push(undo_history, action);
+    undo_history_push(
+        undo_history,
+        create_action(
+            point_layer,
+            point_layer_pop_element,
+            0, 0));
 
     return 0;
 }
@@ -272,6 +273,19 @@ typedef struct {
     char id[ID_MAX_SIZE];
     size_t index;
 } DeleteContext;
+
+static
+DeleteContext create_delete_context(const PointLayer *point_layer,
+                                    size_t i)
+{
+    DeleteContext delete_context = {
+        .position = *((Point *)dynarray_pointer_at(point_layer->positions, i)),
+        .color = *((Color *)dynarray_pointer_at(point_layer->colors, i)),
+        .index = i
+    };
+    memcpy(delete_context.id, dynarray_pointer_at(point_layer->ids, i), ID_MAX_SIZE);
+    return delete_context;
+}
 
 static
 void point_layer_revert_delete(void *layer, Context context)
@@ -294,27 +308,13 @@ void point_layer_delete_nth_element(PointLayer *point_layer,
 {
     trace_assert(point_layer);
 
-    Action action = {
-        .revert = point_layer_revert_delete,
-        .layer = point_layer
-    };
-
-    trace_assert(sizeof(DeleteContext) <= CONTEXT_SIZE);
-    DeleteContext *delete_context = (DeleteContext *)action.context.data;
-
-    Point *positions = dynarray_data(point_layer->positions);
-    Color *colors = dynarray_data(point_layer->colors);
-    char *ids = dynarray_data(point_layer->ids);
-
-    delete_context->position = positions[i];
-    delete_context->color = colors[i];
-    memcpy(
-        delete_context->id,
-        ids + i * ID_MAX_SIZE,
-        ID_MAX_SIZE);
-    delete_context->index = i;
-
-    undo_history_push(undo_history, action);
+    DeleteContext context = create_delete_context(point_layer, i);
+    undo_history_push(
+        undo_history,
+        create_action(
+            point_layer,
+            point_layer_revert_delete,
+            &context, sizeof(context)));
 
     dynarray_delete_at(point_layer->positions, i);
     dynarray_delete_at(point_layer->colors, i);
@@ -368,17 +368,17 @@ int point_layer_idle_event(PointLayer *point_layer,
             Color *colors = dynarray_data(point_layer->colors);
 
             if (!color_picker_drag(&point_layer->color_picker)) {
-                Action action = {
-                    .layer = point_layer,
-                    .revert = point_layer_revert_color
-                };
-
-                *((ColorContext*)action.context.data) = (ColorContext) {
+                ColorContext context = {
                     .index = (size_t) point_layer->selected,
                     .color = point_layer->prev_color
                 };
 
-                undo_history_push(undo_history, action);
+                undo_history_push(
+                    undo_history,
+                    create_action(
+                        point_layer,
+                        point_layer_revert_color,
+                        &context, sizeof(context)));
 
                 point_layer->prev_color =
                     color_picker_rgba(&point_layer->color_picker);
@@ -456,6 +456,18 @@ typedef struct {
 } RenameContext;
 
 static
+RenameContext create_rename_context(PointLayer *point_layer, size_t index)
+{
+    RenameContext context = {
+        .index = index
+    };
+
+    memcpy(context.id, dynarray_pointer_at(point_layer->ids, index), ID_MAX_SIZE);
+
+    return context;
+}
+
+static
 void point_layer_revert_rename(void *layer,
                                Context context)
 {
@@ -488,28 +500,22 @@ int point_layer_edit_id_event(PointLayer *point_layer,
     case SDL_KEYDOWN: {
         switch(event->key.keysym.sym) {
         case SDLK_RETURN: {
-            char *ids = dynarray_data(point_layer->ids);
+            RenameContext rename_context = create_rename_context(
+                point_layer,
+                (size_t) point_layer->selected);
+
+            undo_history_push(
+                undo_history,
+                create_action(
+                    point_layer,
+                    point_layer_revert_rename,
+                    &rename_context,
+                    sizeof(rename_context)));
+
+            char *id = dynarray_pointer_at(point_layer->ids, (size_t) point_layer->selected);
             const char *text = edit_field_as_text(point_layer->edit_field);
-
-            Action action = {
-                .revert = point_layer_revert_rename,
-                .layer = point_layer
-            };
-
-            ASSERT_CONTEXT_SIZE(RenameContext);
-            RenameContext *rename_context = (RenameContext *)action.context.data;
-
-            memcpy(
-                rename_context->id,
-                ids + point_layer->selected * ID_MAX_SIZE,
-                ID_MAX_SIZE);
-            rename_context->index = (size_t) point_layer->selected;
-
-            undo_history_push(undo_history, action);
-
-            size_t n = max_size_t(strlen(text), ID_MAX_SIZE - 1);
-            memcpy(ids + point_layer->selected * ID_MAX_SIZE, text, n);
-            *(ids + point_layer->selected * ID_MAX_SIZE + n) = '\0';
+            memset(id, 0, ID_MAX_SIZE);
+            memcpy(id, text, min_size_t(strlen(text), ID_MAX_SIZE - 1));
 
             point_layer->state = POINT_LAYER_IDLE;
             SDL_StopTextInput();
@@ -564,19 +570,19 @@ int point_layer_move_event(PointLayer *point_layer,
         case SDL_BUTTON_LEFT: {
             point_layer->state = POINT_LAYER_IDLE;
 
-            Action action = {
-                .revert = point_layer_revert_move,
-                .layer = point_layer
+            MoveContext context = {
+                .index = (size_t) point_layer->selected,
+                .position = point_layer->prev_position
             };
 
-            MoveContext *context = (MoveContext *)action.context.data;
-            ASSERT_CONTEXT_SIZE(MoveContext);
-
-            context->index = (size_t) point_layer->selected;
-            context->position = point_layer->prev_position;
-
             // TODO(#1014): just click (without moving) on the point creates an undo history entry
-            undo_history_push(undo_history, action);
+            undo_history_push(
+                undo_history,
+                create_action(
+                    point_layer,
+                    point_layer_revert_move,
+                    &context,
+                    sizeof(context)));
         } break;
         }
     } break;
