@@ -52,20 +52,12 @@ inline static float layer_picker_max_width(void)
 
 #define LAYER_CELL_WIDTH layer_picker_max_width()
 #define LAYER_CELL_HEIGHT (LAYER_TITLE_SIZE * FONT_CHAR_HEIGHT + LAYER_TITLE_PADDING * 2.0f)
-
-inline static Vec layer_picker_position(const Camera *camera)
-{
-    trace_assert(camera);
-
-    const Rect viewport = camera_view_port_screen(camera);
-
-    Vec position = {
-        .x = 0.0f,
-        .y = viewport.h * 0.5f - LAYER_CELL_HEIGHT * LAYER_PICKER_N * 0.5f
-    };
-
-    return position;
-}
+#define LAYER_CELL_REFERENCE 1980.0f
+#define LAYER_CELL_WR_RATIO (LAYER_CELL_WIDTH / LAYER_CELL_REFERENCE)
+#define LAYER_CELL_HW_RATIO (LAYER_CELL_HEIGHT / LAYER_CELL_WIDTH)
+#define LAYER_TITLE_SW_RATIO (LAYER_TITLE_SIZE / LAYER_CELL_WIDTH)
+#define LAYER_TITLE_PW_RATIO (LAYER_TITLE_PADDING / LAYER_CELL_WIDTH)
+#define LAYER_CELL_OW_RATIO (LAYER_SELECTED_OFFSET / LAYER_CELL_WIDTH)
 
 int layer_picker_render(const LayerPicker *layer_picker,
                         Camera *camera)
@@ -73,12 +65,23 @@ int layer_picker_render(const LayerPicker *layer_picker,
     trace_assert(layer_picker);
     trace_assert(camera);
 
+    const Rect viewport = camera_view_port_screen(camera);
+
     for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
-        Vec position = layer_picker_position(camera);
+        const Vec size = {
+            .x = viewport.w * LAYER_CELL_WR_RATIO,
+            .y = viewport.w * LAYER_CELL_WR_RATIO * LAYER_CELL_HW_RATIO
+        };
+
+        Vec position = {
+            .x = 0.0f,
+            .y = viewport.h * 0.5f - size.y * LAYER_PICKER_N * 0.5f
+        };
+
         Color color = LAYER_CELL_BACKGROUND_COLORS[i];
 
         if (*layer_picker == i) {
-            position.x += LAYER_SELECTED_OFFSET;
+            position.x += size.x * LAYER_CELL_OW_RATIO;
         } else {
             color.a *= 0.70f;
         }
@@ -87,9 +90,8 @@ int layer_picker_render(const LayerPicker *layer_picker,
                 camera,
                 rect(
                     position.x,
-                    LAYER_CELL_HEIGHT * (float) i + position.y,
-                    LAYER_CELL_WIDTH,
-                    LAYER_CELL_HEIGHT),
+                    size.y * (float) i + position.y,
+                    size.x, size.y),
                 color) < 0) {
             return -1;
         }
@@ -97,10 +99,11 @@ int layer_picker_render(const LayerPicker *layer_picker,
         if (camera_render_text_screen(
                 camera,
                 LAYER_CELL_TITLES[i],
-                vec(LAYER_TITLE_SIZE, LAYER_TITLE_SIZE),
+                vec(size.x * LAYER_TITLE_SW_RATIO,
+                    size.x * LAYER_TITLE_SW_RATIO),
                 color_invert(color),
-                vec(position.x + LAYER_TITLE_PADDING,
-                    LAYER_CELL_HEIGHT * (float) i + position.y + LAYER_TITLE_PADDING)) < 0) {
+                vec(position.x + size.x * LAYER_TITLE_PW_RATIO,
+                    size.y * (float) i + position.y + size.x * LAYER_TITLE_PW_RATIO)) < 0) {
             return -1;
         }
     }
@@ -117,15 +120,25 @@ int layer_picker_event(LayerPicker *layer_picker,
     trace_assert(event);
     trace_assert(camera);
 
-    const Vec position = layer_picker_position(camera);
+    const Rect viewport = camera_view_port_screen(camera);
+
+    const Vec size = {
+        .x = viewport.w * LAYER_CELL_WR_RATIO,
+        .y = viewport.w * LAYER_CELL_WR_RATIO * LAYER_CELL_HW_RATIO
+    };
+
+    const Vec position = {
+        .x = 0.0f,
+        .y = viewport.h * 0.5f - size.y * LAYER_PICKER_N * 0.5f
+    };
 
     switch (event->type) {
     case SDL_MOUSEBUTTONDOWN: {
         for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
-            const Rect cell = rect(position.x,
-                                   LAYER_CELL_HEIGHT * (float) i + position.y,
-                                   LAYER_CELL_WIDTH,
-                                   LAYER_CELL_HEIGHT);
+            const Rect cell = rect(
+                position.x,
+                size.y * (float) i + position.y,
+                size.x, size.y);
             if (rect_contains_point(cell, vec((float) event->button.x, (float) event->button.y))) {
                 *layer_picker = i;
                 *selected = true;
