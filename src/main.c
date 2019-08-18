@@ -1,5 +1,6 @@
 #include <SDL.h>
 
+#include <locale.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -58,6 +59,8 @@ int main(int argc, char *argv[])
         RETURN_LT(lt, -1);
     }
     PUSH_LT(lt, 42, SDL_Quit);
+
+    setlocale(LC_NUMERIC, "C");
 
     SDL_ShowCursor(SDL_DISABLE);
 
