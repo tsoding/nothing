@@ -131,13 +131,14 @@ int player_layer_event(PlayerLayer *player_layer,
     if (!selected &&
         event->type == SDL_MOUSEBUTTONDOWN &&
         event->button.button == SDL_BUTTON_LEFT) {
-        Action action = {
-            .layer = player_layer,
-            .revert = player_layer_revert_position
-        };
-        trace_assert(sizeof(player_layer->position) <= CONTEXT_SIZE);
-        memcpy(action.context.data, &player_layer->position, sizeof(player_layer->position));
-        undo_history_push(undo_history, action);
+
+        undo_history_push(
+            undo_history,
+            create_action(
+                player_layer,
+                player_layer_revert_position,
+                &player_layer->position,
+                sizeof(player_layer->position)));
 
         player_layer->position =
             camera_map_screen(camera,
