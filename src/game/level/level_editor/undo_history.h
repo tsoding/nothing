@@ -3,7 +3,7 @@
 
 #include "layer.h"
 
-// TODO: UndoHistory context size is fixed
+// TODO(#1030): UndoHistory context size is fixed
 //   If we treated it as a stack we could store
 //   the elements with variable size.
 #define CONTEXT_SIZE 256
