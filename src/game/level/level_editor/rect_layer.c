@@ -40,6 +40,7 @@ struct RectLayer {
     int selection;
     Vec move_anchor;
     Edit_field *id_edit_field;
+    Color prev_color;
 };
 
 typedef int (*EventHandler)(RectLayer *layer, const SDL_Event *event, const Camera *camera);
@@ -225,6 +226,7 @@ static int rect_layer_event_idle(RectLayer *layer,
                             rects[layer->selection].y));
                 layer->color_picker =
                     create_color_picker_from_rgba(colors[rect_at_position]);
+                layer->prev_color = colors[rect_at_position];
             } else if (layer->selection >= 0 && rect_contains_point(
                            rect_layer_resize_anchor(
                                layer,
@@ -457,7 +459,9 @@ RectLayer *create_rect_layer(void)
         RETURN_LT(lt, NULL);
     }
 
-    layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
+    Color init_color = rgba(1.0f, 0.0f, 0.0f, 1.0f);
+    layer->color_picker = create_color_picker_from_rgba(init_color);
+    layer->prev_color = init_color;
     layer->selection = -1;
 
     return layer;
@@ -606,6 +610,27 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
     return 0;
 }
 
+typedef struct {
+    Color color;
+    size_t index;
+} ColorContext;
+
+static
+void rect_layer_undo_color(void *layer, Context context)
+{
+    trace_assert(layer);
+    RectLayer *rect_layer = layer;
+
+    trace_assert(sizeof(ColorContext) < CONTEXT_SIZE);
+    ColorContext *color_context = (ColorContext *)context.data;
+    trace_assert(color_context->index < dynarray_count(rect_layer->rects));
+
+    dynarray_replace_at(
+        rect_layer->colors,
+        color_context->index,
+        &color_context->color);
+}
+
 int rect_layer_event(RectLayer *layer,
                      const SDL_Event *event,
                      const Camera *camera,
@@ -615,15 +640,31 @@ int rect_layer_event(RectLayer *layer,
     trace_assert(event);
     trace_assert(undo_history);
 
-    int selected = 0;
-    if (color_picker_event(&layer->color_picker, event, camera, &selected) < 0) {
+    int color_changed = 0;
+    if (color_picker_event(&layer->color_picker, event, camera, &color_changed) < 0) {
         return -1;
     }
 
-    if (selected) {
+    if (color_changed) {
         if (layer->selection >= 0) {
             Color *colors = dynarray_data(layer->colors);
             colors[layer->selection] = color_picker_rgba(&layer->color_picker);
+
+            if (!color_picker_drag(&layer->color_picker)) {
+                ColorContext context = {
+                    .color = layer->prev_color,
+                    .index = (size_t) layer->selection
+                };
+
+                undo_history_push(
+                    undo_history,
+                    create_action(
+                        layer,
+                        rect_layer_undo_color,
+                        &context,
+                        sizeof(context)));
+                layer->prev_color = colors[layer->selection];
+            }
         }
 
         return 0;
