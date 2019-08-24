@@ -195,3 +195,15 @@ void dynarray_pop(Dynarray *dynarray, void *element)
             dynarray->element_size);
     }
 }
+
+void dynarray_replace_at(Dynarray *dynarray, size_t index, void *element)
+{
+    trace_assert(dynarray);
+    trace_assert(element);
+    trace_assert(index < dynarray->count);
+
+    memcpy(
+        dynarray->data + index * dynarray->element_size,
+        element,
+        dynarray->element_size);
+}
