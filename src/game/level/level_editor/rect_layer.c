@@ -41,7 +41,7 @@ struct RectLayer {
     Vec move_anchor;
     Edit_field *id_edit_field;
     Color prev_color;
-    Point prev_position;
+    Rect prev_rect;
 };
 
 typedef int (*EventHandler)(RectLayer *layer, const SDL_Event *event, const Camera *camera);
@@ -228,7 +228,7 @@ static int rect_layer_event_idle(RectLayer *layer,
                 layer->color_picker =
                     create_color_picker_from_rgba(colors[rect_at_position]);
                 layer->prev_color = colors[rect_at_position];
-                layer->prev_position = vec(rects[rect_at_position].x, rects[rect_at_position].y);
+                layer->prev_rect = rects[rect_at_position];
             } else if (layer->selection >= 0 && rect_contains_point(
                            rect_layer_resize_anchor(
                                layer,
@@ -320,15 +320,40 @@ static int rect_layer_event_create(RectLayer *layer,
     return 0;
 }
 
-static int rect_layer_event_resize(RectLayer *layer, const SDL_Event *event, const Camera *camera)
+typedef struct {
+    size_t index;
+    Rect rect;
+} ResizeContext;
+
+static
+void rect_layer_undo_resize(void *layer, Context context)
+{
+    trace_assert(layer);
+    RectLayer *rect_layer = layer;
+
+    trace_assert(sizeof(ResizeContext) <= CONTEXT_SIZE);
+    ResizeContext *resize_context = (ResizeContext *)context.data;
+    trace_assert(resize_context->index < dynarray_count(rect_layer->rects));
+
+    dynarray_replace_at(
+        rect_layer->rects,
+        resize_context->index,
+        &resize_context->rect);
+}
+
+static int rect_layer_event_resize(RectLayer *layer,
+                                   const SDL_Event *event,
+                                   const Camera *camera,
+                                   UndoHistory *undo_history)
 {
     trace_assert(layer);
     trace_assert(event);
     trace_assert(camera);
 
+    Rect *rects = dynarray_data(layer->rects);
+
     switch (event->type) {
     case SDL_MOUSEMOTION: {
-        Rect *rects = dynarray_data(layer->rects);
         trace_assert(layer->selection >= 0);
         rects[layer->selection] = rect_from_points(
             vec(rects[layer->selection].x, rects[layer->selection].y),
@@ -343,6 +368,20 @@ static int rect_layer_event_resize(RectLayer *layer, const SDL_Event *event, con
 
     case SDL_MOUSEBUTTONUP: {
         layer->state = RECT_LAYER_IDLE;
+
+        ResizeContext context = {
+            .index = (size_t) layer->selection,
+            .rect = layer->prev_rect
+        };
+
+        undo_history_push(
+            undo_history,
+            create_action(
+                layer,
+                rect_layer_undo_resize,
+                &context, sizeof(context)));
+
+        layer->prev_rect = rects[layer->selection];
     } break;
     }
 
@@ -351,7 +390,7 @@ static int rect_layer_event_resize(RectLayer *layer, const SDL_Event *event, con
 
 typedef struct {
     size_t index;
-    Point position;
+    Rect rect;
 } MoveContext;
 
 static
@@ -362,13 +401,12 @@ void rect_layer_undo_move(void *layer, Context context)
 
     trace_assert(sizeof(MoveContext) <= CONTEXT_SIZE);
     MoveContext *move_context = (MoveContext *)context.data;
+    trace_assert(move_context->index < dynarray_count(rect_layer->rects));
 
-    Rect *rect = dynarray_pointer_at(
+    dynarray_replace_at(
         rect_layer->rects,
-        move_context->index);
-
-    rect->x = move_context->position.x;
-    rect->y = move_context->position.y;
+        move_context->index,
+        &move_context->rect);
 }
 
 static int rect_layer_event_move(RectLayer *layer,
@@ -402,7 +440,7 @@ static int rect_layer_event_move(RectLayer *layer,
 
         MoveContext context = {
             .index = (size_t)layer->selection,
-            .position = layer->prev_position
+            .rect = layer->prev_rect
         };
 
         undo_history_push(
@@ -412,9 +450,7 @@ static int rect_layer_event_move(RectLayer *layer,
                 rect_layer_undo_move,
                 &context, sizeof(context)));
 
-        layer->prev_position = vec(
-            rects[layer->selection].x,
-            rects[layer->selection].y);
+        layer->prev_rect = rects[layer->selection];
     } break;
     }
     return 0;
@@ -721,7 +757,7 @@ int rect_layer_event(RectLayer *layer,
         return rect_layer_event_create(layer, event, camera, undo_history);
 
     case RECT_LAYER_RESIZE:
-        return rect_layer_event_resize(layer, event, camera);
+        return rect_layer_event_resize(layer, event, camera, undo_history);
 
     case RECT_LAYER_MOVE:
         return rect_layer_event_move(layer, event, camera, undo_history);
