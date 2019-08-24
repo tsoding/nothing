@@ -61,9 +61,7 @@ LevelEditor *create_level_editor(void)
         RETURN_LT(lt, NULL);
     }
 
-    level_editor->background_layer = (BackgroundLayer) {
-        .color_picker = create_color_picker_from_rgba(hexstr("fffda5"))
-    };
+    level_editor->background_layer = create_background_layer(hexstr("fffda5"));
 
     level_editor->player_layer =
         create_player_layer(vec(0.0f, 0.0f), hexstr("ff8080"));
@@ -205,8 +203,8 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
         RETURN_LT(lt, NULL);
     }
 
-    if (color_picker_read_from_line_stream(
-            &level_editor->background_layer.color_picker,
+    if (background_layer_read_from_line_stream(
+            &level_editor->background_layer,
             level_stream) < 0) {
         RETURN_LT(lt, NULL);
     }
