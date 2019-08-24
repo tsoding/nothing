@@ -25,7 +25,7 @@ typedef enum {
     // TODO(#955): Rectangles in Level Editor have only one resize anchor to work with
     RECT_LAYER_RESIZE,
     RECT_LAYER_MOVE,
-    // TODO: id renaming in RectLayer is ugly
+    // TODO(#1035): id renaming in RectLayer is ugly
     RECT_LAYER_ID_RENAME,
 } RectLayerState;
 
