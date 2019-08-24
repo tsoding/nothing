@@ -41,6 +41,7 @@ struct RectLayer {
     Vec move_anchor;
     Edit_field *id_edit_field;
     Color prev_color;
+    Point prev_position;
 };
 
 typedef int (*EventHandler)(RectLayer *layer, const SDL_Event *event, const Camera *camera);
@@ -227,6 +228,7 @@ static int rect_layer_event_idle(RectLayer *layer,
                 layer->color_picker =
                     create_color_picker_from_rgba(colors[rect_at_position]);
                 layer->prev_color = colors[rect_at_position];
+                layer->prev_position = vec(rects[rect_at_position].x, rects[rect_at_position].y);
             } else if (layer->selection >= 0 && rect_contains_point(
                            rect_layer_resize_anchor(
                                layer,
@@ -347,11 +349,38 @@ static int rect_layer_event_resize(RectLayer *layer, const SDL_Event *event, con
     return 0;
 }
 
-static int rect_layer_event_move(RectLayer *layer, const SDL_Event *event, const Camera *camera)
+typedef struct {
+    size_t index;
+    Point position;
+} MoveContext;
+
+static
+void rect_layer_undo_move(void *layer, Context context)
+{
+    trace_assert(layer);
+    RectLayer *rect_layer = layer;
+
+    trace_assert(sizeof(MoveContext) <= CONTEXT_SIZE);
+    MoveContext *move_context = (MoveContext *)context.data;
+
+    Rect *rect = dynarray_pointer_at(
+        rect_layer->rects,
+        move_context->index);
+
+    rect->x = move_context->position.x;
+    rect->y = move_context->position.y;
+}
+
+static int rect_layer_event_move(RectLayer *layer,
+                                 const SDL_Event *event,
+                                 const Camera *camera,
+                                 UndoHistory *undo_history)
 {
     trace_assert(layer);
     trace_assert(event);
     trace_assert(camera);
+
+    Rect *rects = dynarray_data(layer->rects);
 
     switch (event->type) {
     case SDL_MOUSEMOTION: {
@@ -362,8 +391,6 @@ static int rect_layer_event_move(RectLayer *layer, const SDL_Event *event, const
                 event->button.y),
             layer->move_anchor);
 
-        Rect *rects = dynarray_data(layer->rects);
-
         trace_assert(layer->selection >= 0);
 
         rects[layer->selection].x = position.x;
@@ -372,6 +399,22 @@ static int rect_layer_event_move(RectLayer *layer, const SDL_Event *event, const
 
     case SDL_MOUSEBUTTONUP: {
         layer->state = RECT_LAYER_IDLE;
+
+        MoveContext context = {
+            .index = (size_t)layer->selection,
+            .position = layer->prev_position
+        };
+
+        undo_history_push(
+            undo_history,
+            create_action(
+                layer,
+                rect_layer_undo_move,
+                &context, sizeof(context)));
+
+        layer->prev_position = vec(
+            rects[layer->selection].x,
+            rects[layer->selection].y);
     } break;
     }
     return 0;
@@ -681,7 +724,7 @@ int rect_layer_event(RectLayer *layer,
         return rect_layer_event_resize(layer, event, camera);
 
     case RECT_LAYER_MOVE:
-        return rect_layer_event_move(layer, event, camera);
+        return rect_layer_event_move(layer, event, camera, undo_history);
 
     case RECT_LAYER_ID_RENAME:
         return rect_layer_event_id_rename(layer, event, camera);
