@@ -435,7 +435,29 @@ static int rect_layer_event_move(RectLayer *layer,
     return 0;
 }
 
-static int rect_layer_event_id_rename(RectLayer *layer, const SDL_Event *event, const Camera *camera)
+typedef struct {
+    size_t index;
+    char id[RECT_LAYER_ID_MAX_SIZE];
+} RenameContext;
+
+static
+void rect_layer_undo_rename_id(void *layer, Context context)
+{
+    trace_assert(layer);
+    RectLayer *rect_layer = layer;
+
+    RenameContext *rename_context = (RenameContext *)context.data;
+
+    dynarray_replace_at(
+        rect_layer->ids,
+        rename_context->index,
+        rename_context->id);
+}
+
+static int rect_layer_event_id_rename(RectLayer *layer,
+                                      const SDL_Event *event,
+                                      const Camera *camera,
+                                      UndoHistory *undo_history)
 {
     trace_assert(layer);
     trace_assert(event);
@@ -445,8 +467,20 @@ static int rect_layer_event_id_rename(RectLayer *layer, const SDL_Event *event, 
     case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
         case SDLK_RETURN: {
-            char *id =
-                (char *)dynarray_data(layer->ids) + layer->selection * RECT_LAYER_ID_MAX_SIZE;
+            char *id = dynarray_pointer_at(layer->ids, (size_t)layer->selection);
+
+            RenameContext context = {
+                .index = (size_t)layer->selection,
+            };
+            memcpy(context.id, id, RECT_LAYER_ID_MAX_SIZE);
+
+            undo_history_push(
+                undo_history,
+                create_action(
+                    layer,
+                    rect_layer_undo_rename_id,
+                    &context, sizeof(context)));
+
             memset(id, 0, RECT_LAYER_ID_MAX_SIZE);
             memcpy(id, edit_field_as_text(layer->id_edit_field), RECT_LAYER_ID_MAX_SIZE - 1);
             layer->state = RECT_LAYER_IDLE;
@@ -742,7 +776,7 @@ int rect_layer_event(RectLayer *layer,
         return rect_layer_event_move(layer, event, camera, undo_history);
 
     case RECT_LAYER_ID_RENAME:
-        return rect_layer_event_id_rename(layer, event, camera);
+        return rect_layer_event_id_rename(layer, event, camera, undo_history);
     }
 
     return 0;
