@@ -11,6 +11,7 @@
 #include "color_picker.h"
 #include "system/str.h"
 #include "ui/edit_field.h"
+#include "undo_history.h"
 
 #define RECT_LAYER_ID_MAX_SIZE 36
 #define RECT_LAYER_SELECTION_THICCNESS 10.0f
@@ -43,9 +44,29 @@ struct RectLayer {
 
 typedef int (*EventHandler)(RectLayer *layer, const SDL_Event *event, const Camera *camera);
 
-static int rect_layer_add_rect(RectLayer *layer, Rect rect, Color color)
+static
+void rect_layer_undo_add(void *layer, Context context)
 {
     trace_assert(layer);
+    RectLayer *rect_layer = layer;
+
+    trace_assert(sizeof(size_t) < CONTEXT_SIZE);
+    size_t *index = (size_t *)context.data;
+
+    trace_assert(*index < dynarray_count(rect_layer->rects));
+    dynarray_delete_at(rect_layer->rects, *index);
+    dynarray_delete_at(rect_layer->colors, *index);
+    dynarray_delete_at(rect_layer->ids, *index);
+}
+
+static int rect_layer_add_rect(RectLayer *layer,
+                               Rect rect,
+                               Color color,
+                               UndoHistory *undo_history)
+{
+    trace_assert(layer);
+
+    size_t index = dynarray_count(layer->rects);
 
     if (dynarray_push(layer->rects, &rect) < 0) {
         return -1;
@@ -64,6 +85,13 @@ static int rect_layer_add_rect(RectLayer *layer, Rect rect, Color color)
     if (dynarray_push(layer->ids, id)) {
         return -1;
     }
+
+    undo_history_push(
+        undo_history,
+        create_action(
+            layer,
+            rect_layer_undo_add,
+            &index, sizeof(index)));
 
     return 0;
 }
@@ -189,7 +217,10 @@ static int rect_layer_event_idle(RectLayer *layer, const SDL_Event *event, const
     return 0;
 }
 
-static int rect_layer_event_create(RectLayer *layer, const SDL_Event *event, const Camera *camera)
+static int rect_layer_event_create(RectLayer *layer,
+                                   const SDL_Event *event,
+                                   const Camera *camera,
+                                   UndoHistory *undo_history)
 {
     trace_assert(layer);
     trace_assert(event);
@@ -209,7 +240,8 @@ static int rect_layer_event_create(RectLayer *layer, const SDL_Event *event, con
                 rect_layer_add_rect(
                     layer,
                     real_rect,
-                    color_picker_rgba(&layer->color_picker));
+                    color_picker_rgba(&layer->color_picker),
+                    undo_history);
             } else {
                 log_info("The area is too small %f. Such small box won't be created.\n", area);
             }
@@ -546,7 +578,7 @@ int rect_layer_event(RectLayer *layer,
         return rect_layer_event_idle(layer, event, camera);
 
     case RECT_LAYER_CREATE:
-        return rect_layer_event_create(layer, event, camera);
+        return rect_layer_event_create(layer, event, camera, undo_history);
 
     case RECT_LAYER_RESIZE:
         return rect_layer_event_resize(layer, event, camera);
