@@ -17,7 +17,7 @@
 #define RECT_LAYER_SELECTION_THICCNESS 10.0f
 #define CREATE_AREA_THRESHOLD 10.0
 
-// TODO: Can we use a single Context for everything in RectLayer
+// TODO(#1034): Can we use a single Context for everything in RectLayer
 
 typedef enum {
     RECT_LAYER_IDLE = 0,
