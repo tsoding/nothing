@@ -5,7 +5,12 @@
 
 typedef struct {
     ColorPicker color_picker;
+    Color prev_color;
 } BackgroundLayer;
+
+BackgroundLayer create_background_layer(Color color);
+int background_layer_read_from_line_stream(BackgroundLayer *layer,
+                                           LineStream *line_stream);
 
 static inline
 LayerPtr background_layer_as_layer(BackgroundLayer *layer)
