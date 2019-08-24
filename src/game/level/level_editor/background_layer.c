@@ -1,3 +1,4 @@
+#include <string.h>
 #include <SDL.h>
 
 #include "system/stacktrace.h"
