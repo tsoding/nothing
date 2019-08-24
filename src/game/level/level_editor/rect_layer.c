@@ -323,22 +323,22 @@ static int rect_layer_event_create(RectLayer *layer,
 typedef struct {
     size_t index;
     Rect rect;
-} ResizeContext;
+} RectContext;
 
 static
-void rect_layer_undo_resize(void *layer, Context context)
+void rect_layer_undo_rect(void *layer, Context context)
 {
     trace_assert(layer);
     RectLayer *rect_layer = layer;
 
-    trace_assert(sizeof(ResizeContext) <= CONTEXT_SIZE);
-    ResizeContext *resize_context = (ResizeContext *)context.data;
-    trace_assert(resize_context->index < dynarray_count(rect_layer->rects));
+    trace_assert(sizeof(RectContext) <= CONTEXT_SIZE);
+    RectContext *rect_context = (RectContext *)context.data;
+    trace_assert(rect_context->index < dynarray_count(rect_layer->rects));
 
     dynarray_replace_at(
         rect_layer->rects,
-        resize_context->index,
-        &resize_context->rect);
+        rect_context->index,
+        &rect_context->rect);
 }
 
 static int rect_layer_event_resize(RectLayer *layer,
@@ -369,7 +369,7 @@ static int rect_layer_event_resize(RectLayer *layer,
     case SDL_MOUSEBUTTONUP: {
         layer->state = RECT_LAYER_IDLE;
 
-        ResizeContext context = {
+        RectContext context = {
             .index = (size_t) layer->selection,
             .rect = layer->prev_rect
         };
@@ -378,7 +378,7 @@ static int rect_layer_event_resize(RectLayer *layer,
             undo_history,
             create_action(
                 layer,
-                rect_layer_undo_resize,
+                rect_layer_undo_rect,
                 &context, sizeof(context)));
 
         layer->prev_rect = rects[layer->selection];
@@ -386,27 +386,6 @@ static int rect_layer_event_resize(RectLayer *layer,
     }
 
     return 0;
-}
-
-typedef struct {
-    size_t index;
-    Rect rect;
-} MoveContext;
-
-static
-void rect_layer_undo_move(void *layer, Context context)
-{
-    trace_assert(layer);
-    RectLayer *rect_layer = layer;
-
-    trace_assert(sizeof(MoveContext) <= CONTEXT_SIZE);
-    MoveContext *move_context = (MoveContext *)context.data;
-    trace_assert(move_context->index < dynarray_count(rect_layer->rects));
-
-    dynarray_replace_at(
-        rect_layer->rects,
-        move_context->index,
-        &move_context->rect);
 }
 
 static int rect_layer_event_move(RectLayer *layer,
@@ -438,7 +417,7 @@ static int rect_layer_event_move(RectLayer *layer,
     case SDL_MOUSEBUTTONUP: {
         layer->state = RECT_LAYER_IDLE;
 
-        MoveContext context = {
+        RectContext context = {
             .index = (size_t)layer->selection,
             .rect = layer->prev_rect
         };
@@ -447,7 +426,7 @@ static int rect_layer_event_move(RectLayer *layer,
             undo_history,
             create_action(
                 layer,
-                rect_layer_undo_move,
+                rect_layer_undo_rect,
                 &context, sizeof(context)));
 
         layer->prev_rect = rects[layer->selection];
