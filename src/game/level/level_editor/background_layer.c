@@ -8,7 +8,6 @@
 #include "background_layer.h"
 #include "undo_history.h"
 
-// TODO(#1012): UndoHistory is not support in BackgroundLayer
 
 BackgroundLayer create_background_layer(Color color)
 {
