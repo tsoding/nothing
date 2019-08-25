@@ -45,8 +45,6 @@ struct RectLayer {
     Rect prev_rect;
 };
 
-typedef int (*EventHandler)(RectLayer *layer, const SDL_Event *event, const Camera *camera);
-
 static
 void rect_layer_undo_add(void *layer, Context context)
 {
