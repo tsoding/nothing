@@ -207,3 +207,12 @@ void dynarray_replace_at(Dynarray *dynarray, size_t index, void *element)
         element,
         dynarray->element_size);
 }
+
+void dynarray_copy_to(Dynarray *dynarray, void *dest, size_t index)
+{
+    trace_assert(dynarray);
+    trace_assert(dest);
+    trace_assert(index < dynarray->count);
+
+    memcpy(dest, dynarray->data + index * dynarray->element_size, dynarray->element_size);
+}
