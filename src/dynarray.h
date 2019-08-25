@@ -12,6 +12,7 @@ size_t dynarray_count(const Dynarray *dynarray);
 void *dynarray_data(Dynarray *dynarray);
 void *dynarray_pointer_at(Dynarray *dynarray, size_t index);
 void dynarray_replace_at(Dynarray *dynarray, size_t index, void *element);
+void dynarray_copy_to(Dynarray *dynarray, void *dest, size_t index);
 void dynarray_clear(Dynarray *dynarray);
 // O(1) amortized
 // TODO(#981): dynarray_push should be called dynarray_push_copy

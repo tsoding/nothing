@@ -11,6 +11,12 @@
 #define ASSERT_CONTEXT_SIZE(context)               \
     trace_assert(sizeof(context) <= CONTEXT_SIZE)
 
+typedef enum {
+    UNDO_ADD,
+    UNDO_DELETE,
+    UNDO_UPDATE
+} UndoType;
+
 typedef struct {
     char data[CONTEXT_SIZE];
 } Context;
