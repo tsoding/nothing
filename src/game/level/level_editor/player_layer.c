@@ -9,6 +9,35 @@
 #include "system/log.h"
 #include "undo_history.h"
 
+typedef struct {
+    Point position;
+    Color color;
+} UndoContext;
+
+static
+UndoContext player_layer_create_undo_context(PlayerLayer *player_layer)
+{
+    UndoContext context = {
+        .position = player_layer->position,
+        .color = player_layer->prev_color
+    };
+
+    return context;
+}
+
+static
+void player_layer_undo(void *layer, Context context)
+{
+    trace_assert(layer);
+    PlayerLayer *player_layer = layer;
+
+    UndoContext *undo_context = (UndoContext *)context.data;
+
+    player_layer->position = undo_context->position;
+    player_layer->color_picker = create_color_picker_from_rgba(undo_context->color);
+    player_layer->prev_color = undo_context->color;
+}
+
 PlayerLayer create_player_layer(Vec position, Color color)
 {
     return (PlayerLayer) {
@@ -77,27 +106,6 @@ int player_layer_render(const PlayerLayer *player_layer,
     return 0;
 }
 
-static void player_layer_revert_position(void *layer, Context context)
-{
-    trace_assert(layer);
-
-    PlayerLayer *player_layer = layer;
-    player_layer->position = *((Point*)context.data);
-}
-
-static
-void player_layer_revert_color(void *layer, Context context)
-{
-    trace_assert(layer);
-    PlayerLayer *player_layer = layer;
-
-    trace_assert(sizeof(Color) <= CONTEXT_SIZE);
-    Color *color = (Color *)context.data;
-
-    player_layer->color_picker = create_color_picker_from_rgba(*color);
-    player_layer->prev_color = *color;
-}
-
 int player_layer_event(PlayerLayer *player_layer,
                        const SDL_Event *event,
                        const Camera *camera,
@@ -118,13 +126,15 @@ int player_layer_event(PlayerLayer *player_layer,
     }
 
     if (selected && !color_picker_drag(&player_layer->color_picker)) {
+        UndoContext context =
+            player_layer_create_undo_context(player_layer);
         undo_history_push(
             undo_history,
             create_action(
                 player_layer,
-                player_layer_revert_color,
-                &player_layer->prev_color,
-                sizeof(player_layer->prev_color)));
+                player_layer_undo,
+                &context,
+                sizeof(context)));
         player_layer->prev_color = color_picker_rgba(&player_layer->color_picker);
     }
 
@@ -132,13 +142,15 @@ int player_layer_event(PlayerLayer *player_layer,
         event->type == SDL_MOUSEBUTTONDOWN &&
         event->button.button == SDL_BUTTON_LEFT) {
 
+        UndoContext context =
+            player_layer_create_undo_context(player_layer);
+
         undo_history_push(
             undo_history,
             create_action(
                 player_layer,
-                player_layer_revert_position,
-                &player_layer->position,
-                sizeof(player_layer->position)));
+                player_layer_undo,
+                &context, sizeof(context)));
 
         player_layer->position =
             camera_map_screen(camera,
