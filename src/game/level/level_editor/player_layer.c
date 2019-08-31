@@ -130,11 +130,10 @@ int player_layer_event(PlayerLayer *player_layer,
             player_layer_create_undo_context(player_layer);
         undo_history_push(
             undo_history,
-            create_action(
-                player_layer,
-                player_layer_undo,
-                &context,
-                sizeof(context)));
+            player_layer,
+            player_layer_undo,
+            &context,
+            sizeof(context));
         player_layer->prev_color = color_picker_rgba(&player_layer->color_picker);
     }
 
@@ -147,10 +146,9 @@ int player_layer_event(PlayerLayer *player_layer,
 
         undo_history_push(
             undo_history,
-            create_action(
-                player_layer,
-                player_layer_undo,
-                &context, sizeof(context)));
+            player_layer,
+            player_layer_undo,
+            &context, sizeof(context));
 
         player_layer->position =
             camera_map_screen(camera,

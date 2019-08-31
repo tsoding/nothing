@@ -83,10 +83,9 @@ int background_layer_event(BackgroundLayer *layer,
     if (selected && !color_picker_drag(&layer->color_picker)) {
         undo_history_push(
             undo_history,
-            create_action(
-                layer,
-                background_undo_color,
-                &layer->prev_color, sizeof(layer->prev_color)));
+            layer,
+            background_undo_color,
+            &layer->prev_color, sizeof(layer->prev_color));
         layer->prev_color = color_picker_rgba(&layer->color_picker);
     }
 
