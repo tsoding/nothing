@@ -1,7 +1,7 @@
 #ifndef UNDO_HISTORY_H_
 #define UNDO_HISTORY_H_
 
-#include "layer.h"
+#include "stack.h"
 
 typedef enum {
     UNDO_ADD,
@@ -11,10 +11,15 @@ typedef enum {
 
 typedef void (*RevertAction)(void *layer, void *context, size_t context_size);
 
-typedef struct UndoHistory UndoHistory;
+typedef struct {
+    Stack actions;
+} UndoHistory;
 
-UndoHistory *create_undo_history(void);
-void destroy_undo_history(UndoHistory *undo_history);
+static inline
+void destroy_undo_history(UndoHistory undo_history)
+{
+    destroy_stack(undo_history.actions);
+}
 
 void undo_history_push(UndoHistory *undo_history,
                        void *layer,

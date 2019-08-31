@@ -1,6 +1,8 @@
 #ifndef LAYER_H_
 #define LAYER_H_
 
+#include "undo_history.h"
+
 typedef enum {
     LAYER_RECT,
     LAYER_POINT,
@@ -15,7 +17,6 @@ typedef struct {
 } LayerPtr;
 
 typedef struct Camera Camera;
-typedef struct UndoHistory UndoHistory;
 
 int layer_render(LayerPtr layer, Camera *camera, int active);
 int layer_event(LayerPtr layer,

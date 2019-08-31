@@ -42,7 +42,7 @@ struct LevelEditor
 
     LayerPtr layers[LAYER_PICKER_N];
 
-    UndoHistory *undo_history;
+    UndoHistory undo_history;
 
     bool drag;
 
