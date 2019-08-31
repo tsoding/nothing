@@ -596,12 +596,6 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
         }
     }
 
-    // ID renaming Edit Field
-    if (layer->state == RECT_LAYER_ID_RENAME) {
-        if (edit_field_render_screen(layer->id_edit_field, camera, vec(400.0f, 400.0f)) < 0) {
-            return -1;
-        }
-    }
 
     // Selection Overlay
     if (active && layer->selection >= 0) {
@@ -630,13 +624,24 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
         }
 
         // Rectangle Id
-        if (camera_render_text(
-                camera,
-                ids + layer->selection * RECT_LAYER_ID_MAX_SIZE,
-                vec(3.0f, 3.0f),
-                color_invert(colors[layer->selection]),
-                rect_position(rects[layer->selection])) < 0) {
-            return -1;
+        if (layer->state == RECT_LAYER_ID_RENAME) {
+            // ID renaming Edit Field
+            if (edit_field_render_world(
+                    layer->id_edit_field,
+                    camera,
+                    rect_position(rects[layer->selection])) < 0) {
+                return -1;
+            }
+        } else {
+            // Id text
+            if (camera_render_text(
+                    camera,
+                    ids + layer->selection * RECT_LAYER_ID_MAX_SIZE,
+                    vec(3.0f, 3.0f),
+                    color_invert(colors[layer->selection]),
+                    rect_position(rects[layer->selection])) < 0) {
+                return -1;
+            }
         }
 
         // Resize Anchor
