@@ -40,6 +40,12 @@ struct PointLayer
     Point prev_position;
 };
 
+typedef enum {
+    UNDO_ADD,
+    UNDO_DELETE,
+    UNDO_UPDATE
+} UndoType;
+
 typedef struct {
     UndoType type;
     Point position;

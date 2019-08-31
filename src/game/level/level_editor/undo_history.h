@@ -3,12 +3,6 @@
 
 #include "stack.h"
 
-typedef enum {
-    UNDO_ADD,
-    UNDO_DELETE,
-    UNDO_UPDATE
-} UndoType;
-
 typedef void (*RevertAction)(void *layer, void *context, size_t context_size);
 
 typedef struct {

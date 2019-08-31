@@ -45,6 +45,12 @@ struct RectLayer {
     Rect prev_rect;
 };
 
+typedef enum {
+    UNDO_ADD,
+    UNDO_DELETE,
+    UNDO_UPDATE
+} UndoType;
+
 typedef struct {
     UndoType type;
     Rect rect;
