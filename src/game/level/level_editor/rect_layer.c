@@ -72,13 +72,14 @@ UndoContext rect_layer_create_undo_context(RectLayer *rect_layer, size_t index, 
 }
 
 static
-void rect_layer_undo(void *layer, Context context)
+void rect_layer_undo(void *layer, void *context, size_t context_size)
 {
     trace_assert(layer);
-    RectLayer *rect_layer = layer;
+    trace_assert(context);
+    trace_assert(sizeof(UndoContext) == context_size);
 
-    trace_assert(sizeof(UndoContext) < CONTEXT_SIZE);
-    UndoContext *undo_context = (UndoContext *)context.data;
+    RectLayer *rect_layer = layer;
+    UndoContext *undo_context = context;
 
     switch (undo_context->type) {
     case UNDO_ADD: {
@@ -135,10 +136,9 @@ static int rect_layer_add_rect(RectLayer *layer,
 
     undo_history_push(
         undo_history,
-        create_action(
-            layer,
-            rect_layer_undo,
-            &context, sizeof(context)));
+        layer,
+        rect_layer_undo,
+        &context, sizeof(context));
 
     return 0;
 }
@@ -185,10 +185,9 @@ static int rect_layer_delete_rect_at(RectLayer *layer,
 
     undo_history_push(
         undo_history,
-        create_action(
-            layer,
-            rect_layer_undo,
-            &context, sizeof(context)));
+        layer,
+        rect_layer_undo,
+        &context, sizeof(context));
 
     dynarray_delete_at(layer->rects, i);
     dynarray_delete_at(layer->colors, i);
@@ -356,10 +355,9 @@ static int rect_layer_event_resize(RectLayer *layer,
 
         undo_history_push(
             undo_history,
-            create_action(
-                layer,
-                rect_layer_undo,
-                &context, sizeof(context)));
+            layer,
+            rect_layer_undo,
+            &context, sizeof(context));
 
         layer->prev_rect = rects[layer->selection];
     } break;
@@ -402,10 +400,9 @@ static int rect_layer_event_move(RectLayer *layer,
 
         undo_history_push(
             undo_history,
-            create_action(
-                layer,
-                rect_layer_undo,
-                &context, sizeof(context)));
+            layer,
+            rect_layer_undo,
+            &context, sizeof(context));
 
         layer->prev_rect = rects[layer->selection];
     } break;
@@ -433,10 +430,9 @@ static int rect_layer_event_id_rename(RectLayer *layer,
 
             undo_history_push(
                 undo_history,
-                create_action(
-                    layer,
-                    rect_layer_undo,
-                    &undo_context, sizeof(undo_context)));
+                layer,
+                rect_layer_undo,
+                &undo_context, sizeof(undo_context));
 
             memset(id, 0, RECT_LAYER_ID_MAX_SIZE);
             memcpy(id, edit_field_as_text(layer->id_edit_field), RECT_LAYER_ID_MAX_SIZE - 1);
@@ -684,11 +680,10 @@ int rect_layer_event(RectLayer *layer,
 
                 undo_history_push(
                     undo_history,
-                    create_action(
-                        layer,
-                        rect_layer_undo,
-                        &context,
-                        sizeof(context)));
+                    layer,
+                    rect_layer_undo,
+                    &context,
+                    sizeof(context));
                 layer->prev_color = colors[layer->selection];
             }
         }

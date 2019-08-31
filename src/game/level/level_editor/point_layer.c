@@ -20,7 +20,6 @@
 #define POINT_LAYER_ID_TEXT_SIZE vec(2.0f, 2.0f)
 #define POINT_LAYER_ID_TEXT_COLOR COLOR_BLACK
 
-
 typedef enum {
     POINT_LAYER_IDLE = 0,
     POINT_LAYER_EDIT_ID,
@@ -66,12 +65,14 @@ UndoContext point_layer_create_undo_context(PointLayer *point_layer,
 }
 
 static
-void point_layer_undo(void *layer, Context context)
+void point_layer_undo(void *layer, void *context, size_t context_size)
 {
     trace_assert(layer);
-    PointLayer *point_layer = layer;
+    trace_assert(context);
+    trace_assert(sizeof(UndoContext) == context_size);
 
-    UndoContext *undo_context = (UndoContext *)context.data;
+    PointLayer *point_layer = layer;
+    UndoContext *undo_context = context;
 
     switch (undo_context->type) {
     case UNDO_ADD: {
@@ -305,10 +306,9 @@ int point_layer_add_element(PointLayer *point_layer,
 
     undo_history_push(
         undo_history,
-        create_action(
-            point_layer,
-            point_layer_undo,
-            &context, sizeof(context)));
+        point_layer,
+        point_layer_undo,
+        &context, sizeof(context));
 
     return 0;
 }
@@ -323,10 +323,9 @@ void point_layer_delete_nth_element(PointLayer *point_layer,
     UndoContext context = point_layer_create_undo_context(point_layer, i, UNDO_DELETE);
     undo_history_push(
         undo_history,
-        create_action(
-            point_layer,
-            point_layer_undo,
-            &context, sizeof(context)));
+        point_layer,
+        point_layer_undo,
+        &context, sizeof(context));
 
     dynarray_delete_at(point_layer->positions, i);
     dynarray_delete_at(point_layer->colors, i);
@@ -362,10 +361,9 @@ int point_layer_idle_event(PointLayer *point_layer,
 
                 undo_history_push(
                     undo_history,
-                    create_action(
-                        point_layer,
-                        point_layer_undo,
-                        &context, sizeof(context)));
+                    point_layer,
+                    point_layer_undo,
+                    &context, sizeof(context));
 
                 point_layer->prev_color =
                     color_picker_rgba(&point_layer->color_picker);
@@ -456,11 +454,10 @@ int point_layer_edit_id_event(PointLayer *point_layer,
 
             undo_history_push(
                 undo_history,
-                create_action(
-                    point_layer,
-                    point_layer_undo,
-                    &context,
-                    sizeof(context)));
+                point_layer,
+                point_layer_undo,
+                &context,
+                sizeof(context));
 
             char *id = dynarray_pointer_at(point_layer->ids, (size_t) point_layer->selected);
             const char *text = edit_field_as_text(point_layer->edit_field);
@@ -508,11 +505,10 @@ int point_layer_move_event(PointLayer *point_layer,
             // TODO(#1014): just click (without moving) on the point creates an undo history entry
             undo_history_push(
                 undo_history,
-                create_action(
-                    point_layer,
-                    point_layer_undo,
-                    &context,
-                    sizeof(context)));
+                point_layer,
+                point_layer_undo,
+                &context,
+                sizeof(context));
         } break;
         }
     } break;

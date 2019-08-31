@@ -49,13 +49,14 @@ int background_layer_render(BackgroundLayer *layer,
 }
 
 static
-void background_undo_color(void *layer, Context context)
+void background_undo_color(void *layer, void *context, size_t context_size)
 {
     trace_assert(layer);
-    BackgroundLayer *background_layer = layer;
+    trace_assert(context);
+    trace_assert(sizeof(Color) == context_size);
 
-    trace_assert(sizeof(Color) < CONTEXT_SIZE);
-    Color *color = (Color *)context.data;
+    BackgroundLayer *background_layer = layer;
+    Color *color = context;
 
     background_layer->color_picker = create_color_picker_from_rgba(*color);
 }
@@ -83,10 +84,9 @@ int background_layer_event(BackgroundLayer *layer,
     if (selected && !color_picker_drag(&layer->color_picker)) {
         undo_history_push(
             undo_history,
-            create_action(
-                layer,
-                background_undo_color,
-                &layer->prev_color, sizeof(layer->prev_color)));
+            layer,
+            background_undo_color,
+            &layer->prev_color, sizeof(layer->prev_color));
         layer->prev_color = color_picker_rgba(&layer->color_picker);
     }
 

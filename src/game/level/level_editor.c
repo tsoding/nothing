@@ -135,11 +135,6 @@ LevelEditor *create_level_editor(void)
     level_editor->layers[LAYER_PICKER_BACKGROUND] = background_layer_as_layer(&level_editor->background_layer);
     level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
 
-    level_editor->undo_history = PUSH_LT(
-        lt,
-        create_undo_history(),
-        destroy_undo_history);
-
     level_editor->notice = (FadingWigglyText) {
         .wiggly_text = {
             .text = "Level saved",
@@ -293,11 +288,6 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->layers[LAYER_PICKER_BACKGROUND] = background_layer_as_layer(&level_editor->background_layer);
     level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
 
-    level_editor->undo_history = PUSH_LT(
-        lt,
-        create_undo_history(),
-        destroy_undo_history);
-
     level_editor->drag = false;
 
     level_editor->notice = (FadingWigglyText) {
@@ -317,6 +307,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
 void destroy_level_editor(LevelEditor *level_editor)
 {
     trace_assert(level_editor);
+    destroy_undo_history(level_editor->undo_history);
     RETURN_LT0(level_editor->lt);
 }
 
@@ -440,7 +431,7 @@ int level_editor_idle_event(LevelEditor *level_editor,
         case SDLK_z: {
             if (event->key.keysym.mod & KMOD_CTRL) {
                 log_info("Undo\n");
-                undo_history_pop(level_editor->undo_history);
+                undo_history_pop(&level_editor->undo_history);
             }
         } break;
         }
@@ -507,7 +498,7 @@ int level_editor_idle_event(LevelEditor *level_editor,
                 level_editor->layers[level_editor->layer_picker],
                 event,
                 camera,
-                level_editor->undo_history) < 0) {
+                &level_editor->undo_history) < 0) {
             return -1;
         }
     }
