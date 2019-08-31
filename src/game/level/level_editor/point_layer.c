@@ -464,8 +464,9 @@ int point_layer_edit_id_event(PointLayer *point_layer,
 
             char *id = dynarray_pointer_at(point_layer->ids, (size_t) point_layer->selected);
             const char *text = edit_field_as_text(point_layer->edit_field);
-            memset(id, 0, ID_MAX_SIZE);
-            memcpy(id, text, min_size_t(strlen(text), ID_MAX_SIZE - 1));
+            size_t n = min_size_t(strlen(text), ID_MAX_SIZE - 1);
+            memcpy(id, text, n);
+            memset(id + n, 0, ID_MAX_SIZE - n);
 
             point_layer->state = POINT_LAYER_IDLE;
             SDL_StopTextInput();
