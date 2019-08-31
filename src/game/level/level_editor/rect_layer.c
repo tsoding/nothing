@@ -15,6 +15,7 @@
 
 #define RECT_LAYER_ID_MAX_SIZE 36
 #define RECT_LAYER_SELECTION_THICCNESS 10.0f
+#define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
 #define CREATE_AREA_THRESHOLD 10.0
 
 // TODO(#1034): Can we use a single Context for everything in RectLayer
@@ -265,6 +266,13 @@ static int rect_layer_event_idle(RectLayer *layer,
         case SDLK_F2: {
             if (layer->selection >= 0) {
                 const char *ids = dynarray_data(layer->ids);
+                Color *colors = dynarray_data(layer->colors);
+
+                edit_field_restyle(
+                    layer->id_edit_field,
+                    RECT_LAYER_ID_LABEL_SIZE,
+                    color_invert(colors[layer->selection]));
+
                 layer->state = RECT_LAYER_ID_RENAME;
                 edit_field_replace(
                     layer->id_edit_field,
@@ -497,7 +505,7 @@ RectLayer *create_rect_layer(void)
     layer->id_edit_field = PUSH_LT(
         lt,
         create_edit_field(
-            vec(3.0f, 3.0f),
+            RECT_LAYER_ID_LABEL_SIZE,
             COLOR_BLACK),
         destroy_edit_field);
     if (layer->id_edit_field == NULL) {
@@ -596,12 +604,6 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
         }
     }
 
-    // ID renaming Edit Field
-    if (layer->state == RECT_LAYER_ID_RENAME) {
-        if (edit_field_render_screen(layer->id_edit_field, camera, vec(400.0f, 400.0f)) < 0) {
-            return -1;
-        }
-    }
 
     // Selection Overlay
     if (active && layer->selection >= 0) {
@@ -630,13 +632,24 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
         }
 
         // Rectangle Id
-        if (camera_render_text(
-                camera,
-                ids + layer->selection * RECT_LAYER_ID_MAX_SIZE,
-                vec(3.0f, 3.0f),
-                color_invert(colors[layer->selection]),
-                rect_position(rects[layer->selection])) < 0) {
-            return -1;
+        if (layer->state == RECT_LAYER_ID_RENAME) {
+            // ID renaming Edit Field
+            if (edit_field_render_world(
+                    layer->id_edit_field,
+                    camera,
+                    rect_position(rects[layer->selection])) < 0) {
+                return -1;
+            }
+        } else {
+            // Id text
+            if (camera_render_text(
+                    camera,
+                    ids + layer->selection * RECT_LAYER_ID_MAX_SIZE,
+                    RECT_LAYER_ID_LABEL_SIZE,
+                    color_invert(colors[layer->selection]),
+                    rect_position(rects[layer->selection])) < 0) {
+                return -1;
+            }
         }
 
         // Resize Anchor
