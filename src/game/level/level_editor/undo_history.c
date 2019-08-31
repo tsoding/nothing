@@ -9,40 +9,15 @@
 #include "undo_history.h"
 #include "stack.h"
 
-struct UndoHistory
-{
+struct UndoHistory {
     Lt *lt;
     Stack actions;
 };
 
-
-
 typedef struct {
-    void *layer;
-    Context context;
     RevertAction revert;
+    void *layer;
 } Action;
-
-static inline
-Action create_action(void *layer, RevertAction revert,
-                     void *context_data,
-                     size_t context_data_size)
-{
-    trace_assert(layer);
-    trace_assert(revert);
-    trace_assert(context_data_size < CONTEXT_SIZE);
-
-    Action action = {
-        .layer = layer,
-        .revert = revert
-    };
-
-    if (context_data) {
-        memcpy(action.context.data, context_data, context_data_size);
-    }
-
-    return action;
-}
 
 UndoHistory *create_undo_history(void)
 {
@@ -72,16 +47,13 @@ void undo_history_push(UndoHistory *undo_history,
 {
     trace_assert(undo_history);
 
-    Action action = create_action(
-        layer,
-        revert,
-        context_data,
-        context_data_size);
+    Action action = {
+        .revert = revert,
+        .layer = layer
+    };
 
-    stack_push(
-        &undo_history->actions,
-        &action,
-        sizeof(action));
+    stack_push(&undo_history->actions, context_data, context_data_size);
+    stack_push(&undo_history->actions, &action, sizeof(action));
 }
 
 void undo_history_pop(UndoHistory *undo_history)
@@ -89,8 +61,13 @@ void undo_history_pop(UndoHistory *undo_history)
     trace_assert(undo_history);
 
     if (stack_empty(&undo_history->actions) > 0) {
-        Action *action = stack_top_element(&undo_history->actions);
-        action->revert(action->layer, action->context);
+        Action action = *(Action *)stack_top_element(&undo_history->actions);
+        stack_pop(&undo_history->actions);
+
+        size_t context_size = stack_top_size(&undo_history->actions);
+        void *context = stack_top_element(&undo_history->actions);
+
+        action.revert(action.layer, context, context_size);
         stack_pop(&undo_history->actions);
     }
 }

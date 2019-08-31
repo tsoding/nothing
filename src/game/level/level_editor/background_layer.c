@@ -49,13 +49,14 @@ int background_layer_render(BackgroundLayer *layer,
 }
 
 static
-void background_undo_color(void *layer, Context context)
+void background_undo_color(void *layer, void *context, size_t context_size)
 {
     trace_assert(layer);
-    BackgroundLayer *background_layer = layer;
+    trace_assert(context);
+    trace_assert(sizeof(Color) == context_size);
 
-    trace_assert(sizeof(Color) < CONTEXT_SIZE);
-    Color *color = (Color *)context.data;
+    BackgroundLayer *background_layer = layer;
+    Color *color = context;
 
     background_layer->color_picker = create_color_picker_from_rgba(*color);
 }

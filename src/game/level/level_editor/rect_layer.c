@@ -72,13 +72,14 @@ UndoContext rect_layer_create_undo_context(RectLayer *rect_layer, size_t index, 
 }
 
 static
-void rect_layer_undo(void *layer, Context context)
+void rect_layer_undo(void *layer, void *context, size_t context_size)
 {
     trace_assert(layer);
-    RectLayer *rect_layer = layer;
+    trace_assert(context);
+    trace_assert(sizeof(UndoContext) == context_size);
 
-    trace_assert(sizeof(UndoContext) < CONTEXT_SIZE);
-    UndoContext *undo_context = (UndoContext *)context.data;
+    RectLayer *rect_layer = layer;
+    UndoContext *undo_context = context;
 
     switch (undo_context->type) {
     case UNDO_ADD: {

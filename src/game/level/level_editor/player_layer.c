@@ -26,12 +26,14 @@ UndoContext player_layer_create_undo_context(PlayerLayer *player_layer)
 }
 
 static
-void player_layer_undo(void *layer, Context context)
+void player_layer_undo(void *layer, void *context, size_t context_size)
 {
     trace_assert(layer);
-    PlayerLayer *player_layer = layer;
+    trace_assert(context);
+    trace_assert(sizeof(UndoContext) == context_size);
 
-    UndoContext *undo_context = (UndoContext *)context.data;
+    PlayerLayer *player_layer = layer;
+    UndoContext *undo_context = context;
 
     player_layer->position = undo_context->position;
     player_layer->color_picker = create_color_picker_from_rgba(undo_context->color);

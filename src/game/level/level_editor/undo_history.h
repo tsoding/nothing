@@ -3,22 +3,13 @@
 
 #include "layer.h"
 
-#define CONTEXT_SIZE 256
-
-#define ASSERT_CONTEXT_SIZE(context)               \
-    trace_assert(sizeof(context) <= CONTEXT_SIZE)
-
 typedef enum {
     UNDO_ADD,
     UNDO_DELETE,
     UNDO_UPDATE
 } UndoType;
 
-typedef struct {
-    char data[CONTEXT_SIZE];
-} Context;
-
-typedef void (*RevertAction)(void *layer, Context context);
+typedef void (*RevertAction)(void *layer, void *context, size_t context_size);
 
 typedef struct UndoHistory UndoHistory;
 

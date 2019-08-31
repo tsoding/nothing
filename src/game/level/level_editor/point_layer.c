@@ -65,12 +65,14 @@ UndoContext point_layer_create_undo_context(PointLayer *point_layer,
 }
 
 static
-void point_layer_undo(void *layer, Context context)
+void point_layer_undo(void *layer, void *context, size_t context_size)
 {
     trace_assert(layer);
-    PointLayer *point_layer = layer;
+    trace_assert(context);
+    trace_assert(sizeof(UndoContext) == context_size);
 
-    UndoContext *undo_context = (UndoContext *)context.data;
+    PointLayer *point_layer = layer;
+    UndoContext *undo_context = context;
 
     switch (undo_context->type) {
     case UNDO_ADD: {
