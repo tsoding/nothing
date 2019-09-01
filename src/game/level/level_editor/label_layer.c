@@ -553,7 +553,8 @@ int label_layer_idle_event(LabelLayer *label_layer,
 static
 int label_layer_move_event(LabelLayer *label_layer,
                            const SDL_Event *event,
-                           const Camera *camera)
+                           const Camera *camera,
+                           UndoHistory *undo_history)
 {
     trace_assert(label_layer);
     trace_assert(event);
@@ -573,6 +574,15 @@ int label_layer_move_event(LabelLayer *label_layer,
     case SDL_MOUSEBUTTONUP: {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
+            // TODO: Why pass label_layer->selected if we already pass label_layer
+            UndoContext context = create_undo_context(label_layer, (size_t) label_layer->selected, UNDO_UPDATE);
+            undo_history_push(
+                undo_history,
+                label_layer,
+                label_layer_undo,
+                &context,
+                sizeof(context));
+
             dynarray_replace_at(
                 label_layer->positions,
                 (size_t)label_layer->selected,
@@ -709,7 +719,7 @@ int label_layer_event(LabelLayer *label_layer,
         return label_layer_idle_event(label_layer, event, camera, undo_history);
 
     case LABEL_LAYER_MOVE:
-        return label_layer_move_event(label_layer, event, camera);
+        return label_layer_move_event(label_layer, event, camera, undo_history);
 
     case LABEL_LAYER_EDIT_TEXT:
         return label_layer_edit_text_event(label_layer, event, camera);
