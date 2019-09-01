@@ -1,7 +1,6 @@
 #ifndef POINT_H_
 #define POINT_H_
 
-#include "math/mat3x3.h"
 #include "math/pi.h"
 
 typedef struct Point {
@@ -31,6 +30,6 @@ Vec vec_entry_mult(Vec v1, Vec v2);
 Vec vec_entry_div(Vec v1, Vec v2);
 Vec vec_norm(Vec v);
 
-Point point_mat3x3_product(Point p, mat3x3 m);
+
 
 #endif  // POINT_H_

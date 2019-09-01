@@ -3,6 +3,7 @@
 
 #include "explosion.h"
 #include "math/rand.h"
+#include "math/mat3x3.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 
