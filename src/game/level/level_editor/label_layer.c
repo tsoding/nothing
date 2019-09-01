@@ -111,6 +111,18 @@ void label_layer_undo(void *layer, void *context, size_t context_size)
     }
 }
 
+#define UNDO_PUSH(LAYER, HISTORY, UNDO_TYPE)                            \
+    do {                                                                \
+        UndoContext context = create_undo_context(LAYER, UNDO_TYPE);    \
+        undo_history_push(                                              \
+            HISTORY,                                                    \
+            LAYER,                                                      \
+            label_layer_undo,                                           \
+            &context,                                                   \
+            sizeof(context));                                           \
+    } while(0)
+
+
 LayerPtr label_layer_as_layer(LabelLayer *label_layer)
 {
     LayerPtr layer = {
@@ -387,13 +399,7 @@ void label_layer_delete_selected_label(LabelLayer *label_layer,
     trace_assert(label_layer);
     trace_assert(label_layer->selected >= 0);
 
-    UndoContext context = create_undo_context(label_layer, UNDO_DELETE);
-    undo_history_push(
-        undo_history,
-        label_layer,
-        label_layer_undo,
-        &context,
-        sizeof(context));
+    UNDO_PUSH(label_layer, undo_history, UNDO_DELETE);
 
     dynarray_delete_at(label_layer->ids, (size_t)label_layer->selected);
     dynarray_delete_at(label_layer->positions, (size_t)label_layer->selected);
@@ -423,13 +429,7 @@ int label_layer_add_label(LabelLayer *label_layer,
     dynarray_push(label_layer->colors, &color);
     dynarray_push_empty(label_layer->texts);
 
-    UndoContext context = create_undo_context(label_layer, UNDO_ADD);
-    undo_history_push(
-        undo_history,
-        label_layer,
-        label_layer_undo,
-        &context,
-        sizeof(context));
+    UNDO_PUSH(label_layer, undo_history, UNDO_ADD);
 
     return (int) n;
 }
@@ -577,13 +577,7 @@ int label_layer_move_event(LabelLayer *label_layer,
     case SDL_MOUSEBUTTONUP: {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
-            UndoContext context = create_undo_context(label_layer, UNDO_UPDATE);
-            undo_history_push(
-                undo_history,
-                label_layer,
-                label_layer_undo,
-                &context,
-                sizeof(context));
+            UNDO_PUSH(label_layer, undo_history, UNDO_UPDATE);
 
             dynarray_replace_at(
                 label_layer->positions,
@@ -601,7 +595,8 @@ int label_layer_move_event(LabelLayer *label_layer,
 static
 int label_layer_edit_text_event(LabelLayer *label_layer,
                                 const SDL_Event *event,
-                                const Camera *camera)
+                                const Camera *camera,
+                                UndoHistory *undo_history)
 {
     trace_assert(label_layer);
     trace_assert(event);
@@ -612,6 +607,8 @@ int label_layer_edit_text_event(LabelLayer *label_layer,
     case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
         case SDLK_RETURN: {
+            UNDO_PUSH(label_layer, undo_history, UNDO_UPDATE);
+
             char *text =
                 (char*)dynarray_data(label_layer->texts) + label_layer->selected * LABEL_LAYER_TEXT_MAX_SIZE;
             memset(text, 0, LABEL_LAYER_TEXT_MAX_SIZE);
@@ -636,17 +633,21 @@ int label_layer_edit_text_event(LabelLayer *label_layer,
 static
 int label_layer_edit_id_event(LabelLayer *label_layer,
                               const SDL_Event *event,
-                              const Camera *camera)
+                              const Camera *camera,
+                              UndoHistory *undo_history)
 {
     trace_assert(label_layer);
     trace_assert(event);
     trace_assert(camera);
+    trace_assert(undo_history);
     trace_assert(label_layer->selected >= 0);
 
     switch (event->type) {
     case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
         case SDLK_RETURN: {
+            UNDO_PUSH(label_layer, undo_history, UNDO_UPDATE);
+
             char *id =
                 (char*)dynarray_data(label_layer->ids) + label_layer->selected * LABEL_LAYER_ID_MAX_SIZE;
             memset(id, 0, LABEL_LAYER_ID_MAX_SIZE);
@@ -695,6 +696,8 @@ int label_layer_recolor_event(LabelLayer *label_layer,
             color_picker_rgba(&label_layer->color_picker);
 
         if (!color_picker_drag(&label_layer->color_picker)) {
+            UNDO_PUSH(label_layer, undo_history, UNDO_UPDATE);
+
             dynarray_replace_at(
                 label_layer->colors,
                 (size_t) label_layer->selected,
@@ -724,10 +727,10 @@ int label_layer_event(LabelLayer *label_layer,
         return label_layer_move_event(label_layer, event, camera, undo_history);
 
     case LABEL_LAYER_EDIT_TEXT:
-        return label_layer_edit_text_event(label_layer, event, camera);
+        return label_layer_edit_text_event(label_layer, event, camera, undo_history);
 
     case LABEL_LAYER_EDIT_ID:
-        return label_layer_edit_id_event(label_layer, event, camera);
+        return label_layer_edit_id_event(label_layer, event, camera, undo_history);
 
     case LABEL_LAYER_RECOLOR:
         return label_layer_recolor_event(label_layer, event, camera, undo_history);
