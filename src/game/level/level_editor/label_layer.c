@@ -38,7 +38,85 @@ struct LabelLayer {
     ColorPicker color_picker;
     Point move_anchor;
     Edit_field *edit_field;
+    Point prev_position;
+    Color prev_color;
 };
+
+typedef enum {
+    UNDO_ADD,
+    UNDO_DELETE,
+    UNDO_ID,
+    UNDO_POSITION,
+    UNDO_COLOR,
+    UNDO_TEXT
+} UndoType;
+
+typedef struct {
+    UndoType type;
+    char id[LABEL_LAYER_ID_MAX_SIZE];
+    Point position;
+    Color color;
+    char text[LABEL_LAYER_TEXT_MAX_SIZE];
+    size_t index;
+} UndoContext;
+
+static
+UndoContext create_undo_context(LabelLayer *label_layer, size_t index, UndoType type)
+{
+    UndoContext undo_context;
+
+    undo_context.type = type;
+    dynarray_copy_to(label_layer->ids, &undo_context.id, index);
+    undo_context.position = label_layer->prev_position;
+    undo_context.color = label_layer->prev_color;
+    dynarray_copy_to(label_layer->texts, &undo_context.text, index);
+    undo_context.index = index;
+
+    return undo_context;
+}
+
+static
+void label_layer_undo(void *layer, void *context, size_t context_size)
+{
+    trace_assert(layer);
+    trace_assert(context);
+    trace_assert(sizeof(UndoContext) == context_size);
+
+    LabelLayer *label_layer = layer;
+    UndoContext *undo_context = context;
+
+    switch (undo_context->type) {
+    case UNDO_ADD: {
+        dynarray_delete_at(label_layer->ids, undo_context->index);
+        dynarray_delete_at(label_layer->positions, undo_context->index);
+        dynarray_delete_at(label_layer->colors, undo_context->index);
+        dynarray_delete_at(label_layer->texts, undo_context->index);
+    } break;
+
+    case UNDO_DELETE: {
+        dynarray_insert_before(label_layer->ids, undo_context->index, &undo_context->id);
+        dynarray_insert_before(label_layer->positions, undo_context->index, &undo_context->position);
+        dynarray_insert_before(label_layer->colors, undo_context->index, &undo_context->color);
+        dynarray_insert_before(label_layer->texts, undo_context->index, &undo_context->text);
+    } break;
+
+    case UNDO_ID: {
+        dynarray_replace_at(label_layer->ids, undo_context->index, &undo_context->id);
+    } break;
+
+    case UNDO_POSITION: {
+        dynarray_replace_at(label_layer->positions, undo_context->index, &undo_context->position);
+    } break;
+
+    case UNDO_COLOR: {
+        dynarray_replace_at(label_layer->colors, undo_context->index, &undo_context->color);
+    } break;
+
+    case UNDO_TEXT: {
+        dynarray_replace_at(label_layer->texts, undo_context->index, &undo_context->text);
+    } break;
+    }
+}
 
 LayerPtr label_layer_as_layer(LabelLayer *label_layer)
 {
@@ -310,8 +388,9 @@ void label_layer_delete_nth_label(LabelLayer *label_layer,
 
 static
 int label_layer_add_label(LabelLayer *label_layer,
-                           Point position,
-                           Color color)
+                          Point position,
+                          Color color,
+                          UndoHistory *undo_history)
 {
     trace_assert(label_layer);
 
@@ -329,13 +408,22 @@ int label_layer_add_label(LabelLayer *label_layer,
     dynarray_push(label_layer->colors, &color);
     dynarray_push_empty(label_layer->texts);
 
+    UndoContext context = create_undo_context(label_layer, n, UNDO_ADD);
+    undo_history_push(
+        undo_history,
+        label_layer,
+        label_layer_undo,
+        &context,
+        sizeof(context));
+
     return (int) n;
 }
 
 static
 int label_layer_idle_event(LabelLayer *label_layer,
                            const SDL_Event *event,
-                           const Camera *camera)
+                           const Camera *camera,
+                           UndoHistory *undo_history)
 {
     trace_assert(label_layer);
     trace_assert(event);
@@ -372,7 +460,8 @@ int label_layer_idle_event(LabelLayer *label_layer,
                     label_layer,
                     position,
                     color_picker_rgba(
-                        &label_layer->color_picker));
+                        &label_layer->color_picker),
+                    undo_history);
                 label_layer->state = LABEL_LAYER_EDIT_TEXT;
                 edit_field_replace(
                     label_layer->edit_field,
@@ -561,13 +650,18 @@ int label_layer_event(LabelLayer *label_layer,
             Color *colors = dynarray_data(label_layer->colors);
             colors[label_layer->selected] =
                 color_picker_rgba(&label_layer->color_picker);
+
+            if (!color_picker_drag(&label_layer->color_picker)) {
+                label_layer->prev_color =
+                    color_picker_rgba(&label_layer->color_picker);
+            }
         }
         return 0;
     }
 
     switch (label_layer->state) {
     case LABEL_LAYER_IDLE:
-        return label_layer_idle_event(label_layer, event, camera);
+        return label_layer_idle_event(label_layer, event, camera, undo_history);
 
     case LABEL_LAYER_MOVE:
         return label_layer_move_event(label_layer, event, camera);
