@@ -13,6 +13,7 @@
 #include "ui/edit_field.h"
 #include "./point_layer.h"
 #include "math/extrema.h"
+#include "math/mat3x3.h"
 #include "./color_picker.h"
 #include "undo_history.h"
 
@@ -37,7 +38,7 @@ struct PointLayer
     int selected;
     ColorPicker color_picker;
     Color prev_color;
-    Point prev_position;
+    Point inter_position;
 };
 
 typedef enum {
@@ -62,7 +63,7 @@ UndoContext point_layer_create_undo_context(PointLayer *point_layer,
     UndoContext undo_context;
 
     undo_context.type = type;
-    undo_context.position = point_layer->prev_position;
+    dynarray_copy_to(point_layer->positions, &undo_context.position, index);
     undo_context.color = point_layer->prev_color;
     dynarray_copy_to(point_layer->ids, &undo_context.id, index);
     undo_context.index = index;
@@ -200,6 +201,16 @@ void destroy_point_layer(PointLayer *point_layer)
     RETURN_LT0(point_layer->lt);
 }
 
+static inline
+Triangle element_shape(Point position, float scale)
+{
+    return triangle_mat3x3_product(
+        equilateral_triangle(),
+        mat3x3_product(
+            trans_mat_vec(position),
+            scale_mat(scale)));
+}
+
 int point_layer_render(const PointLayer *point_layer,
                        Camera *camera,
                        int active)
@@ -213,24 +224,22 @@ int point_layer_render(const PointLayer *point_layer,
     char *ids = dynarray_data(point_layer->ids);
 
     for (int i = 0; i < n; ++i) {
-        const Triangle t = triangle_mat3x3_product(
-            equilateral_triangle(),
-            mat3x3_product(
-                trans_mat(positions[i].x, positions[i].y),
-                scale_mat(POINT_LAYER_ELEMENT_RADIUS)));
-
         const Color color = color_scale(
             colors[i],
             rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f));
 
-        if (i == point_layer->selected) {
-            const Triangle t0 = triangle_mat3x3_product(
-                equilateral_triangle(),
-                mat3x3_product(
-                    trans_mat(positions[i].x, positions[i].y),
-                    scale_mat(15.0f)));
+        const Point position =
+            point_layer->state == POINT_LAYER_MOVE && i == point_layer->selected
+            ? point_layer->inter_position
+            : positions[i];
 
-            if (camera_fill_triangle(camera, t0, color_invert(color)) < 0) {
+        if (i == point_layer->selected) {
+            if (camera_fill_triangle(
+                    camera,
+                    element_shape(
+                        position,
+                        POINT_LAYER_ELEMENT_RADIUS + 5.0f),
+                    color_invert(color)) < 0) {
                 return -1;
             }
 
@@ -240,15 +249,19 @@ int point_layer_render(const PointLayer *point_layer,
                     ids + ID_MAX_SIZE * i,
                     POINT_LAYER_ID_TEXT_SIZE,
                     POINT_LAYER_ID_TEXT_COLOR,
-                    positions[i]) < 0) {
+                    position) < 0) {
                 return -1;
             }
         }
 
-        if (camera_fill_triangle(camera, t, color) < 0) {
+        if (camera_fill_triangle(
+                camera,
+                element_shape(
+                    position,
+                    POINT_LAYER_ELEMENT_RADIUS),
+                color) < 0) {
             return -1;
         }
-
     }
 
     if (point_layer->state == POINT_LAYER_EDIT_ID) {
@@ -404,9 +417,9 @@ int point_layer_idle_event(PointLayer *point_layer,
                 point_layer->state = POINT_LAYER_MOVE;
                 point_layer->color_picker =
                     create_color_picker_from_rgba(colors[point_layer->selected]);
+                point_layer->inter_position = positions[point_layer->selected];
 
                 point_layer->prev_color = colors[point_layer->selected];
-                point_layer->prev_position = positions[point_layer->selected];
             }
         } break;
         }
@@ -515,13 +528,17 @@ int point_layer_move_event(PointLayer *point_layer,
                 point_layer_undo,
                 &context,
                 sizeof(context));
+
+            dynarray_replace_at(
+                point_layer->positions,
+                (size_t) point_layer->selected,
+                &point_layer->inter_position);
         } break;
         }
     } break;
 
     case SDL_MOUSEMOTION: {
-        Point *positions = dynarray_data(point_layer->positions);
-        positions[point_layer->selected] =
+        point_layer->inter_position =
             camera_map_screen(camera, event->motion.x, event->motion.y);
     } break;
     }
