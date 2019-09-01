@@ -24,7 +24,8 @@
 typedef enum {
     POINT_LAYER_IDLE = 0,
     POINT_LAYER_EDIT_ID,
-    POINT_LAYER_MOVE
+    POINT_LAYER_MOVE,
+    POINT_LAYER_RECOLOR
 } PointLayerState;
 
 struct PointLayer
@@ -34,11 +35,12 @@ struct PointLayer
     Dynarray/*<Point>*/ *positions;
     Dynarray/*<Color>*/ *colors;
     Dynarray/*<char[ID_MAX_SIZE]>*/ *ids;
-    Edit_field *edit_field;
     int selected;
     ColorPicker color_picker;
-    Color prev_color;
+
     Point inter_position;
+    Color inter_color;
+    Edit_field *edit_field;
 };
 
 typedef enum {
@@ -64,7 +66,7 @@ UndoContext point_layer_create_undo_context(PointLayer *point_layer,
 
     undo_context.type = type;
     dynarray_copy_to(point_layer->positions, &undo_context.position, index);
-    undo_context.color = point_layer->prev_color;
+    dynarray_copy_to(point_layer->colors, &undo_context.color, index);
     dynarray_copy_to(point_layer->ids, &undo_context.id, index);
     undo_context.index = index;
 
@@ -190,7 +192,6 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
     point_layer->selected = -1;
 
     point_layer->color_picker = create_color_picker_from_rgba(COLOR_RED);
-    point_layer->prev_color = COLOR_RED;
 
     return point_layer;
 }
@@ -225,7 +226,9 @@ int point_layer_render(const PointLayer *point_layer,
 
     for (int i = 0; i < n; ++i) {
         const Color color = color_scale(
-            colors[i],
+            point_layer->state == POINT_LAYER_RECOLOR && i == point_layer->selected
+            ? point_layer->inter_color
+            : colors[i],
             rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f));
 
         const Point position =
@@ -370,28 +373,9 @@ int point_layer_idle_event(PointLayer *point_layer,
         return -1;
     }
 
-    if (selected) {
-        if (point_layer->selected >= 0) {
-            Color *colors = dynarray_data(point_layer->colors);
-
-            if (!color_picker_drag(&point_layer->color_picker)) {
-                UndoContext context =
-                    point_layer_create_undo_context(point_layer, (size_t)point_layer->selected, UNDO_UPDATE);
-
-                undo_history_push(
-                    undo_history,
-                    point_layer,
-                    point_layer_undo,
-                    &context, sizeof(context));
-
-                point_layer->prev_color =
-                    color_picker_rgba(&point_layer->color_picker);
-            }
-
-            colors[point_layer->selected] =
-                color_picker_rgba(&point_layer->color_picker);
-        }
-
+    if (selected && point_layer->selected >= 0) {
+        point_layer->inter_color = color_picker_rgba(&point_layer->color_picker);
+        point_layer->state = POINT_LAYER_RECOLOR;
         return 0;
     }
 
@@ -418,8 +402,6 @@ int point_layer_idle_event(PointLayer *point_layer,
                 point_layer->color_picker =
                     create_color_picker_from_rgba(colors[point_layer->selected]);
                 point_layer->inter_position = positions[point_layer->selected];
-
-                point_layer->prev_color = colors[point_layer->selected];
             }
         } break;
         }
@@ -546,6 +528,53 @@ int point_layer_move_event(PointLayer *point_layer,
     return 0;
 }
 
+static
+int point_layer_recolor_event(PointLayer *point_layer,
+                              const SDL_Event *event,
+                              const Camera *camera,
+                              UndoHistory *undo_history)
+{
+    trace_assert(point_layer);
+    trace_assert(event);
+    trace_assert(camera);
+    trace_assert(undo_history);
+    trace_assert(point_layer->selected >= 0);
+
+    int selected = 0;
+    if (color_picker_event(
+            &point_layer->color_picker,
+            event,
+            camera,
+            &selected) < 0) {
+        return -1;
+    }
+
+    if (selected) {
+        point_layer->inter_color = color_picker_rgba(&point_layer->color_picker);
+
+        if (!color_picker_drag(&point_layer->color_picker)) {
+            UndoContext context =
+                point_layer_create_undo_context(point_layer, (size_t)point_layer->selected, UNDO_UPDATE);
+
+            undo_history_push(
+                undo_history,
+                point_layer,
+                point_layer_undo,
+                &context, sizeof(context));
+
+            dynarray_replace_at(
+                point_layer->colors,
+                (size_t) point_layer->selected,
+                &point_layer->inter_color);
+
+            point_layer->state = POINT_LAYER_IDLE;
+        }
+    }
+
+
+    return 0;
+}
+
 int point_layer_event(PointLayer *point_layer,
                       const SDL_Event *event,
                       const Camera *camera,
@@ -565,6 +594,9 @@ int point_layer_event(PointLayer *point_layer,
 
     case POINT_LAYER_MOVE:
         return point_layer_move_event(point_layer, event, camera, undo_history);
+
+    case POINT_LAYER_RECOLOR:
+        return point_layer_recolor_event(point_layer, event, camera, undo_history);
     }
 
     return 0;
