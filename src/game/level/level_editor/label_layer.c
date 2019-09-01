@@ -59,9 +59,13 @@ typedef struct {
 } UndoContext;
 
 static
-UndoContext create_undo_context(LabelLayer *label_layer, size_t index, UndoType type)
+UndoContext create_undo_context(LabelLayer *label_layer, UndoType type)
 {
     UndoContext undo_context;
+
+    size_t index = type == UNDO_ADD
+        ? dynarray_count(label_layer->positions) - 1
+        : (size_t)label_layer->selected;
 
     undo_context.type = type;
     dynarray_copy_to(label_layer->ids, &undo_context.id, index);
@@ -377,13 +381,13 @@ int label_layer_element_at(LabelLayer *label_layer,
 }
 
 static
-void label_layer_delete_nth_label(LabelLayer *label_layer,
-                                  size_t i,
-                                  UndoHistory *undo_history)
+void label_layer_delete_selected_label(LabelLayer *label_layer,
+                                       UndoHistory *undo_history)
 {
     trace_assert(label_layer);
+    trace_assert(label_layer->selected >= 0);
 
-    UndoContext context = create_undo_context(label_layer, i, UNDO_DELETE);
+    UndoContext context = create_undo_context(label_layer, UNDO_DELETE);
     undo_history_push(
         undo_history,
         label_layer,
@@ -391,10 +395,10 @@ void label_layer_delete_nth_label(LabelLayer *label_layer,
         &context,
         sizeof(context));
 
-    dynarray_delete_at(label_layer->ids, i);
-    dynarray_delete_at(label_layer->positions, i);
-    dynarray_delete_at(label_layer->colors, i);
-    dynarray_delete_at(label_layer->texts, i);
+    dynarray_delete_at(label_layer->ids, (size_t)label_layer->selected);
+    dynarray_delete_at(label_layer->positions, (size_t)label_layer->selected);
+    dynarray_delete_at(label_layer->colors, (size_t)label_layer->selected);
+    dynarray_delete_at(label_layer->texts, (size_t)label_layer->selected);
 }
 
 static
@@ -419,7 +423,7 @@ int label_layer_add_label(LabelLayer *label_layer,
     dynarray_push(label_layer->colors, &color);
     dynarray_push_empty(label_layer->texts);
 
-    UndoContext context = create_undo_context(label_layer, n, UNDO_ADD);
+    UndoContext context = create_undo_context(label_layer, UNDO_ADD);
     undo_history_push(
         undo_history,
         label_layer,
@@ -536,9 +540,8 @@ int label_layer_idle_event(LabelLayer *label_layer,
 
         case SDLK_DELETE: {
             if (label_layer->selected >= 0) {
-                label_layer_delete_nth_label(
+                label_layer_delete_selected_label(
                     label_layer,
-                    (size_t) label_layer->selected,
                     undo_history);
                 label_layer->selected = -1;
             }
@@ -574,8 +577,7 @@ int label_layer_move_event(LabelLayer *label_layer,
     case SDL_MOUSEBUTTONUP: {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
-            // TODO: Why pass label_layer->selected if we already pass label_layer
-            UndoContext context = create_undo_context(label_layer, (size_t) label_layer->selected, UNDO_UPDATE);
+            UndoContext context = create_undo_context(label_layer, UNDO_UPDATE);
             undo_history_push(
                 undo_history,
                 label_layer,
