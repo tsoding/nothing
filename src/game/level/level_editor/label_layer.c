@@ -24,7 +24,8 @@ typedef enum {
     LABEL_LAYER_IDLE = 0,
     LABEL_LAYER_MOVE,
     LABEL_LAYER_EDIT_TEXT,
-    LABEL_LAYER_EDIT_ID
+    LABEL_LAYER_EDIT_ID,
+    LABEL_LAYER_RECOLOR
 } LabelLayerState;
 
 struct LabelLayer {
@@ -38,7 +39,89 @@ struct LabelLayer {
     ColorPicker color_picker;
     Point move_anchor;
     Edit_field *edit_field;
+    Point inter_position;
+    Color inter_color;
 };
+
+typedef enum {
+    UNDO_ADD,
+    UNDO_DELETE,
+    UNDO_UPDATE
+} UndoType;
+
+typedef struct {
+    UndoType type;
+    char id[LABEL_LAYER_ID_MAX_SIZE];
+    Point position;
+    Color color;
+    char text[LABEL_LAYER_TEXT_MAX_SIZE];
+    size_t index;
+} UndoContext;
+
+static
+UndoContext create_undo_context(LabelLayer *label_layer, UndoType type)
+{
+    UndoContext undo_context;
+
+    size_t index = type == UNDO_ADD
+        ? dynarray_count(label_layer->positions) - 1
+        : (size_t)label_layer->selected;
+
+    undo_context.type = type;
+    dynarray_copy_to(label_layer->ids, &undo_context.id, index);
+    dynarray_copy_to(label_layer->positions, &undo_context.position, index);
+    dynarray_copy_to(label_layer->colors, &undo_context.color, index);
+    dynarray_copy_to(label_layer->texts, &undo_context.text, index);
+    undo_context.index = index;
+
+    return undo_context;
+}
+
+static
+void label_layer_undo(void *layer, void *context, size_t context_size)
+{
+    trace_assert(layer);
+    trace_assert(context);
+    trace_assert(sizeof(UndoContext) == context_size);
+
+    LabelLayer *label_layer = layer;
+    UndoContext *undo_context = context;
+
+    switch (undo_context->type) {
+    case UNDO_ADD: {
+        dynarray_delete_at(label_layer->ids, undo_context->index);
+        dynarray_delete_at(label_layer->positions, undo_context->index);
+        dynarray_delete_at(label_layer->colors, undo_context->index);
+        dynarray_delete_at(label_layer->texts, undo_context->index);
+    } break;
+
+    case UNDO_DELETE: {
+        dynarray_insert_before(label_layer->ids, undo_context->index, &undo_context->id);
+        dynarray_insert_before(label_layer->positions, undo_context->index, &undo_context->position);
+        dynarray_insert_before(label_layer->colors, undo_context->index, &undo_context->color);
+        dynarray_insert_before(label_layer->texts, undo_context->index, &undo_context->text);
+    } break;
+
+    case UNDO_UPDATE: {
+        dynarray_replace_at(label_layer->ids, undo_context->index, &undo_context->id);
+        dynarray_replace_at(label_layer->positions, undo_context->index, &undo_context->position);
+        dynarray_replace_at(label_layer->colors, undo_context->index, &undo_context->color);
+        dynarray_replace_at(label_layer->texts, undo_context->index, &undo_context->text);
+    } break;
+    }
+}
+
+#define UNDO_PUSH(LAYER, HISTORY, UNDO_TYPE)                            \
+    do {                                                                \
+        UndoContext context = create_undo_context(LAYER, UNDO_TYPE);    \
+        undo_history_push(                                              \
+            HISTORY,                                                    \
+            LAYER,                                                      \
+            label_layer_undo,                                           \
+            &context,                                                   \
+            sizeof(context));                                           \
+    } while(0)
+
 
 LayerPtr label_layer_as_layer(LabelLayer *label_layer)
 {
@@ -185,11 +268,21 @@ int label_layer_render(const LabelLayer *label_layer,
 
     /* TODO(#891): LabelLayer doesn't show the final position of Label after the animation */
     for (size_t i = 0; i < n; ++i) {
+        const Color color = label_layer->state == LABEL_LAYER_RECOLOR && label_layer->selected == (int) i
+            ? label_layer->inter_color
+            : colors[i];
+
+        const Point position =
+            label_layer->state == LABEL_LAYER_MOVE && label_layer->selected == (int) i
+            ? label_layer->inter_position
+            : positions[i];
+
+        // Label Text
         if (label_layer->state == LABEL_LAYER_EDIT_TEXT && label_layer->selected == (int) i) {
             if (edit_field_render_world(
                     label_layer->edit_field,
                     camera,
-                    positions[i]) < 0) {
+                    position) < 0) {
                 return -1;
             }
         } else {
@@ -198,19 +291,20 @@ int label_layer_render(const LabelLayer *label_layer,
                     texts + i * LABEL_LAYER_TEXT_MAX_SIZE,
                     LABELS_SIZE,
                     color_scale(
-                        colors[i],
+                        color,
                         rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f)),
-                    positions[i]) < 0) {
+                    position) < 0) {
                 return -1;
             }
         }
 
+        // Label ID
         if (label_layer->state == LABEL_LAYER_EDIT_ID && label_layer->selected == (int)i) {
             if (edit_field_render_world(
                     label_layer->edit_field,
                     camera,
                     vec_sub(
-                        positions[i],
+                        position,
                         vec(0.0f, FONT_CHAR_HEIGHT))) < 0) {
                 return -1;
             }
@@ -220,44 +314,45 @@ int label_layer_render(const LabelLayer *label_layer,
                     ids + i * LABEL_LAYER_ID_MAX_SIZE,
                     vec(1.0f, 1.0f),
                     color_scale(
-                        color_invert(colors[i]),
+                        color_invert(color),
                         rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f)),
-                    vec_sub(positions[i], vec(0.0f, FONT_CHAR_HEIGHT))) < 0) {
+                    vec_sub(position, vec(0.0f, FONT_CHAR_HEIGHT))) < 0) {
+                return -1;
+            }
+        }
+
+        // Label Selection
+        if (label_layer->selected == (int) i) {
+            Rect selection =
+                rect_scale(
+                    camera_rect(
+                        camera,
+                        rect_boundary2(
+                            sprite_font_boundary_box(
+                                camera_font(camera),
+                                position,
+                                LABELS_SIZE,
+                                texts + label_layer->selected * LABEL_LAYER_TEXT_MAX_SIZE),
+                            sprite_font_boundary_box(
+                                camera_font(camera),
+                                vec_sub(
+                                    position,
+                                    vec(0.0f, FONT_CHAR_HEIGHT)),
+                                vec(1.0f, 1.0f),
+                                ids + label_layer->selected * LABEL_LAYER_ID_MAX_SIZE))),
+                    LABEL_LAYER_SELECTION_THICCNESS * 0.5f);
+
+
+            if (camera_draw_thicc_rect_screen(
+                    camera,
+                    selection,
+                    color,
+                    LABEL_LAYER_SELECTION_THICCNESS) < 0) {
                 return -1;
             }
         }
     }
 
-    if (label_layer->selected >= 0) {
-
-        Rect selection =
-            rect_scale(
-                camera_rect(
-                    camera,
-                    rect_boundary2(
-                        sprite_font_boundary_box(
-                            camera_font(camera),
-                            positions[label_layer->selected],
-                            LABELS_SIZE,
-                            texts + label_layer->selected * LABEL_LAYER_TEXT_MAX_SIZE),
-                        sprite_font_boundary_box(
-                            camera_font(camera),
-                            vec_sub(
-                                positions[label_layer->selected],
-                                vec(0.0f, FONT_CHAR_HEIGHT)),
-                            vec(1.0f, 1.0f),
-                            ids + label_layer->selected * LABEL_LAYER_ID_MAX_SIZE))),
-                LABEL_LAYER_SELECTION_THICCNESS * 0.5f);
-
-
-        if (camera_draw_thicc_rect_screen(
-                camera,
-                selection,
-                colors[label_layer->selected],
-                LABEL_LAYER_SELECTION_THICCNESS) < 0) {
-            return -1;
-        }
-    }
 
     return 0;
 }
@@ -298,20 +393,25 @@ int label_layer_element_at(LabelLayer *label_layer,
 }
 
 static
-void label_layer_delete_nth_label(LabelLayer *label_layer,
-                                  size_t i)
+void label_layer_delete_selected_label(LabelLayer *label_layer,
+                                       UndoHistory *undo_history)
 {
     trace_assert(label_layer);
-    dynarray_delete_at(label_layer->ids, i);
-    dynarray_delete_at(label_layer->positions, i);
-    dynarray_delete_at(label_layer->colors, i);
-    dynarray_delete_at(label_layer->texts, i);
+    trace_assert(label_layer->selected >= 0);
+
+    UNDO_PUSH(label_layer, undo_history, UNDO_DELETE);
+
+    dynarray_delete_at(label_layer->ids, (size_t)label_layer->selected);
+    dynarray_delete_at(label_layer->positions, (size_t)label_layer->selected);
+    dynarray_delete_at(label_layer->colors, (size_t)label_layer->selected);
+    dynarray_delete_at(label_layer->texts, (size_t)label_layer->selected);
 }
 
 static
 int label_layer_add_label(LabelLayer *label_layer,
-                           Point position,
-                           Color color)
+                          Point position,
+                          Color color,
+                          UndoHistory *undo_history)
 {
     trace_assert(label_layer);
 
@@ -329,17 +429,36 @@ int label_layer_add_label(LabelLayer *label_layer,
     dynarray_push(label_layer->colors, &color);
     dynarray_push_empty(label_layer->texts);
 
+    UNDO_PUSH(label_layer, undo_history, UNDO_ADD);
+
     return (int) n;
 }
 
 static
 int label_layer_idle_event(LabelLayer *label_layer,
                            const SDL_Event *event,
-                           const Camera *camera)
+                           const Camera *camera,
+                           UndoHistory *undo_history)
 {
     trace_assert(label_layer);
     trace_assert(event);
     trace_assert(camera);
+
+    int changed = 0;
+
+    if (color_picker_event(
+            &label_layer->color_picker,
+            event,
+            camera,
+            &changed) < 0) {
+        return -1;
+    }
+
+    if (changed) {
+        label_layer->state = LABEL_LAYER_RECOLOR;
+        label_layer->inter_color = color_picker_rgba(&label_layer->color_picker);
+        return 0;
+    }
 
     Color *colors = dynarray_data(label_layer->colors);
     Point *positions = dynarray_data(label_layer->positions);
@@ -364,6 +483,7 @@ int label_layer_idle_event(LabelLayer *label_layer,
                 label_layer->move_anchor = vec_sub(position, positions[element]);
                 label_layer->selected = element;
                 label_layer->state = LABEL_LAYER_MOVE;
+                label_layer->inter_position = positions[element];
 
                 label_layer->color_picker =
                     create_color_picker_from_rgba(colors[element]);
@@ -372,7 +492,8 @@ int label_layer_idle_event(LabelLayer *label_layer,
                     label_layer,
                     position,
                     color_picker_rgba(
-                        &label_layer->color_picker));
+                        &label_layer->color_picker),
+                    undo_history);
                 label_layer->state = LABEL_LAYER_EDIT_TEXT;
                 edit_field_replace(
                     label_layer->edit_field,
@@ -419,9 +540,9 @@ int label_layer_idle_event(LabelLayer *label_layer,
 
         case SDLK_DELETE: {
             if (label_layer->selected >= 0) {
-                label_layer_delete_nth_label(
+                label_layer_delete_selected_label(
                     label_layer,
-                    (size_t) label_layer->selected);
+                    undo_history);
                 label_layer->selected = -1;
             }
         } break;
@@ -435,7 +556,8 @@ int label_layer_idle_event(LabelLayer *label_layer,
 static
 int label_layer_move_event(LabelLayer *label_layer,
                            const SDL_Event *event,
-                           const Camera *camera)
+                           const Camera *camera,
+                           UndoHistory *undo_history)
 {
     trace_assert(label_layer);
     trace_assert(event);
@@ -444,19 +566,23 @@ int label_layer_move_event(LabelLayer *label_layer,
 
     switch (event->type) {
     case SDL_MOUSEMOTION: {
-        Point *positions = dynarray_data(label_layer->positions);
-        positions[label_layer->selected] =
-            vec_sub(
-                camera_map_screen(
-                    camera,
-                    event->motion.x,
-                    event->motion.y),
-                label_layer->move_anchor);
+        label_layer->inter_position = vec_sub(
+            camera_map_screen(
+                camera,
+                event->motion.x,
+                event->motion.y),
+            label_layer->move_anchor);
     } break;
 
     case SDL_MOUSEBUTTONUP: {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
+            UNDO_PUSH(label_layer, undo_history, UNDO_UPDATE);
+
+            dynarray_replace_at(
+                label_layer->positions,
+                (size_t)label_layer->selected,
+                &label_layer->inter_position);
             label_layer->state = LABEL_LAYER_IDLE;
         } break;
         }
@@ -469,7 +595,8 @@ int label_layer_move_event(LabelLayer *label_layer,
 static
 int label_layer_edit_text_event(LabelLayer *label_layer,
                                 const SDL_Event *event,
-                                const Camera *camera)
+                                const Camera *camera,
+                                UndoHistory *undo_history)
 {
     trace_assert(label_layer);
     trace_assert(event);
@@ -480,6 +607,8 @@ int label_layer_edit_text_event(LabelLayer *label_layer,
     case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
         case SDLK_RETURN: {
+            UNDO_PUSH(label_layer, undo_history, UNDO_UPDATE);
+
             char *text =
                 (char*)dynarray_data(label_layer->texts) + label_layer->selected * LABEL_LAYER_TEXT_MAX_SIZE;
             memset(text, 0, LABEL_LAYER_TEXT_MAX_SIZE);
@@ -504,17 +633,21 @@ int label_layer_edit_text_event(LabelLayer *label_layer,
 static
 int label_layer_edit_id_event(LabelLayer *label_layer,
                               const SDL_Event *event,
-                              const Camera *camera)
+                              const Camera *camera,
+                              UndoHistory *undo_history)
 {
     trace_assert(label_layer);
     trace_assert(event);
     trace_assert(camera);
+    trace_assert(undo_history);
     trace_assert(label_layer->selected >= 0);
 
     switch (event->type) {
     case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
         case SDLK_RETURN: {
+            UNDO_PUSH(label_layer, undo_history, UNDO_UPDATE);
+
             char *id =
                 (char*)dynarray_data(label_layer->ids) + label_layer->selected * LABEL_LAYER_ID_MAX_SIZE;
             memset(id, 0, LABEL_LAYER_ID_MAX_SIZE);
@@ -536,15 +669,17 @@ int label_layer_edit_id_event(LabelLayer *label_layer,
     return edit_field_event(label_layer->edit_field, event);
 }
 
-int label_layer_event(LabelLayer *label_layer,
-                      const SDL_Event *event,
-                      const Camera *camera,
-                      UndoHistory *undo_history)
+static
+int label_layer_recolor_event(LabelLayer *label_layer,
+                              const SDL_Event *event,
+                              const Camera *camera,
+                              UndoHistory *undo_history)
 {
     trace_assert(label_layer);
     trace_assert(event);
     trace_assert(camera);
     trace_assert(undo_history);
+    trace_assert(label_layer->selected >= 0);
 
     int changed = 0;
 
@@ -557,26 +692,48 @@ int label_layer_event(LabelLayer *label_layer,
     }
 
     if (changed) {
-        if (label_layer->selected >= 0) {
-            Color *colors = dynarray_data(label_layer->colors);
-            colors[label_layer->selected] =
-                color_picker_rgba(&label_layer->color_picker);
+        label_layer->inter_color =
+            color_picker_rgba(&label_layer->color_picker);
+
+        if (!color_picker_drag(&label_layer->color_picker)) {
+            UNDO_PUSH(label_layer, undo_history, UNDO_UPDATE);
+
+            dynarray_replace_at(
+                label_layer->colors,
+                (size_t) label_layer->selected,
+                &label_layer->inter_color);
+            label_layer->state = LABEL_LAYER_IDLE;
         }
-        return 0;
     }
+
+    return 0;
+}
+
+int label_layer_event(LabelLayer *label_layer,
+                      const SDL_Event *event,
+                      const Camera *camera,
+                      UndoHistory *undo_history)
+{
+    trace_assert(label_layer);
+    trace_assert(event);
+    trace_assert(camera);
+    trace_assert(undo_history);
 
     switch (label_layer->state) {
     case LABEL_LAYER_IDLE:
-        return label_layer_idle_event(label_layer, event, camera);
+        return label_layer_idle_event(label_layer, event, camera, undo_history);
 
     case LABEL_LAYER_MOVE:
-        return label_layer_move_event(label_layer, event, camera);
+        return label_layer_move_event(label_layer, event, camera, undo_history);
 
     case LABEL_LAYER_EDIT_TEXT:
-        return label_layer_edit_text_event(label_layer, event, camera);
+        return label_layer_edit_text_event(label_layer, event, camera, undo_history);
 
     case LABEL_LAYER_EDIT_ID:
-        return label_layer_edit_id_event(label_layer, event, camera);
+        return label_layer_edit_id_event(label_layer, event, camera, undo_history);
+
+    case LABEL_LAYER_RECOLOR:
+        return label_layer_recolor_event(label_layer, event, camera, undo_history);
     }
 
     return 0;

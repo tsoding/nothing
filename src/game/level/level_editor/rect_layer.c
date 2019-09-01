@@ -18,7 +18,6 @@
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
 #define CREATE_AREA_THRESHOLD 10.0
 
-// TODO(#1034): Can we use a single Context for everything in RectLayer
 
 typedef enum {
     RECT_LAYER_IDLE = 0,
@@ -26,7 +25,6 @@ typedef enum {
     // TODO(#955): Rectangles in Level Editor have only one resize anchor to work with
     RECT_LAYER_RESIZE,
     RECT_LAYER_MOVE,
-    // TODO(#1035): id renaming in RectLayer is ugly
     RECT_LAYER_ID_RENAME,
 } RectLayerState;
 
@@ -42,9 +40,16 @@ struct RectLayer {
     int selection;
     Vec move_anchor;
     Edit_field *id_edit_field;
+    // TODO(#1043): RectLayer should use intermediate values instead of previous ones
     Color prev_color;
     Rect prev_rect;
 };
+
+typedef enum {
+    UNDO_ADD,
+    UNDO_DELETE,
+    UNDO_UPDATE
+} UndoType;
 
 typedef struct {
     UndoType type;

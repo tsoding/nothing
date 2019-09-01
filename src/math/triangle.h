@@ -14,6 +14,4 @@ Triangle random_triangle(float radius);
 Triangle triangle_sorted_by_y(Triangle t);
 void rect_as_triangles(Rect rect, Triangle triangles[2]);
 
-Triangle triangle_mat3x3_product(Triangle t, mat3x3 m);
-
 #endif  // TRIANGLE_H_

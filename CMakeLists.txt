@@ -130,7 +130,6 @@ add_executable(nothing
   src/game/sprite_font.h
   src/main.c
   src/math/extrema.h
-  src/math/mat3x3.c
   src/math/mat3x3.h
   src/math/pi.h
   src/math/point.c

@@ -1,6 +1,8 @@
 #ifndef RIGID_BODIES_H_
 #define RIGID_BODIES_H_
 
+#include "math/mat3x3.h"
+
 typedef struct RigidBodies RigidBodies;
 typedef struct Camera Camera;
 typedef struct Platforms Platforms;

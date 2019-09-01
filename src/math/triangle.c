@@ -70,14 +70,3 @@ void rect_as_triangles(Rect rect, Triangle triangles[2])
     triangles[0] = t1;
     triangles[1] = t2;
 }
-
-Triangle triangle_mat3x3_product(Triangle t, mat3x3 m)
-{
-    Triangle t1 = {
-        .p1 = point_mat3x3_product(t.p1, m),
-        .p2 = point_mat3x3_product(t.p2, m),
-        .p3 = point_mat3x3_product(t.p3, m)
-    };
-
-    return t1;
-}
