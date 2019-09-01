@@ -41,7 +41,7 @@ struct RectLayer {
     int selection;
     Vec move_anchor;
     Edit_field *id_edit_field;
-    // TODO: RectLayer should use intermediate values instead of previous ones
+    // TODO(#1043): RectLayer should use intermediate values instead of previous ones
     Color prev_color;
     Rect prev_rect;
 };
