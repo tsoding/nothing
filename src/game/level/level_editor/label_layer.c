@@ -378,9 +378,19 @@ int label_layer_element_at(LabelLayer *label_layer,
 
 static
 void label_layer_delete_nth_label(LabelLayer *label_layer,
-                                  size_t i)
+                                  size_t i,
+                                  UndoHistory *undo_history)
 {
     trace_assert(label_layer);
+
+    UndoContext context = create_undo_context(label_layer, i, UNDO_DELETE);
+    undo_history_push(
+        undo_history,
+        label_layer,
+        label_layer_undo,
+        &context,
+        sizeof(context));
+
     dynarray_delete_at(label_layer->ids, i);
     dynarray_delete_at(label_layer->positions, i);
     dynarray_delete_at(label_layer->colors, i);
@@ -528,7 +538,8 @@ int label_layer_idle_event(LabelLayer *label_layer,
             if (label_layer->selected >= 0) {
                 label_layer_delete_nth_label(
                     label_layer,
-                    (size_t) label_layer->selected);
+                    (size_t) label_layer->selected,
+                    undo_history);
                 label_layer->selected = -1;
             }
         } break;
