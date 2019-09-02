@@ -111,5 +111,5 @@ int background_layer_dump_stream(BackgroundLayer *layer,
         color_picker_rgba(&layer->color_picker),
         stream);
 
-    return fprintf(stream, "\n");;
+    return fprintf(stream, "\n");
 }
