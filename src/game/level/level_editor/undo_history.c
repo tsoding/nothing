@@ -10,11 +10,9 @@
 
 typedef struct {
     RevertAction revert;
-    void *layer;
 } Action;
 
 void undo_history_push(UndoHistory *undo_history,
-                       void *layer,
                        RevertAction revert,
                        void *context_data,
                        size_t context_data_size)
@@ -23,7 +21,6 @@ void undo_history_push(UndoHistory *undo_history,
 
     Action action = {
         .revert = revert,
-        .layer = layer
     };
 
     stack_push(&undo_history->actions, context_data, context_data_size);
@@ -41,7 +38,7 @@ void undo_history_pop(UndoHistory *undo_history)
         size_t context_size = stack_top_size(&undo_history->actions);
         void *context = stack_top_element(&undo_history->actions);
 
-        action.revert(action.layer, context, context_size);
+        action.revert(context, context_size);
         stack_pop(&undo_history->actions);
     }
 }

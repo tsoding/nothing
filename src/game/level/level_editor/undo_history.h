@@ -3,7 +3,7 @@
 
 #include "stack.h"
 
-typedef void (*RevertAction)(void *layer, void *context, size_t context_size);
+typedef void (*RevertAction)(void *context, size_t context_size);
 
 typedef struct {
     Stack actions;
@@ -16,7 +16,6 @@ void destroy_undo_history(UndoHistory undo_history)
 }
 
 void undo_history_push(UndoHistory *undo_history,
-                       void *layer,
                        RevertAction revert,
                        void *context_data,
                        size_t context_data_size);
