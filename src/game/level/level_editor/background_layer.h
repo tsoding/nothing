@@ -5,6 +5,7 @@
 
 typedef struct {
     ColorPicker color_picker;
+    // TODO: PlayerLayer should use intermediate color instead of previous one
     Color prev_color;
 } BackgroundLayer;
 

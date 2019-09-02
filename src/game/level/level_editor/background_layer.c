@@ -48,17 +48,21 @@ int background_layer_render(BackgroundLayer *layer,
     return 0;
 }
 
+typedef struct {
+    BackgroundLayer *layer;
+    Color color;
+} UndoContext;
+
 static
-void background_undo_color(void *layer, void *context, size_t context_size)
+void background_undo_color(void *context, size_t context_size)
 {
-    trace_assert(layer);
     trace_assert(context);
-    trace_assert(sizeof(Color) == context_size);
+    trace_assert(sizeof(UndoContext) == context_size);
 
-    BackgroundLayer *background_layer = layer;
-    Color *color = context;
+    UndoContext *undo_context = context;
+    BackgroundLayer *background_layer = undo_context->layer;
 
-    background_layer->color_picker = create_color_picker_from_rgba(*color);
+    background_layer->color_picker = create_color_picker_from_rgba(undo_context->color);
 }
 
 int background_layer_event(BackgroundLayer *layer,
@@ -82,11 +86,15 @@ int background_layer_event(BackgroundLayer *layer,
     }
 
     if (selected && !color_picker_drag(&layer->color_picker)) {
+        UndoContext context = {
+            .layer = layer,
+            .color = layer->prev_color
+        };
+
         undo_history_push(
             undo_history,
-            layer,
             background_undo_color,
-            &layer->prev_color, sizeof(layer->prev_color));
+            &context, sizeof(context));
         layer->prev_color = color_picker_rgba(&layer->color_picker);
     }
 

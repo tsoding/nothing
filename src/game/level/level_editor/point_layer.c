@@ -51,6 +51,7 @@ typedef enum {
 
 typedef struct {
     UndoType type;
+    PointLayer *layer;
     Point position;
     Color color;
     char id[ID_MAX_SIZE];
@@ -69,6 +70,7 @@ UndoContext point_layer_create_undo_context(PointLayer *point_layer,
         : (size_t) point_layer->selected;
 
     undo_context.type = type;
+    undo_context.layer = point_layer;
     dynarray_copy_to(point_layer->positions, &undo_context.position, index);
     dynarray_copy_to(point_layer->colors, &undo_context.color, index);
     dynarray_copy_to(point_layer->ids, &undo_context.id, index);
@@ -78,14 +80,13 @@ UndoContext point_layer_create_undo_context(PointLayer *point_layer,
 }
 
 static
-void point_layer_undo(void *layer, void *context, size_t context_size)
+void point_layer_undo(void *context, size_t context_size)
 {
-    trace_assert(layer);
     trace_assert(context);
     trace_assert(sizeof(UndoContext) == context_size);
 
-    PointLayer *point_layer = layer;
     UndoContext *undo_context = context;
+    PointLayer *point_layer = undo_context->layer;
 
     switch (undo_context->type) {
     case UNDO_ADD: {
@@ -115,7 +116,6 @@ void point_layer_undo(void *layer, void *context, size_t context_size)
         UndoContext context = point_layer_create_undo_context(LAYER, UNDO_TYPE); \
         undo_history_push(                                              \
             HISTORY,                                                    \
-            LAYER,                                                      \
             point_layer_undo,                                           \
             &context,                                                   \
             sizeof(context));                                           \

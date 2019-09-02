@@ -10,6 +10,7 @@
 #include "undo_history.h"
 
 typedef struct {
+    PlayerLayer *layer;
     Point position;
     Color color;
 } UndoContext;
@@ -18,6 +19,7 @@ static
 UndoContext player_layer_create_undo_context(PlayerLayer *player_layer)
 {
     UndoContext context = {
+        .layer = player_layer,
         .position = player_layer->position,
         .color = player_layer->prev_color
     };
@@ -26,14 +28,13 @@ UndoContext player_layer_create_undo_context(PlayerLayer *player_layer)
 }
 
 static
-void player_layer_undo(void *layer, void *context, size_t context_size)
+void player_layer_undo(void *context, size_t context_size)
 {
-    trace_assert(layer);
     trace_assert(context);
     trace_assert(sizeof(UndoContext) == context_size);
 
-    PlayerLayer *player_layer = layer;
     UndoContext *undo_context = context;
+    PlayerLayer *player_layer = undo_context->layer;
 
     player_layer->position = undo_context->position;
     player_layer->color_picker = create_color_picker_from_rgba(undo_context->color);
@@ -132,7 +133,6 @@ int player_layer_event(PlayerLayer *player_layer,
             player_layer_create_undo_context(player_layer);
         undo_history_push(
             undo_history,
-            player_layer,
             player_layer_undo,
             &context,
             sizeof(context));
@@ -148,7 +148,6 @@ int player_layer_event(PlayerLayer *player_layer,
 
         undo_history_push(
             undo_history,
-            player_layer,
             player_layer_undo,
             &context, sizeof(context));
 

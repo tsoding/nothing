@@ -54,6 +54,7 @@ typedef enum {
 
 typedef struct {
     UndoType type;
+    RectLayer *layer;
     Rect rect;
     Color color;
     char id[RECT_LAYER_ID_MAX_SIZE];
@@ -69,6 +70,7 @@ UndoContext create_undo_context(RectLayer *rect_layer, UndoType type)
 
     UndoContext undo_context;
     undo_context.type = type;
+    undo_context.layer = rect_layer;
     dynarray_copy_to(rect_layer->rects, &undo_context.rect, index);
     dynarray_copy_to(rect_layer->colors, &undo_context.color, index);
     dynarray_copy_to(rect_layer->ids, undo_context.id, index);
@@ -78,14 +80,13 @@ UndoContext create_undo_context(RectLayer *rect_layer, UndoType type)
 }
 
 static
-void rect_layer_undo(void *layer, void *context, size_t context_size)
+void rect_layer_undo(void *context, size_t context_size)
 {
-    trace_assert(layer);
     trace_assert(context);
     trace_assert(sizeof(UndoContext) == context_size);
 
-    RectLayer *rect_layer = layer;
     UndoContext *undo_context = context;
+    RectLayer *rect_layer = undo_context->layer;
 
     switch (undo_context->type) {
     case UNDO_ADD: {
@@ -115,7 +116,6 @@ void rect_layer_undo(void *layer, void *context, size_t context_size)
         UndoContext context = create_undo_context(LAYER, UNDO_TYPE);    \
         undo_history_push(                                              \
             HISTORY,                                                    \
-            LAYER,                                                      \
             rect_layer_undo,                                            \
             &context,                                                   \
             sizeof(context));                                           \
