@@ -19,6 +19,7 @@ struct Boxes
 {
     Lt *lt;
     RigidBodies *rigid_bodies;
+    Dynarray *boxes_ids;
     Dynarray *body_ids;
     Dynarray *body_colors;
 };
@@ -38,6 +39,14 @@ Boxes *create_boxes_from_rect_layer(const RectLayer *layer, RigidBodies *rigid_b
 
     boxes->rigid_bodies = rigid_bodies;
 
+    boxes->boxes_ids = PUSH_LT(
+        lt,
+        create_dynarray(RECT_LAYER_ID_MAX_SIZE),
+        destroy_dynarray);
+    if (boxes->boxes_ids == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     boxes->body_ids = PUSH_LT(lt, create_dynarray(sizeof(RigidBodyId)), destroy_dynarray);
     if (boxes->body_ids == NULL) {
         RETURN_LT(lt, NULL);
@@ -51,11 +60,13 @@ Boxes *create_boxes_from_rect_layer(const RectLayer *layer, RigidBodies *rigid_b
     const size_t count = rect_layer_count(layer);
     Rect const *rects = rect_layer_rects(layer);
     Color const *colors = rect_layer_colors(layer);
+    const char *ids = rect_layer_ids(layer);
 
     for (size_t i = 0; i < count; ++i) {
         RigidBodyId body_id = rigid_bodies_add(rigid_bodies, rects[i]);
         dynarray_push(boxes->body_ids, &body_id);
         dynarray_push(boxes->body_colors, &colors[i]);
+        dynarray_push(boxes->boxes_ids, ids + i * RECT_LAYER_ID_MAX_SIZE);
     }
 
     return boxes;
@@ -173,6 +184,26 @@ boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path)
             boxes_add_box(boxes, rect((float) x, (float) y, (float) w, (float) h), color);
 
             return eval_success(NIL(gc));
+        } else if (strcmp(action, "coord") == 0) {
+            const char *box_id = NULL;
+            res = match_list(gc, "s", rest, &box_id);
+            if (res.is_error) {
+                return res;
+            }
+
+            size_t n = dynarray_count(boxes->boxes_ids);
+            RigidBodyId *body_ids = dynarray_data(boxes->body_ids);
+            for (size_t i = 0; i < n; ++i) {
+                if (strcmp(dynarray_pointer_at(boxes->boxes_ids, i), box_id) == 0) {
+                    Rect hitbox = rigid_bodies_hitbox(boxes->rigid_bodies, body_ids[i]);
+                    return eval_success(
+                        CONS(gc,
+                             NUMBER(gc, (long int)hitbox.x),
+                             NUMBER(gc, (long int)hitbox.y)));
+                }
+            }
+
+            return eval_failure(SYMBOL(gc, "box-not-found"));
         }
 
         return unknown_target(gc, "box", action);
