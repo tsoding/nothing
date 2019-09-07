@@ -251,7 +251,8 @@ int point_layer_render(const PointLayer *point_layer,
             ? point_layer->inter_position
             : positions[i];
 
-        if (i == point_layer->selected) {
+        // Selection Layer
+        if (active && i == point_layer->selected) {
             if (camera_fill_triangle(
                     camera,
                     element_shape(
@@ -374,9 +375,11 @@ int point_layer_idle_event(PointLayer *point_layer,
         return -1;
     }
 
-    if (selected && point_layer->selected >= 0) {
-        point_layer->inter_color = color_picker_rgba(&point_layer->color_picker);
-        point_layer->state = POINT_LAYER_RECOLOR;
+    if (selected) {
+        if (point_layer->selected >= 0) {
+            point_layer->inter_color = color_picker_rgba(&point_layer->color_picker);
+            point_layer->state = POINT_LAYER_RECOLOR;
+        }
         return 0;
     }
 

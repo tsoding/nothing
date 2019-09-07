@@ -13,11 +13,9 @@
 #include "ui/edit_field.h"
 #include "undo_history.h"
 
-#define RECT_LAYER_ID_MAX_SIZE 36
 #define RECT_LAYER_SELECTION_THICCNESS 10.0f
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
 #define CREATE_AREA_THRESHOLD 10.0
-
 
 typedef enum {
     RECT_LAYER_IDLE = 0,
@@ -212,9 +210,11 @@ static int rect_layer_event_idle(RectLayer *layer,
         return -1;
     }
 
-    if (color_changed && layer->selection >= 0) {
-        dynarray_copy_to(layer->colors, &layer->inter_color, (size_t)layer->selection);
-        layer->state = RECT_LAYER_RECOLOR;
+    if (color_changed) {
+        if (layer->selection >= 0) {
+            dynarray_copy_to(layer->colors, &layer->inter_color, (size_t)layer->selection);
+            layer->state = RECT_LAYER_RECOLOR;
+        }
         return 0;
     }
 
@@ -592,7 +592,7 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
         }
 
         // Selection Overlay
-        if ((size_t) layer->selection == i) {
+        if (active && (size_t) layer->selection == i) {
             const Rect overlay_rect =
                 rect_scale(
                     camera_rect(camera, rect),
