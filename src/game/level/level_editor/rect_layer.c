@@ -13,11 +13,9 @@
 #include "ui/edit_field.h"
 #include "undo_history.h"
 
-#define RECT_LAYER_ID_MAX_SIZE 36
 #define RECT_LAYER_SELECTION_THICCNESS 10.0f
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
 #define CREATE_AREA_THRESHOLD 10.0
-
 
 typedef enum {
     RECT_LAYER_IDLE = 0,

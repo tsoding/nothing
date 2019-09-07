@@ -3,6 +3,8 @@
 
 #include "layer.h"
 
+#define RECT_LAYER_ID_MAX_SIZE 36
+
 typedef struct RectLayer RectLayer;
 typedef struct LineStream LineStream;
 
