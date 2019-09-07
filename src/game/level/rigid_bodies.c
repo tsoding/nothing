@@ -25,7 +25,6 @@ struct RigidBodies
     bool *grounded;
     Vec *forces;
     bool *deleted;
-    HashSet *collided;
     bool *disabled;
 };
 
@@ -72,14 +71,6 @@ RigidBodies *create_rigid_bodies(size_t capacity)
         RETURN_LT(lt, NULL);
     }
 
-    rigid_bodies->collided = PUSH_LT(
-        lt,
-        create_hashset(sizeof(size_t) * 2, capacity * 2),
-        destroy_hashset);
-    if (rigid_bodies->collided == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
     rigid_bodies->disabled = PUSH_LT(
         lt,
         nth_calloc(capacity, sizeof(bool)),
@@ -97,26 +88,54 @@ void destroy_rigid_bodies(RigidBodies *rigid_bodies)
     RETURN_LT0(rigid_bodies->lt);
 }
 
-static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
+int rigid_bodies_collide(RigidBodies *rigid_bodies,
+                         const Platforms *platforms)
 {
-    trace_assert(rigid_bodies);
+    // TODO(#683): RigidBodies should collide only the bodies that were updated on after a previous collision
+    memset(rigid_bodies->grounded, 0, sizeof(bool) * rigid_bodies->count);
 
     if (rigid_bodies->count == 0) {
         return 0;
     }
 
-    size_t pair[2];
-    hashset_clear(rigid_bodies->collided);
+    int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
 
-    bool the_variable_that_gets_set_when_a_collision_happens_xd = true;
 
-    for (size_t i = 0; i < 1000 && the_variable_that_gets_set_when_a_collision_happens_xd; ++i) {
-        the_variable_that_gets_set_when_a_collision_happens_xd = false;
-        for (size_t i1 = 0; i1 < rigid_bodies->count - 1; ++i1) {
+    int t = 100;
+    int the_variable_that_gets_set_when_a_collision_happens_xd = 1;
+    while (t-- > 0 && the_variable_that_gets_set_when_a_collision_happens_xd) {
+        the_variable_that_gets_set_when_a_collision_happens_xd = 0;
+
+        for (size_t i1 = 0; i1 < rigid_bodies->count; ++i1) {
             if (rigid_bodies->deleted[i1] || rigid_bodies->disabled[i1]) {
                 continue;
             }
 
+            // Platforms
+            memset(sides, 0, sizeof(int) * RECT_SIDE_N);
+
+            platforms_touches_rect_sides(platforms, rigid_bodies->bodies[i1], sides);
+
+            for (int i = 0; i < RECT_SIDE_N; ++i) {
+                if (sides[i]) {
+                    the_variable_that_gets_set_when_a_collision_happens_xd = 1;
+                }
+            }
+
+            if (sides[RECT_SIDE_BOTTOM]) {
+                rigid_bodies->grounded[i1] = true;
+            }
+
+            Vec v = platforms_snap_rect(platforms, &rigid_bodies->bodies[i1]);
+            rigid_bodies->velocities[i1] = vec_entry_mult(rigid_bodies->velocities[i1], v);
+            rigid_bodies->movements[i1] = vec_entry_mult(rigid_bodies->movements[i1], v);
+            rigid_bodies_damper(rigid_bodies, i1, vec_entry_mult(v, vec(-16.0f, 0.0f)));
+
+            if (i1 >= rigid_bodies->count - 1) {
+                continue;
+            }
+
+            // Self-collision
             for (size_t i2 = i1 + 1; i2 < rigid_bodies->count; ++i2) {
                 if (rigid_bodies->deleted[i2] || rigid_bodies->disabled[i1]) {
                     continue;
@@ -126,11 +145,7 @@ static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
                     continue;
                 }
 
-                the_variable_that_gets_set_when_a_collision_happens_xd = true;
-
-                pair[0] = i1;
-                pair[1] = i2;
-                hashset_insert(rigid_bodies->collided, pair);
+                the_variable_that_gets_set_when_a_collision_happens_xd = 1;
 
                 Vec orient = rect_impulse(&rigid_bodies->bodies[i1], &rigid_bodies->bodies[i2]);
 
@@ -146,69 +161,8 @@ static int rigid_bodies_collide_with_itself(RigidBodies *rigid_bodies)
                 rigid_bodies->velocities[i2] = vec(rigid_bodies->velocities[i2].x * orient.x, rigid_bodies->velocities[i2].y * orient.y);
                 rigid_bodies->movements[i1] = vec(rigid_bodies->movements[i1].x * orient.x, rigid_bodies->movements[i1].y * orient.y);
                 rigid_bodies->movements[i2] = vec(rigid_bodies->movements[i2].x * orient.x, rigid_bodies->movements[i2].y * orient.y);
-
             }
         }
-    }
-
-    size_t *collided = hashset_values(rigid_bodies->collided);
-    const size_t n = hashset_count(rigid_bodies->collided);
-    for (size_t i = 0; i < n; ++i) {
-        const size_t i1 = *(collided + i * 2);
-        const size_t i2 = *(collided + i * 2 + 1);
-
-        rigid_bodies_apply_force(
-            rigid_bodies, i1, vec_sum(rigid_bodies->velocities[i2], rigid_bodies->movements[i2]));
-        rigid_bodies_apply_force(
-            rigid_bodies, i2, vec_sum(rigid_bodies->velocities[i1], rigid_bodies->movements[i1]));
-    }
-
-    return 0;
-}
-
-static int rigid_bodies_collide_with_platforms(
-    RigidBodies *rigid_bodies,
-    const Platforms *platforms)
-{
-    trace_assert(rigid_bodies);
-    trace_assert(platforms);
-
-    int sides[RECT_SIDE_N] = { 0, 0, 0, 0 };
-
-    for (size_t i = 0; i < rigid_bodies->count; ++i) {
-        if (rigid_bodies->deleted[i] || rigid_bodies->disabled[i]) {
-            continue;
-        }
-
-        memset(sides, 0, sizeof(int) * RECT_SIDE_N);
-
-        platforms_touches_rect_sides(platforms, rigid_bodies->bodies[i], sides);
-
-        if (sides[RECT_SIDE_BOTTOM]) {
-            rigid_bodies->grounded[i] = true;
-        }
-
-        Vec v = platforms_snap_rect(platforms, &rigid_bodies->bodies[i]);
-        rigid_bodies->velocities[i] = vec_entry_mult(rigid_bodies->velocities[i], v);
-        rigid_bodies->movements[i] = vec_entry_mult(rigid_bodies->movements[i], v);
-        rigid_bodies_damper(rigid_bodies, i, vec_entry_mult(v, vec(-16.0f, 0.0f)));
-    }
-
-    return 0;
-}
-
-int rigid_bodies_collide(RigidBodies *rigid_bodies,
-                         const Platforms *platforms)
-{
-    // TODO(#683): RigidBodies should collide only the bodies that were updated on after a previous collision
-    memset(rigid_bodies->grounded, 0, sizeof(bool) * rigid_bodies->count);
-
-    if (rigid_bodies_collide_with_itself(rigid_bodies) < 0) {
-        return -1;
-    }
-
-    if (rigid_bodies_collide_with_platforms(rigid_bodies, platforms) < 0) {
-        return -1;
     }
 
     return 0;
