@@ -17,6 +17,8 @@
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
 #define CREATE_AREA_THRESHOLD 10.0
 
+// TODO(#1051): RectLayer does not support copy-pasting
+
 typedef enum {
     RECT_LAYER_IDLE = 0,
     RECT_LAYER_CREATE,
@@ -39,7 +41,6 @@ struct RectLayer {
     int selection;
     Vec move_anchor;
     Edit_field *id_edit_field;
-    // TODO(#1043): RectLayer should use intermediate values instead of previous ones
     Color inter_color;
     Rect inter_rect;
 };

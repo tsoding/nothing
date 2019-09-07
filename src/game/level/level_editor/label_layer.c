@@ -18,7 +18,7 @@
 
 #define LABEL_LAYER_SELECTION_THICCNESS 5.0f
 
-// TODO(#999): LabelLayer does not support UndoHistory
+// TODO(#1050): LabelLayer does not support copy-pasting
 
 typedef enum {
     LABEL_LAYER_IDLE = 0,
