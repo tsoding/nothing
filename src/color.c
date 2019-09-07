@@ -129,6 +129,12 @@ int color_hex_to_stream(Color color, FILE *stream)
     return fprintf(stream, "%02x%02x%02x", sdl.r, sdl.g, sdl.b);
 }
 
+int color_hex_to_string(Color color, char *buffer, size_t buffer_size)
+{
+    SDL_Color sdl = color_for_sdl(color);
+    return snprintf(buffer, buffer_size, "%02x%02x%02x", sdl.r, sdl.g, sdl.b);
+}
+
 Color rgba_to_hsla(Color color)
 {
     const float max = fmaxf(color.r, fmaxf(color.g, color.b));

@@ -17,6 +17,8 @@
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
 #define CREATE_AREA_THRESHOLD 10.0
 
+// TODO: RectLayer does not support copy-pasting
+
 typedef enum {
     RECT_LAYER_IDLE = 0,
     RECT_LAYER_CREATE,

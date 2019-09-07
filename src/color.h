@@ -19,6 +19,7 @@ Color hexstr(const char *hexstr);
 SDL_Color color_for_sdl(Color color);
 
 int color_hex_to_stream(Color color, FILE *stream);
+int color_hex_to_string(Color color, char *buffer, size_t buffer_size);
 
 Color color_darker(Color color, float d);
 
