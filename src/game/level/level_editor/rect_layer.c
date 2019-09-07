@@ -212,9 +212,11 @@ static int rect_layer_event_idle(RectLayer *layer,
         return -1;
     }
 
-    if (color_changed && layer->selection >= 0) {
-        dynarray_copy_to(layer->colors, &layer->inter_color, (size_t)layer->selection);
-        layer->state = RECT_LAYER_RECOLOR;
+    if (color_changed) {
+        if (layer->selection >= 0) {
+            dynarray_copy_to(layer->colors, &layer->inter_color, (size_t)layer->selection);
+            layer->state = RECT_LAYER_RECOLOR;
+        }
         return 0;
     }
 

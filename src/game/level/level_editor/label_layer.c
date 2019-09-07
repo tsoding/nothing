@@ -455,8 +455,10 @@ int label_layer_idle_event(LabelLayer *label_layer,
     }
 
     if (changed) {
-        label_layer->state = LABEL_LAYER_RECOLOR;
-        label_layer->inter_color = color_picker_rgba(&label_layer->color_picker);
+        if (label_layer->selected >= 0) {
+            label_layer->state = LABEL_LAYER_RECOLOR;
+            label_layer->inter_color = color_picker_rgba(&label_layer->color_picker);
+        }
         return 0;
     }
 
