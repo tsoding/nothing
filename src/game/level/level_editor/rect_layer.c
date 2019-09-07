@@ -592,7 +592,7 @@ int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
         }
 
         // Selection Overlay
-        if ((size_t) layer->selection == i) {
+        if (active && (size_t) layer->selection == i) {
             const Rect overlay_rect =
                 rect_scale(
                     camera_rect(camera, rect),

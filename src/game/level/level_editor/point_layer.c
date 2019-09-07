@@ -251,7 +251,8 @@ int point_layer_render(const PointLayer *point_layer,
             ? point_layer->inter_position
             : positions[i];
 
-        if (i == point_layer->selected) {
+        // Selection Layer
+        if (active && i == point_layer->selected) {
             if (camera_fill_triangle(
                     camera,
                     element_shape(

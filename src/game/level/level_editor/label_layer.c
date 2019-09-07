@@ -322,7 +322,7 @@ int label_layer_render(const LabelLayer *label_layer,
         }
 
         // Label Selection
-        if (label_layer->selected == (int) i) {
+        if (active && label_layer->selected == (int) i) {
             Rect selection =
                 rect_scale(
                     camera_rect(
