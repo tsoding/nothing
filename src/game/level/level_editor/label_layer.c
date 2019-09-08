@@ -15,6 +15,7 @@
 #include "game/camera.h"
 #include "color_picker.h"
 #include "ui/edit_field.h"
+#include "math/extrema.h"
 
 #define LABEL_LAYER_SELECTION_THICCNESS 5.0f
 
@@ -411,6 +412,7 @@ static
 int label_layer_add_label(LabelLayer *label_layer,
                           Point position,
                           Color color,
+                          const char *text,
                           UndoHistory *undo_history)
 {
     trace_assert(label_layer);
@@ -428,6 +430,10 @@ int label_layer_add_label(LabelLayer *label_layer,
     dynarray_push(label_layer->positions, &position);
     dynarray_push(label_layer->colors, &color);
     dynarray_push_empty(label_layer->texts);
+    memcpy(
+        dynarray_pointer_at(label_layer->texts, n),
+        text,
+        min_size_t(LABEL_LAYER_ID_MAX_SIZE - 1, strlen(text)));
 
     UNDO_PUSH(label_layer, undo_history, UNDO_ADD);
 
@@ -495,6 +501,7 @@ int label_layer_idle_event(LabelLayer *label_layer,
                     position,
                     color_picker_rgba(
                         &label_layer->color_picker),
+                    "",
                     undo_history);
                 label_layer->state = LABEL_LAYER_EDIT_TEXT;
                 edit_field_replace(
@@ -546,6 +553,52 @@ int label_layer_idle_event(LabelLayer *label_layer,
                     label_layer,
                     undo_history);
                 label_layer->selected = -1;
+            }
+        } break;
+
+        case SDLK_c: {
+            if ((event->key.keysym.mod & KMOD_LCTRL) && label_layer->selected >= 0) {
+#define BUFFER_SIZE (LABEL_LAYER_TEXT_MAX_SIZE + 64)
+                const char *text = dynarray_pointer_at(label_layer->texts, (size_t)label_layer->selected);
+                Color *color = dynarray_pointer_at(label_layer->colors, (size_t)label_layer->selected);
+
+                char buffer[BUFFER_SIZE];
+                int n = snprintf(buffer, BUFFER_SIZE, "Label\n%s\n", text);
+                color_hex_to_string(*color, buffer + n, (size_t)(BUFFER_SIZE - n));
+
+                SDL_SetClipboardText(buffer);
+#undef BUFFER_SIZE
+            }
+        } break;
+
+        case SDLK_v: {
+            if ((event->key.keysym.mod & KMOD_LCTRL) && SDL_HasClipboardText()) {
+#define BUFFER_SIZE 10
+                const char *buffer = SDL_GetClipboardText();
+                char type[BUFFER_SIZE];
+                char hex[BUFFER_SIZE];
+                char text[LABEL_LAYER_TEXT_MAX_SIZE];
+
+                if (sscanf(buffer,
+                           "%"STRINGIFY(BUFFER_SIZE)"s\n"
+                           "%"STRINGIFY(LABEL_LAYER_TEXT_MAX_SIZE)"s\n"
+                           "%"STRINGIFY(BUFFER_SIZE)"s",
+                           type, text, hex) != 3) {
+                    printf("Could not read 3 elements");
+                    return 0;
+                }
+
+                if (strcmp(type, "Label") != 0) {
+                    printf("Expected type Label but got %s\n", type);
+                    return 0;
+                }
+
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                Point position = camera_map_screen(camera, x, y);
+
+                label_layer_add_label(label_layer, position, hexstr(hex), text, undo_history);
+#undef BUFFER_SIZE
             }
         } break;
         }
