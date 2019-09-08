@@ -29,6 +29,10 @@ typedef enum {
     LABEL_LAYER_RECOLOR
 } LabelLayerState;
 
+static int clipboard;
+static char clipboard_text[LABEL_LAYER_TEXT_MAX_SIZE];
+static Color clipboard_color;
+
 struct LabelLayer {
     Lt *lt;
     LabelLayerState state;
@@ -406,6 +410,8 @@ void label_layer_delete_selected_label(LabelLayer *label_layer,
     dynarray_delete_at(label_layer->positions, (size_t)label_layer->selected);
     dynarray_delete_at(label_layer->colors, (size_t)label_layer->selected);
     dynarray_delete_at(label_layer->texts, (size_t)label_layer->selected);
+
+    label_layer->selected = -1;
 }
 
 static
@@ -558,47 +564,24 @@ int label_layer_idle_event(LabelLayer *label_layer,
 
         case SDLK_c: {
             if ((event->key.keysym.mod & KMOD_LCTRL) && label_layer->selected >= 0) {
-#define BUFFER_SIZE (LABEL_LAYER_TEXT_MAX_SIZE + 64)
-                const char *text = dynarray_pointer_at(label_layer->texts, (size_t)label_layer->selected);
-                Color *color = dynarray_pointer_at(label_layer->colors, (size_t)label_layer->selected);
-
-                char buffer[BUFFER_SIZE];
-                int n = snprintf(buffer, BUFFER_SIZE, "Label\n%s\n", text);
-                color_hex_to_string(*color, buffer + n, (size_t)(BUFFER_SIZE - n));
-
-                SDL_SetClipboardText(buffer);
-#undef BUFFER_SIZE
+                clipboard = 1;
+                dynarray_copy_to(label_layer->texts, clipboard_text, (size_t)label_layer->selected);
+                dynarray_copy_to(label_layer->colors, &clipboard_color, (size_t)label_layer->selected);
             }
         } break;
 
         case SDLK_v: {
-            if ((event->key.keysym.mod & KMOD_LCTRL) && SDL_HasClipboardText()) {
-#define BUFFER_SIZE 10
-                const char *buffer = SDL_GetClipboardText();
-                char type[BUFFER_SIZE];
-                char hex[BUFFER_SIZE];
-                char text[LABEL_LAYER_TEXT_MAX_SIZE];
-
-                if (sscanf(buffer,
-                           "%"STRINGIFY(BUFFER_SIZE)"s\n"
-                           "%"STRINGIFY(LABEL_LAYER_TEXT_MAX_SIZE)"s\n"
-                           "%"STRINGIFY(BUFFER_SIZE)"s",
-                           type, text, hex) != 3) {
-                    printf("Could not read 3 elements");
-                    return 0;
-                }
-
-                if (strcmp(type, "Label") != 0) {
-                    printf("Expected type Label but got %s\n", type);
-                    return 0;
-                }
-
+            if ((event->key.keysym.mod & KMOD_LCTRL) && clipboard) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
                 Point position = camera_map_screen(camera, x, y);
 
-                label_layer_add_label(label_layer, position, hexstr(hex), text, undo_history);
-#undef BUFFER_SIZE
+                label_layer_add_label(
+                    label_layer,
+                    position,
+                    clipboard_color,
+                    clipboard_text,
+                    undo_history);
             }
         } break;
         }

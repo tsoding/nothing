@@ -19,6 +19,10 @@
 
 // TODO(#1051): RectLayer does not support copy-pasting
 
+static int clipboard = 0;
+static Rect clipboard_rect;
+static Color clipboard_color;
+
 typedef enum {
     RECT_LAYER_IDLE = 0,
     RECT_LAYER_CREATE,
@@ -297,44 +301,24 @@ static int rect_layer_event_idle(RectLayer *layer,
 
         case SDLK_c: {
             if ((event->key.keysym.mod & KMOD_LCTRL) && layer->selection >= 0) {
-#define BUFFER_SIZE 256
-                Rect *rect = dynarray_pointer_at(layer->rects, (size_t)layer->selection);
-                Color *color = dynarray_pointer_at(layer->colors, (size_t)layer->selection);
-
-                char buffer[BUFFER_SIZE];
-                int n = snprintf(buffer, BUFFER_SIZE, "Rect %f %f ", rect->w, rect->h);
-                color_hex_to_string(*color, buffer + n, (size_t)(BUFFER_SIZE - n));
-
-                SDL_SetClipboardText(buffer);
-#undef BUFFER_SIZE
+                clipboard = 1;
+                dynarray_copy_to(layer->rects, &clipboard_rect, (size_t)layer->selection);
+                dynarray_copy_to(layer->colors, &clipboard_color, (size_t)layer->selection);
             }
         } break;
 
         case SDLK_v: {
-            if ((event->key.keysym.mod & KMOD_LCTRL) && SDL_HasClipboardText()) {
-#define BUFFER_SIZE 10
-                const char *rect_serialized = SDL_GetClipboardText();
-                char type[BUFFER_SIZE];
-                char hex[BUFFER_SIZE];
-                float w = 0, h = 0;
-
-                if (sscanf(rect_serialized,
-                           "%"STRINGIFY(BUFFER_SIZE)"s %f %f %"STRINGIFY(BUFFER_SIZE)"s",
-                           type, &w, &h, hex) != 4) {
-                    return 0;
-                }
-
-                if (strcmp(type, "Rect") != 0) {
-                    return 0;
-                }
-
+            if ((event->key.keysym.mod & KMOD_LCTRL) && clipboard) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                Color color = hexstr(hex);
                 Point position = camera_map_screen(camera, x, y);
 
-                rect_layer_add_rect(layer, rect(position.x, position.y, w, h), color, undo_history);
-#undef BUFFER_SIZE
+                rect_layer_add_rect(
+                    layer,
+                    rect(position.x, position.y,
+                         clipboard_rect.w, clipboard_rect.h),
+                    clipboard_color,
+                    undo_history);
             }
         } break;
         }
