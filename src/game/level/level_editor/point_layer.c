@@ -21,6 +21,9 @@
 #define POINT_LAYER_ID_TEXT_SIZE vec(2.0f, 2.0f)
 #define POINT_LAYER_ID_TEXT_COLOR COLOR_BLACK
 
+static int clipboard = 0;
+static Color clipboard_color;
+
 typedef enum {
     POINT_LAYER_IDLE = 0,
     POINT_LAYER_EDIT_ID,
@@ -436,30 +439,22 @@ int point_layer_idle_event(PointLayer *point_layer,
 
         case SDLK_c: {
             if ((event->key.keysym.mod & KMOD_LCTRL) && point_layer->selected >= 0) {
-                Color *colors = dynarray_data(point_layer->colors);
-#define COLOR_BUFFER_SIZE 32
-                char buffer[COLOR_BUFFER_SIZE];
-                buffer[0] = '#';
-                color_hex_to_string(colors[point_layer->selected], buffer + 1, COLOR_BUFFER_SIZE - 1);
-                SDL_SetClipboardText(buffer);
-#undef COLOR_BUFFER_SIZE
+                clipboard = 1;
+                dynarray_copy_to(point_layer->colors, &clipboard_color, (size_t)point_layer->selected);
             }
         } break;
 
         case SDLK_v: {
-            if ((event->key.keysym.mod & KMOD_LCTRL) && SDL_HasClipboardText()) {
-                const char *hex = SDL_GetClipboardText();
-                if (strlen(hex) == 7 && hex[0] == '#') {
-                    Color color = hexstr(hex + 1);
-                    int x, y;
-                    SDL_GetMouseState(&x, &y);
-                    Point position = camera_map_screen(camera, x, y);
-                    point_layer_add_element(
-                        point_layer,
-                        position,
-                        color,
-                        undo_history);
-                }
+            if ((event->key.keysym.mod & KMOD_LCTRL) && clipboard) {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                Point position = camera_map_screen(camera, x, y);
+
+                point_layer_add_element(
+                    point_layer,
+                    position,
+                    clipboard_color,
+                    undo_history);
             }
         } break;
         }

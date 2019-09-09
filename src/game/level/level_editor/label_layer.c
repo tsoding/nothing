@@ -15,6 +15,7 @@
 #include "game/camera.h"
 #include "color_picker.h"
 #include "ui/edit_field.h"
+#include "math/extrema.h"
 
 #define LABEL_LAYER_SELECTION_THICCNESS 5.0f
 
@@ -27,6 +28,10 @@ typedef enum {
     LABEL_LAYER_EDIT_ID,
     LABEL_LAYER_RECOLOR
 } LabelLayerState;
+
+static int clipboard;
+static char clipboard_text[LABEL_LAYER_TEXT_MAX_SIZE];
+static Color clipboard_color;
 
 struct LabelLayer {
     Lt *lt;
@@ -405,12 +410,15 @@ void label_layer_delete_selected_label(LabelLayer *label_layer,
     dynarray_delete_at(label_layer->positions, (size_t)label_layer->selected);
     dynarray_delete_at(label_layer->colors, (size_t)label_layer->selected);
     dynarray_delete_at(label_layer->texts, (size_t)label_layer->selected);
+
+    label_layer->selected = -1;
 }
 
 static
 int label_layer_add_label(LabelLayer *label_layer,
                           Point position,
                           Color color,
+                          const char *text,
                           UndoHistory *undo_history)
 {
     trace_assert(label_layer);
@@ -428,6 +436,10 @@ int label_layer_add_label(LabelLayer *label_layer,
     dynarray_push(label_layer->positions, &position);
     dynarray_push(label_layer->colors, &color);
     dynarray_push_empty(label_layer->texts);
+    memcpy(
+        dynarray_pointer_at(label_layer->texts, n),
+        text,
+        min_size_t(LABEL_LAYER_ID_MAX_SIZE - 1, strlen(text)));
 
     UNDO_PUSH(label_layer, undo_history, UNDO_ADD);
 
@@ -495,6 +507,7 @@ int label_layer_idle_event(LabelLayer *label_layer,
                     position,
                     color_picker_rgba(
                         &label_layer->color_picker),
+                    "",
                     undo_history);
                 label_layer->state = LABEL_LAYER_EDIT_TEXT;
                 edit_field_replace(
@@ -546,6 +559,29 @@ int label_layer_idle_event(LabelLayer *label_layer,
                     label_layer,
                     undo_history);
                 label_layer->selected = -1;
+            }
+        } break;
+
+        case SDLK_c: {
+            if ((event->key.keysym.mod & KMOD_LCTRL) && label_layer->selected >= 0) {
+                clipboard = 1;
+                dynarray_copy_to(label_layer->texts, clipboard_text, (size_t)label_layer->selected);
+                dynarray_copy_to(label_layer->colors, &clipboard_color, (size_t)label_layer->selected);
+            }
+        } break;
+
+        case SDLK_v: {
+            if ((event->key.keysym.mod & KMOD_LCTRL) && clipboard) {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                Point position = camera_map_screen(camera, x, y);
+
+                label_layer_add_label(
+                    label_layer,
+                    position,
+                    clipboard_color,
+                    clipboard_text,
+                    undo_history);
             }
         } break;
         }
