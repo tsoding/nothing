@@ -36,6 +36,7 @@
 
 typedef enum {
     LEVEL_STATE_RUNNING = 0,
+    LEVEL_STATE_CONSOLE,
     LEVEL_STATE_PAUSE
 } LevelState;
 
@@ -56,9 +57,7 @@ struct Level
     Labels *labels;
     Regions *regions;
     Script *supa_script;
-
     Console *console;
-    int console_enabled;
 };
 
 Level *create_level_from_level_editor(const LevelEditor *level_editor,
@@ -228,7 +227,7 @@ int level_render(const Level *level, const Camera *camera)
         return -1;
     }
 
-    if (level->console_enabled) {
+    if (level->state == LEVEL_STATE_CONSOLE) {
         if (console_render(level->console, camera) < 0) {
             return -1;
         }
@@ -263,7 +262,7 @@ int level_update(Level *level, float delta_time)
     lava_update(level->lava, delta_time);
     labels_update(level->labels, delta_time);
 
-    if (level->console_enabled) {
+    if (level->state == LEVEL_STATE_CONSOLE) {
         if (console_update(level->console, delta_time) < 0) {
             return -1;
         }
@@ -283,7 +282,7 @@ int level_event_console(Level *level, const SDL_Event *event)
         switch (event->key.keysym.sym) {
         case SDLK_ESCAPE:
             SDL_StopTextInput();
-            level->console_enabled = 0;
+            level->state = LEVEL_STATE_RUNNING;
             return 0;
 
         default: {}
@@ -302,11 +301,6 @@ int level_event_running(Level *level, const SDL_Event *event,
                         Camera *camera, Sound_samples *sound_samples)
 {
     trace_assert(level);
-
-    if (level->console_enabled) {
-        level_event_console(level, event);
-        return 0;
-    }
 
     switch (event->type) {
     case SDL_KEYDOWN:
@@ -333,7 +327,7 @@ int level_event_running(Level *level, const SDL_Event *event,
         case SDLK_BACKQUOTE:
         case SDLK_c: {
             SDL_StartTextInput();
-            level->console_enabled = true;
+            level->state = LEVEL_STATE_CONSOLE;
             console_slide_down(level->console);
         } break;
         }
@@ -383,6 +377,10 @@ int level_event(Level *level, const SDL_Event *event,
 
     case LEVEL_STATE_PAUSE: {
         return level_event_pause(level, event, camera, sound_samples);
+    } break;
+
+    case LEVEL_STATE_CONSOLE: {
+        return level_event_console(level, event);
     } break;
     }
 
