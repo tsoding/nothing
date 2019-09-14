@@ -45,7 +45,6 @@ struct Console
     Console_Log *console_log;
     History *history;
     float a;
-    char *eval_result;
 };
 
 /* TODO(#356): Console does not support autocompletion */
@@ -96,15 +95,6 @@ Console *create_console(Broadcast *broadcast)
 
     console->a = 0;
 
-    console->eval_result = PUSH_LT(
-        lt,
-        nth_calloc(1, sizeof(char) * CONSOLE_EVAL_RESULT_SIZE),
-        free);
-    if (console->eval_result == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    memset(console->eval_result, 0, sizeof(char) * CONSOLE_EVAL_RESULT_SIZE);
-
     console->history = PUSH_LT(
         lt,
         create_history(HISTORY_CAPACITY),
@@ -154,18 +144,20 @@ static int console_eval_input(Console *console)
             &console->scope,
             parse_result.expr);
 
+        char buffer[CONSOLE_EVAL_RESULT_SIZE];
+
         if (expr_as_sexpr(
                 eval_result.expr,
-                console->eval_result,
+                buffer,
                 CONSOLE_EVAL_RESULT_SIZE) < 0) {
             return -1;
         }
 
         if (console_log_push_line(console->console_log,
-                          console->eval_result,
-                          eval_result.is_error ?
-                          CONSOLE_ERROR :
-                          CONSOLE_FOREGROUND)) {
+                                  buffer,
+                                  eval_result.is_error ?
+                                  CONSOLE_ERROR :
+                                  CONSOLE_FOREGROUND)) {
             return -1;
         }
 
