@@ -29,6 +29,7 @@
 #include "system/str.h"
 #include "game/level/level_editor.h"
 #include "game/level/script.h"
+#include "ui/console.h"
 
 #define LEVEL_GRAVITY 1500.0f
 #define JOYSTICK_THRESHOLD 1000
@@ -54,8 +55,10 @@ struct Level
     Boxes *boxes;
     Labels *labels;
     Regions *regions;
-    Broadcast *broadcast;
     Script *supa_script;
+
+    Console *console;
+    int console_enabled;
 };
 
 Level *create_level_from_level_editor(const LevelEditor *level_editor,
@@ -157,8 +160,6 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor,
         RETURN_LT(lt, NULL);
     }
 
-    level->broadcast = broadcast;
-
     level->supa_script = PUSH_LT(
         lt,
         create_script_from_string(
@@ -167,6 +168,14 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor,
         destroy_script);
     if (level->supa_script == NULL) {
         log_fail("Could not construct Supa Script for the level\n");
+        RETURN_LT(lt, NULL);
+    }
+
+    level->console = PUSH_LT(
+        lt,
+        create_console(broadcast),
+        destroy_console);
+    if (level->console == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -219,6 +228,12 @@ int level_render(const Level *level, const Camera *camera)
         return -1;
     }
 
+    if (level->console_enabled) {
+        if (console_render(level->console, camera) < 0) {
+            return -1;
+        }
+    }
+
     return 0;
 }
 
@@ -248,6 +263,37 @@ int level_update(Level *level, float delta_time)
     lava_update(level->lava, delta_time);
     labels_update(level->labels, delta_time);
 
+    if (level->console_enabled) {
+        if (console_update(level->console, delta_time) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+static
+int level_event_console(Level *level, const SDL_Event *event)
+{
+    trace_assert(level);
+    trace_assert(event);
+
+    switch (event->type) {
+    case SDL_KEYDOWN:
+        switch (event->key.keysym.sym) {
+        case SDLK_ESCAPE:
+            SDL_StopTextInput();
+            level->console_enabled = 0;
+            return 0;
+
+        default: {}
+        }
+
+    default: {}
+    }
+
+    console_handle_event(level->console, event);
+
     return 0;
 }
 
@@ -256,6 +302,11 @@ int level_event_running(Level *level, const SDL_Event *event,
                         Camera *camera, Sound_samples *sound_samples)
 {
     trace_assert(level);
+
+    if (level->console_enabled) {
+        level_event_console(level, event);
+        return 0;
+    }
 
     switch (event->type) {
     case SDL_KEYDOWN:
@@ -276,6 +327,17 @@ int level_event_running(Level *level, const SDL_Event *event,
         } break;
         }
         break;
+
+    case SDL_KEYUP: {
+        switch (event->key.keysym.sym) {
+        case SDLK_BACKQUOTE:
+        case SDLK_c: {
+            SDL_StartTextInput();
+            level->console_enabled = true;
+            console_slide_down(level->console);
+        } break;
+        }
+    } break;
 
     case SDL_JOYBUTTONDOWN:
         if (event->jbutton.button == 1) {
