@@ -346,25 +346,6 @@ static int game_event_running(Game *game, const SDL_Event *event)
     case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
         case SDLK_r: {
-            const char *level_filename = game->level_editor->file_name;
-
-            if (!level_filename) {
-                log_warn("Could not reload the level. There is no associated file.\n");
-                return 0;
-            }
-
-            log_info("Reloading the level from '%s'...\n", level_filename);
-
-            game->level_editor = RESET_LT(
-                game->lt,
-                game->level_editor,
-                create_level_editor_from_file(level_filename));
-            if (game->level_editor == NULL) {
-                log_fail("Could not reload level %s\n", level_filename);
-                game->state = GAME_STATE_QUIT;
-                return -1;
-            }
-
             game->level = RESET_LT(
                 game->lt,
                 game->level,
@@ -372,7 +353,6 @@ static int game_event_running(Game *game, const SDL_Event *event)
                     game->level_editor,
                     game->broadcast));
             if (game->level == NULL) {
-                log_fail("Could not reload level %s\n", level_filename);
                 game->state = GAME_STATE_QUIT;
                 return -1;
             }
