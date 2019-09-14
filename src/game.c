@@ -109,7 +109,7 @@ Game *create_game(const char *level_folder,
 
     game->console = PUSH_LT(
         lt,
-        create_console(game->broadcast, game->font),
+        create_console(game->broadcast),
         destroy_console);
     if (game->console == NULL) {
         RETURN_LT(lt, NULL);
@@ -161,7 +161,7 @@ int game_render(const Game *game)
             return -1;
         }
 
-        if (console_render(game->console, &game->camera, game->renderer) < 0) {
+        if (console_render(game->console, &game->camera) < 0) {
             return -1;
         }
     } break;

@@ -14,7 +14,6 @@ struct Console_Log
 {
     Lt *lt;
 
-    const Sprite_font *font;
     Vec font_size;
 
     Color *colors;
@@ -23,9 +22,8 @@ struct Console_Log
     size_t capacity;
 };
 
-Console_Log *create_console_log(const Sprite_font *font,
-                Vec font_size,
-                size_t capacity)
+Console_Log *create_console_log(Vec font_size,
+                                size_t capacity)
 {
     Lt *lt = create_lt();
 
@@ -34,7 +32,6 @@ Console_Log *create_console_log(const Sprite_font *font,
         RETURN_LT(lt, NULL);
     }
     console_log->lt = lt;
-    console_log->font = font;
     console_log->font_size = font_size;
     console_log->capacity = capacity;
 
@@ -65,23 +62,21 @@ void destroy_console_log(Console_Log *console_log)
 }
 
 int console_log_render(const Console_Log *console_log,
-               SDL_Renderer *renderer,
-               Point position)
+                       const Camera *camera,
+                       Point position)
 {
     trace_assert(console_log);
-    trace_assert(renderer);
-    (void) position;
+    trace_assert(camera);
 
     for (size_t i = 0; i < console_log->capacity; ++i) {
         const size_t j = (i + console_log->cursor) % console_log->capacity;
         if (console_log->buffer[j]) {
-            if (sprite_font_render_text(console_log->font,
-                                        renderer,
-                                        vec_sum(position,
-                                                vec(0.0f, FONT_CHAR_HEIGHT * console_log->font_size.y * (float) i)),
-                                        console_log->font_size,
-                                        console_log->colors[j],
-                                        console_log->buffer[j]) < 0) {
+            if (camera_render_text_screen(camera,
+                                          console_log->buffer[j],
+                                          console_log->font_size,
+                                          console_log->colors[j],
+                                          vec_sum(position,
+                                                  vec(0.0f, FONT_CHAR_HEIGHT * console_log->font_size.y * (float) i))) < 0) {
                 return -1;
             }
         }
