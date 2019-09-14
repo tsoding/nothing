@@ -47,6 +47,13 @@ typedef struct Game {
     int cursor_y;
 } Game;
 
+static
+void game_switch_state(Game *game, Game_state state)
+{
+    game->camera = create_camera(game->renderer, game->font);
+    game->state = state;
+}
+
 Game *create_game(const char *level_folder,
                   const char *sound_sample_files[],
                   size_t sound_sample_files_count,
@@ -62,7 +69,6 @@ Game *create_game(const char *level_folder,
     }
     game->lt = lt;
 
-    game->state = GAME_STATE_LEVEL_PICKER;
 
     game->broadcast = PUSH_LT(
         lt,
@@ -102,8 +108,6 @@ Game *create_game(const char *level_folder,
         RETURN_LT(lt, NULL);
     }
 
-    game->camera = create_camera(renderer, game->font);
-
     game->console = PUSH_LT(
         lt,
         create_console(game->broadcast, game->font),
@@ -130,6 +134,8 @@ Game *create_game(const char *level_folder,
     }
     game->cursor_x = 0;
     game->cursor_y = 0;
+
+    game_switch_state(game, GAME_STATE_LEVEL_PICKER);
 
     return game;
 }
@@ -283,7 +289,7 @@ int game_update(Game *game, float delta_time)
                 return -1;
             }
 
-            game->state = GAME_STATE_RUNNING;
+            game_switch_state(game, GAME_STATE_RUNNING);
         }
 
     } break;
@@ -316,7 +322,7 @@ static int game_event_pause(Game *game, const SDL_Event *event)
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
         case SDLK_p:
-            game->state = GAME_STATE_RUNNING;
+            game_switch_state(game, GAME_STATE_RUNNING);
             camera_toggle_blackwhite_mode(&game->camera);
             sound_samples_toggle_pause(game->sound_samples);
             break;
@@ -347,7 +353,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
                     game->level_editor,
                     game->broadcast));
             if (game->level == NULL) {
-                game->state = GAME_STATE_QUIT;
+                game_switch_state(game, GAME_STATE_QUIT);
                 return -1;
             }
 
@@ -355,7 +361,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
         } break;
 
         case SDLK_p: {
-            game->state = GAME_STATE_PAUSE;
+            game_switch_state(game, GAME_STATE_PAUSE);
             camera_toggle_blackwhite_mode(&game->camera);
             sound_samples_toggle_pause(game->sound_samples);
         } break;
@@ -366,7 +372,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
         } break;
 
         case SDLK_TAB: {
-            game->state = GAME_STATE_LEVEL_EDITOR;
+            game_switch_state(game, GAME_STATE_LEVEL_EDITOR);
         } break;
         }
     } break;
@@ -376,7 +382,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
         case SDLK_BACKQUOTE:
         case SDLK_c: {
             SDL_StartTextInput();
-            game->state = GAME_STATE_CONSOLE;
+            game_switch_state(game, GAME_STATE_CONSOLE);
             console_slide_down(game->console);
         } break;
         }
@@ -393,7 +399,7 @@ static int game_event_console(Game *game, const SDL_Event *event)
         switch (event->key.keysym.sym) {
         case SDLK_ESCAPE:
             SDL_StopTextInput();
-            game->state = GAME_STATE_RUNNING;
+            game_switch_state(game, GAME_STATE_RUNNING);
             return 0;
 
         default: {}
@@ -450,7 +456,7 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
                 return -1;
             }
 
-            game->state = GAME_STATE_RUNNING;
+            game_switch_state(game, GAME_STATE_RUNNING);
         } break;
         }
     } break;
@@ -477,7 +483,7 @@ static int game_event_level_editor(Game *game, const SDL_Event *event)
             if (game->level == NULL) {
                 return -1;
             }
-            game->state = GAME_STATE_RUNNING;
+            game_switch_state(game, GAME_STATE_RUNNING);
         } break;
         }
     } break;
@@ -493,7 +499,7 @@ int game_event(Game *game, const SDL_Event *event)
 
     switch (event->type) {
     case SDL_QUIT: {
-        game->state = GAME_STATE_QUIT;
+        game_switch_state(game, GAME_STATE_QUIT);
         return 0;
     } break;
 
@@ -575,7 +581,7 @@ game_send(Game *game, Gc *gc, struct Scope *scope,
         return level_send(game->level, gc, scope, rest);
     } else if (strcmp(target, "menu") == 0) {
         level_picker_clean_selection(game->level_picker);
-        game->state = GAME_STATE_LEVEL_PICKER;
+        game_switch_state(game, GAME_STATE_LEVEL_PICKER);
         return eval_success(NIL(gc));
     }
 
