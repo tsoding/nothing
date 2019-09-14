@@ -54,7 +54,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name);
 void destroy_level_editor(LevelEditor *level_editor);
 
 int level_editor_render(const LevelEditor *level_editor,
-                        Camera *camera);
+                        const Camera *camera);
 int level_editor_event(LevelEditor *level_editor,
                        const SDL_Event *event,
                        Camera *camera);

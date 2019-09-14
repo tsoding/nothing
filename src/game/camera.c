@@ -12,50 +12,27 @@
 #define RATIO_X 16.0f
 #define RATIO_Y 9.0f
 
-struct Camera {
-    bool debug_mode;
-    bool blackwhite_mode;
-    Point position;
-    float scale;
-    SDL_Renderer *renderer;
-    Sprite_font *font;
-};
-
 static Vec effective_ratio(const SDL_Rect *view_port);
 static Vec effective_scale(const SDL_Rect *view_port);
 static Triangle camera_triangle(const Camera *camera,
                                 const Triangle t);
 
-Camera *create_camera(SDL_Renderer *renderer,
-                      Sprite_font *font)
+Camera create_camera(SDL_Renderer *renderer,
+                     Sprite_font *font)
 {
     trace_assert(renderer);
     trace_assert(font);
 
-    Camera *camera = nth_calloc(1, sizeof(Camera));
-
-    if (camera == NULL) {
-        return NULL;
-    }
-
-    camera->position = vec(0.0f, 0.0f);
-    camera->scale = 1.0f;
-    camera->debug_mode = 0;
-    camera->blackwhite_mode = 0;
-    camera->renderer = renderer;
-    camera->font = font;
+    Camera camera = {
+        .scale = 1.0f,
+        .renderer = renderer,
+        .font = font
+    };
 
     return camera;
 }
 
-void destroy_camera(Camera *camera)
-{
-    trace_assert(camera);
-
-    free(camera);
-}
-
-int camera_fill_rect(Camera *camera,
+int camera_fill_rect(const Camera *camera,
                      Rect rect,
                      Color color)
 {
@@ -152,7 +129,7 @@ int camera_draw_triangle(Camera *camera,
     return 0;
 }
 
-int camera_fill_triangle(Camera *camera,
+int camera_fill_triangle(const Camera *camera,
                          Triangle t,
                          Color color)
 {
@@ -179,7 +156,7 @@ int camera_fill_triangle(Camera *camera,
     return 0;
 }
 
-int camera_render_text(Camera *camera,
+int camera_render_text(const Camera *camera,
                        const char *text,
                        Vec size,
                        Color c,
@@ -204,7 +181,7 @@ int camera_render_text(Camera *camera,
     return 0;
 }
 
-int camera_render_debug_text(Camera *camera,
+int camera_render_debug_text(const Camera *camera,
                              const char *text,
                              Vec position)
 {
@@ -227,7 +204,7 @@ int camera_render_debug_text(Camera *camera,
     return 0;
 }
 
-int camera_clear_background(Camera *camera,
+int camera_clear_background(const Camera *camera,
                             Color color)
 {
     const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
@@ -386,7 +363,7 @@ Rect camera_rect(const Camera *camera, const Rect rect)
             vec(rect.x + rect.w, rect.y + rect.h)));
 }
 
-int camera_render_debug_rect(Camera *camera,
+int camera_render_debug_rect(const Camera *camera,
                              Rect rect,
                              Color c)
 {
@@ -429,7 +406,7 @@ Vec camera_map_screen(const Camera *camera,
         camera->position);
 }
 
-int camera_fill_rect_screen(Camera *camera,
+int camera_fill_rect_screen(const Camera *camera,
                             Rect rect,
                             Color color)
 {
@@ -459,7 +436,7 @@ int camera_fill_rect_screen(Camera *camera,
 
 }
 
-int camera_render_text_screen(Camera *camera,
+int camera_render_text_screen(const Camera *camera,
                               const char *text,
                               Vec size,
                               Color color,
@@ -477,7 +454,7 @@ int camera_render_text_screen(Camera *camera,
         text);
 }
 
-int camera_draw_thicc_rect_screen(Camera *camera,
+int camera_draw_thicc_rect_screen(const Camera *camera,
                                   Rect rect,
                                   Color color,
                                   float thiccness)

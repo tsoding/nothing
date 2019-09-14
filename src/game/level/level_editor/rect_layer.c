@@ -585,7 +585,7 @@ void destroy_rect_layer(RectLayer *layer)
     RETURN_LT0(layer->lt);
 }
 
-int rect_layer_render(const RectLayer *layer, Camera *camera, int active)
+int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
 {
     trace_assert(layer);
     trace_assert(camera);

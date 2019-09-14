@@ -22,7 +22,7 @@ LayerPtr background_layer_as_layer(BackgroundLayer *layer)
 }
 
 int background_layer_render(BackgroundLayer *layer,
-                            Camera *camera,
+                            const Camera *camera,
                             int active);
 int background_layer_event(BackgroundLayer *layer,
                            const SDL_Event *event,

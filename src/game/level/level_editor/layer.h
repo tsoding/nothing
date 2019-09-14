@@ -1,6 +1,7 @@
 #ifndef LAYER_H_
 #define LAYER_H_
 
+#include "game/camera.h"
 #include "undo_history.h"
 
 typedef enum {
@@ -16,9 +17,7 @@ typedef struct {
     void *ptr;
 } LayerPtr;
 
-typedef struct Camera Camera;
-
-int layer_render(LayerPtr layer, Camera *camera, int active);
+int layer_render(LayerPtr layer, const Camera *camera, int active);
 int layer_event(LayerPtr layer,
                 const SDL_Event *event,
                 const Camera *camera,

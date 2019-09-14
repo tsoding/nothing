@@ -15,7 +15,7 @@ typedef struct RectLayer RectLayer;
 Boxes *create_boxes_from_rect_layer(const RectLayer *layer, RigidBodies *rigid_bodies);
 void destroy_boxes(Boxes *boxes);
 
-int boxes_render(Boxes *boxes, Camera *camera);
+int boxes_render(Boxes *boxes, const Camera *camera);
 int boxes_update(Boxes *boxes, float delta_time);
 
 void boxes_float_in_lava(Boxes *boxes, Lava *lava);

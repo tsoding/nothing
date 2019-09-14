@@ -16,7 +16,7 @@ Lava *create_lava_from_rect_layer(const RectLayer *rect_layer);
 void destroy_lava(Lava *lava);
 
 int lava_render(const Lava *lava,
-                Camera *camera);
+                const Camera *camera);
 int lava_update(Lava *lava, float delta_time);
 
 bool lava_overlaps_rect(const Lava *lava, Rect rect);

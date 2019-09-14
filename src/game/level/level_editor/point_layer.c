@@ -231,7 +231,7 @@ Triangle element_shape(Point position, float scale)
 }
 
 int point_layer_render(const PointLayer *point_layer,
-                       Camera *camera,
+                       const Camera *camera,
                        int active)
 {
     trace_assert(point_layer);

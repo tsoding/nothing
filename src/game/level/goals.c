@@ -190,7 +190,7 @@ void destroy_goals(Goals *goals)
 
 static int goals_render_core(const Goals *goals,
                              size_t goal_index,
-                             Camera *camera)
+                             const Camera *camera)
 {
     trace_assert(goals);
     trace_assert(camera);
@@ -222,7 +222,7 @@ static int goals_render_core(const Goals *goals,
 }
 
 int goals_render(const Goals *goals,
-                 Camera *camera)
+                 const Camera *camera)
 {
     trace_assert(goals);
     trace_assert(camera);

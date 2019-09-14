@@ -225,7 +225,7 @@ void regions_player_leave(Regions *regions, Player *player, Script *supa_script)
     }
 }
 
-int regions_render(Regions *regions, Camera *camera)
+int regions_render(Regions *regions, const Camera *camera)
 {
     trace_assert(regions);
     trace_assert(camera);

@@ -10,7 +10,7 @@
 #include "game/camera.h"
 
 int wiggly_text_render(const WigglyText *wiggly_text,
-                       Camera *camera,
+                       const Camera *camera,
                        Vec position)
 {
     trace_assert(wiggly_text);

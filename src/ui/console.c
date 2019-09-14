@@ -228,7 +228,7 @@ int console_handle_event(Console *console,
 }
 
 int console_render(const Console *console,
-                   Camera *camera,
+                   const Camera *camera,
                    SDL_Renderer *renderer)
 {
     /* TODO(#364): console doesn't have any padding around the edit fields */

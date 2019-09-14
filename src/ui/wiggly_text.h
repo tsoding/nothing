@@ -5,8 +5,7 @@
 
 #include "color.h"
 #include "system/stacktrace.h"
-
-typedef struct Camera Camera;
+#include "game/camera.h"
 
 typedef struct {
     const char *text;
@@ -16,7 +15,7 @@ typedef struct {
 } WigglyText;
 
 int wiggly_text_render(const WigglyText *wiggly_text,
-                       Camera *camera,
+                       const Camera *camera,
                        Vec position);
 int wiggly_text_update(WigglyText *wiggly_text, float delta_time);
 Vec wiggly_text_size(const WigglyText *wiggly_text, const Camera *camera);
@@ -28,7 +27,7 @@ typedef struct {
 
 static inline
 int fading_wiggly_text_render(const FadingWigglyText *fading_wiggly_text,
-                              Camera *camera,
+                              const Camera *camera,
                               Vec position)
 {
     return wiggly_text_render(&fading_wiggly_text->wiggly_text, camera, position);

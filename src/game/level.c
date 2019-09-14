@@ -174,7 +174,7 @@ void destroy_level(Level *level)
 }
 
 
-int level_render(const Level *level, Camera *camera)
+int level_render(const Level *level, const Camera *camera)
 {
     trace_assert(level);
 

@@ -5,20 +5,20 @@
 
 #include "color.h"
 #include "math/point.h"
+#include "game/camera.h"
 
 typedef struct Edit_field Edit_field;
-typedef struct Camera Camera;
 
 Edit_field *create_edit_field(Vec font_size,
                               Color font_color);
 void destroy_edit_field(Edit_field *edit_field);
 
 int edit_field_render_screen(const Edit_field *edit_field,
-                             Camera *camera,
+                             const Camera *camera,
                              Point screen_position);
 
 int edit_field_render_world(const Edit_field *edit_field,
-                            Camera *camera,
+                            const Camera *camera,
                             Point world_position);
 
 int edit_field_event(Edit_field *edit_field, const SDL_Event *event);

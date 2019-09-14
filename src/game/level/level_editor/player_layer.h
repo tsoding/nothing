@@ -17,7 +17,7 @@ PlayerLayer create_player_layer_from_line_stream(LineStream *line_stream);
 
 LayerPtr player_layer_as_layer(PlayerLayer *player_layer);
 int player_layer_render(const PlayerLayer *player_layer,
-                        Camera *camera,
+                        const Camera *camera,
                         int active);
 int player_layer_event(PlayerLayer *player_layer,
                        const SDL_Event *event,

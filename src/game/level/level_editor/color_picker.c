@@ -56,7 +56,7 @@ int color_picker_read_from_line_stream(ColorPicker *color_picker,
 }
 
 int color_picker_render(const ColorPicker *color_picker,
-                        Camera *camera)
+                        const Camera *camera)
 {
     trace_assert(color_picker);
     trace_assert(camera);

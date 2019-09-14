@@ -87,11 +87,9 @@ void destroy_level_picker(LevelPicker *level_picker)
 }
 
 int level_picker_render(const LevelPicker *level_picker,
-                        Camera *camera,
-                        SDL_Renderer *renderer)
+                        const Camera *camera)
 {
     trace_assert(level_picker);
-    trace_assert(renderer);
 
     const Rect viewport = camera_view_port_screen(camera);
 
@@ -108,7 +106,7 @@ int level_picker_render(const LevelPicker *level_picker,
         return -1;
     }
 
-    if (list_selector_render(level_picker->list_selector, renderer) < 0) {
+    if (list_selector_render(level_picker->list_selector, camera->renderer) < 0) {
         return -1;
     }
 

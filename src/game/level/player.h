@@ -23,7 +23,7 @@ Player *create_player_from_player_layer(const PlayerLayer *player_layer,
 void destroy_player(Player * player);
 
 int player_render(const Player * player,
-                  Camera *camera);
+                  const Camera *camera);
 void player_update(Player * player,
                    float delta_time);
 void player_touches_rect_sides(Player *player,

@@ -312,7 +312,7 @@ void destroy_level_editor(LevelEditor *level_editor)
 }
 
 int level_editor_render(const LevelEditor *level_editor,
-                        Camera *camera)
+                        const Camera *camera)
 {
     trace_assert(level_editor);
     trace_assert(camera);

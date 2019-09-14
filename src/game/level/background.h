@@ -14,7 +14,7 @@ Background *create_background_from_line_stream(LineStream *line_stream);
 void destroy_background(Background *background);
 
 int background_render(const Background *background,
-                      Camera *camera);
+                      const Camera *camera);
 
 Color background_base_color(const Background *background);
 

@@ -15,7 +15,7 @@
 
 static void chunk_of_point(Point p, int *x, int *y);
 int render_chunk(const Background *background,
-                 Camera *camera,
+                 const Camera *camera,
                  int x, int y,
                  Color color,
                  Vec position,
@@ -65,7 +65,7 @@ void destroy_background(Background *background)
 
 /* TODO(#182): background chunks are randomly disappearing when the size of the window is less than size of the chunk  */
 int background_render(const Background *background,
-                      Camera *camera)
+                      const Camera *camera)
 {
     trace_assert(background);
     trace_assert(camera);
@@ -121,7 +121,7 @@ static void chunk_of_point(Point p, int *x, int *y)
 }
 
 int render_chunk(const Background *background,
-                 Camera *camera,
+                 const Camera *camera,
                  int chunk_x, int chunk_y,
                  Color color,
                  Vec position,
