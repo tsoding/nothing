@@ -22,7 +22,6 @@ static int game_render_cursor(const Game *game);
 
 typedef enum Game_state {
     GAME_STATE_LEVEL = 0,
-    GAME_STATE_PAUSE,
     GAME_STATE_CONSOLE,
     GAME_STATE_LEVEL_PICKER,
     GAME_STATE_LEVEL_EDITOR,
@@ -151,8 +150,7 @@ int game_render(const Game *game)
     trace_assert(game);
 
     switch(game->state) {
-    case GAME_STATE_LEVEL:
-    case GAME_STATE_PAUSE: {
+    case GAME_STATE_LEVEL: {
         if (level_render(game->level, &game->camera) < 0) {
             return -1;
         }
@@ -198,7 +196,6 @@ int game_sound(Game *game)
 {
     switch (game->state) {
     case GAME_STATE_LEVEL:
-    case GAME_STATE_PAUSE:
     case GAME_STATE_CONSOLE:
         return level_sound(game->level, game->sound_samples);
     case GAME_STATE_LEVEL_PICKER:
@@ -304,37 +301,11 @@ int game_update(Game *game, float delta_time)
         level_editor_update(game->level_editor, delta_time);
     } break;
 
-    case GAME_STATE_PAUSE:
     case GAME_STATE_QUIT:
         break;
     }
 
     return 0;
-}
-
-
-static int game_event_pause(Game *game, const SDL_Event *event)
-{
-    trace_assert(game);
-    trace_assert(event);
-
-    switch (event->type) {
-    case SDL_KEYDOWN:
-        switch (event->key.keysym.sym) {
-        case SDLK_p:
-            game_switch_state(game, GAME_STATE_LEVEL);
-            camera_toggle_blackwhite_mode(&game->camera);
-            sound_samples_toggle_pause(game->sound_samples);
-            break;
-        case SDLK_l:
-            camera_toggle_debug_mode(&game->camera);
-            level_toggle_debug_mode(game->level);
-            break;
-        }
-        break;
-    }
-
-    return level_event(game->level, event);
 }
 
 static int game_event_running(Game *game, const SDL_Event *event)
@@ -360,17 +331,6 @@ static int game_event_running(Game *game, const SDL_Event *event)
             camera_disable_debug_mode(&game->camera);
         } break;
 
-        case SDLK_p: {
-            game_switch_state(game, GAME_STATE_PAUSE);
-            camera_toggle_blackwhite_mode(&game->camera);
-            sound_samples_toggle_pause(game->sound_samples);
-        } break;
-
-        case SDLK_l: {
-            camera_toggle_debug_mode(&game->camera);
-            level_toggle_debug_mode(game->level);
-        } break;
-
         case SDLK_TAB: {
             game_switch_state(game, GAME_STATE_LEVEL_EDITOR);
         } break;
@@ -389,7 +349,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
     } break;
     }
 
-    return level_event(game->level, event);
+    return level_event(game->level, event, &game->camera, game->sound_samples);
 }
 
 static int game_event_console(Game *game, const SDL_Event *event)
@@ -513,9 +473,6 @@ int game_event(Game *game, const SDL_Event *event)
     case GAME_STATE_LEVEL:
         return game_event_running(game, event);
 
-    case GAME_STATE_PAUSE:
-        return game_event_pause(game, event);
-
     case GAME_STATE_CONSOLE:
         return game_event_console(game, event);
 
@@ -542,7 +499,6 @@ int game_input(Game *game,
 
     switch (game->state) {
     case GAME_STATE_QUIT:
-    case GAME_STATE_PAUSE:
     case GAME_STATE_CONSOLE:
     case GAME_STATE_LEVEL_EDITOR:
         return 0;

@@ -246,12 +246,6 @@ void camera_disable_debug_mode(Camera *camera)
     camera->debug_mode = 0;
 }
 
-void camera_toggle_blackwhite_mode(Camera *camera)
-{
-    trace_assert(camera);
-    camera->blackwhite_mode = !camera->blackwhite_mode;
-}
-
 int camera_is_point_visible(const Camera *camera, Point p)
 {
     SDL_Rect view_port;

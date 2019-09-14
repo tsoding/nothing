@@ -80,8 +80,6 @@ void camera_scale(Camera *came, float scale);
 void camera_toggle_debug_mode(Camera *camera);
 void camera_disable_debug_mode(Camera *camera);
 
-void camera_toggle_blackwhite_mode(Camera *camera);
-
 int camera_is_point_visible(const Camera *camera, Point p);
 int camera_is_text_visible(const Camera *camera,
                            Vec size,

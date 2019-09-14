@@ -33,10 +33,16 @@
 #define LEVEL_GRAVITY 1500.0f
 #define JOYSTICK_THRESHOLD 1000
 
+typedef enum {
+    LEVEL_STATE_RUNNING = 0,
+    LEVEL_STATE_PAUSE
+} LevelState;
+
 struct Level
 {
     Lt *lt;
 
+    LevelState state;
     LevelMetadata *metadata;
     Background *background;
     RigidBodies *rigid_bodies;
@@ -173,7 +179,6 @@ void destroy_level(Level *level)
     RETURN_LT0(level->lt);
 }
 
-
 int level_render(const Level *level, const Camera *camera)
 {
     trace_assert(level);
@@ -222,6 +227,10 @@ int level_update(Level *level, float delta_time)
     trace_assert(level);
     trace_assert(delta_time > 0);
 
+    if (level->state == LEVEL_STATE_PAUSE) {
+        return 0;
+    }
+
     boxes_float_in_lava(level->boxes, level->lava);
     rigid_bodies_apply_omniforce(level->rigid_bodies, vec(0.0f, LEVEL_GRAVITY));
 
@@ -242,16 +251,28 @@ int level_update(Level *level, float delta_time)
     return 0;
 }
 
-int level_event(Level *level, const SDL_Event *event)
+static
+int level_event_running(Level *level, const SDL_Event *event,
+                        Camera *camera, Sound_samples *sound_samples)
 {
     trace_assert(level);
-    trace_assert(event);
 
     switch (event->type) {
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
         case SDLK_SPACE: {
             player_jump(level->player, level->supa_script);
+        } break;
+
+        case SDLK_p: {
+            level->state = LEVEL_STATE_PAUSE;
+            camera->blackwhite_mode = true;
+            sound_samples_toggle_pause(sound_samples);
+        } break;
+
+        case SDLK_l: {
+            camera_toggle_debug_mode(camera);
+            background_toggle_debug_mode(level->background);
         } break;
         }
         break;
@@ -266,13 +287,56 @@ int level_event(Level *level, const SDL_Event *event)
     return 0;
 }
 
+static
+int level_event_pause(Level *level, const SDL_Event *event,
+                      Camera *camera, Sound_samples *sound_samples)
+{
+    trace_assert(level);
+
+    switch (event->type) {
+    case SDL_KEYDOWN: {
+        switch (event->key.keysym.sym) {
+        case SDLK_p: {
+            level->state = LEVEL_STATE_RUNNING;
+            camera->blackwhite_mode = false;
+            sound_samples_toggle_pause(sound_samples);
+        } break;
+        }
+    } break;
+    }
+
+    return 0;
+}
+
+int level_event(Level *level, const SDL_Event *event,
+                Camera *camera, Sound_samples *sound_samples)
+{
+    trace_assert(level);
+    trace_assert(event);
+
+    switch (level->state) {
+    case LEVEL_STATE_RUNNING: {
+        return level_event_running(level, event, camera, sound_samples);
+    } break;
+
+    case LEVEL_STATE_PAUSE: {
+        return level_event_pause(level, event, camera, sound_samples);
+    } break;
+    }
+
+    return 0;
+}
+
 int level_input(Level *level,
                 const Uint8 *const keyboard_state,
                 SDL_Joystick *the_stick_of_joy)
 {
     trace_assert(level);
     trace_assert(keyboard_state);
-    (void) the_stick_of_joy;
+
+    if (level->state == LEVEL_STATE_PAUSE) {
+        return 0;
+    }
 
     if (keyboard_state[SDL_SCANCODE_A]) {
         player_move_left(level->player);
@@ -291,6 +355,10 @@ int level_input(Level *level,
 
 int level_sound(Level *level, Sound_samples *sound_samples)
 {
+    if (level->state == LEVEL_STATE_PAUSE) {
+        return 0;
+    }
+
     if (goals_sound(level->goals, sound_samples) < 0) {
         return -1;
     }
@@ -302,13 +370,12 @@ int level_sound(Level *level, Sound_samples *sound_samples)
     return 0;
 }
 
-void level_toggle_debug_mode(Level *level)
-{
-    background_toggle_debug_mode(level->background);
-}
-
 int level_enter_camera_event(Level *level, Camera *camera)
 {
+    if (level->state == LEVEL_STATE_PAUSE) {
+        return 0;
+    }
+
     player_focus_camera(level->player, camera);
     camera_scale(camera, 1.0f);
 
