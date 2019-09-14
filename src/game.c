@@ -21,7 +21,7 @@
 static int game_render_cursor(const Game *game);
 
 typedef enum Game_state {
-    GAME_STATE_RUNNING = 0,
+    GAME_STATE_LEVEL = 0,
     GAME_STATE_PAUSE,
     GAME_STATE_CONSOLE,
     GAME_STATE_LEVEL_PICKER,
@@ -151,7 +151,7 @@ int game_render(const Game *game)
     trace_assert(game);
 
     switch(game->state) {
-    case GAME_STATE_RUNNING:
+    case GAME_STATE_LEVEL:
     case GAME_STATE_PAUSE: {
         if (level_render(game->level, &game->camera) < 0) {
             return -1;
@@ -197,7 +197,7 @@ int game_render(const Game *game)
 int game_sound(Game *game)
 {
     switch (game->state) {
-    case GAME_STATE_RUNNING:
+    case GAME_STATE_LEVEL:
     case GAME_STATE_PAUSE:
     case GAME_STATE_CONSOLE:
         return level_sound(game->level, game->sound_samples);
@@ -216,7 +216,7 @@ int game_update(Game *game, float delta_time)
     trace_assert(delta_time > 0.0f);
 
     switch (game->state) {
-    case GAME_STATE_RUNNING: {
+    case GAME_STATE_LEVEL: {
         if (level_update(game->level, delta_time) < 0) {
             return -1;
         }
@@ -289,7 +289,7 @@ int game_update(Game *game, float delta_time)
                 return -1;
             }
 
-            game_switch_state(game, GAME_STATE_RUNNING);
+            game_switch_state(game, GAME_STATE_LEVEL);
         }
 
     } break;
@@ -322,7 +322,7 @@ static int game_event_pause(Game *game, const SDL_Event *event)
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
         case SDLK_p:
-            game_switch_state(game, GAME_STATE_RUNNING);
+            game_switch_state(game, GAME_STATE_LEVEL);
             camera_toggle_blackwhite_mode(&game->camera);
             sound_samples_toggle_pause(game->sound_samples);
             break;
@@ -399,7 +399,7 @@ static int game_event_console(Game *game, const SDL_Event *event)
         switch (event->key.keysym.sym) {
         case SDLK_ESCAPE:
             SDL_StopTextInput();
-            game_switch_state(game, GAME_STATE_RUNNING);
+            game_switch_state(game, GAME_STATE_LEVEL);
             return 0;
 
         default: {}
@@ -456,7 +456,7 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
                 return -1;
             }
 
-            game_switch_state(game, GAME_STATE_RUNNING);
+            game_switch_state(game, GAME_STATE_LEVEL);
         } break;
         }
     } break;
@@ -483,7 +483,7 @@ static int game_event_level_editor(Game *game, const SDL_Event *event)
             if (game->level == NULL) {
                 return -1;
             }
-            game_switch_state(game, GAME_STATE_RUNNING);
+            game_switch_state(game, GAME_STATE_LEVEL);
         } break;
         }
     } break;
@@ -510,7 +510,7 @@ int game_event(Game *game, const SDL_Event *event)
     }
 
     switch (game->state) {
-    case GAME_STATE_RUNNING:
+    case GAME_STATE_LEVEL:
         return game_event_running(game, event);
 
     case GAME_STATE_PAUSE:
@@ -547,7 +547,7 @@ int game_input(Game *game,
     case GAME_STATE_LEVEL_EDITOR:
         return 0;
 
-    case GAME_STATE_RUNNING:
+    case GAME_STATE_LEVEL:
         return level_input(game->level, keyboard_state, the_stick_of_joy);
 
     case GAME_STATE_LEVEL_PICKER:
