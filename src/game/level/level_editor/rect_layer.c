@@ -47,6 +47,8 @@ struct RectLayer {
     Edit_field *id_edit_field;
     Color inter_color;
     Rect inter_rect;
+    int id_name_counter;
+    const char *id_name_prefix;
 };
 
 typedef enum {
@@ -141,11 +143,9 @@ static int rect_layer_add_rect(RectLayer *layer,
     }
 
     char id[RECT_LAYER_ID_MAX_SIZE];
-    for (size_t i = 0; i < RECT_LAYER_ID_MAX_SIZE - 1; ++i) {
-        id[i] = (char) ('a' + rand() % ('z' - 'a' + 1));
-    }
-    id[RECT_LAYER_ID_MAX_SIZE - 1] = '\0';
-
+    snprintf(id, RECT_LAYER_ID_MAX_SIZE, "%s_%d",
+             layer->id_name_prefix,
+             layer->id_name_counter++);
     if (dynarray_push(layer->ids, id)) {
         return -1;
     }
@@ -481,7 +481,7 @@ LayerPtr rect_layer_as_layer(RectLayer *rect_layer)
     return layer;
 }
 
-RectLayer *create_rect_layer(void)
+RectLayer *create_rect_layer(const char *id_name_prefix)
 {
     Lt *lt = create_lt();
 
@@ -527,15 +527,16 @@ RectLayer *create_rect_layer(void)
 
     layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
     layer->selection = -1;
+    layer->id_name_prefix = id_name_prefix;
 
     return layer;
 }
 
-RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream)
+RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream, const char *id_name_prefix)
 {
     trace_assert(line_stream);
 
-    RectLayer *layer = create_rect_layer();
+    RectLayer *layer = create_rect_layer(id_name_prefix);
     if (layer == NULL) {
         return NULL;
     }

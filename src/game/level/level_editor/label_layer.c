@@ -46,6 +46,8 @@ struct LabelLayer {
     Edit_field *edit_field;
     Point inter_position;
     Color inter_color;
+    int id_name_counter;
+    const char *id_name_prefix;
 };
 
 typedef enum {
@@ -137,7 +139,7 @@ LayerPtr label_layer_as_layer(LabelLayer *label_layer)
     return layer;
 }
 
-LabelLayer *create_label_layer(void)
+LabelLayer *create_label_layer(const char *id_name_prefix)
 {
     Lt *lt = create_lt();
 
@@ -185,13 +187,15 @@ LabelLayer *create_label_layer(void)
         RETURN_LT(lt, NULL);
     }
 
+    label_layer->id_name_prefix = id_name_prefix;
+
     return label_layer;
 }
 
-LabelLayer *create_label_layer_from_line_stream(LineStream *line_stream)
+LabelLayer *create_label_layer_from_line_stream(LineStream *line_stream, const char *id_name_prefix)
 {
     trace_assert(line_stream);
-    LabelLayer *label_layer = create_label_layer();
+    LabelLayer *label_layer = create_label_layer(id_name_prefix);
 
     if (label_layer == NULL) {
         RETURN_LT(label_layer->lt, NULL);
@@ -425,10 +429,9 @@ int label_layer_add_label(LabelLayer *label_layer,
 
     // TODO(#982): id generation code is duplicated in label_layer, point_layer and rect_layer
     char id[LABEL_LAYER_ID_MAX_SIZE];
-    for (size_t i = 0; i < LABEL_LAYER_ID_MAX_SIZE - 1; ++i) {
-        id[i] = (char) ('a' + rand() % ('z' - 'a' + 1));
-    }
-    id[LABEL_LAYER_ID_MAX_SIZE - 1] = '\0';
+    snprintf(id, LABEL_LAYER_ID_MAX_SIZE, "%s_%d",
+             label_layer->id_name_prefix,
+             label_layer->id_name_counter++);
 
     size_t n = dynarray_count(label_layer->ids);
 
