@@ -278,30 +278,31 @@ static int game_event_running(Game *game, const SDL_Event *event)
     trace_assert(game);
     trace_assert(event);
 
-    switch (event->type) {
-    case SDL_KEYDOWN: {
-        switch (event->key.keysym.sym) {
-        case SDLK_r: {
-            game->level = RESET_LT(
-                game->lt,
-                game->level,
-                create_level_from_level_editor(
-                    game->level_editor,
-                    game->broadcast));
-            if (game->level == NULL) {
-                game_switch_state(game, GAME_STATE_QUIT);
-                return -1;
+    if (!SDL_IsTextInputActive()) {
+        switch (event->type) {
+        case SDL_KEYDOWN: {
+            switch (event->key.keysym.sym) {
+            case SDLK_r: {
+                game->level = RESET_LT(
+                    game->lt,
+                    game->level,
+                    create_level_from_level_editor(
+                        game->level_editor,
+                        game->broadcast));
+                if (game->level == NULL) {
+                    game_switch_state(game, GAME_STATE_QUIT);
+                    return -1;
+                }
+
+                camera_disable_debug_mode(&game->camera);
+            } break;
+
+            case SDLK_TAB: {
+                game_switch_state(game, GAME_STATE_LEVEL_EDITOR);
+            } break;
             }
-
-            camera_disable_debug_mode(&game->camera);
-        } break;
-
-        case SDLK_TAB: {
-            game_switch_state(game, GAME_STATE_LEVEL_EDITOR);
         } break;
         }
-    } break;
-
     }
 
     return level_event(game->level, event, &game->camera, game->sound_samples);

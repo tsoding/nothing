@@ -35,8 +35,7 @@
 #define JOYSTICK_THRESHOLD 1000
 
 typedef enum {
-    LEVEL_STATE_RUNNING = 0,
-    LEVEL_STATE_CONSOLE,
+    LEVEL_STATE_IDLE = 0,
     LEVEL_STATE_PAUSE
 } LevelState;
 
@@ -58,6 +57,7 @@ struct Level
     Regions *regions;
     Script *supa_script;
     Console *console;
+    int console_enabled;
 };
 
 Level *create_level_from_level_editor(const LevelEditor *level_editor,
@@ -227,7 +227,7 @@ int level_render(const Level *level, const Camera *camera)
         return -1;
     }
 
-    if (level->state == LEVEL_STATE_CONSOLE) {
+    if (level->console_enabled) {
         if (console_render(level->console, camera) < 0) {
             return -1;
         }
@@ -240,6 +240,12 @@ int level_update(Level *level, float delta_time)
 {
     trace_assert(level);
     trace_assert(delta_time > 0);
+
+    if (level->console_enabled) {
+        if (console_update(level->console, delta_time) < 0) {
+            return -1;
+        }
+    }
 
     if (level->state == LEVEL_STATE_PAUSE) {
         return 0;
@@ -262,43 +268,12 @@ int level_update(Level *level, float delta_time)
     lava_update(level->lava, delta_time);
     labels_update(level->labels, delta_time);
 
-    if (level->state == LEVEL_STATE_CONSOLE) {
-        if (console_update(level->console, delta_time) < 0) {
-            return -1;
-        }
-    }
-
     return 0;
 }
 
 static
-int level_event_console(Level *level, const SDL_Event *event)
-{
-    trace_assert(level);
-    trace_assert(event);
-
-    switch (event->type) {
-    case SDL_KEYDOWN:
-        switch (event->key.keysym.sym) {
-        case SDLK_ESCAPE:
-            SDL_StopTextInput();
-            level->state = LEVEL_STATE_RUNNING;
-            return 0;
-
-        default: {}
-        }
-
-    default: {}
-    }
-
-    console_handle_event(level->console, event);
-
-    return 0;
-}
-
-static
-int level_event_running(Level *level, const SDL_Event *event,
-                        Camera *camera, Sound_samples *sound_samples)
+int level_event_idle(Level *level, const SDL_Event *event,
+                     Camera *camera, Sound_samples *sound_samples)
 {
     trace_assert(level);
 
@@ -323,17 +298,6 @@ int level_event_running(Level *level, const SDL_Event *event,
         }
         break;
 
-    case SDL_KEYUP: {
-        switch (event->key.keysym.sym) {
-        case SDLK_BACKQUOTE:
-        case SDLK_c: {
-            SDL_StartTextInput();
-            level->state = LEVEL_STATE_CONSOLE;
-            console_slide_down(level->console);
-        } break;
-        }
-    } break;
-
     case SDL_JOYBUTTONDOWN:
         if (event->jbutton.button == 1) {
             player_jump(level->player, level->supa_script);
@@ -354,7 +318,7 @@ int level_event_pause(Level *level, const SDL_Event *event,
     case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
         case SDLK_p: {
-            level->state = LEVEL_STATE_RUNNING;
+            level->state = LEVEL_STATE_IDLE;
             camera->blackwhite_mode = false;
             sound_samples_toggle_pause(sound_samples);
         } break;
@@ -365,23 +329,63 @@ int level_event_pause(Level *level, const SDL_Event *event,
     return 0;
 }
 
+static
+int level_event_console(Level *level, const SDL_Event *event)
+{
+    trace_assert(level);
+    trace_assert(event);
+
+    if (level->console_enabled) {
+        switch (event->type) {
+        case SDL_KEYDOWN:
+            switch (event->key.keysym.sym) {
+            case SDLK_ESCAPE:
+                SDL_StopTextInput();
+                level->console_enabled = 0;
+                return 0;
+
+            default: {}
+            }
+
+        default: {}
+        }
+    } else {
+        switch (event->type) {
+        case SDL_KEYUP: {
+            switch (event->key.keysym.sym) {
+            case SDLK_BACKQUOTE:
+            case SDLK_c: {
+                SDL_StartTextInput();
+                level->console_enabled = 1;
+                console_slide_down(level->console);
+            } break;
+            }
+        } break;
+        }
+    }
+
+    return console_handle_event(level->console, event);
+}
+
 int level_event(Level *level, const SDL_Event *event,
                 Camera *camera, Sound_samples *sound_samples)
 {
     trace_assert(level);
     trace_assert(event);
 
+    level_event_console(level, event);
+
+    if (level->console_enabled) {
+        return 0;
+    }
+
     switch (level->state) {
-    case LEVEL_STATE_RUNNING: {
-        return level_event_running(level, event, camera, sound_samples);
+    case LEVEL_STATE_IDLE: {
+        return level_event_idle(level, event, camera, sound_samples);
     } break;
 
     case LEVEL_STATE_PAUSE: {
         return level_event_pause(level, event, camera, sound_samples);
-    } break;
-
-    case LEVEL_STATE_CONSOLE: {
-        return level_event_console(level, event);
     } break;
     }
 
@@ -394,6 +398,10 @@ int level_input(Level *level,
 {
     trace_assert(level);
     trace_assert(keyboard_state);
+
+    if (level->console_enabled) {
+        return 0;
+    }
 
     if (level->state == LEVEL_STATE_PAUSE) {
         return 0;
