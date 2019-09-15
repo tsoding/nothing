@@ -395,7 +395,7 @@ int level_input(Level *level,
     trace_assert(level);
     trace_assert(keyboard_state);
 
-    if (level->state == LEVEL_STATE_PAUSE) {
+    if (level->state != LEVEL_STATE_RUNNING) {
         return 0;
     }
 
