@@ -404,6 +404,13 @@ int game_event(Game *game, const SDL_Event *event)
         game->cursor_x = event->motion.x;
         game->cursor_y = event->motion.y;
     } break;
+
+    case SDL_KEYDOWN: {
+        if (event->key.keysym.sym == SDLK_q && event->key.keysym.mod & KMOD_CTRL) {
+            game_switch_state(game, GAME_STATE_QUIT);
+            return 0;
+        }
+    } break;
     }
 
     switch (game->state) {
