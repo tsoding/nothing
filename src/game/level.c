@@ -241,7 +241,7 @@ int level_update(Level *level, float delta_time)
     trace_assert(level);
     trace_assert(delta_time > 0);
 
-    if (level->state == LEVEL_STATE_PAUSE) {
+    if (level->state == LEVEL_STATE_PAUSE || level->state == LEVEL_STATE_CONSOLE) {
         return 0;
     }
 
