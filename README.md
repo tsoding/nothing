@@ -123,17 +123,18 @@ $ ../build/nothing
 
 #### Keyboard
 
-| Key     | Action                                                      |
-|---------|-------------------------------------------------------------|
-| `d`     | Move to the right                                           |
-| `a`     | Move to the left                                            |
-| `SPACE` | Jump                                                        |
-| `c`     | Open debug console                                          |
-| `r`     | Reload the current level including the Player's position    |
-| `q`     | Reload the current level preserving the Player's position   |
-| `p`     | Toggle game pause                                           |
-| `l`     | Toggle transparency on objects. Useful for debugging levels |
-| `TAB`   | Switch to Level Editor                                      |
+| Key      | Action                                                      |
+|----------|-------------------------------------------------------------|
+| `d`      | Move to the right                                           |
+| `a`      | Move to the left                                            |
+| `SPACE`  | Jump                                                        |
+| `c`      | Open debug console                                          |
+| `r`      | Reload the current level including the Player's position    |
+| `q`      | Reload the current level preserving the Player's position   |
+| `p`      | Toggle game pause                                           |
+| `l`      | Toggle transparency on objects. Useful for debugging levels |
+| `TAB`    | Switch to Level Editor                                      |
+| `CTRL+q` | Quit the game                                               |
 
 #### Gamepad
 
