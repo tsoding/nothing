@@ -152,6 +152,14 @@ $ ../build/nothing
 
 <!-- TODO(#914): Level Editor is not documented -->
 
+### Level Editor
+
+To access the Level Editor open a level and press `TAB`.
+
+| Key  | Action                 |
+|------|------------------------|
+| `F2` | Rename selected object |
+
 ## Support
 
 You can support my work via
