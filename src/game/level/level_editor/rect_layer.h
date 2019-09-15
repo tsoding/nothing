@@ -9,8 +9,10 @@ typedef struct RectLayer RectLayer;
 typedef struct LineStream LineStream;
 
 LayerPtr rect_layer_as_layer(RectLayer *layer);
-RectLayer *create_rect_layer(void);
-RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream);
+// NOTE: create_rect_layer and create_rect_layer_from_line_stream does
+// not own id_name_prefix
+RectLayer *create_rect_layer(const char *id_name_prefix);
+RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream, const char *id_name_prefix);
 void destroy_rect_layer(RectLayer *layer);
 
 int rect_layer_render(const RectLayer *layer, const Camera *camera, int active);

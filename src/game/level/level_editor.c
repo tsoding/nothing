@@ -68,7 +68,7 @@ LevelEditor *create_level_editor(void)
 
     level_editor->platforms_layer = PUSH_LT(
         lt,
-        create_rect_layer(),
+        create_rect_layer("platform"),
         destroy_rect_layer);
     if (level_editor->platforms_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -84,7 +84,7 @@ LevelEditor *create_level_editor(void)
 
     level_editor->lava_layer = PUSH_LT(
         lt,
-        create_rect_layer(),
+        create_rect_layer("lava"),
         destroy_rect_layer);
     if (level_editor->lava_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -92,7 +92,7 @@ LevelEditor *create_level_editor(void)
 
     level_editor->back_platforms_layer = PUSH_LT(
         lt,
-        create_rect_layer(),
+        create_rect_layer("back_platform"),
         destroy_rect_layer);
     if (level_editor->back_platforms_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -100,7 +100,7 @@ LevelEditor *create_level_editor(void)
 
     level_editor->boxes_layer = PUSH_LT(
         lt,
-        create_rect_layer(),
+        create_rect_layer("box"),
         destroy_rect_layer);
     if (level_editor->boxes_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -116,7 +116,7 @@ LevelEditor *create_level_editor(void)
 
     level_editor->regions_layer = PUSH_LT(
         lt,
-        create_rect_layer(),
+        create_rect_layer("region"),
         destroy_rect_layer);
     if (level_editor->regions_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -210,7 +210,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->platforms_layer =
         PUSH_LT(
             lt,
-            create_rect_layer_from_line_stream(level_stream),
+            create_rect_layer_from_line_stream(level_stream, "platform"),
             destroy_rect_layer);
     if (level_editor->platforms_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -227,7 +227,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->lava_layer =
         PUSH_LT(
             lt,
-            create_rect_layer_from_line_stream(level_stream),
+            create_rect_layer_from_line_stream(level_stream, "lava"),
             destroy_rect_layer);
     if (level_editor->lava_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -236,7 +236,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->back_platforms_layer =
         PUSH_LT(
             lt,
-            create_rect_layer_from_line_stream(level_stream),
+            create_rect_layer_from_line_stream(level_stream, "back_platform"),
             destroy_rect_layer);
     if (level_editor->back_platforms_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -245,7 +245,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->boxes_layer =
         PUSH_LT(
             lt,
-            create_rect_layer_from_line_stream(level_stream),
+            create_rect_layer_from_line_stream(level_stream, "box"),
             destroy_rect_layer);
     if (level_editor->boxes_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -263,7 +263,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->regions_layer =
         PUSH_LT(
             lt,
-            create_rect_layer_from_line_stream(level_stream),
+            create_rect_layer_from_line_stream(level_stream, "region"),
             destroy_rect_layer);
     if (level_editor->regions_layer == NULL) {
         RETURN_LT(lt, NULL);
