@@ -108,7 +108,7 @@ LevelEditor *create_level_editor(void)
 
     level_editor->label_layer = PUSH_LT(
         lt,
-        create_label_layer(),
+        create_label_layer("label"),
         destroy_label_layer);
     if (level_editor->label_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -254,7 +254,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->label_layer =
         PUSH_LT(
             lt,
-            create_label_layer_from_line_stream(level_stream),
+            create_label_layer_from_line_stream(level_stream, "label"),
             destroy_label_layer);
     if (level_editor->label_layer == NULL) {
         RETURN_LT(lt, NULL);
