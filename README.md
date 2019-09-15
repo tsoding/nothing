@@ -62,7 +62,7 @@ $ mkdir build
 $ cd build/
 $ cmake ..
 $ make
-$ cd ../data/
+$ cd ../assets/
 $ ../build/nothing
 ```
 
@@ -82,7 +82,7 @@ $ ../build/nothing
 > cd build
 > cmake ..
 > cmake --build .
-> cd ../data/
+> cd ../assets/
 > ..\build\nothing
 ```
 
@@ -97,7 +97,7 @@ $ rm SDL2-devel-2.0.10-mingw.tar.gz
 $ mkdir build && cd build
 $ cmake .. -G "MSYS Makefiles"
 $ cmake --build .
-$ cd ../data/
+$ cd ../assets/
 $ ../build/nothing
 ```
 
@@ -113,7 +113,7 @@ $ ../build/nothing
 > cd build
 > cmake .. -G "MinGW Makefiles"
 > cmake --build .
-> cd ../data/
+> cd ../assets/
 > ..\build\nothing
 ```
 
