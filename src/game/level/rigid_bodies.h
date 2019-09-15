@@ -4,7 +4,6 @@
 #include "math/mat3x3.h"
 
 typedef struct RigidBodies RigidBodies;
-typedef struct Camera Camera;
 typedef struct Platforms Platforms;
 typedef struct LineStream LineStream;
 
@@ -23,7 +22,7 @@ int rigid_bodies_update(RigidBodies *rigid_bodies,
 int rigid_bodies_render(RigidBodies *rigid_bodies,
                         RigidBodyId id,
                         Color color,
-                        Camera *camera);
+                        const Camera *camera);
 RigidBodyId rigid_bodies_add(RigidBodies *rigid_bodies,
                              Rect rect);
 void rigid_bodies_remove(RigidBodies *rigid_bodies,

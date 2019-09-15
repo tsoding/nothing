@@ -332,7 +332,7 @@ void destroy_edit_field(Edit_field *edit_field)
 }
 
 int edit_field_render_screen(const Edit_field *edit_field,
-                             Camera *camera,
+                             const Camera *camera,
                              Point screen_position)
 {
     trace_assert(edit_field);
@@ -365,7 +365,7 @@ int edit_field_render_screen(const Edit_field *edit_field,
 }
 
 int edit_field_render_world(const Edit_field *edit_field,
-                            Camera *camera,
+                            const Camera *camera,
                             Point world_position)
 {
     trace_assert(edit_field);

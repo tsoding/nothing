@@ -98,7 +98,7 @@ void destroy_player(Player * player)
 }
 
 int player_render(const Player * player,
-                  Camera *camera)
+                  const Camera *camera)
 {
     trace_assert(player);
     trace_assert(camera);

@@ -15,7 +15,7 @@ Wavy_rect *create_wavy_rect_from_line_stream(LineStream *line_stream);
 void destroy_wavy_rect(Wavy_rect *wavy_rect);
 
 int wavy_rect_render(const Wavy_rect *wavy_rect,
-                     Camera *camera);
+                     const Camera *camera);
 int wavy_rect_update(Wavy_rect *wavy_rect,
                      float delta_time);
 

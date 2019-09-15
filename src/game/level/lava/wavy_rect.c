@@ -67,7 +67,7 @@ void destroy_wavy_rect(Wavy_rect *wavy_rect)
 }
 
 int wavy_rect_render(const Wavy_rect *wavy_rect,
-                     Camera *camera)
+                     const Camera *camera)
 {
     trace_assert(wavy_rect);
     trace_assert(camera);

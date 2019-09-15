@@ -3,7 +3,7 @@
 #include "game/camera.h"
 #include "./slider.h"
 
-int slider_render(const Slider *slider, Camera *camera, Rect boundary)
+int slider_render(const Slider *slider, const Camera *camera, Rect boundary)
 {
     trace_assert(slider);
     trace_assert(camera);

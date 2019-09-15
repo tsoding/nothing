@@ -14,7 +14,7 @@ Explosion *create_explosion(Color color,
 void destroy_explosion(Explosion *explosion);
 
 int explosion_render(const Explosion *explosion,
-                     Camera *camera);
+                     const Camera *camera);
 int explosion_update(Explosion *explosion,
                      float delta_time);
 

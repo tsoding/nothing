@@ -255,7 +255,7 @@ void destroy_label_layer(LabelLayer *label_layer)
 }
 
 int label_layer_render(const LabelLayer *label_layer,
-                       Camera *camera,
+                       const Camera *camera,
                        int active)
 {
     trace_assert(label_layer);

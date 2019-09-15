@@ -61,7 +61,7 @@ void destroy_platforms(Platforms *platforms)
 
 /* TODO(#450): platforms do not render their ids in debug mode */
 int platforms_render(const Platforms *platforms,
-                     Camera *camera)
+                     const Camera *camera)
 {
     for (size_t i = 0; i < platforms->rects_size; ++i) {
         if (camera_fill_rect(

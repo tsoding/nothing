@@ -45,18 +45,17 @@ struct Console
     Console_Log *console_log;
     History *history;
     float a;
-    char *eval_result;
 };
 
 /* TODO(#356): Console does not support autocompletion */
 /* TODO(#357): Console does not show the state of the GC of the script */
 /* TODO(#358): Console does not support copy, cut, paste operations */
 
-Console *create_console(Broadcast *broadcast,
-                        const Sprite_font *font)
+Console *create_console(Broadcast *broadcast)
 {
-    Lt *lt = create_lt();
+    trace_assert(broadcast);
 
+    Lt *lt = create_lt();
 
     Console *console = PUSH_LT(lt, nth_calloc(1, sizeof(Console)), free);
     if (console == NULL) {
@@ -91,21 +90,11 @@ Console *create_console(Broadcast *broadcast,
     console->console_log = PUSH_LT(
         lt,
         create_console_log(
-            font,
             vec(FONT_WIDTH_SCALE, FONT_HEIGHT_SCALE),
             CONSOLE_LOG_CAPACITY),
         destroy_console_log);
 
     console->a = 0;
-
-    console->eval_result = PUSH_LT(
-        lt,
-        nth_calloc(1, sizeof(char) * CONSOLE_EVAL_RESULT_SIZE),
-        free);
-    if (console->eval_result == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    memset(console->eval_result, 0, sizeof(char) * CONSOLE_EVAL_RESULT_SIZE);
 
     console->history = PUSH_LT(
         lt,
@@ -156,18 +145,20 @@ static int console_eval_input(Console *console)
             &console->scope,
             parse_result.expr);
 
+        char buffer[CONSOLE_EVAL_RESULT_SIZE];
+
         if (expr_as_sexpr(
                 eval_result.expr,
-                console->eval_result,
+                buffer,
                 CONSOLE_EVAL_RESULT_SIZE) < 0) {
             return -1;
         }
 
         if (console_log_push_line(console->console_log,
-                          console->eval_result,
-                          eval_result.is_error ?
-                          CONSOLE_ERROR :
-                          CONSOLE_FOREGROUND)) {
+                                  buffer,
+                                  eval_result.is_error ?
+                                  CONSOLE_ERROR :
+                                  CONSOLE_FOREGROUND)) {
             return -1;
         }
 
@@ -228,26 +219,26 @@ int console_handle_event(Console *console,
 }
 
 int console_render(const Console *console,
-                   Camera *camera,
-                   SDL_Renderer *renderer)
+                   const Camera *camera)
 {
     /* TODO(#364): console doesn't have any padding around the edit fields */
     SDL_Rect view_port;
-    SDL_RenderGetViewport(renderer, &view_port);
+    SDL_RenderGetViewport(camera->renderer, &view_port);
 
     const float e = console->a * (2 - console->a);
     const float y = -(1.0f - e) * CONSOLE_HEIGHT;
 
-    if (fill_rect(renderer,
-                  rect(0.0f, y,
-                       (float) view_port.w,
-                       CONSOLE_HEIGHT),
-                  CONSOLE_BACKGROUND) < 0) {
+    if (camera_fill_rect_screen(
+            camera,
+            rect(0.0f, y,
+                 (float) view_port.w,
+                 CONSOLE_HEIGHT),
+            CONSOLE_BACKGROUND) < 0) {
         return -1;
     }
 
     if (console_log_render(console->console_log,
-                           renderer,
+                           camera,
                            vec(0.0f, y)) < 0) {
         return -1;
     }

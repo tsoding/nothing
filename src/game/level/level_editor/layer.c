@@ -6,7 +6,7 @@
 #include "background_layer.h"
 #include "./layer.h"
 
-int layer_render(LayerPtr layer, Camera *camera, int active)
+int layer_render(LayerPtr layer, const Camera *camera, int active)
 {
     switch (layer.type) {
     case LAYER_RECT:

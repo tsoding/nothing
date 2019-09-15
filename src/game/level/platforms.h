@@ -14,7 +14,7 @@ Platforms *create_platforms_from_rect_layer(const RectLayer *layer);
 void destroy_platforms(Platforms *platforms);
 
 int platforms_render(const Platforms *platforms,
-                     Camera *camera);
+                     const Camera *camera);
 
 void platforms_touches_rect_sides(const Platforms *platforms,
                                   Rect object,

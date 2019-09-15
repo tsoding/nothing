@@ -83,7 +83,7 @@ LayerPtr player_layer_as_layer(PlayerLayer *player_layer)
 }
 
 int player_layer_render(const PlayerLayer *player_layer,
-                        Camera *camera,
+                        const Camera *camera,
                         int active)
 {
     trace_assert(player_layer);

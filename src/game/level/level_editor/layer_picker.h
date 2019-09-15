@@ -1,8 +1,9 @@
 #ifndef LAYER_PICKER_H_
 #define LAYER_PICKER_H_
 
+#include "game/camera.h"
+
 typedef struct RectLayer RectLayer;
-typedef struct Camera Camera;
 
 typedef enum {
     LAYER_PICKER_BACKGROUND = 0,
@@ -19,7 +20,7 @@ typedef enum {
 } LayerPicker;
 
 int layer_picker_render(const LayerPicker *layer_picker,
-                        Camera *camera);
+                        const Camera *camera);
 int layer_picker_event(LayerPicker *layer_picker,
                        const SDL_Event *event,
                        const Camera *camera,

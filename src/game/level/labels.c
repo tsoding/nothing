@@ -203,7 +203,7 @@ void destroy_labels(Labels *label)
 }
 
 int labels_render(const Labels *label,
-                 Camera *camera)
+                  const Camera *camera)
 {
     trace_assert(label);
     trace_assert(camera);

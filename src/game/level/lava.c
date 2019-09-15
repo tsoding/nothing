@@ -92,7 +92,7 @@ void destroy_lava(Lava *lava)
 
 /* TODO(#449): lava does not render its id in debug mode */
 int lava_render(const Lava *lava,
-                Camera *camera)
+                const Camera *camera)
 {
     trace_assert(lava);
     trace_assert(camera);

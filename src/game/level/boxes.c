@@ -86,7 +86,7 @@ void destroy_boxes(Boxes *boxes)
     RETURN_LT0(boxes->lt);
 }
 
-int boxes_render(Boxes *boxes, Camera *camera)
+int boxes_render(Boxes *boxes, const Camera *camera)
 {
     trace_assert(boxes);
     trace_assert(camera);

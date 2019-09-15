@@ -33,7 +33,7 @@ int background_layer_read_from_line_stream(BackgroundLayer *layer,
 }
 
 int background_layer_render(BackgroundLayer *layer,
-                            Camera *camera,
+                            const Camera *camera,
                             int active)
 {
     trace_assert(layer);

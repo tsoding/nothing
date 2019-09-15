@@ -60,7 +60,7 @@ void destroy_explosion(Explosion *explosion)
 }
 
 int explosion_render(const Explosion *explosion,
-                     Camera *camera)
+                     const Camera *camera)
 {
     trace_assert(explosion);
     trace_assert(camera);

@@ -3,16 +3,16 @@
 
 #include <SDL.h>
 
+#include "game/camera.h"
+
 typedef struct LevelPicker LevelPicker;
-typedef struct Camera Camera;
 typedef struct Sprite_font Sprite_font;
 
 LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dirpath);
 void destroy_level_picker(LevelPicker *level_picker);
 
 int level_picker_render(const LevelPicker *level_picker,
-                        Camera *camera,
-                        SDL_Renderer *renderer);
+                        const Camera *camera);
 int level_picker_update(LevelPicker *level,
                         float delta_time);
 int level_picker_event(LevelPicker *level_picker,

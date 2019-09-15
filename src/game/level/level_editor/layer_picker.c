@@ -60,7 +60,7 @@ inline static float layer_picker_max_width(void)
 #define LAYER_CELL_OW_RATIO (LAYER_SELECTED_OFFSET / LAYER_CELL_WIDTH)
 
 int layer_picker_render(const LayerPicker *layer_picker,
-                        Camera *camera)
+                        const Camera *camera)
 {
     trace_assert(layer_picker);
     trace_assert(camera);

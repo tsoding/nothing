@@ -206,7 +206,7 @@ int rigid_bodies_update(RigidBodies *rigid_bodies,
 int rigid_bodies_render(RigidBodies *rigid_bodies,
                         RigidBodyId id,
                         Color color,
-                        Camera *camera)
+                        const Camera *camera)
 {
     trace_assert(rigid_bodies);
     trace_assert(camera);
