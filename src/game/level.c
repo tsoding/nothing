@@ -281,6 +281,7 @@ int level_event_idle(Level *level, const SDL_Event *event,
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
         case SDLK_w:
+        case SDLK_UP:
         case SDLK_SPACE: {
             player_jump(level->player, level->supa_script);
         } break;
@@ -407,9 +408,9 @@ int level_input(Level *level,
         return 0;
     }
 
-    if (keyboard_state[SDL_SCANCODE_A]) {
+    if (keyboard_state[SDL_SCANCODE_A] || keyboard_state[SDL_SCANCODE_LEFT]) {
         player_move_left(level->player);
-    } else if (keyboard_state[SDL_SCANCODE_D]) {
+    } else if (keyboard_state[SDL_SCANCODE_D] || keyboard_state[SDL_SCANCODE_RIGHT]) {
         player_move_right(level->player);
     } else if (the_stick_of_joy && SDL_JoystickGetAxis(the_stick_of_joy, 0) < -JOYSTICK_THRESHOLD) {
         player_move_left(level->player);
