@@ -305,6 +305,7 @@ int level_event_running(Level *level, const SDL_Event *event,
     switch (event->type) {
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
+        case SDLK_w:
         case SDLK_SPACE: {
             player_jump(level->player, level->supa_script);
         } break;
