@@ -44,6 +44,9 @@ struct PointLayer
     Point inter_position;
     Color inter_color;
     Edit_field *edit_field;
+
+    int id_name_counter;
+    const char *id_name_prefix;
 };
 
 typedef enum {
@@ -133,7 +136,7 @@ LayerPtr point_layer_as_layer(PointLayer *point_layer)
     return layer;
 }
 
-PointLayer *create_point_layer(void)
+PointLayer *create_point_layer(const char *id_name_prefix)
 {
     Lt *lt = create_lt();
 
@@ -170,14 +173,17 @@ PointLayer *create_point_layer(void)
         RETURN_LT(lt, NULL);
     }
 
+    point_layer->id_name_prefix = id_name_prefix;
+
     return point_layer;
 }
 
-PointLayer *create_point_layer_from_line_stream(LineStream *line_stream)
+PointLayer *create_point_layer_from_line_stream(LineStream *line_stream,
+                                                const char *id_name_prefix)
 {
     trace_assert(line_stream);
 
-    PointLayer *point_layer = create_point_layer();
+    PointLayer *point_layer = create_point_layer(id_name_prefix);
 
     size_t count = 0;
     if (sscanf(
@@ -331,10 +337,9 @@ int point_layer_add_element(PointLayer *point_layer,
     trace_assert(undo_history);
 
     char id[ID_MAX_SIZE];
-    for (size_t i = 0; i < ID_MAX_SIZE - 1; ++i) {
-        id[i] = (char) ('a' + rand() % ('z' - 'a' + 1));
-    }
-    id[ID_MAX_SIZE - 1] = '\0';
+    snprintf(id, ID_MAX_SIZE, "%s_%d",
+             point_layer->id_name_prefix,
+             point_layer->id_name_counter++);
 
     dynarray_push(point_layer->positions, &position);
     dynarray_push(point_layer->colors, &color);

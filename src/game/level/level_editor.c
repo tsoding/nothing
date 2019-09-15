@@ -76,7 +76,7 @@ LevelEditor *create_level_editor(void)
 
     level_editor->goals_layer = PUSH_LT(
         lt,
-        create_point_layer(),
+        create_point_layer("goal"),
         destroy_point_layer);
     if (level_editor->goals_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -218,7 +218,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
 
     level_editor->goals_layer = PUSH_LT(
         lt,
-        create_point_layer_from_line_stream(level_stream),
+        create_point_layer_from_line_stream(level_stream, "goal"),
         destroy_point_layer);
     if (level_editor->goals_layer == NULL) {
         RETURN_LT(lt, NULL);
