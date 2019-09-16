@@ -11,6 +11,7 @@
 #include "system/log.h"
 #include "game/level_folder.h"
 #include "ui/wiggly_text.h"
+#include "ui/slider.h"
 
 #define TITLE_MARGIN_TOP 100.0f
 #define TITLE_MARGIN_BOTTOM 100.0f
@@ -22,6 +23,8 @@ struct LevelPicker
     Vec camera_position;
     LevelFolder *level_folder;
     WigglyText wiggly_text;
+    Slider volume_slider;
+    Vec volume_slider_scale;
     ListSelector *list_selector;
 };
 
@@ -63,6 +66,13 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
         .scale = {10.0f, 10.0f},
         .color = COLOR_WHITE,
     };
+
+    level_picker->volume_slider = (Slider) {
+                                     .drag = 0,
+                                     .value = 80.0f,
+                                     .max_value = 100.0f,
+    };
+    level_picker->volume_slider_scale = vec(0.25f, 0.10f);
 
     level_picker->list_selector = PUSH_LT(
         lt,
@@ -128,6 +138,21 @@ int level_picker_render(const LevelPicker *level_picker,
         }
     }
 
+    {
+      //////////////////////////////////////////////////////////////////////////////////////////
+        /* CSS volume */
+        const Rect position = {
+          .w = viewport.w * level_picker->volume_slider_scale.x,
+          .h = viewport.h * level_picker->volume_slider_scale.y,
+          .x = viewport.w - viewport.w * level_picker->volume_slider_scale.x,
+          .y = viewport.h - viewport.h * level_picker->volume_slider_scale.y,
+        };
+
+        /* HTML volume */
+        if (slider_render(&level_picker->volume_slider, camera, position) < 0) {
+            return -1;
+        }
+    }
     return 0;
 }
 
@@ -153,6 +178,26 @@ int level_picker_event(LevelPicker *level_picker,
     trace_assert(level_picker);
     trace_assert(event);
 
+    {
+      const Rect viewport = camera_view_port_screen(camera);
+      const Rect position = {
+                             .w = viewport.w * level_picker->volume_slider_scale.x,
+                             .h = viewport.h * level_picker->volume_slider_scale.y,
+                             .x = viewport.w - viewport.w * level_picker->volume_slider_scale.x,
+                             .y = viewport.h - viewport.h * level_picker->volume_slider_scale.y,
+      };
+      int selected = 0;
+      if (slider_event(
+                &level_picker->volume_slider,
+                event,
+                position,
+                &selected) < 0) {
+        return -1;
+      }
+      if(selected){
+        return 0;
+      }
+    }
     switch (event->type) {
     case SDL_WINDOWEVENT: {
         switch (event->window.event) {
