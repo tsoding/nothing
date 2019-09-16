@@ -139,13 +139,12 @@ int level_picker_render(const LevelPicker *level_picker,
     }
 
     {
-      //////////////////////////////////////////////////////////////////////////////////////////
         /* CSS volume */
         const Rect position = {
           .w = viewport.w * level_picker->volume_slider_scale.x,
           .h = viewport.h * level_picker->volume_slider_scale.y,
-          .x = viewport.w - viewport.w * level_picker->volume_slider_scale.x,
-          .y = viewport.h - viewport.h * level_picker->volume_slider_scale.y,
+          .x = viewport.w - viewport.w * level_picker->volume_slider_scale.x - 5.0f,
+          .y = viewport.h - viewport.h * level_picker->volume_slider_scale.y - 5.0f,
         };
 
         /* HTML volume */
@@ -183,8 +182,8 @@ int level_picker_event(LevelPicker *level_picker,
       const Rect position = {
                              .w = viewport.w * level_picker->volume_slider_scale.x,
                              .h = viewport.h * level_picker->volume_slider_scale.y,
-                             .x = viewport.w - viewport.w * level_picker->volume_slider_scale.x,
-                             .y = viewport.h - viewport.h * level_picker->volume_slider_scale.y,
+                             .x = viewport.w - viewport.w * level_picker->volume_slider_scale.x - 5.0f,
+                             .y = viewport.h - viewport.h * level_picker->volume_slider_scale.y - 5.0f,
       };
       int selected = 0;
       if (slider_event(
