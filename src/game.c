@@ -251,6 +251,7 @@ int game_update(Game *game, float delta_time)
                 return -1;
             }
 
+            //TODO: Move this function somewhere else to allow volume adjustment in game
             sound_samples_update_volume(game->sound_samples, level_picker_get_volume(game->level_picker));
             game_switch_state(game, GAME_STATE_LEVEL);
         }
