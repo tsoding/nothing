@@ -144,7 +144,7 @@ int level_picker_render(const LevelPicker *level_picker,
           .w = viewport.w * level_picker->volume_slider_scale.x,
           .h = viewport.h * level_picker->volume_slider_scale.y,
           .x = viewport.w - viewport.w * level_picker->volume_slider_scale.x - 5.0f,
-          .y = viewport.h - viewport.h * level_picker->volume_slider_scale.y - 5.0f,
+          .y = 5.0f,
         };
 
         /* HTML volume */
@@ -183,7 +183,7 @@ int level_picker_event(LevelPicker *level_picker,
                              .w = viewport.w * level_picker->volume_slider_scale.x,
                              .h = viewport.h * level_picker->volume_slider_scale.y,
                              .x = viewport.w - viewport.w * level_picker->volume_slider_scale.x - 5.0f,
-                             .y = viewport.h - viewport.h * level_picker->volume_slider_scale.y - 5.0f,
+                             .y = 5.0f,
       };
       int selected = 0;
       if (slider_event(
@@ -262,4 +262,10 @@ int level_picker_enter_camera_event(LevelPicker *level_picker,
 {
     camera_center_at(camera, level_picker->camera_position);
     return 0;
+}
+
+float level_picker_get_volume(LevelPicker *level_picker)
+{
+  trace_assert(level_picker);
+  return level_picker->volume_slider.value;
 }

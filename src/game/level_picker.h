@@ -27,4 +27,6 @@ int level_picker_enter_camera_event(LevelPicker *level_picker,
 const char *level_picker_selected_level(const LevelPicker *level_picker);
 void level_picker_clean_selection(LevelPicker *level_picker);
 
+float level_picker_get_volume(LevelPicker *level_picker);
+
 #endif  // LEVEL_PICKER_H_

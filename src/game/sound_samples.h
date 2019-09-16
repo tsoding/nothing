@@ -14,4 +14,7 @@ int sound_samples_play_sound(Sound_samples *sound_samples,
 
 int sound_samples_toggle_pause(Sound_samples *sound_samples);
 
+void sound_samples_update_volume(Sound_samples *sound_samples,
+                                 float volume);
+
 #endif  // SOUND_SAMPLES_H_

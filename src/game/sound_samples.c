@@ -20,6 +20,7 @@ struct Sound_samples
     uint32_t *audio_buf_size_array;
     size_t samples_count;
     int paused;
+    float volume;
 };
 
 static 
@@ -152,4 +153,11 @@ int sound_samples_toggle_pause(Sound_samples *sound_samples)
     trace_assert(sound_samples->dev);
     SDL_PauseAudioDevice(sound_samples->dev, sound_samples->paused);
     return 0;
+}
+
+void sound_samples_update_volume(Sound_samples *sound_samples,
+                                 float volume)
+{
+  trace_assert(sound_samples);
+  sound_samples->volume = volume;
 }
