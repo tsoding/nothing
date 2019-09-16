@@ -18,6 +18,7 @@ struct Sound_samples
     SDL_AudioDeviceID dev;
     uint8_t **audio_buf_array;
     uint32_t *audio_buf_size_array;
+    uint8_t **active_audio_buf_array;
     size_t samples_count;
     int paused;
     float volume;
@@ -85,6 +86,22 @@ int init_buffer_and_device(Sound_samples *sound_samples,
         }
     }
     
+    /* Allocating active audio buffer location*/
+    sound_samples->active_audio_buf_array = PUSH_LT(sound_samples->lt, nth_calloc(sound_samples->samples_count, sizeof(uint8_t*)), free);
+    if (sound_samples->active_audio_buf_array == NULL) {
+      log_fail("Failed to allocate memory for active audio buffer pointer array\n");
+      return -1;
+    }
+    for (size_t i = 0; i < sound_samples->samples_count; ++i) {
+      sound_samples->active_audio_buf_array[i] = PUSH_LT(sound_samples->lt, nth_calloc(sound_samples->audio_buf_size_array[i],
+                                                                                       sizeof(uint8_t)), free);
+      if (sound_samples->active_audio_buf_array == NULL) {
+        log_fail("Failed to allocate memory for active audio buffer array\n");
+        return -1;
+      }
+    }
+
+    /* Opening the device*/
     sound_samples->dev = SDL_OpenAudioDevice(NULL, 0, &destination_spec, NULL, 0);
     if (sound_samples->dev == 0) {
         log_fail("SDL_OpenAudioDevice failed: %s\n", SDL_GetError());
@@ -136,8 +153,19 @@ int sound_samples_play_sound(Sound_samples *sound_samples,
     trace_assert(sound_samples);
     trace_assert(sound_index < sound_samples->samples_count);
     trace_assert(sound_samples->dev);
+    /* Premix the audio volume */
+    memset(sound_samples->active_audio_buf_array[sound_index], 0, sound_samples->audio_buf_size_array[sound_index]);
+
+    //TODO: replace this linear scaling volume with logarithmic scale for better audio perception
+    SDL_MixAudioFormat(sound_samples->active_audio_buf_array[sound_index],
+                       sound_samples->audio_buf_array[sound_index],
+                       AUDIO_F32, //Hardcoded format just like in issue #1023
+                       sound_samples->audio_buf_size_array[sound_index],
+                       (int)((float)SDL_MIX_MAXVOLUME * sound_samples->volume / 100.0f));
+
+    /* Play the audio*/
     SDL_ClearQueuedAudio(sound_samples->dev);
-    if (SDL_QueueAudio(sound_samples->dev, sound_samples->audio_buf_array[sound_index], 
+    if (SDL_QueueAudio(sound_samples->dev, sound_samples->active_audio_buf_array[sound_index],
                 sound_samples->audio_buf_size_array[sound_index]) < 0) {
         log_warn("Failed to queue audio data of sound index %zu to device: %s\n", sound_index, SDL_GetError());
         return 0;
