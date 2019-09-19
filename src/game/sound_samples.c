@@ -157,7 +157,7 @@ int sound_samples_play_sound(Sound_samples *sound_samples,
     /* Premix the audio volume */
     memset(sound_samples->active_audio_buf_array[sound_index], 0, sound_samples->audio_buf_size_array[sound_index]);
 
-    //TODO: replace this linear scaling volume with logarithmic scale for better audio perception
+    //TODO(#1073): replace this linear scaling volume with logarithmic scale for better audio perception
     SDL_MixAudioFormat(sound_samples->active_audio_buf_array[sound_index],
                        sound_samples->audio_buf_array[sound_index],
                        AUDIO_F32, //Hardcoded format just like in issue #1023
