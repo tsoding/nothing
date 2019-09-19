@@ -87,7 +87,7 @@ int init_buffer_and_device(Sound_samples *sound_samples,
     }
     
     /* Allocating active audio buffer location*/
-    //TODO: Allocate one huge active audio buffer with length of the maximum of all audio buffer, instead of one active buffer for each audio
+    //TODO(#1072): Allocate one huge active audio buffer with length of the maximum of all audio buffer, instead of one active buffer for each audio
     sound_samples->active_audio_buf_array = PUSH_LT(sound_samples->lt, nth_calloc(sound_samples->samples_count, sizeof(uint8_t*)), free);
     if (sound_samples->active_audio_buf_array == NULL) {
       log_fail("Failed to allocate memory for active audio buffer pointer array\n");
