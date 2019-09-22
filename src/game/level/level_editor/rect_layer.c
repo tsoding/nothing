@@ -17,6 +17,8 @@
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
 #define CREATE_AREA_THRESHOLD 10.0
 
+// TODO(#1075): there is no way to modify z order in Rect, Point and Label Layers
+
 // TODO(#1051): RectLayer does not support copy-pasting
 
 static int clipboard = 0;
@@ -160,10 +162,10 @@ static int rect_layer_rect_at(RectLayer *layer, Vec position)
 {
     trace_assert(layer);
 
-    const size_t n = dynarray_count(layer->rects);
+    int n = (int) dynarray_count(layer->rects);
     Rect *rects = dynarray_data(layer->rects);
 
-    for (size_t i = 0; i < n; ++i) {
+    for (int i = n - 1; i >= 0; --i) {
         if (rect_contains_point(rects[i], position)) {
             return (int) i;
         }

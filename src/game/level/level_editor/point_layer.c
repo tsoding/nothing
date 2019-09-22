@@ -318,7 +318,7 @@ int point_layer_element_at(const PointLayer *point_layer,
     int n = (int) dynarray_count(point_layer->positions);
     Point *positions = dynarray_data(point_layer->positions);
 
-    for (int i = 0; i < n; ++i) {
+    for (int i = n - 1; i >= 0; --i) {
         if (vec_length(vec_sub(positions[i], position)) < POINT_LAYER_ELEMENT_RADIUS) {
             return i;
         }

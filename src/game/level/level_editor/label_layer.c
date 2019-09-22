@@ -373,12 +373,12 @@ int label_layer_element_at(LabelLayer *label_layer,
 {
     trace_assert(label_layer);
 
-    const size_t n = dynarray_count(label_layer->texts);
+    const int n = (int) dynarray_count(label_layer->texts);
     char *ids = dynarray_data(label_layer->ids);
     char *texts = dynarray_data(label_layer->texts);
     Point *positions = dynarray_data(label_layer->positions);
 
-    for (size_t i = 0; i < n; ++i) {
+    for (int i = n - 1; i >= 0; --i) {
         Rect boundary = rect_boundary2(
             sprite_font_boundary_box(
                 font,
@@ -394,7 +394,7 @@ int label_layer_element_at(LabelLayer *label_layer,
                 ids + i * LABEL_LAYER_ID_MAX_SIZE));
 
         if (rect_contains_point(boundary, position)) {
-            return (int) i;
+            return i;
         }
     }
 
