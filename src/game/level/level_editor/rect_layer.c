@@ -162,10 +162,10 @@ static int rect_layer_rect_at(RectLayer *layer, Vec position)
 {
     trace_assert(layer);
 
-    const ssize_t n = (ssize_t) dynarray_count(layer->rects);
+    int n = (int) dynarray_count(layer->rects);
     Rect *rects = dynarray_data(layer->rects);
 
-    for (ssize_t i = n - 1; i >= 0; --i) {
+    for (int i = n - 1; i >= 0; --i) {
         if (rect_contains_point(rects[i], position)) {
             return (int) i;
         }
