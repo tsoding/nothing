@@ -21,6 +21,9 @@ int dynarray_push_empty(Dynarray *dynarray);
 void dynarray_pop(Dynarray *dynarray, void *element);
 bool dynarray_contains(const Dynarray *dynarray,
                        const void *element);
+
+void dynarray_swap(Dynarray *dynarray, size_t i, size_t j);
+
 // O(N)
 void dynarray_delete_at(Dynarray *dynarray, size_t index);
 void dynarray_insert_before(Dynarray *dynarray, size_t index, void *element);
