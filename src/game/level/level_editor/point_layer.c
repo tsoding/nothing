@@ -52,9 +52,11 @@ struct PointLayer
 typedef enum {
     UNDO_ADD,
     UNDO_DELETE,
-    UNDO_UPDATE
+    UNDO_UPDATE,
+    UNDO_SWAP
 } UndoType;
 
+// TODO: Split PointLayer's UndoContext into a union of different structs?
 typedef struct {
     UndoType type;
     PointLayer *layer;
@@ -62,12 +64,29 @@ typedef struct {
     Color color;
     char id[ID_MAX_SIZE];
     size_t index;
+    size_t index2;
 } UndoContext;
+
+static
+UndoContext create_undo_swap_context(PointLayer *point_layer,
+                                     size_t index, size_t index2)
+{
+    UndoContext undo_context;
+    undo_context.type = UNDO_SWAP;
+    undo_context.layer = point_layer;
+    undo_context.index = index;
+    undo_context.index2 = index2;
+    return undo_context;
+}
 
 static
 UndoContext point_layer_create_undo_context(PointLayer *point_layer,
                                             UndoType type)
 {
+    trace_assert(type != UNDO_SWAP);
+
+    (void) create_undo_swap_context;
+
     UndoContext undo_context;
 
     size_t index =
@@ -114,6 +133,12 @@ void point_layer_undo(void *context, size_t context_size)
         dynarray_replace_at(point_layer->colors, undo_context->index, &undo_context->color);
         dynarray_replace_at(point_layer->ids, undo_context->index, &undo_context->id);
     } break;
+
+    case UNDO_SWAP: {
+        dynarray_swap(point_layer->positions, undo_context->index, undo_context->index2);
+        dynarray_swap(point_layer->colors, undo_context->index, undo_context->index2);
+        dynarray_swap(point_layer->ids, undo_context->index, undo_context->index2);
+    } break;
     }
 }
 
@@ -126,7 +151,6 @@ void point_layer_undo(void *context, size_t context_size)
             &context,                                                   \
             sizeof(context));                                           \
     } while(0)
-
 
 LayerPtr point_layer_as_layer(PointLayer *point_layer)
 {
