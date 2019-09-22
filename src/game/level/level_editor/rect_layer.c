@@ -248,7 +248,8 @@ static int rect_layer_rect_at(RectLayer *layer, Vec position)
     return -1;
 }
 
-static void rect_layer_swap_elements(RectLayer *layer, size_t a, size_t b)
+static void rect_layer_swap_elements(RectLayer *layer, size_t a, size_t b,
+                                     UndoHistory *undo_history)
 {
     trace_assert(layer);
     trace_assert(a < dynarray_count(layer->rects));
@@ -258,7 +259,7 @@ static void rect_layer_swap_elements(RectLayer *layer, size_t a, size_t b)
     dynarray_swap(layer->colors, a, b);
     dynarray_swap(layer->ids, a, b);
 
-    // TODO: rect_layer_swap_elements does not add action to Undo History
+    UNDO_PUSH(undo_history, create_undo_swap_context(layer, a, b));
 }
 
 static Rect rect_layer_resize_anchor(const Camera *camera, Rect boundary_rect)
@@ -367,15 +368,11 @@ static int rect_layer_event_idle(RectLayer *layer,
             if ((event->key.keysym.mod & KMOD_SHIFT)
                 && (layer->selection >= 0)
                 && ((size_t)(layer->selection + 1) < dynarray_count(layer->rects))) {
-                rect_layer_swap_elements(layer, (size_t) layer->selection, (size_t) layer->selection + 1);
-
-                UNDO_PUSH(
-                    undo_history,
-                    create_undo_swap_context(
-                        layer,
-                        (size_t) layer->selection,
-                        (size_t) layer->selection + 1));
-
+                rect_layer_swap_elements(
+                    layer,
+                    (size_t) layer->selection,
+                    (size_t) layer->selection + 1,
+                    undo_history);
                 layer->selection++;
             }
         } break;
@@ -384,15 +381,11 @@ static int rect_layer_event_idle(RectLayer *layer,
             if ((event->key.keysym.mod & KMOD_SHIFT)
                 && (layer->selection > 0)
                 && ((size_t) layer->selection < dynarray_count(layer->rects))) {
-                rect_layer_swap_elements(layer, (size_t) layer->selection, (size_t) layer->selection - 1);
-
-                UNDO_PUSH(
-                    undo_history,
-                    create_undo_swap_context(
-                        layer,
-                        (size_t) layer->selection,
-                        (size_t) layer->selection - 1));
-
+                rect_layer_swap_elements(
+                    layer,
+                    (size_t) layer->selection,
+                    (size_t) layer->selection - 1,
+                    undo_history);
                 layer->selection--;
             }
         } break;
