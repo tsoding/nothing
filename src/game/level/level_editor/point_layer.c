@@ -80,7 +80,7 @@ UndoContext create_undo_swap_context(PointLayer *point_layer,
 }
 
 static
-UndoContext point_layer_create_undo_context(PointLayer *point_layer,
+UndoContext create_undo_context(PointLayer *point_layer,
                                             UndoType type)
 {
     trace_assert(type != UNDO_SWAP);
@@ -372,7 +372,7 @@ int point_layer_add_element(PointLayer *point_layer,
 
     UNDO_PUSH(
         undo_history,
-        point_layer_create_undo_context(point_layer, UNDO_ADD));
+        create_undo_context(point_layer, UNDO_ADD));
 
     return 0;
 }
@@ -386,7 +386,7 @@ void point_layer_delete_nth_element(PointLayer *point_layer,
 
     UNDO_PUSH(
         undo_history,
-        point_layer_create_undo_context(
+        create_undo_context(
             point_layer,
             UNDO_DELETE));
 
@@ -516,7 +516,7 @@ int point_layer_edit_id_event(PointLayer *point_layer,
         case SDLK_RETURN: {
             UNDO_PUSH(
                 undo_history,
-                point_layer_create_undo_context(
+                create_undo_context(
                     point_layer,
                     UNDO_UPDATE));
 
@@ -563,7 +563,7 @@ int point_layer_move_event(PointLayer *point_layer,
             // TODO(#1014): just click (without moving) on the point creates an undo history entry
             UNDO_PUSH(
                 undo_history,
-                point_layer_create_undo_context(
+                create_undo_context(
                     point_layer,
                     UNDO_UPDATE));
 
@@ -611,7 +611,7 @@ int point_layer_recolor_event(PointLayer *point_layer,
         if (!color_picker_drag(&point_layer->color_picker)) {
             UNDO_PUSH(
                 undo_history,
-                point_layer_create_undo_context(
+                create_undo_context(
                     point_layer,
                     UNDO_UPDATE));
 
