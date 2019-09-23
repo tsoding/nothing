@@ -76,7 +76,7 @@ int background_render(const Background *background,
         return -1;
     }
 
-    // TODO: background rendering is broken
+    // TODO(#1086): background rendering is broken
     //   Broken by #1067
     const Rect view_port = camera_view_port(camera);
     const Vec position = vec(
