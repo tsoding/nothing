@@ -76,11 +76,15 @@ int background_render(const Background *background,
         return -1;
     }
 
+    // TODO(#1086): background rendering is broken
+    //   Broken by #1067
     const Rect view_port = camera_view_port(camera);
-    const Vec position = vec(view_port.x, view_port.y);
+    const Vec position = vec(
+        view_port.x - view_port.w * 0.5f,
+        view_port.y - view_port.h * 0.5f);
 
     for (int l = 0; l < 3; ++l) {
-        const float parallax = 1.0f - 0.2f * (float)l;
+        const float parallax = 1.0f - 0.2f * (float) l;
 
         int min_x = 0, min_y = 0;
         chunk_of_point(vec(view_port.x - position.x * parallax,

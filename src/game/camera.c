@@ -263,13 +263,16 @@ Rect camera_view_port(const Camera *camera)
     SDL_Rect view_port;
     SDL_RenderGetViewport(camera->renderer, &view_port);
 
-    const Vec s = effective_scale(&view_port);
-    const float w = (float) view_port.w * s.x;
-    const float h = (float) view_port.h * s.y;
+    Point p1 = camera_map_screen(
+        camera,
+        view_port.x,
+        view_port.y);
+    Point p2 = camera_map_screen(
+        camera,
+        view_port.x + view_port.w,
+        view_port.y + view_port.h);
 
-    return rect(camera->position.x - w * 0.5f,
-                camera->position.y - h * 0.5f,
-                w, h);
+    return rect_from_points(p1, p2);
 }
 
 Rect camera_view_port_screen(const Camera *camera)

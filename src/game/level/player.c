@@ -16,6 +16,7 @@
 #include "system/nth_alloc.h"
 #include "system/stacktrace.h"
 #include "ebisp/builtins.h"
+#include "config.h"
 
 #define PLAYER_WIDTH 25.0f
 #define PLAYER_HEIGHT 25.0f
@@ -142,7 +143,7 @@ void player_update(Player *player,
         const Rect hitbox = rigid_bodies_hitbox(player->rigid_bodies, player->alive_body_id);
 
 
-        if (hitbox.y > 1000.0f) {
+        if (hitbox.y > PLAYER_DEATH_LEVEL) {
             player_die(player);
         }
     } break;
