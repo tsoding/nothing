@@ -216,3 +216,21 @@ void dynarray_copy_to(Dynarray *dynarray, void *dest, size_t index)
 
     memcpy(dest, dynarray->data + index * dynarray->element_size, dynarray->element_size);
 }
+
+void dynarray_swap(Dynarray *dynarray, size_t i, size_t j)
+{
+    trace_assert(dynarray);
+    trace_assert(i < dynarray->count);
+    trace_assert(j < dynarray->count);
+
+    if (i == j) return;
+
+    char *a = dynarray_pointer_at(dynarray, i);
+    char *b = dynarray_pointer_at(dynarray, j);
+
+    for (size_t k = 0; k < dynarray->element_size; ++k) {
+        char t = a[k];
+        a[k] = b[k];
+        b[k] = t;
+    }
+}

@@ -21,6 +21,8 @@
 #define POINT_LAYER_ID_TEXT_SIZE vec(2.0f, 2.0f)
 #define POINT_LAYER_ID_TEXT_COLOR COLOR_BLACK
 
+// TODO(#1080): PointLayer does not support z reordering
+
 static int clipboard = 0;
 static Color clipboard_color;
 
@@ -52,7 +54,8 @@ struct PointLayer
 typedef enum {
     UNDO_ADD,
     UNDO_DELETE,
-    UNDO_UPDATE
+    UNDO_UPDATE,
+    UNDO_SWAP
 } UndoType;
 
 typedef struct {
@@ -62,12 +65,29 @@ typedef struct {
     Color color;
     char id[ID_MAX_SIZE];
     size_t index;
+    size_t index2;
 } UndoContext;
 
 static
-UndoContext point_layer_create_undo_context(PointLayer *point_layer,
+UndoContext create_undo_swap_context(PointLayer *point_layer,
+                                     size_t index, size_t index2)
+{
+    UndoContext undo_context;
+    undo_context.type = UNDO_SWAP;
+    undo_context.layer = point_layer;
+    undo_context.index = index;
+    undo_context.index2 = index2;
+    return undo_context;
+}
+
+static
+UndoContext create_undo_context(PointLayer *point_layer,
                                             UndoType type)
 {
+    trace_assert(type != UNDO_SWAP);
+
+    (void) create_undo_swap_context;
+
     UndoContext undo_context;
 
     size_t index =
@@ -114,12 +134,18 @@ void point_layer_undo(void *context, size_t context_size)
         dynarray_replace_at(point_layer->colors, undo_context->index, &undo_context->color);
         dynarray_replace_at(point_layer->ids, undo_context->index, &undo_context->id);
     } break;
+
+    case UNDO_SWAP: {
+        dynarray_swap(point_layer->positions, undo_context->index, undo_context->index2);
+        dynarray_swap(point_layer->colors, undo_context->index, undo_context->index2);
+        dynarray_swap(point_layer->ids, undo_context->index, undo_context->index2);
+    } break;
     }
 }
 
-#define UNDO_PUSH(LAYER, HISTORY, UNDO_TYPE)                            \
+#define UNDO_PUSH(HISTORY, CONTEXT)                                     \
     do {                                                                \
-        UndoContext context = point_layer_create_undo_context(LAYER, UNDO_TYPE); \
+        UndoContext context = (CONTEXT);                                \
         undo_history_push(                                              \
             HISTORY,                                                    \
             point_layer_undo,                                           \
@@ -345,7 +371,9 @@ int point_layer_add_element(PointLayer *point_layer,
     dynarray_push(point_layer->colors, &color);
     dynarray_push(point_layer->ids, id);
 
-    UNDO_PUSH(point_layer, undo_history, UNDO_ADD);
+    UNDO_PUSH(
+        undo_history,
+        create_undo_context(point_layer, UNDO_ADD));
 
     return 0;
 }
@@ -357,7 +385,11 @@ void point_layer_delete_nth_element(PointLayer *point_layer,
 {
     trace_assert(point_layer);
 
-    UNDO_PUSH(point_layer, undo_history, UNDO_DELETE);
+    UNDO_PUSH(
+        undo_history,
+        create_undo_context(
+            point_layer,
+            UNDO_DELETE));
 
     dynarray_delete_at(point_layer->positions, i);
     dynarray_delete_at(point_layer->colors, i);
@@ -483,7 +515,11 @@ int point_layer_edit_id_event(PointLayer *point_layer,
     case SDL_KEYDOWN: {
         switch(event->key.keysym.sym) {
         case SDLK_RETURN: {
-            UNDO_PUSH(point_layer, undo_history, UNDO_UPDATE);
+            UNDO_PUSH(
+                undo_history,
+                create_undo_context(
+                    point_layer,
+                    UNDO_UPDATE));
 
             char *id = dynarray_pointer_at(point_layer->ids, (size_t) point_layer->selected);
             const char *text = edit_field_as_text(point_layer->edit_field);
@@ -526,7 +562,11 @@ int point_layer_move_event(PointLayer *point_layer,
             point_layer->state = POINT_LAYER_IDLE;
 
             // TODO(#1014): just click (without moving) on the point creates an undo history entry
-            UNDO_PUSH(point_layer, undo_history, UNDO_UPDATE);
+            UNDO_PUSH(
+                undo_history,
+                create_undo_context(
+                    point_layer,
+                    UNDO_UPDATE));
 
             dynarray_replace_at(
                 point_layer->positions,
@@ -570,7 +610,11 @@ int point_layer_recolor_event(PointLayer *point_layer,
         point_layer->inter_color = color_picker_rgba(&point_layer->color_picker);
 
         if (!color_picker_drag(&point_layer->color_picker)) {
-            UNDO_PUSH(point_layer, undo_history, UNDO_UPDATE);
+            UNDO_PUSH(
+                undo_history,
+                create_undo_context(
+                    point_layer,
+                    UNDO_UPDATE));
 
             dynarray_replace_at(
                 point_layer->colors,
