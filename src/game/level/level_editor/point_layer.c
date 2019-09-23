@@ -21,8 +21,6 @@
 #define POINT_LAYER_ID_TEXT_SIZE vec(2.0f, 2.0f)
 #define POINT_LAYER_ID_TEXT_COLOR COLOR_BLACK
 
-// TODO(#1080): PointLayer does not support z reordering
-
 static int clipboard = 0;
 static Color clipboard_color;
 
