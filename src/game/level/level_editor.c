@@ -16,6 +16,7 @@
 #include "system/lt_adapters.h"
 #include "system/log.h"
 #include "system/str.h"
+#include "config.h"
 
 #include "level_editor.h"
 
@@ -321,6 +322,19 @@ int level_editor_render(const LevelEditor *level_editor,
         return -1;
     }
 
+    const Rect world_viewport = camera_view_port(camera);
+
+    if (PLAYER_DEATH_LEVEL < world_viewport.y + world_viewport.h) {
+        if (camera_fill_rect(
+                camera,
+                rect(
+                    world_viewport.x, PLAYER_DEATH_LEVEL,
+                    world_viewport.w, world_viewport.h + fmaxf(0.0f, world_viewport.y - PLAYER_DEATH_LEVEL)),
+                LEVEL_EDITOR_DETH_LEVEL_COLOR) < 0) {
+            return -1;
+        }
+    }
+
     for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
         if (layer_render(
                 level_editor->layers[i],
@@ -360,14 +374,14 @@ int level_editor_render(const LevelEditor *level_editor,
         }
     }
 
-    const Rect viewport = camera_view_port_screen(camera);
+    const Rect screen_viewport = camera_view_port_screen(camera);
     const Vec text_size = fading_wiggly_text_size(
         &level_editor->notice,
         camera);
 
     fading_wiggly_text_render(
         &level_editor->notice, camera,
-        vec(viewport.w * 0.5f - text_size.x * 0.5f,
+        vec(screen_viewport.w * 0.5f - text_size.x * 0.5f,
             LEVEL_EDITOR_NOTICE_PADDING_TOP));
 
     return 0;
