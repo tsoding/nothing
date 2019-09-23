@@ -223,9 +223,6 @@ void dynarray_swap(Dynarray *dynarray, size_t i, size_t j)
     trace_assert(i < dynarray->count);
     trace_assert(j < dynarray->count);
 
-    char xs[dynarray->element_size];
-    (void) xs;
-
     if (i == j) return;
 
     char *a = dynarray_pointer_at(dynarray, i);
