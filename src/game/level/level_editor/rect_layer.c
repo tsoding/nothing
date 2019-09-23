@@ -325,7 +325,16 @@ static int rect_layer_event_idle(RectLayer *layer,
             Rect *rects = dynarray_data(layer->rects);
             Color *colors = dynarray_data(layer->colors);
 
-            if (rect_at_position >= 0) {
+            if (layer->selection >= 0 && rect_contains_point(
+                    rect_layer_resize_anchor(
+                        camera,
+                        rects[layer->selection]),
+                    vec(
+                        (float) event->button.x,
+                        (float) event->button.y))) {
+                layer->state = RECT_LAYER_RESIZE;
+                dynarray_copy_to(layer->rects, &layer->inter_rect, (size_t) layer->selection);
+            } else if (rect_at_position >= 0) {
                 layer->selection = rect_at_position;
                 layer->state = RECT_LAYER_MOVE;
                 layer->move_anchor =
@@ -338,15 +347,6 @@ static int rect_layer_event_idle(RectLayer *layer,
                     create_color_picker_from_rgba(colors[rect_at_position]);
 
                 dynarray_copy_to(layer->rects, &layer->inter_rect, (size_t) rect_at_position);
-            } else if (layer->selection >= 0 && rect_contains_point(
-                           rect_layer_resize_anchor(
-                               camera,
-                               rects[layer->selection]),
-                           vec(
-                               (float) event->button.x,
-                               (float) event->button.y))) {
-                layer->state = RECT_LAYER_RESIZE;
-                dynarray_copy_to(layer->rects, &layer->inter_rect, (size_t) layer->selection);
             } else {
                 layer->selection = rect_at_position;
 
