@@ -231,7 +231,6 @@ static int rect_layer_add_rect(RectLayer *layer,
     return 0;
 }
 
-// TODO(#956): rect_layer_rect_at doesn't return rectangles according to some z-order
 static int rect_layer_rect_at(RectLayer *layer, Vec position)
 {
     trace_assert(layer);
