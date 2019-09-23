@@ -450,6 +450,22 @@ int label_layer_add_label(LabelLayer *label_layer,
 }
 
 static
+void label_layer_swap_elements(LabelLayer *label_layer,
+                               size_t a, size_t b,
+                               UndoHistory *undo_history)
+{
+    trace_assert(label_layer);
+    trace_assert(undo_history);
+    trace_assert(a < dynarray_count(label_layer->positions));
+    trace_assert(b < dynarray_count(label_layer->positions));
+
+    dynarray_swap(label_layer->ids, a, b);
+    dynarray_swap(label_layer->positions, a, b);
+    dynarray_swap(label_layer->colors, a, b);
+    dynarray_swap(label_layer->texts, a, b);
+}
+
+static
 int label_layer_idle_event(LabelLayer *label_layer,
                            const SDL_Event *event,
                            const Camera *camera,
@@ -459,8 +475,8 @@ int label_layer_idle_event(LabelLayer *label_layer,
     trace_assert(event);
     trace_assert(camera);
 
-    int changed = 0;
 
+    int changed = 0;
     if (color_picker_event(
             &label_layer->color_picker,
             event,
@@ -528,6 +544,32 @@ int label_layer_idle_event(LabelLayer *label_layer,
 
     case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
+        case SDLK_UP: {
+            if ((event->key.keysym.mod & KMOD_SHIFT)
+                && (label_layer->selection >= 0)
+                && ((size_t)(label_layer->selection + 1) < dynarray_count(label_layer->positions))) {
+                label_layer_swap_elements(
+                    label_layer,
+                    (size_t) label_layer->selection,
+                    (size_t) label_layer->selection + 1,
+                    undo_history);
+                label_layer->selection++;
+            }
+        } break;
+
+        case SDLK_DOWN: {
+            if ((event->key.keysym.mod & KMOD_SHIFT)
+                && (label_layer->selection > 0)
+                && ((size_t) label_layer->selection < dynarray_count(label_layer->positions))) {
+                label_layer_swap_elements(
+                    label_layer,
+                    (size_t) label_layer->selection,
+                    (size_t) label_layer->selection - 1,
+                    undo_history);
+                label_layer->selection--;
+            }
+        } break;
+
         case SDLK_F2: {
             if (label_layer->selection >= 0) {
                 label_layer->state = LABEL_LAYER_EDIT_TEXT;
