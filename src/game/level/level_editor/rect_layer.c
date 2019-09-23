@@ -19,7 +19,6 @@
 
 // TODO(#1075): there is no way to modify z order in Rect, Point and Label Layers
 
-// TODO(#1051): RectLayer does not support copy-pasting
 
 static int clipboard = 0;
 static Rect clipboard_rect;
