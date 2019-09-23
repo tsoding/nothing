@@ -19,7 +19,6 @@
 
 #define LABEL_LAYER_SELECTION_THICCNESS 5.0f
 
-// TODO(#1050): LabelLayer does not support copy-pasting
 // TODO: LabelLayer doe snot support z reordering
 
 typedef enum {
