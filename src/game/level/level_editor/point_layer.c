@@ -72,6 +72,10 @@ static
 UndoContext create_undo_swap_context(PointLayer *point_layer,
                                      size_t index, size_t index2)
 {
+    trace_assert(point_layer);
+    trace_assert(index < dynarray_count(point_layer->positions));
+    trace_assert(index2 < dynarray_count(point_layer->positions));
+
     UndoContext undo_context;
     undo_context.type = UNDO_SWAP;
     undo_context.layer = point_layer;
@@ -82,7 +86,7 @@ UndoContext create_undo_swap_context(PointLayer *point_layer,
 
 static
 UndoContext create_undo_context(PointLayer *point_layer,
-                                            UndoType type)
+                                UndoType type)
 {
     trace_assert(type != UNDO_SWAP);
 
@@ -391,6 +395,10 @@ void point_layer_swap_elements(PointLayer *point_layer,
     dynarray_swap(point_layer->positions, a, b);
     dynarray_swap(point_layer->colors, a, b);
     dynarray_swap(point_layer->ids, a, b);
+
+    UNDO_PUSH(
+        undo_history,
+        create_undo_swap_context(point_layer, a, b));
 }
 
 static
