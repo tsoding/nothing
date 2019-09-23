@@ -21,8 +21,6 @@
 #define POINT_LAYER_ID_TEXT_SIZE vec(2.0f, 2.0f)
 #define POINT_LAYER_ID_TEXT_COLOR COLOR_BLACK
 
-// TODO(#1080): PointLayer does not support z reordering
-
 static int clipboard = 0;
 static Color clipboard_color;
 
@@ -40,7 +38,7 @@ struct PointLayer
     Dynarray/*<Point>*/ *positions;
     Dynarray/*<Color>*/ *colors;
     Dynarray/*<char[ID_MAX_SIZE]>*/ *ids;
-    int selected;
+    int selection;
     ColorPicker color_picker;
 
     Point inter_position;
@@ -72,6 +70,10 @@ static
 UndoContext create_undo_swap_context(PointLayer *point_layer,
                                      size_t index, size_t index2)
 {
+    trace_assert(point_layer);
+    trace_assert(index < dynarray_count(point_layer->positions));
+    trace_assert(index2 < dynarray_count(point_layer->positions));
+
     UndoContext undo_context;
     undo_context.type = UNDO_SWAP;
     undo_context.layer = point_layer;
@@ -82,7 +84,7 @@ UndoContext create_undo_swap_context(PointLayer *point_layer,
 
 static
 UndoContext create_undo_context(PointLayer *point_layer,
-                                            UndoType type)
+                                UndoType type)
 {
     trace_assert(type != UNDO_SWAP);
 
@@ -93,7 +95,7 @@ UndoContext create_undo_context(PointLayer *point_layer,
     size_t index =
         type == UNDO_ADD
         ? dynarray_count(point_layer->positions) - 1
-        : (size_t) point_layer->selected;
+        : (size_t) point_layer->selection;
 
     undo_context.type = type;
     undo_context.layer = point_layer;
@@ -119,14 +121,14 @@ void point_layer_undo(void *context, size_t context_size)
         dynarray_pop(point_layer->positions, NULL);
         dynarray_pop(point_layer->colors, NULL);
         dynarray_pop(point_layer->ids, NULL);
-        point_layer->selected = -1;
+        point_layer->selection = -1;
     } break;
 
     case UNDO_DELETE: {
         dynarray_insert_before(point_layer->positions, undo_context->index, &undo_context->position);
         dynarray_insert_before(point_layer->colors, undo_context->index, &undo_context->color);
         dynarray_insert_before(point_layer->ids, undo_context->index, &undo_context->id);
-        point_layer->selected = -1;
+        point_layer->selection = -1;
     } break;
 
     case UNDO_UPDATE: {
@@ -239,7 +241,7 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream,
         dynarray_push(point_layer->ids, id);
     }
 
-    point_layer->selected = -1;
+    point_layer->selection = -1;
 
     point_layer->color_picker = create_color_picker_from_rgba(COLOR_RED);
 
@@ -276,18 +278,18 @@ int point_layer_render(const PointLayer *point_layer,
 
     for (int i = 0; i < n; ++i) {
         const Color color = color_scale(
-            point_layer->state == POINT_LAYER_RECOLOR && i == point_layer->selected
+            point_layer->state == POINT_LAYER_RECOLOR && i == point_layer->selection
             ? point_layer->inter_color
             : colors[i],
             rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f));
 
         const Point position =
-            point_layer->state == POINT_LAYER_MOVE && i == point_layer->selected
+            point_layer->state == POINT_LAYER_MOVE && i == point_layer->selection
             ? point_layer->inter_position
             : positions[i];
 
         // Selection Layer
-        if (active && i == point_layer->selected) {
+        if (active && i == point_layer->selection) {
             if (camera_fill_triangle(
                     camera,
                     element_shape(
@@ -322,7 +324,7 @@ int point_layer_render(const PointLayer *point_layer,
         if (edit_field_render_world(
                 point_layer->edit_field,
                 camera,
-                positions[point_layer->selected]) < 0) {
+                positions[point_layer->selection]) < 0) {
             return -1;
         }
     }
@@ -379,6 +381,25 @@ int point_layer_add_element(PointLayer *point_layer,
 }
 
 static
+void point_layer_swap_elements(PointLayer *point_layer,
+                               size_t a, size_t b,
+                               UndoHistory *undo_history)
+{
+    trace_assert(point_layer);
+    trace_assert(undo_history);
+    trace_assert(a < dynarray_count(point_layer->positions));
+    trace_assert(b < dynarray_count(point_layer->positions));
+
+    dynarray_swap(point_layer->positions, a, b);
+    dynarray_swap(point_layer->colors, a, b);
+    dynarray_swap(point_layer->ids, a, b);
+
+    UNDO_PUSH(
+        undo_history,
+        create_undo_swap_context(point_layer, a, b));
+}
+
+static
 void point_layer_delete_nth_element(PointLayer *point_layer,
                                     size_t i,
                                     UndoHistory *undo_history)
@@ -416,7 +437,7 @@ int point_layer_idle_event(PointLayer *point_layer,
     }
 
     if (selected) {
-        if (point_layer->selected >= 0) {
+        if (point_layer->selection >= 0) {
             point_layer->inter_color = color_picker_rgba(&point_layer->color_picker);
             point_layer->state = POINT_LAYER_RECOLOR;
         }
@@ -429,10 +450,10 @@ int point_layer_idle_event(PointLayer *point_layer,
         case SDL_BUTTON_LEFT: {
             const Point position = camera_map_screen(camera, event->button.x, event->button.y);
 
-            point_layer->selected = point_layer_element_at(
+            point_layer->selection = point_layer_element_at(
                 point_layer, position);
 
-            if (point_layer->selected < 0) {
+            if (point_layer->selection < 0) {
                 point_layer_add_element(
                     point_layer,
                     position,
@@ -444,8 +465,8 @@ int point_layer_idle_event(PointLayer *point_layer,
 
                 point_layer->state = POINT_LAYER_MOVE;
                 point_layer->color_picker =
-                    create_color_picker_from_rgba(colors[point_layer->selected]);
-                point_layer->inter_position = positions[point_layer->selected];
+                    create_color_picker_from_rgba(colors[point_layer->selection]);
+                point_layer->inter_position = positions[point_layer->selection];
             }
         } break;
         }
@@ -453,31 +474,57 @@ int point_layer_idle_event(PointLayer *point_layer,
 
     case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
+        case SDLK_UP: {
+            if ((event->key.keysym.mod & KMOD_SHIFT)
+                && (point_layer->selection >= 0)
+                && ((size_t)(point_layer->selection + 1) < dynarray_count(point_layer->positions))) {
+                point_layer_swap_elements(
+                    point_layer,
+                    (size_t) point_layer->selection,
+                    (size_t) point_layer->selection + 1,
+                    undo_history);
+                point_layer->selection++;
+            }
+        } break;
+
+        case SDLK_DOWN: {
+            if ((event->key.keysym.mod & KMOD_SHIFT)
+                && (point_layer->selection > 0)
+                && ((size_t) point_layer->selection < dynarray_count(point_layer->positions))) {
+                point_layer_swap_elements(
+                    point_layer,
+                    (size_t) point_layer->selection,
+                    (size_t) point_layer->selection - 1,
+                    undo_history);
+                point_layer->selection--;
+            }
+        } break;
+
         case SDLK_DELETE: {
-            if (0 <= point_layer->selected && point_layer->selected < (int) dynarray_count(point_layer->positions)) {
+            if (0 <= point_layer->selection && point_layer->selection < (int) dynarray_count(point_layer->positions)) {
                 point_layer_delete_nth_element(
                     point_layer,
-                    (size_t)point_layer->selected,
+                    (size_t)point_layer->selection,
                     undo_history);
-                point_layer->selected = -1;
+                point_layer->selection = -1;
             }
         } break;
 
         case SDLK_F2: {
-            if (point_layer->selected >= 0) {
+            if (point_layer->selection >= 0) {
                 char *ids = dynarray_data(point_layer->ids);
                 point_layer->state = POINT_LAYER_EDIT_ID;
                 edit_field_replace(
                     point_layer->edit_field,
-                    ids + ID_MAX_SIZE * point_layer->selected);
+                    ids + ID_MAX_SIZE * point_layer->selection);
                 SDL_StartTextInput();
             }
         } break;
 
         case SDLK_c: {
-            if ((event->key.keysym.mod & KMOD_LCTRL) && point_layer->selected >= 0) {
+            if ((event->key.keysym.mod & KMOD_LCTRL) && point_layer->selection >= 0) {
                 clipboard = 1;
-                dynarray_copy_to(point_layer->colors, &clipboard_color, (size_t)point_layer->selected);
+                dynarray_copy_to(point_layer->colors, &clipboard_color, (size_t)point_layer->selection);
             }
         } break;
 
@@ -521,7 +568,7 @@ int point_layer_edit_id_event(PointLayer *point_layer,
                     point_layer,
                     UNDO_UPDATE));
 
-            char *id = dynarray_pointer_at(point_layer->ids, (size_t) point_layer->selected);
+            char *id = dynarray_pointer_at(point_layer->ids, (size_t) point_layer->selection);
             const char *text = edit_field_as_text(point_layer->edit_field);
             size_t n = min_size_t(strlen(text), ID_MAX_SIZE - 1);
             memcpy(id, text, n);
@@ -553,7 +600,7 @@ int point_layer_move_event(PointLayer *point_layer,
     trace_assert(point_layer);
     trace_assert(event);
     trace_assert(camera);
-    trace_assert(point_layer->selected >= 0);
+    trace_assert(point_layer->selection >= 0);
 
     switch (event->type) {
     case SDL_MOUSEBUTTONUP: {
@@ -570,7 +617,7 @@ int point_layer_move_event(PointLayer *point_layer,
 
             dynarray_replace_at(
                 point_layer->positions,
-                (size_t) point_layer->selected,
+                (size_t) point_layer->selection,
                 &point_layer->inter_position);
         } break;
         }
@@ -595,7 +642,7 @@ int point_layer_recolor_event(PointLayer *point_layer,
     trace_assert(event);
     trace_assert(camera);
     trace_assert(undo_history);
-    trace_assert(point_layer->selected >= 0);
+    trace_assert(point_layer->selection >= 0);
 
     int selected = 0;
     if (color_picker_event(
@@ -618,7 +665,7 @@ int point_layer_recolor_event(PointLayer *point_layer,
 
             dynarray_replace_at(
                 point_layer->colors,
-                (size_t) point_layer->selected,
+                (size_t) point_layer->selection,
                 &point_layer->inter_color);
 
             point_layer->state = POINT_LAYER_IDLE;
