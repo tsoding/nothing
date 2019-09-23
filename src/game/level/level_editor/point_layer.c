@@ -21,6 +21,8 @@
 #define POINT_LAYER_ID_TEXT_SIZE vec(2.0f, 2.0f)
 #define POINT_LAYER_ID_TEXT_COLOR COLOR_BLACK
 
+// TODO: PointLayer does not support z reordering
+
 static int clipboard = 0;
 static Color clipboard_color;
 
@@ -56,7 +58,6 @@ typedef enum {
     UNDO_SWAP
 } UndoType;
 
-// TODO: Split PointLayer's UndoContext into a union of different structs?
 typedef struct {
     UndoType type;
     PointLayer *layer;
