@@ -28,7 +28,7 @@ int camera_fill_rect(const Camera *camera,
                      Rect rect,
                      Color color);
 
-int camera_draw_rect(Camera *camera,
+int camera_draw_rect(const Camera *camera,
                      Rect rect,
                      Color color);
 

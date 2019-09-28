@@ -63,7 +63,7 @@ int camera_fill_rect(const Camera *camera,
     return 0;
 }
 
-int camera_draw_rect(Camera *camera,
+int camera_draw_rect(const Camera *camera,
                      Rect rect,
                      Color color)
 {

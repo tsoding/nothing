@@ -8,24 +8,39 @@
 #include "system/nth_alloc.h"
 #include "system/log.h"
 #include "system/stacktrace.h"
+#include "config.h"
 
-#define BACKGROUND_CHUNK_COUNT 5
-#define BACKGROUND_CHUNK_WIDTH 250.0f
-#define BACKGROUND_CHUNK_HEIGHT 250.0f
+typedef struct {
+    int x, y;
+} Vec2i;
 
-static void chunk_of_point(Point p, int *x, int *y);
+static inline
+Vec2i vec2i(int x, int y)
+{
+    Vec2i resoolt = {
+        .x = x,
+        .y = y
+    };
+    return resoolt;
+}
+
+static inline
+Vec2i chunk_of_point(Point p)
+{
+    return vec2i(
+        (int) floorf(p.x / BACKGROUND_CHUNK_WIDTH),
+        (int) floorf(p.y / BACKGROUND_CHUNK_HEIGHT));
+}
+
 int render_chunk(const Background *background,
                  const Camera *camera,
-                 int x, int y,
-                 Color color,
-                 Vec position,
-                 float parallax);
+                 Vec2i chunk,
+                 Color color);
 
 struct Background
 {
     Lt *lt;
     Color base_color;
-    Vec position;
     int debug_mode;
 };
 
@@ -39,7 +54,6 @@ Background *create_background(Color base_color)
     }
 
     background->base_color = base_color;
-    background->position = vec(0.0f, 0.0f);
     background->debug_mode = 0;
     background->lt = lt;
 
@@ -63,52 +77,42 @@ void destroy_background(Background *background)
     RETURN_LT0(background->lt);
 }
 
-/* TODO(#182): background chunks are randomly disappearing when the size of the window is less than size of the chunk  */
 int background_render(const Background *background,
-                      const Camera *camera)
+                      const Camera *camera0)
 {
     trace_assert(background);
-    trace_assert(camera);
+    trace_assert(camera0);
+
+    Camera camera = *camera0;
 
     if (camera_clear_background(
-            camera,
+            &camera,
             background->base_color) < 0) {
         return -1;
     }
 
-    // TODO(#1086): background rendering is broken
-    //   Broken by #1067
-    const Rect view_port = camera_view_port(camera);
-    const Vec position = vec(
-        view_port.x - view_port.w * 0.5f,
-        view_port.y - view_port.h * 0.5f);
+    camera.scale = 1.0f - BACKGROUND_LAYERS_STEP * BACKGROUND_LAYERS_COUNT;
 
-    for (int l = 0; l < 3; ++l) {
-        const float parallax = 1.0f - 0.2f * (float) l;
+    for (int l = 0; l < BACKGROUND_LAYERS_COUNT; ++l) {
+        const Rect view_port = camera_view_port(&camera);
+        const Vec position = vec(view_port.x, view_port.y);
 
-        int min_x = 0, min_y = 0;
-        chunk_of_point(vec(view_port.x - position.x * parallax,
-                           view_port.y - position.y * parallax),
-                       &min_x, &min_y);
+        Vec2i min = chunk_of_point(position);
+        Vec2i max = chunk_of_point(vec_sum(position, vec(view_port.w, view_port.h)));
 
-        int max_x = 0, max_y = 0;
-        chunk_of_point(vec(view_port.x - position.x * parallax + view_port.w,
-                           view_port.y - position.y * parallax + view_port.h),
-                       &max_x, &max_y);
-
-        for (int x = min_x; x <= max_x; ++x) {
-            for (int y = min_y; y <= max_y; ++y) {
+        for (int x = min.x - 1; x <= max.x; ++x) {
+            for (int y = min.y - 1; y <= max.y; ++y) {
                 if (render_chunk(
                         background,
-                        camera,
-                        x, y,
-                        color_darker(background->base_color, 0.05f * (float)(l + 1)),
-                        position,
-                        parallax) < 0) {
+                        &camera,
+                        vec2i(x, y),
+                        color_darker(background->base_color, 0.05f * (float)(l + 1))) < 0) {
                     return -1;
                 }
             }
         }
+
+        camera.scale += BACKGROUND_LAYERS_STEP;
     }
 
     return 0;
@@ -116,41 +120,30 @@ int background_render(const Background *background,
 
 /* Private Function */
 
-static void chunk_of_point(Point p, int *x, int *y)
-{
-    trace_assert(x);
-    trace_assert(y);
-    *x = (int) (p.x / BACKGROUND_CHUNK_WIDTH);
-    *y = (int) (p.y / BACKGROUND_CHUNK_HEIGHT);
-}
-
 int render_chunk(const Background *background,
                  const Camera *camera,
-                 int chunk_x, int chunk_y,
-                 Color color,
-                 Vec position,
-                 float parallax)
+                 Vec2i chunk,
+                 Color color)
 {
-    (void) background;
+    (void) color;
 
     if (background->debug_mode) {
         return 0;
     }
 
-    srand((unsigned int)(roundf((float)chunk_x + (float)chunk_y + parallax)));
+    srand((unsigned int)(roundf((float)chunk.x + (float)chunk.y + camera->scale * 10.0f)));
 
-    for (size_t i = 0; i < BACKGROUND_CHUNK_COUNT; ++i) {
-        const float rect_x = rand_float_range((float) chunk_x * BACKGROUND_CHUNK_WIDTH,
-                                              (float) (chunk_x + 1) * BACKGROUND_CHUNK_WIDTH);
-        const float rect_y = rand_float_range((float) chunk_y * BACKGROUND_CHUNK_HEIGHT,
-                                              (float) (chunk_y + 1) * BACKGROUND_CHUNK_HEIGHT);
+    for (size_t i = 0; i < BACKGROUND_TURDS_PER_CHUNK; ++i) {
+        const float rect_x = rand_float_range(0.0f, BACKGROUND_CHUNK_WIDTH);
+        const float rect_y = rand_float_range(0.0f, BACKGROUND_CHUNK_HEIGHT);
+
         const float rect_w = rand_float_range(0.0f, BACKGROUND_CHUNK_WIDTH * 0.5f);
         const float rect_h = rand_float_range(rect_w * 0.5f, rect_w * 1.5f);
 
         if (camera_fill_rect(
                 camera,
-                rect(rect_x + position.x * parallax,
-                     rect_y + position.y * parallax,
+                rect((float) chunk.x * BACKGROUND_CHUNK_WIDTH + rect_x,
+                     (float) chunk.y * BACKGROUND_CHUNK_HEIGHT + rect_y,
                      rect_w,
                      rect_h),
                 color) < 0) {
