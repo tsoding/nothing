@@ -9,15 +9,14 @@
 
 ## Dependencies
 
-- [gcc]
+- [gcc] or [clang] or [MSVC 2015+][visual-studio]
 - [cmake]
 - [libsdl2-dev]
-- [inotify-tools]
 
 ### Ubuntu
 
 ```console
-$ sudo apt-get install gcc cmake libsdl2-dev inotify-tools libxml2-dev
+$ sudo apt-get install gcc cmake libsdl2-dev
 ```
 
 ### MacOS
@@ -39,7 +38,7 @@ $ nix-shell
 ### Arch Linux
 
 ```console
-$ sudo pacman -S gcc cmake sdl2 inotify-tools libxml2
+$ sudo pacman -S gcc cmake sdl2
 ```
 
 ### Windows
@@ -173,6 +172,7 @@ You can support my work via
 [./levels/]: ./levels/
 [./levels/Makefile]: ./levels/Makefile
 [gcc]: https://gcc.gnu.org/
+[clang]: https://clang.llvm.org/
 [cmake]: https://cmake.org/
 [libsdl2-dev]: https://www.libsdl.org/
 [NixOS]: https://nixos.org/
