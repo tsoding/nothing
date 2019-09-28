@@ -677,6 +677,8 @@ int label_layer_move_event(LabelLayer *label_layer,
     trace_assert(camera);
     trace_assert(label_layer->selection >= 0);
 
+    Point *positions = dynarray_data(label_layer->positions);
+
     switch (event->type) {
     case SDL_MOUSEMOTION: {
         label_layer->inter_position = vec_sub(
@@ -690,12 +692,19 @@ int label_layer_move_event(LabelLayer *label_layer,
     case SDL_MOUSEBUTTONUP: {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
-            UNDO_PUSH(undo_history, create_undo_context(label_layer, UNDO_UPDATE));
+            const float distance = vec_length(
+                vec_sub(label_layer->inter_position,
+                        positions[label_layer->selection]));
 
-            dynarray_replace_at(
-                label_layer->positions,
-                (size_t)label_layer->selection,
-                &label_layer->inter_position);
+            if (distance > 1e-6) {
+                UNDO_PUSH(undo_history, create_undo_context(label_layer, UNDO_UPDATE));
+
+                dynarray_replace_at(
+                    label_layer->positions,
+                    (size_t)label_layer->selection,
+                    &label_layer->inter_position);
+            }
+
             label_layer->state = LABEL_LAYER_IDLE;
         } break;
         }

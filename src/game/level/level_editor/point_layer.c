@@ -602,23 +602,30 @@ int point_layer_move_event(PointLayer *point_layer,
     trace_assert(camera);
     trace_assert(point_layer->selection >= 0);
 
+    Point *positions = dynarray_data(point_layer->positions);
+
     switch (event->type) {
     case SDL_MOUSEBUTTONUP: {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
             point_layer->state = POINT_LAYER_IDLE;
 
-            // TODO(#1014): just click (without moving) on the point creates an undo history entry
-            UNDO_PUSH(
-                undo_history,
-                create_undo_context(
-                    point_layer,
-                    UNDO_UPDATE));
+            const float distance = vec_length(
+                vec_sub(point_layer->inter_position,
+                        positions[point_layer->selection]));
 
-            dynarray_replace_at(
-                point_layer->positions,
-                (size_t) point_layer->selection,
-                &point_layer->inter_position);
+            if (distance > 1e-6) {
+                UNDO_PUSH(
+                    undo_history,
+                    create_undo_context(
+                        point_layer,
+                        UNDO_UPDATE));
+
+                dynarray_replace_at(
+                    point_layer->positions,
+                    (size_t) point_layer->selection,
+                    &point_layer->inter_position);
+            }
         } break;
         }
     } break;
