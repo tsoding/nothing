@@ -77,7 +77,6 @@ void destroy_background(Background *background)
     RETURN_LT0(background->lt);
 }
 
-/* TODO(#182): background chunks are randomly disappearing when the size of the window is less than size of the chunk  */
 int background_render(const Background *background,
                       const Camera *camera0)
 {
