@@ -142,8 +142,8 @@ int render_chunk(const Background *background,
 
         if (camera_fill_rect(
                 camera,
-                rect((float) chunk.x * BACKGROUND_CHUNK_WIDTH + rect_x /*+ position.x * parallax*/,
-                     (float) chunk.y * BACKGROUND_CHUNK_HEIGHT + rect_y /*+ position.y * parallax*/,
+                rect((float) chunk.x * BACKGROUND_CHUNK_WIDTH + rect_x,
+                     (float) chunk.y * BACKGROUND_CHUNK_HEIGHT + rect_y,
                      rect_w,
                      rect_h),
                 color) < 0) {
