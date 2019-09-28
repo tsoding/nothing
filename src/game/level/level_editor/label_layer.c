@@ -19,7 +19,6 @@
 
 #define LABEL_LAYER_SELECTION_THICCNESS 5.0f
 
-// TODO(#1079): LabelLayer doe snot support z reordering
 
 typedef enum {
     LABEL_LAYER_IDLE = 0,
