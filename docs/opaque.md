@@ -6,7 +6,6 @@ See [Opaque data type](https://en.wikipedia.org/wiki/Opaque_data_type) first.
 
 - [level](../src/game/level.h)
 - [player](../src/game/level/player.h)
-- [camera](../src/game/camera.h)
 - ...
 
 ## Conventions
