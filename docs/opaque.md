@@ -1,4 +1,6 @@
-# "OOP" entities
+# Opaque Entities
+
+See [Opaque data type](https://en.wikipedia.org/wiki/Opaque_data_type) first.
 
 ## Examples
 
