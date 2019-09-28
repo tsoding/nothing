@@ -12,7 +12,7 @@
 typedef struct {
     bool debug_mode;
     bool blackwhite_mode;
-    Point position;
+    Vec2f position;
     float scale;
     SDL_Renderer *renderer;
     Sprite_font *font;
@@ -51,49 +51,49 @@ int camera_fill_triangle(const Camera *camera,
 
 int camera_render_text(const Camera *camera,
                        const char *text,
-                       Vec size,
+                       Vec2f size,
                        Color color,
-                       Vec position);
+                       Vec2f position);
 
 int camera_render_text_screen(const Camera *camera,
                               const char *text,
-                              Vec size,
+                              Vec2f size,
                               Color color,
-                              Vec position);
+                              Vec2f position);
 
 Rect camera_text_boundary_box(const Camera *camera,
-                              Vec position,
-                              Vec scale,
+                              Vec2f position,
+                              Vec2f scale,
                               const char *text);
 
 int camera_render_debug_text(const Camera *camera,
                              const char *text,
-                             Vec position);
+                             Vec2f position);
 
 int camera_render_debug_rect(const Camera *camera,
                              Rect rect,
                              Color color);
 
-void camera_center_at(Camera *camera, Point position);
+void camera_center_at(Camera *camera, Vec2f position);
 void camera_scale(Camera *came, float scale);
 
 void camera_toggle_debug_mode(Camera *camera);
 void camera_disable_debug_mode(Camera *camera);
 
-int camera_is_point_visible(const Camera *camera, Point p);
+int camera_is_point_visible(const Camera *camera, Vec2f p);
 int camera_is_text_visible(const Camera *camera,
-                           Vec size,
-                           Vec position,
+                           Vec2f size,
+                           Vec2f position,
                            const char *text);
 
 Rect camera_view_port(const Camera *camera);
 
 Rect camera_view_port_screen(const Camera *camera);
 
-Vec camera_map_screen(const Camera *camera,
+Vec2f camera_map_screen(const Camera *camera,
                       Sint32 x, Sint32 y);
 
-Vec camera_point(const Camera *camera, const Vec p);
+Vec2f camera_point(const Camera *camera, const Vec2f p);
 Rect camera_rect(const Camera *camera, const Rect rect);
 
 int camera_fill_rect_screen(const Camera *camera,

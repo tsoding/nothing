@@ -30,7 +30,7 @@ typedef enum Cue_state {
 struct Goals {
     Lt *lt;
     char **ids;
-    Point *positions;
+    Vec2f *positions;
     Color *colors;
     Cue_state *cue_states;
     bool *visible;
@@ -73,7 +73,7 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
         }
     }
 
-    goals->positions = PUSH_LT(lt, nth_calloc(1, sizeof(Point) * goals->count), free);
+    goals->positions = PUSH_LT(lt, nth_calloc(1, sizeof(Vec2f) * goals->count), free);
     if (goals->positions == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -143,7 +143,7 @@ Goals *create_goals_from_point_layer(const PointLayer *point_layer)
         }
     }
 
-    goals->positions = PUSH_LT(lt, nth_calloc(1, sizeof(Point) * goals->count), free);
+    goals->positions = PUSH_LT(lt, nth_calloc(1, sizeof(Vec2f) * goals->count), free);
     if (goals->positions == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -163,7 +163,7 @@ Goals *create_goals_from_point_layer(const PointLayer *point_layer)
         RETURN_LT(lt, NULL);
     }
 
-    const Point *positions = point_layer_positions(point_layer);
+    const Vec2f *positions = point_layer_positions(point_layer);
     const Color *colors = point_layer_colors(point_layer);
     const char *ids = point_layer_ids(point_layer);
 
@@ -195,7 +195,7 @@ static int goals_render_core(const Goals *goals,
     trace_assert(goals);
     trace_assert(camera);
 
-    const Point position = vec_sum(
+    const Vec2f position = vec_sum(
         goals->positions[goal_index],
         vec(0.0f, sinf(goals->angle) * 10.0f));
 

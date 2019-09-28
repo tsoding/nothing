@@ -33,7 +33,7 @@ void player_touches_rect_sides(Player *player,
 int player_sound(Player *player,
                  Sound_samples *sound_samples);
 void player_checkpoint(Player *player,
-                       Vec checkpoint);
+                       Vec2f checkpoint);
 
 void player_move_left(Player *player);
 void player_move_right(Player *player);

@@ -20,15 +20,15 @@ struct ListSelector
     size_t count;
     size_t cursor;
     int selected_item;
-    Vec position;
-    Vec font_scale;
+    Vec2f position;
+    Vec2f font_scale;
     float padding_bottom;
 };
 
 ListSelector *create_list_selector(const Sprite_font *sprite_font,
                                    const char *items[],
                                    size_t count,
-                                   Vec font_scale,
+                                   Vec2f font_scale,
                                    float padding_bottom)
 {
     trace_assert(items);
@@ -66,7 +66,7 @@ int list_selector_render(const ListSelector *list_selector,
     trace_assert(renderer);
 
     for (size_t i = 0; i < list_selector->count; ++i) {
-        const Vec current_position = vec_sum(
+        const Vec2f current_position = vec_sum(
             list_selector->position,
             vec(0.0f, (float) i * ((float) FONT_CHAR_HEIGHT * list_selector->font_scale.y + list_selector->padding_bottom)));
 
@@ -100,13 +100,13 @@ int list_selector_render(const ListSelector *list_selector,
     return 0;
 }
 
-Vec list_selector_size(const ListSelector *list_selector,
-                       Vec font_scale,
+Vec2f list_selector_size(const ListSelector *list_selector,
+                       Vec2f font_scale,
                        float padding_bottom)
 {
     trace_assert(list_selector);
 
-    Vec result = vec(0.0f, 0.0f);
+    Vec2f result = vec(0.0f, 0.0f);
 
     for (size_t i = 0; i < list_selector->count; ++i) {
         Rect boundary_box = sprite_font_boundary_box(
@@ -155,8 +155,8 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event)
         break;
 
     case SDL_MOUSEMOTION: {
-        const Vec mouse_pos = vec((float)event->motion.x, (float)event->motion.y);
-        Vec position = list_selector->position;
+        const Vec2f mouse_pos = vec((float)event->motion.x, (float)event->motion.y);
+        Vec2f position = list_selector->position;
 
         for (size_t i = 0; i < list_selector->count; ++i) {
             Rect boundary_box = sprite_font_boundary_box(
@@ -197,7 +197,7 @@ void list_selector_clean_selection(ListSelector *list_selector)
     list_selector->selected_item = -1;
 }
 
-void list_selector_move(ListSelector *list_selector, Vec position)
+void list_selector_move(ListSelector *list_selector, Vec2f position)
 {
     list_selector->position = position;
 }

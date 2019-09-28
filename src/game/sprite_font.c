@@ -86,8 +86,8 @@ static SDL_Rect sprite_font_char_rect(const Sprite_font *sprite_font, char x)
 
 int sprite_font_render_text(const Sprite_font *sprite_font,
                             SDL_Renderer *renderer,
-                            Vec position,
-                            Vec size,
+                            Vec2f position,
+                            Vec2f size,
                             Color color,
                             const char *text)
 {
@@ -125,8 +125,8 @@ int sprite_font_render_text(const Sprite_font *sprite_font,
 }
 
 Rect sprite_font_boundary_box(const Sprite_font *sprite_font,
-                                Vec position,
-                                Vec size,
+                                Vec2f position,
+                                Vec2f size,
                                 const char *text)
 {
     trace_assert(sprite_font);

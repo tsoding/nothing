@@ -40,10 +40,10 @@ struct RectLayer {
     Dynarray *rects;
     Dynarray *colors;
     ColorPicker color_picker;
-    Vec create_begin;
-    Vec create_end;
+    Vec2f create_begin;
+    Vec2f create_end;
     int selection;
-    Vec move_anchor;
+    Vec2f move_anchor;
     Edit_field *id_edit_field;
     Color inter_color;
     Rect inter_rect;
@@ -229,7 +229,7 @@ static int rect_layer_add_rect(RectLayer *layer,
     return 0;
 }
 
-static int rect_layer_rect_at(RectLayer *layer, Vec position)
+static int rect_layer_rect_at(RectLayer *layer, Vec2f position)
 {
     trace_assert(layer);
 
@@ -314,7 +314,7 @@ static int rect_layer_event_idle(RectLayer *layer,
     case SDL_MOUSEBUTTONDOWN: {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
-            Point position = camera_map_screen(
+            Vec2f position = camera_map_screen(
                 camera,
                 event->button.x,
                 event->button.y);
@@ -424,7 +424,7 @@ static int rect_layer_event_idle(RectLayer *layer,
             if ((event->key.keysym.mod & KMOD_LCTRL) && clipboard) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                Point position = camera_map_screen(camera, x, y);
+                Vec2f position = camera_map_screen(camera, x, y);
 
                 rect_layer_add_rect(
                     layer,
@@ -531,7 +531,7 @@ static int rect_layer_event_move(RectLayer *layer,
 
     switch (event->type) {
     case SDL_MOUSEMOTION: {
-        Point position = vec_sub(
+        Vec2f position = vec_sub(
             camera_map_screen(
                 camera,
                 event->button.x,

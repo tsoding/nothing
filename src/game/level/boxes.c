@@ -213,7 +213,7 @@ boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path)
 }
 
 
-int boxes_delete_at(Boxes *boxes, Vec position)
+int boxes_delete_at(Boxes *boxes, Vec2f position)
 {
     trace_assert(boxes);
 

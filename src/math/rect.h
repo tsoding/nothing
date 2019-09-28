@@ -20,16 +20,16 @@ typedef struct Rect {
 } Rect;
 
 typedef struct Line {
-    Point p1;
-    Point p2;
+    Vec2f p1;
+    Vec2f p2;
 } Line;
 
 Rect horizontal_thicc_line(float x1, float x2, float y, float thiccness);
 Rect vertical_thicc_line(float y1, float y2, float x, float thiccness);
 
 Rect rect(float x, float y, float w, float h);
-Rect rect_from_vecs(Point position, Vec size);
-Rect rect_from_points(Point p1, Point p2);
+Rect rect_from_vecs(Vec2f position, Vec2f size);
+Rect rect_from_points(Vec2f p1, Vec2f p2);
 Rect rect_from_sdl(const SDL_Rect *rect);
 
 Rect rects_overlap_area(Rect rect1, Rect rect2);
@@ -46,7 +46,7 @@ Rect rect_boundary2(Rect rect1, Rect rect2)
             fmaxf(rect1.y + rect1.h, rect2.y + rect2.h)));
 }
 
-static inline Point rect_position(Rect rect)
+static inline Vec2f rect_position(Rect rect)
 {
     return vec(rect.x, rect.y);
 }
@@ -60,7 +60,7 @@ static inline Rect rect_scale(Rect rect, float d)
     return rect;
 }
 
-int rect_contains_point(Rect rect, Point p);
+int rect_contains_point(Rect rect, Vec2f p);
 
 int rects_overlap(Rect rect1, Rect rect2);
 
@@ -70,15 +70,15 @@ void rect_object_impact(Rect object,
 
 Line rect_side(Rect rect, Rect_side side);
 
-Rect rect_from_point(Point p, float w, float h);
+Rect rect_from_point(Vec2f p, float w, float h);
 
 float line_length(Line line);
 
 SDL_Rect rect_for_sdl(Rect rect);
 
-Vec rect_center(Rect rect);
+Vec2f rect_center(Rect rect);
 
-Vec rect_snap(Rect pivot, Rect *rect);
-Vec rect_impulse(Rect *r1, Rect *r2);
+Vec2f rect_snap(Rect pivot, Rect *rect);
+Vec2f rect_impulse(Rect *r1, Rect *r2);
 
 #endif  // RECT_H_

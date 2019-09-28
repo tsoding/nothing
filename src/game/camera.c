@@ -12,8 +12,8 @@
 #define RATIO_X 16.0f
 #define RATIO_Y 9.0f
 
-static Vec effective_ratio(const SDL_Rect *view_port);
-static Vec effective_scale(const SDL_Rect *view_port);
+static Vec2f effective_ratio(const SDL_Rect *view_port);
+static Vec2f effective_scale(const SDL_Rect *view_port);
 static Triangle camera_triangle(const Camera *camera,
                                 const Triangle t);
 
@@ -158,15 +158,15 @@ int camera_fill_triangle(const Camera *camera,
 
 int camera_render_text(const Camera *camera,
                        const char *text,
-                       Vec size,
+                       Vec2f size,
                        Color c,
-                       Vec position)
+                       Vec2f position)
 {
     SDL_Rect view_port;
     SDL_RenderGetViewport(camera->renderer, &view_port);
 
-    const Vec scale = effective_scale(&view_port);
-    const Vec screen_position = camera_point(camera, position);
+    const Vec2f scale = effective_scale(&view_port);
+    const Vec2f screen_position = camera_point(camera, position);
 
     if (sprite_font_render_text(
             camera->font,
@@ -183,7 +183,7 @@ int camera_render_text(const Camera *camera,
 
 int camera_render_debug_text(const Camera *camera,
                              const char *text,
-                             Vec position)
+                             Vec2f position)
 {
     trace_assert(camera);
     trace_assert(text);
@@ -222,7 +222,7 @@ int camera_clear_background(const Camera *camera,
     return 0;
 }
 
-void camera_center_at(Camera *camera, Point position)
+void camera_center_at(Camera *camera, Vec2f position)
 {
     trace_assert(camera);
     camera->position = position;
@@ -246,7 +246,7 @@ void camera_disable_debug_mode(Camera *camera)
     camera->debug_mode = 0;
 }
 
-int camera_is_point_visible(const Camera *camera, Point p)
+int camera_is_point_visible(const Camera *camera, Vec2f p)
 {
     SDL_Rect view_port;
     SDL_RenderGetViewport(camera->renderer, &view_port);
@@ -263,11 +263,11 @@ Rect camera_view_port(const Camera *camera)
     SDL_Rect view_port;
     SDL_RenderGetViewport(camera->renderer, &view_port);
 
-    Point p1 = camera_map_screen(
+    Vec2f p1 = camera_map_screen(
         camera,
         view_port.x,
         view_port.y);
-    Point p2 = camera_map_screen(
+    Vec2f p2 = camera_map_screen(
         camera,
         view_port.x + view_port.w,
         view_port.y + view_port.h);
@@ -286,8 +286,8 @@ Rect camera_view_port_screen(const Camera *camera)
 }
 
 int camera_is_text_visible(const Camera *camera,
-                           Vec size,
-                           Vec position,
+                           Vec2f size,
+                           Vec2f position,
                            const char *text)
 {
     trace_assert(camera);
@@ -309,7 +309,7 @@ int camera_is_text_visible(const Camera *camera,
 
 /* ---------- Private Function ---------- */
 
-static Vec effective_ratio(const SDL_Rect *view_port)
+static Vec2f effective_ratio(const SDL_Rect *view_port)
 {
     if ((float) view_port->w / RATIO_X > (float) view_port->h / RATIO_Y) {
         return vec(RATIO_X, (float) view_port->h / ((float) view_port->w / RATIO_X));
@@ -318,14 +318,14 @@ static Vec effective_ratio(const SDL_Rect *view_port)
     }
 }
 
-static Vec effective_scale(const SDL_Rect *view_port)
+static Vec2f effective_scale(const SDL_Rect *view_port)
 {
     return vec_entry_div(
         vec((float) view_port->w, (float) view_port->h),
         vec_scala_mult(effective_ratio(view_port), 50.0f));
 }
 
-Vec camera_point(const Camera *camera, const Vec p)
+Vec2f camera_point(const Camera *camera, const Vec2f p)
 {
     SDL_Rect view_port;
     SDL_RenderGetViewport(camera->renderer, &view_port);
@@ -377,7 +377,7 @@ int camera_render_debug_rect(const Camera *camera,
     return 0;
 }
 
-Vec camera_map_screen(const Camera *camera,
+Vec2f camera_map_screen(const Camera *camera,
                       Sint32 x, Sint32 y)
 {
     trace_assert(camera);
@@ -385,11 +385,11 @@ Vec camera_map_screen(const Camera *camera,
     SDL_Rect view_port;
     SDL_RenderGetViewport(camera->renderer, &view_port);
 
-    Vec es = effective_scale(&view_port);
+    Vec2f es = effective_scale(&view_port);
     es.x = 1.0f / es.x;
     es.y = 1.0f / es.y;
 
-    const Vec p = vec((float) x, (float) y);
+    const Vec2f p = vec((float) x, (float) y);
 
     return vec_sum(
         vec_entry_mult(
@@ -435,9 +435,9 @@ int camera_fill_rect_screen(const Camera *camera,
 
 int camera_render_text_screen(const Camera *camera,
                               const char *text,
-                              Vec size,
+                              Vec2f size,
                               Color color,
-                              Vec position)
+                              Vec2f position)
 {
     trace_assert(camera);
     trace_assert(text);
@@ -515,8 +515,8 @@ const Sprite_font *camera_font(const Camera *camera)
 }
 
 Rect camera_text_boundary_box(const Camera *camera,
-                              Vec position,
-                              Vec scale,
+                              Vec2f position,
+                              Vec2f scale,
                               const char *text)
 {
     trace_assert(camera);

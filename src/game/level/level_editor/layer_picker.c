@@ -68,12 +68,12 @@ int layer_picker_render(const LayerPicker *layer_picker,
     const Rect viewport = camera_view_port_screen(camera);
 
     for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
-        const Vec size = {
+        const Vec2f size = {
             .x = viewport.w * LAYER_CELL_WR_RATIO,
             .y = viewport.w * LAYER_CELL_WR_RATIO * LAYER_CELL_HW_RATIO
         };
 
-        Vec position = {
+        Vec2f position = {
             .x = 0.0f,
             .y = viewport.h * 0.5f - size.y * LAYER_PICKER_N * 0.5f
         };
@@ -122,12 +122,12 @@ int layer_picker_event(LayerPicker *layer_picker,
 
     const Rect viewport = camera_view_port_screen(camera);
 
-    const Vec size = {
+    const Vec2f size = {
         .x = viewport.w * LAYER_CELL_WR_RATIO,
         .y = viewport.w * LAYER_CELL_WR_RATIO * LAYER_CELL_HW_RATIO
     };
 
-    const Vec position = {
+    const Vec2f position = {
         .x = 0.0f,
         .y = viewport.h * 0.5f - size.y * LAYER_PICKER_N * 0.5f
     };

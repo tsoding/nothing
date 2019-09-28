@@ -17,12 +17,12 @@ Rect rect(float x, float y, float w, float h)
     return result;
 }
 
-Rect rect_from_vecs(Point position, Vec size)
+Rect rect_from_vecs(Vec2f position, Vec2f size)
 {
     return rect(position.x, position.y, size.x, size.y);
 }
 
-Rect rect_from_points(Point p1, Point p2)
+Rect rect_from_points(Vec2f p1, Vec2f p2)
 {
     return rect_from_vecs(
         vec(fminf(p1.x, p2.x),
@@ -138,7 +138,7 @@ Line rect_side(Rect rect, Rect_side side)
     return result;
 }
 
-Rect rect_from_point(Point p, float w, float h)
+Rect rect_from_point(Vec2f p, float w, float h)
 {
     Rect result = {
         .x = p.x,
@@ -150,7 +150,7 @@ Rect rect_from_point(Point p, float w, float h)
     return result;
 }
 
-int rect_contains_point(Rect rect, Point p)
+int rect_contains_point(Rect rect, Vec2f p)
 {
     return rect.x <= p.x && p.x <= rect.x + rect.w
         && rect.y <= p.y && p.y <= rect.y + rect.h;
@@ -168,16 +168,16 @@ SDL_Rect rect_for_sdl(Rect rect)
     return result;
 }
 
-Vec rect_center(Rect rect)
+Vec2f rect_center(Rect rect)
 {
     return vec(rect.x + rect.w * 0.5f,
                rect.y + rect.h * 0.5f);
 }
 
-Vec rect_snap(Rect pivot, Rect *r)
+Vec2f rect_snap(Rect pivot, Rect *r)
 {
-    const Vec pivot_c = rect_center(pivot);
-    const Vec r_c = rect_center(*r);
+    const Vec2f pivot_c = rect_center(pivot);
+    const Vec2f r_c = rect_center(*r);
 
     const float sx = r_c.x < pivot_c.x ? -1.0f : 1.0f;
     const float sy = r_c.y < pivot_c.y ? -1.0f : 1.0f;
@@ -193,15 +193,15 @@ Vec rect_snap(Rect pivot, Rect *r)
     }
 }
 
-Vec rect_impulse(Rect *r1, Rect *r2)
+Vec2f rect_impulse(Rect *r1, Rect *r2)
 {
     trace_assert(r1);
     trace_assert(r2);
 
-    const Vec c1 = rect_center(*r1);
-    const Vec c2 = rect_center(*r2);
+    const Vec2f c1 = rect_center(*r1);
+    const Vec2f c2 = rect_center(*r2);
     const Rect overlap = rects_overlap_area(*r1, *r2);
-    const Vec overlap_center = rect_center(overlap);
+    const Vec2f overlap_center = rect_center(overlap);
     const float dx = overlap_center.x;
     const float dy = overlap_center.y;
     const float sx = c1.x < c2.x ? 1.0f : -1.0f;

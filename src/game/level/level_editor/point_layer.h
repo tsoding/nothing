@@ -30,7 +30,7 @@ int point_layer_dump_stream(const PointLayer *point_layer,
                             FILE *filedump);
 
 size_t point_layer_count(const PointLayer *point_layer);
-const Point *point_layer_positions(const PointLayer *point_layer);
+const Vec2f *point_layer_positions(const PointLayer *point_layer);
 const Color *point_layer_colors(const PointLayer *point_layer);
 const char *point_layer_ids(const PointLayer *point_layer);
 

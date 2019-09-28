@@ -16,14 +16,14 @@ void destroy_sprite_font(Sprite_font *sprite_font);
 
 int sprite_font_render_text(const Sprite_font *sprite_font,
                             SDL_Renderer *renderer,
-                            Vec position,
-                            Vec size,
+                            Vec2f position,
+                            Vec2f size,
                             Color color,
                             const char *text);
 
 Rect sprite_font_boundary_box(const Sprite_font *sprite_font,
-                              Vec position,
-                              Vec size,
+                              Vec2f position,
+                              Vec2f size,
                               const char *text);
 
 #endif  // SPRITE_FONT_H_

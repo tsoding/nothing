@@ -11,7 +11,7 @@
 
 int wiggly_text_render(const WigglyText *wiggly_text,
                        const Camera *camera,
-                       Vec position)
+                       Vec2f position)
 {
     trace_assert(wiggly_text);
     trace_assert(camera);
@@ -46,7 +46,7 @@ int wiggly_text_update(WigglyText *wiggly_text, float delta_time)
     return 0;
 }
 
-Vec wiggly_text_size(const WigglyText *wiggly_text, const Camera *camera)
+Vec2f wiggly_text_size(const WigglyText *wiggly_text, const Camera *camera)
 {
     trace_assert(wiggly_text);
 

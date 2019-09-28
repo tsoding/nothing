@@ -35,13 +35,13 @@ struct PointLayer
 {
     Lt *lt;
     PointLayerState state;
-    Dynarray/*<Point>*/ *positions;
+    Dynarray/*<Vec2f>*/ *positions;
     Dynarray/*<Color>*/ *colors;
     Dynarray/*<char[ID_MAX_SIZE]>*/ *ids;
     int selection;
     ColorPicker color_picker;
 
-    Point inter_position;
+    Vec2f inter_position;
     Color inter_color;
     Edit_field *edit_field;
 
@@ -59,7 +59,7 @@ typedef enum {
 typedef struct {
     UndoType type;
     PointLayer *layer;
-    Point position;
+    Vec2f position;
     Color color;
     char id[ID_MAX_SIZE];
     size_t index;
@@ -176,7 +176,7 @@ PointLayer *create_point_layer(const char *id_name_prefix)
 
     point_layer->state = POINT_LAYER_IDLE;
 
-    point_layer->positions = PUSH_LT(lt, create_dynarray(sizeof(Point)), destroy_dynarray);
+    point_layer->positions = PUSH_LT(lt, create_dynarray(sizeof(Vec2f)), destroy_dynarray);
     if (point_layer->positions == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -234,7 +234,7 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream,
             RETURN_LT(point_layer->lt, NULL);
         }
         const Color color = hexstr(color_name);
-        const Point point = vec(x, y);
+        const Vec2f point = vec(x, y);
 
         dynarray_push(point_layer->colors, &color);
         dynarray_push(point_layer->positions, &point);
@@ -255,7 +255,7 @@ void destroy_point_layer(PointLayer *point_layer)
 }
 
 static inline
-Triangle element_shape(Point position, float scale)
+Triangle element_shape(Vec2f position, float scale)
 {
     return triangle_mat3x3_product(
         equilateral_triangle(),
@@ -272,7 +272,7 @@ int point_layer_render(const PointLayer *point_layer,
     trace_assert(camera);
 
     const int n = (int) dynarray_count(point_layer->positions);
-    Point *positions = dynarray_data(point_layer->positions);
+    Vec2f *positions = dynarray_data(point_layer->positions);
     Color *colors = dynarray_data(point_layer->colors);
     char *ids = dynarray_data(point_layer->ids);
 
@@ -283,7 +283,7 @@ int point_layer_render(const PointLayer *point_layer,
             : colors[i],
             rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f));
 
-        const Point position =
+        const Vec2f position =
             point_layer->state == POINT_LAYER_MOVE && i == point_layer->selection
             ? point_layer->inter_position
             : positions[i];
@@ -339,12 +339,12 @@ int point_layer_render(const PointLayer *point_layer,
 
 static
 int point_layer_element_at(const PointLayer *point_layer,
-                           Point position)
+                           Vec2f position)
 {
     trace_assert(point_layer);
 
     int n = (int) dynarray_count(point_layer->positions);
-    Point *positions = dynarray_data(point_layer->positions);
+    Vec2f *positions = dynarray_data(point_layer->positions);
 
     for (int i = n - 1; i >= 0; --i) {
         if (vec_length(vec_sub(positions[i], position)) < POINT_LAYER_ELEMENT_RADIUS) {
@@ -357,7 +357,7 @@ int point_layer_element_at(const PointLayer *point_layer,
 
 static
 int point_layer_add_element(PointLayer *point_layer,
-                            Point position,
+                            Vec2f position,
                             Color color,
                             UndoHistory *undo_history)
 {
@@ -448,7 +448,7 @@ int point_layer_idle_event(PointLayer *point_layer,
     case SDL_MOUSEBUTTONDOWN: {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
-            const Point position = camera_map_screen(camera, event->button.x, event->button.y);
+            const Vec2f position = camera_map_screen(camera, event->button.x, event->button.y);
 
             point_layer->selection = point_layer_element_at(
                 point_layer, position);
@@ -461,7 +461,7 @@ int point_layer_idle_event(PointLayer *point_layer,
                     undo_history);
             } else {
                 Color *colors = dynarray_data(point_layer->colors);
-                Point *positions = dynarray_data(point_layer->positions);
+                Vec2f *positions = dynarray_data(point_layer->positions);
 
                 point_layer->state = POINT_LAYER_MOVE;
                 point_layer->color_picker =
@@ -532,7 +532,7 @@ int point_layer_idle_event(PointLayer *point_layer,
             if ((event->key.keysym.mod & KMOD_LCTRL) && clipboard) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                Point position = camera_map_screen(camera, x, y);
+                Vec2f position = camera_map_screen(camera, x, y);
 
                 point_layer_add_element(
                     point_layer,
@@ -602,7 +602,7 @@ int point_layer_move_event(PointLayer *point_layer,
     trace_assert(camera);
     trace_assert(point_layer->selection >= 0);
 
-    Point *positions = dynarray_data(point_layer->positions);
+    Vec2f *positions = dynarray_data(point_layer->positions);
 
     switch (event->type) {
     case SDL_MOUSEBUTTONUP: {
@@ -716,7 +716,7 @@ size_t point_layer_count(const PointLayer *point_layer)
     return dynarray_count(point_layer->positions);
 }
 
-const Point *point_layer_positions(const PointLayer *point_layer)
+const Vec2f *point_layer_positions(const PointLayer *point_layer)
 {
     trace_assert(point_layer);
     return dynarray_data(point_layer->positions);
@@ -742,7 +742,7 @@ int point_layer_dump_stream(const PointLayer *point_layer,
 
     size_t n = dynarray_count(point_layer->ids);
     char *ids = dynarray_data(point_layer->ids);
-    Point *positions = dynarray_data(point_layer->positions);
+    Vec2f *positions = dynarray_data(point_layer->positions);
     Color *colors = dynarray_data(point_layer->colors);
 
     fprintf(filedump, "%zd\n", n);

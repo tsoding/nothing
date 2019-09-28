@@ -3,16 +3,14 @@
 
 #include "math/pi.h"
 
-typedef struct Point {
+typedef struct {
     float x, y;
-} Point;
-
-typedef Point Vec;
+} Vec2f;
 
 static inline
-Vec vec(float x, float y)
+Vec2f vec(float x, float y)
 {
-    Vec result = {
+    Vec2f result = {
         .x = x,
         .y = y
     };
@@ -20,9 +18,9 @@ Vec vec(float x, float y)
 }
 
 static inline
-Vec vec_scala_mult(Vec v, float scalar)
+Vec2f vec_scala_mult(Vec2f v, float scalar)
 {
-    Vec result = {
+    Vec2f result = {
         .x = v.x * scalar,
         .y = v.y * scalar
     };
@@ -30,7 +28,7 @@ Vec vec_scala_mult(Vec v, float scalar)
 }
 
 static inline
-Vec vec_from_polar(float arg, float mag)
+Vec2f vec_from_polar(float arg, float mag)
 {
     return vec_scala_mult(
         vec(cosf(arg), sinf(arg)),
@@ -38,9 +36,9 @@ Vec vec_from_polar(float arg, float mag)
 }
 
 static inline
-Vec vec_from_ps(Point p1, Point p2)
+Vec2f vec_from_ps(Vec2f p1, Vec2f p2)
 {
-    Vec result = {
+    Vec2f result = {
         .x = p2.x - p1.x,
         .y = p2.y - p1.y
     };
@@ -48,21 +46,21 @@ Vec vec_from_ps(Point p1, Point p2)
 }
 
 static inline
-float vec_arg(Vec v)
+float vec_arg(Vec2f v)
 {
     return atan2f(v.y, v.x);
 }
 
 static inline
-float vec_mag(Vec v)
+float vec_mag(Vec2f v)
 {
     return sqrtf(v.x * v.x + v.y * v.y);
 }
 
 static inline
-Vec vec_sum(Vec v1, Vec v2)
+Vec2f vec_sum(Vec2f v1, Vec2f v2)
 {
-    Vec result = {
+    Vec2f result = {
         .x = v1.x + v2.x,
         .y = v1.y + v2.y
     };
@@ -70,9 +68,9 @@ Vec vec_sum(Vec v1, Vec v2)
 }
 
 static inline
-Vec vec_sub(Vec v1, Vec v2)
+Vec2f vec_sub(Vec2f v1, Vec2f v2)
 {
-    Vec result = {
+    Vec2f result = {
         .x = v1.x - v2.x,
         .y = v1.y - v2.y
     };
@@ -80,9 +78,9 @@ Vec vec_sub(Vec v1, Vec v2)
 }
 
 static inline
-Vec vec_neg(Vec v)
+Vec2f vec_neg(Vec2f v)
 {
-    Vec result = {
+    Vec2f result = {
         .x = -v.x,
         .y = -v.y
     };
@@ -91,22 +89,22 @@ Vec vec_neg(Vec v)
 }
 
 static inline
-float vec_length(Vec v)
+float vec_length(Vec2f v)
 {
     return sqrtf(v.x * v.x + v.y * v.y);
 }
 
 static inline
-void vec_add(Vec *v1, Vec v2)
+void vec_add(Vec2f *v1, Vec2f v2)
 {
     v1->x += v2.x;
     v1->y += v2.y;
 }
 
 static inline
-Vec vec_entry_mult(Vec v1, Vec v2)
+Vec2f vec_entry_mult(Vec2f v1, Vec2f v2)
 {
-    Vec result = {
+    Vec2f result = {
         .x = v1.x * v2.x,
         .y = v1.y * v2.y
     };
@@ -115,9 +113,9 @@ Vec vec_entry_mult(Vec v1, Vec v2)
 }
 
 static inline
-Vec vec_entry_div(Vec v1, Vec v2)
+Vec2f vec_entry_div(Vec2f v1, Vec2f v2)
 {
-    Vec result = {
+    Vec2f result = {
         .x = v1.x / v2.x,
         .y = v1.y / v2.y
     };
@@ -132,7 +130,7 @@ float rad_to_deg(float a)
 }
 
 static inline
-Vec vec_norm(Vec v)
+Vec2f vec_norm(Vec2f v)
 {
     // TODO(#657): math/point/vec_norm: using vec_length is too expensive
     //   It involves multiplication and sqrt. We can just check if its components are close to 0.0f.
@@ -147,7 +145,7 @@ Vec vec_norm(Vec v)
 }
 
 static inline
-float vec_sqr_norm(Vec v)
+float vec_sqr_norm(Vec2f v)
 {
     return v.x * v.x + v.y * v.y;
 }

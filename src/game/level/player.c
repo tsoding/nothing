@@ -42,7 +42,7 @@ struct Player {
     int jump_threshold;
     Color color;
 
-    Vec checkpoint;
+    Vec2f checkpoint;
 
     int play_die_cue;
 };
@@ -278,7 +278,7 @@ void player_die_from_lava(Player *player,
     }
 }
 
-void player_checkpoint(Player *player, Vec checkpoint)
+void player_checkpoint(Player *player, Vec2f checkpoint)
 {
     player->checkpoint = checkpoint;
 }

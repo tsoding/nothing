@@ -9,16 +9,16 @@
 
 typedef struct {
     const char *text;
-    Vec scale;
+    Vec2f scale;
     Color color;
     float angle;
 } WigglyText;
 
 int wiggly_text_render(const WigglyText *wiggly_text,
                        const Camera *camera,
-                       Vec position);
+                       Vec2f position);
 int wiggly_text_update(WigglyText *wiggly_text, float delta_time);
-Vec wiggly_text_size(const WigglyText *wiggly_text, const Camera *camera);
+Vec2f wiggly_text_size(const WigglyText *wiggly_text, const Camera *camera);
 
 typedef struct {
     WigglyText wiggly_text;
@@ -28,7 +28,7 @@ typedef struct {
 static inline
 int fading_wiggly_text_render(const FadingWigglyText *fading_wiggly_text,
                               const Camera *camera,
-                              Vec position)
+                              Vec2f position)
 {
     return wiggly_text_render(&fading_wiggly_text->wiggly_text, camera, position);
 }
@@ -56,8 +56,8 @@ void fading_wiggly_text_reset(FadingWigglyText *fading_wiggly_text)
 }
 
 static inline
-Vec fading_wiggly_text_size(const FadingWigglyText *fading_wiggly_text,
-                            const Camera *camera)
+Vec2f fading_wiggly_text_size(const FadingWigglyText *fading_wiggly_text,
+                              const Camera *camera)
 {
     return wiggly_text_size(&fading_wiggly_text->wiggly_text, camera);
 }
