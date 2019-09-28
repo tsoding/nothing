@@ -152,4 +152,18 @@ float vec_sqr_norm(Vec2f v)
 
 #define vec_scale vec_scala_mult
 
+typedef struct {
+    int x, y;
+} Vec2i;
+
+static inline
+Vec2i vec2i(int x, int y)
+{
+    Vec2i resoolt = {
+        .x = x,
+        .y = y
+    };
+    return resoolt;
+}
+
 #endif  // POINT_H_

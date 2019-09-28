@@ -10,20 +10,6 @@
 #include "system/stacktrace.h"
 #include "config.h"
 
-typedef struct {
-    int x, y;
-} Vec2i;
-
-static inline
-Vec2i vec2i(int x, int y)
-{
-    Vec2i resoolt = {
-        .x = x,
-        .y = y
-    };
-    return resoolt;
-}
-
 static inline
 Vec2i chunk_of_point(Vec2f p)
 {
