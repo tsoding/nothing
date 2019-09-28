@@ -12,7 +12,7 @@
 #include "game/sound_samples.h"
 #include "game/sprite_font.h"
 #include "math/extrema.h"
-#include "math/point.h"
+#include "math/vec.h"
 #include "sdl/renderer.h"
 #include "system/log.h"
 #include "system/lt.h"

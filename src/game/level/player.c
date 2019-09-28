@@ -7,7 +7,7 @@
 #include "game/level/script.h"
 #include "game/level/rigid_bodies.h"
 #include "goals.h"
-#include "math/point.h"
+#include "math/vec.h"
 #include "platforms.h"
 #include "player.h"
 #include "system/line_stream.h"

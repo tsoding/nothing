@@ -1,6 +1,6 @@
 #include <SDL.h>
 
-#include "math/point.h"
+#include "math/vec.h"
 
 #include "./wiggly_text.h"
 #include "system/lt.h"

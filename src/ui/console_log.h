@@ -1,7 +1,7 @@
 #ifndef CONSOLE_LOG_H_
 #define CONSOLE_LOG_H_
 
-#include "math/point.h"
+#include "math/vec.h"
 #include "game/camera.h"
 
 typedef struct Console_Log Console_Log;

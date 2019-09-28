@@ -132,7 +132,7 @@ add_executable(nothing
   src/math/extrema.h
   src/math/mat3x3.h
   src/math/pi.h
-  src/math/point.h
+  src/math/vec.h
   src/math/rand.c
   src/math/rand.h
   src/math/rect.c

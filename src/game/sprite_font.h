@@ -2,7 +2,7 @@
 #define SPRITE_FONT_H_
 
 #include "color.h"
-#include "math/point.h"
+#include "math/vec.h"
 #include "math/rect.h"
 
 #define FONT_CHAR_WIDTH 7

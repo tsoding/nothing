@@ -1,7 +1,7 @@
 #ifndef POINT_LAYER_H_
 #define POINT_LAYER_H_
 
-#include "math/point.h"
+#include "math/vec.h"
 #include "color.h"
 #include "layer.h"
 

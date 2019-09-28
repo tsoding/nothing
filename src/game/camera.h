@@ -5,7 +5,7 @@
 
 #include "color.h"
 #include "game/sprite_font.h"
-#include "math/point.h"
+#include "math/vec.h"
 #include "math/rect.h"
 #include "math/triangle.h"
 

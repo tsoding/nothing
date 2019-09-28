@@ -4,7 +4,7 @@
 #include <SDL.h>
 
 #include "color.h"
-#include "math/point.h"
+#include "math/vec.h"
 #include "math/triangle.h"
 
 // TODO(#474): there are no logging SDL wrappers (similar to system/nth_alloc)

@@ -4,7 +4,7 @@
 #include <SDL.h>
 
 #include "color.h"
-#include "math/point.h"
+#include "math/vec.h"
 #include "game/camera.h"
 
 typedef struct Edit_field Edit_field;

@@ -6,7 +6,7 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/str.h"
-#include "math/point.h"
+#include "math/vec.h"
 #include "game/sprite_font.h"
 #include "system/log.h"
 

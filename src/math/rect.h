@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include <math.h>
 
-#include "math/point.h"
+#include "math/vec.h"
 
 typedef enum Rect_side {
     RECT_SIDE_LEFT = 0,

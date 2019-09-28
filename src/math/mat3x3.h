@@ -1,7 +1,7 @@
 #ifndef MAT3X3_H_
 #define MAT3X3_H_
 
-#include "point.h"
+#include "vec.h"
 
 typedef struct mat3x3 {
     float M[3][3];

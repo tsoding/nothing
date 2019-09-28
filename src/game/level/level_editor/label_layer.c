@@ -8,7 +8,7 @@
 #include "system/lt.h"
 #include "system/str.h"
 #include "system/log.h"
-#include "math/point.h"
+#include "math/vec.h"
 #include "label_layer.h"
 #include "dynarray.h"
 #include "color.h"

@@ -3,7 +3,7 @@
 
 #include "layer.h"
 #include "color.h"
-#include "math/point.h"
+#include "math/vec.h"
 
 #define LABELS_SIZE vec(2.0f, 2.0f)
 #define LABEL_LAYER_ID_MAX_SIZE 36
