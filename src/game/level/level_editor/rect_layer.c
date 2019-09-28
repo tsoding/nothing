@@ -528,6 +528,8 @@ static int rect_layer_event_move(RectLayer *layer,
     trace_assert(camera);
     trace_assert(layer->selection >= 0);
 
+    Rect *rects = dynarray_data(layer->rects);
+
     switch (event->type) {
     case SDL_MOUSEMOTION: {
         Point position = vec_sub(
@@ -545,8 +547,15 @@ static int rect_layer_event_move(RectLayer *layer,
 
     case SDL_MOUSEBUTTONUP: {
         layer->state = RECT_LAYER_IDLE;
-        UNDO_PUSH(undo_history, create_undo_update_context(layer));
-        dynarray_replace_at(layer->rects, (size_t) layer->selection, &layer->inter_rect);
+
+        float distance = vec_length(
+            vec_sub(rect_position(layer->inter_rect),
+                    rect_position(rects[layer->selection])));
+
+        if (distance > 1e-6) {
+            UNDO_PUSH(undo_history, create_undo_update_context(layer));
+            dynarray_replace_at(layer->rects, (size_t) layer->selection, &layer->inter_rect);
+        }
     } break;
     }
     return 0;
