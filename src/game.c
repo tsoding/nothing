@@ -144,6 +144,11 @@ int game_render(const Game *game)
         if (level_render(game->level, &game->camera) < 0) {
             return -1;
         }
+
+        if (game_render_cursor(game) < 0) {
+            return -1;
+        }
+
     } break;
 
     case GAME_STATE_LEVEL_PICKER: {
