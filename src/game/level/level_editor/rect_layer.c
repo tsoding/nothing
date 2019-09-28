@@ -17,7 +17,6 @@
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
 #define CREATE_AREA_THRESHOLD 10.0
 
-// TODO(#1075): there is no way to modify z order in Rect, Point and Label Layers
 
 
 static int clipboard = 0;
