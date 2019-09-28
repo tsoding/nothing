@@ -8,7 +8,7 @@
 #include "system/lt.h"
 #include "system/str.h"
 #include "system/log.h"
-#include "math/point.h"
+#include "math/vec.h"
 #include "label_layer.h"
 #include "dynarray.h"
 #include "color.h"
@@ -41,9 +41,9 @@ struct LabelLayer {
     Dynarray *texts;
     int selection;
     ColorPicker color_picker;
-    Point move_anchor;
+    Vec2f move_anchor;
     Edit_field *edit_field;
-    Point inter_position;
+    Vec2f inter_position;
     Color inter_color;
     int id_name_counter;
     const char *id_name_prefix;
@@ -60,7 +60,7 @@ typedef struct {
     UndoType type;
     LabelLayer *layer;
     char id[LABEL_LAYER_ID_MAX_SIZE];
-    Point position;
+    Vec2f position;
     Color color;
     char text[LABEL_LAYER_TEXT_MAX_SIZE];
     size_t index;
@@ -185,7 +185,7 @@ LabelLayer *create_label_layer(const char *id_name_prefix)
         RETURN_LT(lt, NULL);
     }
 
-    label_layer->positions = PUSH_LT(lt, create_dynarray(sizeof(Point)), destroy_dynarray);
+    label_layer->positions = PUSH_LT(lt, create_dynarray(sizeof(Vec2f)), destroy_dynarray);
     if (label_layer->positions == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -243,7 +243,7 @@ LabelLayer *create_label_layer_from_line_stream(LineStream *line_stream, const c
     for (size_t i = 0; i < n; ++i) {
         char hex[7];
         char id[LABEL_LAYER_ID_MAX_SIZE];
-        Point position;
+        Vec2f position;
 
         line = line_stream_next(line_stream);
         if (line == NULL) {
@@ -298,7 +298,7 @@ int label_layer_render(const LabelLayer *label_layer,
 
     size_t n = dynarray_count(label_layer->ids);
     char *ids = dynarray_data(label_layer->ids);
-    Point *positions = dynarray_data(label_layer->positions);
+    Vec2f *positions = dynarray_data(label_layer->positions);
     Color *colors = dynarray_data(label_layer->colors);
     char *texts = dynarray_data(label_layer->texts);
 
@@ -308,7 +308,7 @@ int label_layer_render(const LabelLayer *label_layer,
             ? label_layer->inter_color
             : colors[i];
 
-        const Point position =
+        const Vec2f position =
             label_layer->state == LABEL_LAYER_MOVE && label_layer->selection == (int) i
             ? label_layer->inter_position
             : positions[i];
@@ -396,14 +396,14 @@ int label_layer_render(const LabelLayer *label_layer,
 static
 int label_layer_element_at(LabelLayer *label_layer,
                            const Sprite_font *font,
-                           Point position)
+                           Vec2f position)
 {
     trace_assert(label_layer);
 
     const int n = (int) dynarray_count(label_layer->texts);
     char *ids = dynarray_data(label_layer->ids);
     char *texts = dynarray_data(label_layer->texts);
-    Point *positions = dynarray_data(label_layer->positions);
+    Vec2f *positions = dynarray_data(label_layer->positions);
 
     for (int i = n - 1; i >= 0; --i) {
         Rect boundary = rect_boundary2(
@@ -447,7 +447,7 @@ void label_layer_delete_selected_label(LabelLayer *label_layer,
 
 static
 int label_layer_add_label(LabelLayer *label_layer,
-                          Point position,
+                          Vec2f position,
                           Color color,
                           const char *text,
                           UndoHistory *undo_history)
@@ -523,7 +523,7 @@ int label_layer_idle_event(LabelLayer *label_layer,
     }
 
     Color *colors = dynarray_data(label_layer->colors);
-    Point *positions = dynarray_data(label_layer->positions);
+    Vec2f *positions = dynarray_data(label_layer->positions);
     char *ids = dynarray_data(label_layer->ids);
     char *texts = dynarray_data(label_layer->texts);
 
@@ -531,7 +531,7 @@ int label_layer_idle_event(LabelLayer *label_layer,
     case SDL_MOUSEBUTTONDOWN: {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
-            const Point position = camera_map_screen(
+            const Vec2f position = camera_map_screen(
                 camera,
                 event->button.x,
                 event->button.y);
@@ -648,7 +648,7 @@ int label_layer_idle_event(LabelLayer *label_layer,
             if ((event->key.keysym.mod & KMOD_LCTRL) && clipboard) {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                Point position = camera_map_screen(camera, x, y);
+                Vec2f position = camera_map_screen(camera, x, y);
 
                 label_layer_add_label(
                     label_layer,
@@ -676,7 +676,7 @@ int label_layer_move_event(LabelLayer *label_layer,
     trace_assert(camera);
     trace_assert(label_layer->selection >= 0);
 
-    Point *positions = dynarray_data(label_layer->positions);
+    Vec2f *positions = dynarray_data(label_layer->positions);
 
     switch (event->type) {
     case SDL_MOUSEMOTION: {
@@ -870,7 +870,7 @@ char *label_layer_ids(const LabelLayer *label_layer)
     return dynarray_data(label_layer->ids);
 }
 
-Point *label_layer_positions(const LabelLayer *label_layer)
+Vec2f *label_layer_positions(const LabelLayer *label_layer)
 {
     return dynarray_data(label_layer->positions);
 }
@@ -892,7 +892,7 @@ int label_layer_dump_stream(const LabelLayer *label_layer, FILE *filedump)
 
     size_t n = dynarray_count(label_layer->ids);
     char *ids = dynarray_data(label_layer->ids);
-    Point *positions = dynarray_data(label_layer->positions);
+    Vec2f *positions = dynarray_data(label_layer->positions);
     Color *colors = dynarray_data(label_layer->colors);
     char *texts = dynarray_data(label_layer->texts);
 

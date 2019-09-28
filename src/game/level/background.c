@@ -10,22 +10,8 @@
 #include "system/stacktrace.h"
 #include "config.h"
 
-typedef struct {
-    int x, y;
-} Vec2i;
-
 static inline
-Vec2i vec2i(int x, int y)
-{
-    Vec2i resoolt = {
-        .x = x,
-        .y = y
-    };
-    return resoolt;
-}
-
-static inline
-Vec2i chunk_of_point(Point p)
+Vec2i chunk_of_point(Vec2f p)
 {
     return vec2i(
         (int) floorf(p.x / BACKGROUND_CHUNK_WIDTH),
@@ -95,7 +81,7 @@ int background_render(const Background *background,
 
     for (int l = 0; l < BACKGROUND_LAYERS_COUNT; ++l) {
         const Rect view_port = camera_view_port(&camera);
-        const Vec position = vec(view_port.x, view_port.y);
+        const Vec2f position = vec(view_port.x, view_port.y);
 
         Vec2i min = chunk_of_point(position);
         Vec2i max = chunk_of_point(vec_sum(position, vec(view_port.w, view_port.h)));

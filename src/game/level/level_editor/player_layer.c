@@ -11,7 +11,7 @@
 
 typedef struct {
     PlayerLayer *layer;
-    Point position;
+    Vec2f position;
     Color color;
 } UndoContext;
 
@@ -41,7 +41,7 @@ void player_layer_undo(void *context, size_t context_size)
     player_layer->prev_color = undo_context->color;
 }
 
-PlayerLayer create_player_layer(Vec position, Color color)
+PlayerLayer create_player_layer(Vec2f position, Color color)
 {
     return (PlayerLayer) {
         .position = position,
@@ -58,7 +58,7 @@ PlayerLayer create_player_layer_from_line_stream(LineStream *line_stream)
     trace_assert(line);
 
     char colorstr[7] = "000000";
-    Point position = vec(0.0f, 0.0f);
+    Vec2f position = vec(0.0f, 0.0f);
 
     const int bound =
         sscanf(line, "%f%f%6s", &position.x, &position.y, colorstr);

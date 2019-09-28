@@ -1,7 +1,7 @@
 #ifndef LABELS_H_
 #define LABELS_H_
 
-#include "math/point.h"
+#include "math/vec.h"
 #include "color.h"
 #include "ebisp/expr.h"
 

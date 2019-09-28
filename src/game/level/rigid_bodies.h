@@ -33,17 +33,17 @@ Rect rigid_bodies_hitbox(const RigidBodies *rigid_bodies,
 
 void rigid_bodies_move(RigidBodies *rigid_bodies,
                        RigidBodyId id,
-                       Vec movement);
+                       Vec2f movement);
 
 int rigid_bodies_touches_ground(const RigidBodies *rigid_bodies,
                                 RigidBodyId id);
 
 void rigid_bodies_apply_force(RigidBodies * rigid_bodies,
                               RigidBodyId id,
-                              Vec force);
+                              Vec2f force);
 
 void rigid_bodies_apply_omniforce(RigidBodies *rigid_bodies,
-                                  Vec force);
+                                  Vec2f force);
 
 void rigid_bodies_transform_velocity(RigidBodies *rigid_bodies,
                                      RigidBodyId id,
@@ -51,11 +51,11 @@ void rigid_bodies_transform_velocity(RigidBodies *rigid_bodies,
 
 void rigid_bodies_teleport_to(RigidBodies *rigid_bodies,
                               RigidBodyId id,
-                              Vec position);
+                              Vec2f position);
 
 void rigid_bodies_damper(RigidBodies *rigid_bodies,
                          RigidBodyId id,
-                         Vec v);
+                         Vec2f v);
 
 void rigid_bodies_disable(RigidBodies *rigid_bodies,
                           RigidBodyId id,

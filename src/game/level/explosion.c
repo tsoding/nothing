@@ -11,10 +11,10 @@
 #define EXPLOSION_PIECE_SIZE 20.0f
 
 typedef struct Piece {
-    Point position;
+    Vec2f position;
     float angle;
     float angle_velocity;
-    Vec direction;
+    Vec2f direction;
     Triangle body;
 } Piece;
 
@@ -22,7 +22,7 @@ struct Explosion
 {
     Lt *lt;
 
-    Vec position;
+    Vec2f position;
     Color color;
     float duration;
     float time_passed;
@@ -118,7 +118,7 @@ int explosion_is_done(const Explosion *explosion)
 }
 
 void explosion_start(Explosion *explosion,
-                     Vec position)
+                     Vec2f position)
 {
     explosion->position = position;
     explosion->time_passed = 0;

@@ -27,7 +27,7 @@ struct Labels
     Lt *lt;
     size_t count;
     char *ids;
-    Vec *positions;
+    Vec2f *positions;
     Color *colors;
     char **texts;
 
@@ -62,7 +62,7 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    labels->positions = PUSH_LT(lt, nth_calloc(1, sizeof(Vec) * labels->count), free);
+    labels->positions = PUSH_LT(lt, nth_calloc(1, sizeof(Vec2f) * labels->count), free);
     if (labels->positions == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -149,13 +149,13 @@ Labels *create_labels_from_label_layer(const LabelLayer *label_layer)
            label_layer_ids(label_layer),
            labels->count * sizeof(char) * LABEL_MAX_ID_SIZE);
 
-    labels->positions = PUSH_LT(lt, nth_calloc(1, sizeof(Vec) * labels->count), free);
+    labels->positions = PUSH_LT(lt, nth_calloc(1, sizeof(Vec2f) * labels->count), free);
     if (labels->positions == NULL) {
         RETURN_LT(lt, NULL);
     }
     memcpy(labels->positions,
            label_layer_positions(label_layer),
-           labels->count * sizeof(Point));
+           labels->count * sizeof(Vec2f));
 
     labels->colors = PUSH_LT(lt, nth_calloc(1, sizeof(Color) * labels->count), free);
     if (labels->colors == NULL) {

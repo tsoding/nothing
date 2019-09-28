@@ -1,7 +1,7 @@
 #ifndef SOUND_SAMPLES_H_
 #define SOUND_SAMPLES_H_
 
-#include "math/point.h"
+#include "math/vec.h"
 
 typedef struct Sound_samples Sound_samples;
 

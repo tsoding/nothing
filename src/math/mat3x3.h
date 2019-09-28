@@ -1,7 +1,7 @@
 #ifndef MAT3X3_H_
 #define MAT3X3_H_
 
-#include "point.h"
+#include "vec.h"
 
 typedef struct mat3x3 {
     float M[3][3];
@@ -61,7 +61,7 @@ mat3x3 trans_mat(float x, float y)
 }
 
 static inline
-mat3x3 trans_mat_vec(Vec v)
+mat3x3 trans_mat_vec(Vec2f v)
 {
     return trans_mat(v.x, v.y);
 }
@@ -95,7 +95,7 @@ mat3x3 scale_mat(float factor)
 }
 
 static inline
-Point point_mat3x3_product(Point p, mat3x3 m)
+Vec2f point_mat3x3_product(Vec2f p, mat3x3 m)
 {
     /* Convert p to Homogeneous coordinates */
     const float homo_p[3] = {p.x, p.y, 1};
@@ -108,7 +108,7 @@ Point point_mat3x3_product(Point p, mat3x3 m)
     };
 
     /* Convert p back to Cartesian coordinates */
-    const Point result_p = {
+    const Vec2f result_p = {
         .x = trans_p[0] / trans_p[2],
         .y = trans_p[1] / trans_p[2]
     };

@@ -17,7 +17,7 @@ struct Edit_field
     char *buffer;
     size_t buffer_size;
     size_t cursor;
-    Vec font_size;
+    Vec2f font_size;
     Color font_color;
 };
 
@@ -299,7 +299,7 @@ static void handle_keydown_ctrl(Edit_field *edit_field, const SDL_Event *event)
     }
 }
 
-Edit_field *create_edit_field(Vec font_size,
+Edit_field *create_edit_field(Vec2f font_size,
                               Color font_color)
 {
     Lt *lt = create_lt();
@@ -333,7 +333,7 @@ void destroy_edit_field(Edit_field *edit_field)
 
 int edit_field_render_screen(const Edit_field *edit_field,
                              const Camera *camera,
-                             Point screen_position)
+                             Vec2f screen_position)
 {
     trace_assert(edit_field);
     trace_assert(camera);
@@ -366,7 +366,7 @@ int edit_field_render_screen(const Edit_field *edit_field,
 
 int edit_field_render_world(const Edit_field *edit_field,
                             const Camera *camera,
-                            Point world_position)
+                            Vec2f world_position)
 {
     trace_assert(edit_field);
     trace_assert(camera);
@@ -461,7 +461,7 @@ void edit_field_clean(Edit_field *edit_field)
 }
 
 void edit_field_restyle(Edit_field *edit_field,
-                        Vec font_size,
+                        Vec2f font_size,
                         Color font_color)
 {
     trace_assert(edit_field);

@@ -42,7 +42,7 @@ int slider_event(Slider *slider, const SDL_Event *event, Rect boundary, int *sel
     if (!slider->drag) {
         switch (event->type) {
         case SDL_MOUSEBUTTONDOWN: {
-            Point position = vec((float) event->button.x, (float) event->button.y);
+            Vec2f position = vec((float) event->button.x, (float) event->button.y);
             if (rect_contains_point(boundary, position)) {
                 slider->drag = 1;
                 if (selected) {

@@ -83,7 +83,7 @@ int color_picker_render(const ColorPicker *color_picker,
                  boundary.y + color_slider_height * (float) (index + 1),
                  boundary.w, color_slider_height);
         const float font_scale = boundary.w / COLOR_PICKER_WIDTH;
-        const Point label_size = vec(2.5f * font_scale, 2.5f * font_scale);
+        const Vec2f label_size = vec(2.5f * font_scale, 2.5f * font_scale);
 
         if (slider_render(
                 &color_picker->sliders[index],

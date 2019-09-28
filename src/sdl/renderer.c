@@ -113,7 +113,7 @@ int fill_triangle(SDL_Renderer *render,
             return -1;
         }
     } else {
-        const Point p4 = vec(t.p1.x + ((t.p2.y - t.p1.y) / (t.p3.y - t.p1.y)) * (t.p3.x - t.p1.x), t.p2.y);
+        const Vec2f p4 = vec(t.p1.x + ((t.p2.y - t.p1.y) / (t.p3.y - t.p1.y)) * (t.p3.x - t.p1.x), t.p2.y);
 
         if (fill_bottom_flat_triangle(render, triangle(t.p1, t.p2, p4)) < 0) {
             return -1;

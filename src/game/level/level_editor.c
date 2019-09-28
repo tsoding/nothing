@@ -350,9 +350,9 @@ int level_editor_render(const LevelEditor *level_editor,
 
     if (level_editor->state == LEVEL_EDITOR_SAVEAS) {
         /* CSS */
-        const Point size = LEVEL_EDITOR_EDIT_FIELD_SIZE;
+        const Vec2f size = LEVEL_EDITOR_EDIT_FIELD_SIZE;
         const char *save_as_text = "Save as: ";
-        const Point position = vec(200.0f, 200.0f);
+        const Vec2f position = vec(200.0f, 200.0f);
         const float save_as_width =
             (float) strlen(save_as_text) * FONT_CHAR_WIDTH * size.x;
 
@@ -375,7 +375,7 @@ int level_editor_render(const LevelEditor *level_editor,
     }
 
     const Rect screen_viewport = camera_view_port_screen(camera);
-    const Vec text_size = fading_wiggly_text_size(
+    const Vec2f text_size = fading_wiggly_text_size(
         &level_editor->notice,
         camera);
 
@@ -455,14 +455,14 @@ int level_editor_idle_event(LevelEditor *level_editor,
         int x, y;
         SDL_GetMouseState(&x, &y);
 
-        Vec position = camera_map_screen(camera, x, y);
+        Vec2f position = camera_map_screen(camera, x, y);
         if (event->wheel.y > 0) {
             level_editor->camera_scale += 0.1f;
         } else if (event->wheel.y < 0) {
             level_editor->camera_scale = fmaxf(0.1f, level_editor->camera_scale - 0.1f);
         }
         camera_scale(camera, level_editor->camera_scale);
-        Vec zoomed_position = camera_map_screen(camera, x, y);
+        Vec2f zoomed_position = camera_map_screen(camera, x, y);
 
         level_editor->camera_position =
             vec_sum(
@@ -484,8 +484,8 @@ int level_editor_idle_event(LevelEditor *level_editor,
 
     case SDL_MOUSEMOTION: {
         if (level_editor->drag) {
-            const Vec next_position = camera_map_screen(camera, event->motion.x, event->motion.y);
-            const Vec prev_position = camera_map_screen(
+            const Vec2f next_position = camera_map_screen(camera, event->motion.x, event->motion.y);
+            const Vec2f prev_position = camera_map_screen(
                 camera,
                 event->motion.x + event->motion.xrel,
                 event->motion.y + event->motion.yrel);

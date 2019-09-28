@@ -20,11 +20,11 @@ struct LevelPicker
 {
     Lt *lt;
     Background *background;
-    Vec camera_position;
+    Vec2f camera_position;
     LevelFolder *level_folder;
     WigglyText wiggly_text;
     Slider volume_slider;
-    Vec volume_slider_scale;
+    Vec2f volume_slider_scale;
     ListSelector *list_selector;
 };
 
@@ -107,7 +107,7 @@ int level_picker_render(const LevelPicker *level_picker,
         return -1;
     }
 
-    const Vec title_size = wiggly_text_size(&level_picker->wiggly_text, camera);
+    const Vec2f title_size = wiggly_text_size(&level_picker->wiggly_text, camera);
 
     if (wiggly_text_render(
             &level_picker->wiggly_text,
@@ -123,8 +123,8 @@ int level_picker_render(const LevelPicker *level_picker,
     {
         /* CSS */
         const float padding = 20.0f;
-        const Point size = vec(3.0f, 3.0f);
-        const Point position = vec(0.0f, viewport.h - size.y * FONT_CHAR_HEIGHT);
+        const Vec2f size = vec(3.0f, 3.0f);
+        const Vec2f position = vec(0.0f, viewport.h - size.y * FONT_CHAR_HEIGHT);
 
         /* HTML */
         if (camera_render_text_screen(
@@ -202,15 +202,15 @@ int level_picker_event(LevelPicker *level_picker,
         switch (event->window.event) {
         case SDL_WINDOWEVENT_SHOWN:
         case SDL_WINDOWEVENT_RESIZED: {
-            const Vec font_scale = vec(5.0f, 5.0f);
+            const Vec2f font_scale = vec(5.0f, 5.0f);
             const float padding_bottom = 50.0f;
 
             int width;
             SDL_GetWindowSize(SDL_GetWindowFromID(event->window.windowID), &width, NULL);
 
-            const Vec title_size = wiggly_text_size(&level_picker->wiggly_text, camera);
+            const Vec2f title_size = wiggly_text_size(&level_picker->wiggly_text, camera);
 
-            const Vec selector_size = list_selector_size(
+            const Vec2f selector_size = list_selector_size(
                 level_picker->list_selector,
                 font_scale,
                 padding_bottom);

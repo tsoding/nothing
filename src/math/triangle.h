@@ -1,14 +1,14 @@
 #ifndef TRIANGLE_H_
 #define TRIANGLE_H_
 
-#include "math/point.h"
+#include "math/vec.h"
 #include "math/rect.h"
 
 typedef struct Triangle {
-    Point p1, p2, p3;
+    Vec2f p1, p2, p3;
 } Triangle;
 
-Triangle triangle(Point p1, Point p2, Point p3);
+Triangle triangle(Vec2f p1, Vec2f p2, Vec2f p3);
 Triangle equilateral_triangle(void);
 Triangle random_triangle(float radius);
 Triangle triangle_sorted_by_y(Triangle t);

@@ -1,18 +1,18 @@
 #ifndef CONSOLE_LOG_H_
 #define CONSOLE_LOG_H_
 
-#include "math/point.h"
+#include "math/vec.h"
 #include "game/camera.h"
 
 typedef struct Console_Log Console_Log;
 
-Console_Log *create_console_log(Vec font_size,
+Console_Log *create_console_log(Vec2f font_size,
                                 size_t capacity);
 void destroy_console_log(Console_Log *console_log);
 
 int console_log_render(const Console_Log *console_log,
                        const Camera *camera,
-                       Point position);
+                       Vec2f position);
 
 int console_log_push_line(Console_Log *console_log,
                           const char *line,

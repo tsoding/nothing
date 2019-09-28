@@ -20,10 +20,10 @@ struct RigidBodies
     size_t count;
 
     Rect *bodies;
-    Vec *velocities;
-    Vec *movements;
+    Vec2f *velocities;
+    Vec2f *movements;
     bool *grounded;
-    Vec *forces;
+    Vec2f *forces;
     bool *deleted;
     bool *disabled;
 };
@@ -46,12 +46,12 @@ RigidBodies *create_rigid_bodies(size_t capacity)
         RETURN_LT(lt, NULL);
     }
 
-    rigid_bodies->velocities = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec)), free);
+    rigid_bodies->velocities = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec2f)), free);
     if (rigid_bodies->velocities == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    rigid_bodies->movements = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec)), free);
+    rigid_bodies->movements = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec2f)), free);
     if (rigid_bodies->movements == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -61,7 +61,7 @@ RigidBodies *create_rigid_bodies(size_t capacity)
         RETURN_LT(lt, NULL);
     }
 
-    rigid_bodies->forces = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec)), free);
+    rigid_bodies->forces = PUSH_LT(lt, nth_calloc(capacity, sizeof(Vec2f)), free);
     if (rigid_bodies->forces == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -125,7 +125,7 @@ int rigid_bodies_collide(RigidBodies *rigid_bodies,
                 rigid_bodies->grounded[i1] = true;
             }
 
-            Vec v = platforms_snap_rect(platforms, &rigid_bodies->bodies[i1]);
+            Vec2f v = platforms_snap_rect(platforms, &rigid_bodies->bodies[i1]);
             rigid_bodies->velocities[i1] = vec_entry_mult(rigid_bodies->velocities[i1], v);
             rigid_bodies->movements[i1] = vec_entry_mult(rigid_bodies->movements[i1], v);
             rigid_bodies_damper(rigid_bodies, i1, vec_entry_mult(v, vec(-16.0f, 0.0f)));
@@ -146,7 +146,7 @@ int rigid_bodies_collide(RigidBodies *rigid_bodies,
 
                 the_variable_that_gets_set_when_a_collision_happens_xd = 1;
 
-                Vec orient = rect_impulse(&rigid_bodies->bodies[i1], &rigid_bodies->bodies[i2]);
+                Vec2f orient = rect_impulse(&rigid_bodies->bodies[i1], &rigid_bodies->bodies[i2]);
 
                 if (orient.x > orient.y) {
                     if (rigid_bodies->bodies[i1].y < rigid_bodies->bodies[i2].y) {
@@ -183,7 +183,7 @@ int rigid_bodies_update(RigidBodies *rigid_bodies,
                 rigid_bodies->forces[id],
                 delta_time));
 
-    Vec position = vec(rigid_bodies->bodies[id].x,
+    Vec2f position = vec(rigid_bodies->bodies[id].x,
                        rigid_bodies->bodies[id].y);
 
     position = vec_sum(
@@ -301,7 +301,7 @@ Rect rigid_bodies_hitbox(const RigidBodies *rigid_bodies,
 
 void rigid_bodies_move(RigidBodies *rigid_bodies,
                        RigidBodyId id,
-                       Vec movement)
+                       Vec2f movement)
 {
     trace_assert(rigid_bodies);
     trace_assert(id < rigid_bodies->count);
@@ -323,7 +323,7 @@ int rigid_bodies_touches_ground(const RigidBodies *rigid_bodies,
 }
 
 void rigid_bodies_apply_omniforce(RigidBodies *rigid_bodies,
-                                  Vec force)
+                                  Vec2f force)
 {
     for (size_t i = 0; i < rigid_bodies->count; ++i) {
         rigid_bodies_apply_force(rigid_bodies, i, force);
@@ -332,7 +332,7 @@ void rigid_bodies_apply_omniforce(RigidBodies *rigid_bodies,
 
 void rigid_bodies_apply_force(RigidBodies * rigid_bodies,
                               RigidBodyId id,
-                              Vec force)
+                              Vec2f force)
 {
     trace_assert(rigid_bodies);
     trace_assert(id < rigid_bodies->count);
@@ -362,7 +362,7 @@ void rigid_bodies_transform_velocity(RigidBodies *rigid_bodies,
 
 void rigid_bodies_teleport_to(RigidBodies *rigid_bodies,
                               RigidBodyId id,
-                              Vec position)
+                              Vec2f position)
 {
     trace_assert(rigid_bodies);
     trace_assert(id < rigid_bodies->count);
@@ -377,7 +377,7 @@ void rigid_bodies_teleport_to(RigidBodies *rigid_bodies,
 
 void rigid_bodies_damper(RigidBodies *rigid_bodies,
                          RigidBodyId id,
-                         Vec v)
+                         Vec2f v)
 {
     trace_assert(rigid_bodies);
     trace_assert(id < rigid_bodies->count);

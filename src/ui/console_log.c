@@ -5,7 +5,7 @@
 #include "color.h"
 #include "game/sprite_font.h"
 #include "console_log.h"
-#include "math/point.h"
+#include "math/vec.h"
 #include "system/str.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
@@ -14,7 +14,7 @@ struct Console_Log
 {
     Lt *lt;
 
-    Vec font_size;
+    Vec2f font_size;
 
     Color *colors;
     char **buffer;
@@ -22,7 +22,7 @@ struct Console_Log
     size_t capacity;
 };
 
-Console_Log *create_console_log(Vec font_size,
+Console_Log *create_console_log(Vec2f font_size,
                                 size_t capacity)
 {
     Lt *lt = create_lt();
@@ -63,7 +63,7 @@ void destroy_console_log(Console_Log *console_log)
 
 int console_log_render(const Console_Log *console_log,
                        const Camera *camera,
-                       Point position)
+                       Vec2f position)
 {
     trace_assert(console_log);
     trace_assert(camera);

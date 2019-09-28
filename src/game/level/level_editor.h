@@ -22,7 +22,7 @@ struct LevelEditor
 {
     Lt *lt;
     LevelEditorState state;
-    Vec camera_position;
+    Vec2f camera_position;
     float camera_scale;
     Edit_field *edit_field_filename;
     LayerPicker layer_picker;

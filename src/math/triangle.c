@@ -5,7 +5,7 @@
 #include "math/rand.h"
 #include "triangle.h"
 
-Triangle triangle(Point p1, Point p2, Point p3)
+Triangle triangle(Vec2f p1, Vec2f p2, Vec2f p3)
 {
     const Triangle result = {
         .p1 = p1,
@@ -37,9 +37,9 @@ Triangle random_triangle(float radius)
         vec_from_polar(rand_float(2 * PI), rand_float(radius)));
 }
 
-static void swap_points(Point *p1, Point *p2)
+static void swap_points(Vec2f *p1, Vec2f *p2)
 {
-    Point t = *p1;
+    Vec2f t = *p1;
     *p1 = *p2;
     *p2 = t;
 }

@@ -19,7 +19,7 @@ int platforms_render(const Platforms *platforms,
 void platforms_touches_rect_sides(const Platforms *platforms,
                                   Rect object,
                                   int sides[RECT_SIDE_N]);
-Vec platforms_snap_rect(const Platforms *platforms,
-                        Rect *object);
+Vec2f platforms_snap_rect(const Platforms *platforms,
+                          Rect *object);
 
 #endif  // PLATFORMS_H_

@@ -20,6 +20,6 @@ int explosion_update(Explosion *explosion,
 
 int explosion_is_done(const Explosion *explosion);
 
-void explosion_start(Explosion *explosion, Vec position);
+void explosion_start(Explosion *explosion, Vec2f position);
 
 #endif  // EXPLOSION_H_
