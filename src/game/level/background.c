@@ -92,7 +92,7 @@ int background_render(const Background *background,
         return -1;
     }
 
-    camera.scale = 1.0f - BACKGROUND_LAYERS_STEP * (BACKGROUND_LAYERS_COUNT - 1);
+    camera.scale = 1.0f - BACKGROUND_LAYERS_STEP * BACKGROUND_LAYERS_COUNT;
 
     for (int l = 0; l < BACKGROUND_LAYERS_COUNT; ++l) {
         const Rect view_port = camera_view_port(&camera);
@@ -133,7 +133,6 @@ int render_chunk(const Background *background,
     }
 
     srand((unsigned int)(roundf((float)chunk.x + (float)chunk.y + camera->scale * 10.0f)));
-
 
     for (size_t i = 0; i < BACKGROUND_TURDS_PER_CHUNK; ++i) {
         const float rect_x = rand_float_range(0.0f, BACKGROUND_CHUNK_WIDTH);
