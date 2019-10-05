@@ -17,21 +17,30 @@ static bool equal_atoms(struct Atom *atom1, struct Atom *atom2)
     }
 
     switch (atom1->type) {
-    case ATOM_SYMBOL:
+    case ATOM_SYMBOL: {
         return strcmp(atom1->sym, atom2->sym) == 0;
+    }
 
-    case ATOM_NUMBER:
+    case ATOM_INTEGER: {
         return atom1->num == atom2->num;
+    }
 
-    case ATOM_STRING:
+    case ATOM_REAL: {
+        return atom1->real == atom2->real;
+    }
+
+    case ATOM_STRING: {
         return strcmp(atom1->str, atom2->str) == 0;
+    }
 
-    case ATOM_LAMBDA:
+    case ATOM_LAMBDA: {
         return atom1 == atom2;
+    }
 
-    case ATOM_NATIVE:
+    case ATOM_NATIVE: {
         return atom1->native.fun == atom2->native.fun
             && atom1->native.param == atom2->native.param;
+    }
     }
 
     return false;
@@ -77,10 +86,10 @@ bool symbol_p(struct Expr obj)
         && obj.atom->type == ATOM_SYMBOL;
 }
 
-bool number_p(struct Expr obj)
+bool integer_p(struct Expr obj)
 {
     return obj.type == EXPR_ATOM
-        && obj.atom->type == ATOM_NUMBER;
+        && obj.atom->type == ATOM_INTEGER;
 }
 
 bool string_p(struct Expr obj)
@@ -185,7 +194,7 @@ list_rec(Gc *gc, const char *format, va_list args)
     switch (*format) {
     case 'd': {
         long int p = va_arg(args, long int);
-        return CONS(gc, NUMBER(gc, p),
+        return CONS(gc, INTEGER(gc, p),
                     list_rec(gc, format + 1, args));
     }
 

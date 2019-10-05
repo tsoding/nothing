@@ -11,7 +11,8 @@ typedef struct Scope Scope;
 struct Cons;
 struct Atom;
 
-#define NUMBER(G, X) atom_as_expr(create_number_atom(G, X))
+#define INTEGER(G, X) atom_as_expr(create_integer_atom(G, X))
+#define REAL(G, X) atom_as_expr(create_real_atom(G, X))
 #define STRING(G, S) atom_as_expr(create_string_atom(G, S, NULL))
 #define SYMBOL(G, S) atom_as_expr(create_symbol_atom(G, S, NULL))
 #define NATIVE(G, F, P) atom_as_expr(create_native_atom(G, F, P))
@@ -76,7 +77,8 @@ struct Lambda
 enum AtomType
 {
     ATOM_SYMBOL = 0,
-    ATOM_NUMBER,
+    ATOM_INTEGER,
+    ATOM_REAL,
     ATOM_STRING,
     ATOM_LAMBDA,
     ATOM_NATIVE
@@ -90,7 +92,8 @@ struct Atom
     union
     {
         // TODO(#330): Atom doesn't support floats
-        long int num;           // ATOM_NUMBER
+        long int num;           // ATOM_INTEGER
+        float real;             // ATOM_REAL
         char *sym;              // ATOM_SYMBOL
         char *str;              // ATOM_STRING
         struct Lambda lambda;   // ATOM_LAMBDA
@@ -98,7 +101,8 @@ struct Atom
     };
 };
 
-struct Atom *create_number_atom(Gc *gc, long int num);
+struct Atom *create_integer_atom(Gc *gc, long int num);
+struct Atom *create_real_atom(Gc *gc, float num);
 struct Atom *create_string_atom(Gc *gc, const char *str, const char *str_end);
 struct Atom *create_symbol_atom(Gc *gc, const char *sym, const char *sym_end);
 struct Atom *create_lambda_atom(Gc *gc, struct Expr args_list, struct Expr body, struct Expr envir);
