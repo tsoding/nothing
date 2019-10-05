@@ -115,7 +115,7 @@ plus_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     trace_assert(gc);
     trace_assert(scope);
 
-    // TODO: plus_op does not support floats
+    // TODO(#1100): plus_op does not support floats
 
     long int result = 0L;
 
