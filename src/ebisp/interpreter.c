@@ -263,7 +263,7 @@ match_list(struct Gc *gc, const char *format, struct Expr xs, ...)
     va_list args_list;
     va_start(args_list, xs);
 
-    // TODO: match_list does not support real numbers
+    // TODO(#1098): match_list does not support real numbers
 
     long int i = 0;
     for (i = 0; *format != 0 && !nil_p(xs); ++i) {
