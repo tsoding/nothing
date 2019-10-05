@@ -67,7 +67,7 @@ greaterThan(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     trace_assert(scope);
     (void) param;
 
-    // TODO: greaterThan does not support floats
+    // TODO(#1099): greaterThan does not support floats
 
     long int x1 = 0;
     struct Expr xs = void_expr();
