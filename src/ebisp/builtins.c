@@ -17,21 +17,30 @@ static bool equal_atoms(struct Atom *atom1, struct Atom *atom2)
     }
 
     switch (atom1->type) {
-    case ATOM_SYMBOL:
+    case ATOM_SYMBOL: {
         return strcmp(atom1->sym, atom2->sym) == 0;
+    }
 
-    case ATOM_INTEGER:
+    case ATOM_INTEGER: {
         return atom1->num == atom2->num;
+    }
 
-    case ATOM_STRING:
+    case ATOM_REAL: {
+        return atom1->real == atom2->real;
+    }
+
+    case ATOM_STRING: {
         return strcmp(atom1->str, atom2->str) == 0;
+    }
 
-    case ATOM_LAMBDA:
+    case ATOM_LAMBDA: {
         return atom1 == atom2;
+    }
 
-    case ATOM_NATIVE:
+    case ATOM_NATIVE: {
         return atom1->native.fun == atom2->native.fun
             && atom1->native.param == atom2->native.param;
+    }
     }
 
     return false;

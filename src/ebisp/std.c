@@ -67,6 +67,8 @@ greaterThan(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     trace_assert(scope);
     (void) param;
 
+    // TODO: greaterThan does not support floats
+
     long int x1 = 0;
     struct Expr xs = void_expr();
 
@@ -113,6 +115,8 @@ plus_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     trace_assert(gc);
     trace_assert(scope);
 
+    // TODO: plus_op does not support floats
+
     long int result = 0L;
 
     while (!nil_p(args)) {
@@ -139,6 +143,8 @@ mul_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
     trace_assert(scope);
 
     long int result = 1L;
+
+    // TODO: mul_op does not support floats
 
     while (!nil_p(args)) {
         if (!cons_p(args)) {

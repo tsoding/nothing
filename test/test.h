@@ -73,8 +73,8 @@
         fprintf(stderr, "\n%s:%d: ASSERT_FLOATEQ: \n",                  \
                 __FILE__, __LINE__);                                    \
         fprintf(stderr, "  Expected: %f\n", expected);                  \
-        fprintf(stderr, "  Actual: %f\n", actual);                      \
-        fprintf(stderr, "  Margin: %f\n", margin);                      \
+        fprintf(stderr, "  Actual:   %f\n", actual);                    \
+        fprintf(stderr, "  Margin:   %f\n", margin);                    \
         return -1;                                                      \
     }
 

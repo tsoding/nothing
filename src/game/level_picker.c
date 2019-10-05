@@ -62,7 +62,7 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
     }
 
     level_picker->wiggly_text = (WigglyText) {
-        .text = "Select Level",
+        .text = "SMOL BREAK (1 minutes)",
         .scale = {10.0f, 10.0f},
         .color = COLOR_WHITE,
     };

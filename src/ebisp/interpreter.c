@@ -65,10 +65,12 @@ static struct EvalResult eval_atom(Gc *gc, struct Scope *scope, struct Atom *ato
 
     switch (atom->type) {
     case ATOM_INTEGER:
+    case ATOM_REAL:
     case ATOM_STRING:
     case ATOM_LAMBDA:
-    case ATOM_NATIVE:
+    case ATOM_NATIVE: {
         return eval_success(atom_as_expr(atom));
+    }
 
     case ATOM_SYMBOL: {
         struct Expr value = get_scope_value(scope, atom_as_expr(atom));

@@ -43,26 +43,30 @@ void print_atom_as_sexpr(FILE *stream, struct Atom *atom)
     trace_assert(atom);
 
     switch (atom->type) {
-    case ATOM_SYMBOL:
+    case ATOM_SYMBOL: {
         fprintf(stream, "%s", atom->sym);
-        break;
+    } break;
 
-    case ATOM_INTEGER:
+    case ATOM_INTEGER: {
         fprintf(stream, "%ld", atom->num);
-        break;
+    } break;
 
-    case ATOM_STRING:
+    case ATOM_REAL: {
+        fprintf(stream, "%f", atom->real);
+    } break;
+
+    case ATOM_STRING: {
         fprintf(stream, "\"%s\"", atom->str);
-        break;
+    } break;
 
-    case ATOM_LAMBDA:
+    case ATOM_LAMBDA: {
         /* TODO(#649): Print LAMBDAs with arglists (and maybe bodies) in print_atom_as_sexpr and atom_as_sexpr */
         fprintf(stream, "<lambda>");
-        break;
+    } break;
 
-    case ATOM_NATIVE:
+    case ATOM_NATIVE: {
         fprintf(stream, "<native>");
-        break;
+    } break;
     }
 }
 
@@ -72,29 +76,33 @@ static void print_atom_as_c(FILE *stream, struct Atom *atom)
     trace_assert(atom);
 
     switch(atom->type) {
-    case ATOM_SYMBOL:
+    case ATOM_SYMBOL: {
         fprintf(stream, "SYMBOL(gc, \"%s\")", atom->sym);
-        break;
+    } break;
 
-    case ATOM_INTEGER:
+    case ATOM_INTEGER: {
         fprintf(stream, "INTEGER(gc, %ld)", atom->num);
-        break;
+    } break;
 
-    case ATOM_STRING:
+    case ATOM_REAL: {
+        fprintf(stream, "REAL(gc, %f)", atom->real);
+    } break;
+
+    case ATOM_STRING: {
         fprintf(stream, "STRING(gc, \"%s\")", atom->str);
-        break;
+    } break;
 
-    case ATOM_LAMBDA:
+    case ATOM_LAMBDA: {
         fprintf(stream, "CONS(gc, SYMBOL(gc, \"lambda\"), CONS(gc, ");
         print_expr_as_c(stream, atom->lambda.args_list);
         fprintf(stream, ", CONS(gc, ");
         print_expr_as_c(stream, atom->lambda.body);
         fprintf(stream, ")))");
-        break;
+    } break;
 
-    case ATOM_NATIVE:
+    case ATOM_NATIVE: {
         fprintf(stream, "NIL(gc)");
-        break;
+    } break;
     }
 }
 
@@ -206,6 +214,23 @@ struct Cons *create_cons(Gc *gc, struct Expr car, struct Expr cdr)
 void destroy_cons(struct Cons *cons)
 {
     free(cons);
+}
+
+struct Atom *create_real_atom(Gc *gc, float real)
+{
+    struct Atom *atom = malloc(sizeof(struct Atom));
+    if (atom == NULL) {
+        return NULL;
+    }
+    atom->type = ATOM_REAL;
+    atom->real = real;
+
+    if (gc_add_expr(gc, atom_as_expr(atom)) < 0) {
+        free(atom);
+        return NULL;
+    }
+
+    return atom;
 }
 
 struct Atom *create_integer_atom(Gc *gc, long int num)
@@ -352,7 +377,8 @@ void destroy_atom(struct Atom *atom)
 
     case ATOM_LAMBDA:
     case ATOM_NATIVE:
-    case ATOM_INTEGER: {
+    case ATOM_INTEGER:
+    case ATOM_REAL: {
         /* Nothing */
     } break;
     }
@@ -366,14 +392,21 @@ static int atom_as_sexpr(struct Atom *atom, char *output, size_t n)
     trace_assert(output);
 
     switch (atom->type) {
-    case ATOM_SYMBOL:
+    case ATOM_SYMBOL: {
         return snprintf(output, n, "%s", atom->sym);
+    }
 
-    case ATOM_INTEGER:
+    case ATOM_INTEGER: {
         return snprintf(output, n, "%ld", atom->num);
+    }
 
-    case ATOM_STRING:
+    case ATOM_REAL: {
+        return snprintf(output, n, "%f", atom->real);
+    }
+
+    case ATOM_STRING: {
         return snprintf(output, n, "\"%s\"", atom->str);
+    }
 
     case ATOM_LAMBDA:
         return snprintf(output, n, "<lambda>");
@@ -474,6 +507,7 @@ const char *atom_type_as_string(enum AtomType atom_type)
     switch (atom_type) {
     case ATOM_SYMBOL: return "ATOM_SYMBOL";
     case ATOM_INTEGER: return "ATOM_INTEGER";
+    case ATOM_REAL: return "ATOM_REAL";
     case ATOM_STRING: return "ATOM_STRING";
     case ATOM_LAMBDA: return "ATOM_LAMBDA";
     case ATOM_NATIVE: return "ATOM_NATIVE";
