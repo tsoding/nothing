@@ -198,8 +198,8 @@ boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path)
                     Rect hitbox = rigid_bodies_hitbox(boxes->rigid_bodies, body_ids[i]);
                     return eval_success(
                         CONS(gc,
-                             NUMBER(gc, (long int)hitbox.x),
-                             NUMBER(gc, (long int)hitbox.y)));
+                             INTEGER(gc, (long int)hitbox.x),
+                             INTEGER(gc, (long int)hitbox.y)));
                 }
             }
 

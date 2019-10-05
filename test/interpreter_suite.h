@@ -57,9 +57,9 @@ TEST(assoc_test)
     struct Expr b = SYMBOL(gc, "b");
     struct Expr c = SYMBOL(gc, "c");
 
-    struct Expr a_pair = CONS(gc, a, NUMBER(gc, 10));
-    struct Expr b_pair = CONS(gc, b, NUMBER(gc, 20));
-    struct Expr c_pair = CONS(gc, c, NUMBER(gc, 30));
+    struct Expr a_pair = CONS(gc, a, INTEGER(gc, 10));
+    struct Expr b_pair = CONS(gc, b, INTEGER(gc, 20));
+    struct Expr c_pair = CONS(gc, c, INTEGER(gc, 30));
 
     struct Expr alist =
         CONS(gc, a_pair,
@@ -92,7 +92,7 @@ TEST(match_list_test)
         42,
         "hello",
         "world",
-        CONS(gc, NUMBER(gc, 1), NUMBER(gc, 2)));
+        CONS(gc, INTEGER(gc, 1), INTEGER(gc, 2)));
 
     long int d = 0;
     const char *s = NULL;
@@ -115,9 +115,9 @@ TEST(match_list_test)
     ASSERT_TRUE(strcmp(q, "world") == 0, {
         fprintf(stderr, "Expected: world, Actual: %s\n", q);
     });
-    ASSERT_TRUE(equal(e, CONS(gc, NUMBER(gc, 1), NUMBER(gc, 2))), {
+    ASSERT_TRUE(equal(e, CONS(gc, INTEGER(gc, 1), INTEGER(gc, 2))), {
             fprintf(stderr, "Expected: ");
-            print_expr_as_sexpr(stderr, CONS(gc, NUMBER(gc, 1), NUMBER(gc, 2)));
+            print_expr_as_sexpr(stderr, CONS(gc, INTEGER(gc, 1), INTEGER(gc, 2)));
             fprintf(stderr, ", Actual: ");
             print_expr_as_sexpr(stderr, e);
             fprintf(stderr, "\n");

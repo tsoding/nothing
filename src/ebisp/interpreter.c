@@ -37,12 +37,12 @@ wrong_argument_type(Gc *gc, const char *type, struct Expr obj)
 }
 
 struct EvalResult
-wrong_number_of_arguments(Gc *gc, long int count)
+wrong_integer_of_arguments(Gc *gc, long int count)
 {
     return eval_failure(
         CONS(gc,
-             SYMBOL(gc, "wrong-number-of-arguments"),
-             NUMBER(gc, count)));
+             SYMBOL(gc, "wrong-integer-of-arguments"),
+             INTEGER(gc, count)));
 }
 
 struct EvalResult
@@ -64,7 +64,7 @@ static struct EvalResult eval_atom(Gc *gc, struct Scope *scope, struct Atom *ato
     (void) gc;
 
     switch (atom->type) {
-    case ATOM_NUMBER:
+    case ATOM_INTEGER:
     case ATOM_STRING:
     case ATOM_LAMBDA:
     case ATOM_NATIVE:
@@ -138,8 +138,8 @@ static struct EvalResult call_lambda(Gc *gc,
 
     if (length_of_list(args) != length_of_list(vars)) {
         return eval_failure(CONS(gc,
-                                 SYMBOL(gc, "wrong-number-of-arguments"),
-                                 NUMBER(gc, length_of_list(args))));
+                                 SYMBOL(gc, "wrong-integer-of-arguments"),
+                                 INTEGER(gc, length_of_list(args))));
     }
 
     struct Scope scope = {
@@ -272,9 +272,9 @@ match_list(struct Gc *gc, const char *format, struct Expr xs, ...)
 
         switch (*format) {
         case 'd': {
-            if (!number_p(x)) {
+            if (!integer_p(x)) {
                 va_end(args_list);
-                return wrong_argument_type(gc, "numberp", x);
+                return wrong_argument_type(gc, "integerp", x);
             }
 
             long int *p = va_arg(args_list, long int *);
@@ -337,7 +337,7 @@ match_list(struct Gc *gc, const char *format, struct Expr xs, ...)
 
     if (*format != 0 || !nil_p(xs)) {
         va_end(args_list);
-        return wrong_number_of_arguments(gc, i);
+        return wrong_integer_of_arguments(gc, i);
     }
 
     va_end(args_list);

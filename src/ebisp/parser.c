@@ -115,17 +115,17 @@ static struct ParseResult parse_string(Gc *gc, struct Token current_token)
         current_token.end);
 }
 
-static struct ParseResult parse_number(Gc *gc, struct Token current_token)
+static struct ParseResult parse_integer(Gc *gc, struct Token current_token)
 {
     char *endptr = 0;
     const long int x = strtol(current_token.begin, &endptr, 10);
 
     if (current_token.begin == endptr || current_token.end != endptr) {
-        return parse_failure("Expected number", current_token.begin);
+        return parse_failure("Expected integer", current_token.begin);
     }
 
     return parse_success(
-        atom_as_expr(create_number_atom(gc, x)),
+        atom_as_expr(create_integer_atom(gc, x)),
         current_token.end);
 }
 
@@ -190,7 +190,7 @@ static struct ParseResult parse_expr(Gc *gc, struct Token current_token)
     }
 
     if (*current_token.begin == '-' || isdigit(*current_token.begin)) {
-        struct ParseResult result = parse_number(gc, current_token);
+        struct ParseResult result = parse_integer(gc, current_token);
         if (!result.is_error) {
             return result;
         }

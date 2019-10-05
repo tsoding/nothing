@@ -120,15 +120,15 @@ plus_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
             return wrong_argument_type(gc, "consp", args);
         }
 
-        if (!number_p(CAR(args))) {
-            return wrong_argument_type(gc, "numberp", CAR(args));
+        if (!integer_p(CAR(args))) {
+            return wrong_argument_type(gc, "integerp", CAR(args));
         }
 
         result += CAR(args).atom->num;
         args = CDR(args);
     }
 
-    return eval_success(NUMBER(gc, result));
+    return eval_success(INTEGER(gc, result));
 }
 
 static struct EvalResult
@@ -145,15 +145,15 @@ mul_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
             return wrong_argument_type(gc, "consp", args);
         }
 
-        if (!number_p(CAR(args))) {
-            return wrong_argument_type(gc, "numberp", CAR(args));
+        if (!integer_p(CAR(args))) {
+            return wrong_argument_type(gc, "integerp", CAR(args));
         }
 
         result *= CAR(args).atom->num;
         args = CDR(args);
     }
 
-    return eval_success(NUMBER(gc, result));
+    return eval_success(INTEGER(gc, result));
 }
 
 static struct EvalResult

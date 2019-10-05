@@ -8,7 +8,7 @@
 #include "test.h"
 #include "ebisp/tokenizer.h"
 
-TEST(tokenizer_number_list_test)
+TEST(tokenizer_integer_list_test)
 {
     struct Token token = next_token("(1 2 3)");
     ASSERT_STREQN("(", token.begin, (size_t) (token.end - token.begin));
@@ -50,7 +50,7 @@ TEST(tokenizer_string_list_test)
 
 TEST_SUITE(tokenizer_suite)
 {
-    TEST_RUN(tokenizer_number_list_test);
+    TEST_RUN(tokenizer_integer_list_test);
     TEST_RUN(tokenizer_string_list_test);
     return 0;
 }

@@ -47,7 +47,7 @@ void print_atom_as_sexpr(FILE *stream, struct Atom *atom)
         fprintf(stream, "%s", atom->sym);
         break;
 
-    case ATOM_NUMBER:
+    case ATOM_INTEGER:
         fprintf(stream, "%ld", atom->num);
         break;
 
@@ -76,8 +76,8 @@ static void print_atom_as_c(FILE *stream, struct Atom *atom)
         fprintf(stream, "SYMBOL(gc, \"%s\")", atom->sym);
         break;
 
-    case ATOM_NUMBER:
-        fprintf(stream, "NUMBER(gc, %ld)", atom->num);
+    case ATOM_INTEGER:
+        fprintf(stream, "INTEGER(gc, %ld)", atom->num);
         break;
 
     case ATOM_STRING:
@@ -208,13 +208,13 @@ void destroy_cons(struct Cons *cons)
     free(cons);
 }
 
-struct Atom *create_number_atom(Gc *gc, long int num)
+struct Atom *create_integer_atom(Gc *gc, long int num)
 {
     struct Atom *atom = malloc(sizeof(struct Atom));
     if (atom == NULL) {
         return NULL;
     }
-    atom->type = ATOM_NUMBER;
+    atom->type = ATOM_INTEGER;
     atom->num = num;
 
     if (gc_add_expr(gc, atom_as_expr(atom)) < 0) {
@@ -352,7 +352,7 @@ void destroy_atom(struct Atom *atom)
 
     case ATOM_LAMBDA:
     case ATOM_NATIVE:
-    case ATOM_NUMBER: {
+    case ATOM_INTEGER: {
         /* Nothing */
     } break;
     }
@@ -369,7 +369,7 @@ static int atom_as_sexpr(struct Atom *atom, char *output, size_t n)
     case ATOM_SYMBOL:
         return snprintf(output, n, "%s", atom->sym);
 
-    case ATOM_NUMBER:
+    case ATOM_INTEGER:
         return snprintf(output, n, "%ld", atom->num);
 
     case ATOM_STRING:
@@ -473,7 +473,7 @@ const char *atom_type_as_string(enum AtomType atom_type)
 {
     switch (atom_type) {
     case ATOM_SYMBOL: return "ATOM_SYMBOL";
-    case ATOM_NUMBER: return "ATOM_NUMBER";
+    case ATOM_INTEGER: return "ATOM_INTEGER";
     case ATOM_STRING: return "ATOM_STRING";
     case ATOM_LAMBDA: return "ATOM_LAMBDA";
     case ATOM_NATIVE: return "ATOM_NATIVE";
