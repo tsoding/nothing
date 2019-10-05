@@ -548,6 +548,18 @@ int level_editor_focus_camera(LevelEditor *level_editor,
     return 0;
 }
 
+static LayerPicker level_format_layer_order[LAYER_PICKER_N] = {
+    LAYER_PICKER_BACKGROUND,
+    LAYER_PICKER_PLAYER,
+    LAYER_PICKER_PLATFORMS,
+    LAYER_PICKER_GOALS,
+    LAYER_PICKER_LAVA,
+    LAYER_PICKER_BACK_PLATFORMS,
+    LAYER_PICKER_BOXES,
+    LAYER_PICKER_LABELS,
+    LAYER_PICKER_REGIONS
+};
+
 /* TODO(#904): LevelEditor does not check that the saved level file is modified by external program */
 static int level_editor_dump(LevelEditor *level_editor)
 {
@@ -564,7 +576,7 @@ static int level_editor_dump(LevelEditor *level_editor)
 
     for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
         if (layer_dump_stream(
-                level_editor->layers[i],
+                level_editor->layers[level_format_layer_order[i]],
                 filedump) < 0) {
             return -1;
         }
