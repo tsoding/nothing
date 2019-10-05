@@ -144,7 +144,7 @@ mul_op(void *param, Gc *gc, struct Scope *scope, struct Expr args)
 
     long int result = 1L;
 
-    // TODO: mul_op does not support floats
+    // TODO(#1101): mul_op does not support floats
 
     while (!nil_p(args)) {
         if (!cons_p(args)) {
