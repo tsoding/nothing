@@ -60,21 +60,12 @@ TEST(parse_reals_test)
 
     const char *input = "3.1415";
     struct ParseResult result = read_expr_from_string(gc, input);
+
     ASSERT_FALSE(result.is_error, {
         fprintf(stderr, "Parsing failed: %s\n", result.error_message);
     });
 
-    ASSERT_EQ(enum ExprType, EXPR_ATOM, result.expr.type, {
-        fprintf(stderr, "Expected: %s\n", expr_type_as_string(_expected));
-        fprintf(stderr, "Actual: %s\n", expr_type_as_string(_actual));
-    });
-
-    ASSERT_EQ(enum AtomType, ATOM_REAL, result.expr.atom->type, {
-        fprintf(stderr, "Expected: %s\n", atom_type_as_string(_expected));
-        fprintf(stderr, "Actual: %s\n", atom_type_as_string(_actual));
-    });
-
-    ASSERT_FLOATEQ(3.1415f, result.expr.atom->real, 1e-5);
+    EPIC_ASSERT_EQ(struct Expr, result.expr, REAL(gc, 3.1416f));
 
     destroy_gc(gc);
 

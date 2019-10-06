@@ -2,6 +2,7 @@
 #define TEST_H_
 
 #include "math.h"
+#include "overloading.h"
 
 #define TEST_RUN(name)                          \
     if (name() < 0) {                           \
@@ -86,6 +87,23 @@
             fprintf(stderr, "\n%s:%d: ASSERT_EQ: \n",                   \
                     __FILE__, __LINE__);                                \
             handler                                                     \
+            return -1;                                                  \
+        }                                                               \
+    }
+
+#define EPIC_ASSERT_EQ(type, expected, actual)                          \
+    {                                                                   \
+        type _expected = (expected);                                    \
+        type _actual = (actual);                                        \
+        if (!EQUAL(_expected, _actual)) {                               \
+            fprintf(stderr, "\n%s:%d: ASSERT_EQ: \n",                   \
+                    __FILE__, __LINE__);                                \
+            fputs("Expected: ", stderr);                                \
+            print(_expected, stderr);                                   \
+            fputc('\n', stderr);                                        \
+            fputs("Actual:   ", stderr);                                \
+            print(_actual, stderr);                                     \
+            fputc('\n', stderr);                                        \
             return -1;                                                  \
         }                                                               \
     }
