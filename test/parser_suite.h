@@ -79,7 +79,8 @@ TEST(parse_real_pair_test)
     const char *input[] = {
         "(2 . 2)",
         "(2. 2)",
-        // TODO: parse_real_pair_test does not parse (2 .2) as expected
+        // TODO(#1104): parse_real_pair_test does not parse (2 .2) as expected
+
         // "(2 .2)",
         "(2.2)"
     };
