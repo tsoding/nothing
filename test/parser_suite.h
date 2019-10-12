@@ -60,12 +60,21 @@ TEST(parse_reals_test)
 
     const char *input = "3.1415";
     struct ParseResult result = read_expr_from_string(gc, input);
+    struct Expr expected = REAL(gc, 3.1415f);
 
     ASSERT_FALSE(result.is_error, {
         fprintf(stderr, "Parsing failed: %s\n", result.error_message);
     });
 
-    EPIC_ASSERT_EQ(struct Expr, result.expr, REAL(gc, 3.1415f));
+    ASSERT_TRUE(equal(expected, result.expr), {
+            fprintf(stderr, "Expected: ");
+            print_expr_as_sexpr(stderr, expected);
+            fprintf(stderr, "\n");
+
+            fprintf(stderr, "Actual:   ");
+            print_expr_as_sexpr(stderr, result.expr);
+            fprintf(stderr, "\n");
+        });
 
     destroy_gc(gc);
 
@@ -100,7 +109,15 @@ TEST(parse_real_pair_test)
         });
 
 
-        EPIC_ASSERT_EQ(struct Expr, expected[i], result.expr);
+        ASSERT_TRUE(equal(expected[i], result.expr), {
+                fprintf(stderr, "Expected: ");
+                print_expr_as_sexpr(stderr, expected[i]);
+                fprintf(stderr, "\n");
+
+                fprintf(stderr, "Actual:   ");
+                print_expr_as_sexpr(stderr, result.expr);
+                fprintf(stderr, "\n");
+            });
     }
 
     destroy_gc(gc);
