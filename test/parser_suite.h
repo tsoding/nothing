@@ -60,21 +60,65 @@ TEST(parse_reals_test)
 
     const char *input = "3.1415";
     struct ParseResult result = read_expr_from_string(gc, input);
+    struct Expr expected = REAL(gc, 3.1415f);
+
     ASSERT_FALSE(result.is_error, {
         fprintf(stderr, "Parsing failed: %s\n", result.error_message);
     });
 
-    ASSERT_EQ(enum ExprType, EXPR_ATOM, result.expr.type, {
-        fprintf(stderr, "Expected: %s\n", expr_type_as_string(_expected));
-        fprintf(stderr, "Actual: %s\n", expr_type_as_string(_actual));
-    });
+    ASSERT_TRUE(equal(expected, result.expr), {
+            fprintf(stderr, "Expected: ");
+            print_expr_as_sexpr(stderr, expected);
+            fprintf(stderr, "\n");
 
-    ASSERT_EQ(enum AtomType, ATOM_REAL, result.expr.atom->type, {
-        fprintf(stderr, "Expected: %s\n", atom_type_as_string(_expected));
-        fprintf(stderr, "Actual: %s\n", atom_type_as_string(_actual));
-    });
+            fprintf(stderr, "Actual:   ");
+            print_expr_as_sexpr(stderr, result.expr);
+            fprintf(stderr, "\n");
+        });
 
-    ASSERT_FLOATEQ(3.1415f, result.expr.atom->real, 1e-5);
+    destroy_gc(gc);
+
+    return 0;
+}
+
+TEST(parse_real_pair_test)
+{
+    Gc *gc = create_gc();
+
+    const char *input[] = {
+        "(2 . 2)",
+        "(2. 2)",
+        // TODO(#1104): parse_real_pair_test does not parse (2 .2) as expected
+
+        // "(2 .2)",
+        "(2.2)"
+    };
+
+    struct Expr expected[] = {
+        CONS(gc, INTEGER(gc, 2), INTEGER(gc, 2)),
+        CONS(gc, REAL(gc, 2.0f), CONS(gc, INTEGER(gc, 2), NIL(gc))),
+        // CONS(gc, INTEGER(gc, 2), CONS(gc, REAL(gc, 0.2f), NIL(gc))),
+        CONS(gc, REAL(gc, 2.2f), NIL(gc))
+    };
+    size_t n = sizeof(input) / sizeof(input[0]);
+
+    for (size_t i = 0; i < n; ++i) {
+        struct ParseResult result = read_expr_from_string(gc, input[i]);
+        ASSERT_FALSE(result.is_error, {
+                fprintf(stderr, "Parsing failed: %s\n", result.error_message);
+        });
+
+
+        ASSERT_TRUE(equal(expected[i], result.expr), {
+                fprintf(stderr, "Expected: ");
+                print_expr_as_sexpr(stderr, expected[i]);
+                fprintf(stderr, "\n");
+
+                fprintf(stderr, "Actual:   ");
+                print_expr_as_sexpr(stderr, result.expr);
+                fprintf(stderr, "\n");
+            });
+    }
 
     destroy_gc(gc);
 
@@ -219,6 +263,7 @@ TEST_SUITE(parser_suite)
     TEST_IGNORE(read_all_exprs_from_string_bad_test);
     TEST_RUN(read_all_exprs_from_string_trailing_spaces_test);
     TEST_RUN(parse_reals_test);
+    TEST_RUN(parse_real_pair_test);
 
     return 0;
 }
