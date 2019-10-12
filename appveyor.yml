@@ -34,11 +34,7 @@ build_script:
        if ($isWindows -and $env:BUILD_TYPE -eq 'mingw') {
            C:\msys64\usr\bin\bash.exe -lc "cmake .. -G 'MSYS Makefiles'"
            C:\msys64\usr\bin\bash.exe -lc "cmake --build ."
-           ./nothing_test.exe
        } else {
            cmake ..
            cmake --build .
        }
-  # TODO(#866): Unit Tests are not run on Windows CI build
-  #   https://ci.appveyor.com/project/rexim/nothing/builds/24807772/job/nr36kt098djthl4l#L431
-  - sh: ./nothing_test
