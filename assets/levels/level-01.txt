@@ -47,6 +47,7 @@ script_show_goal_2 1249.832397 -862.224976 323.924408 544.635071 deaa87
 script_hide_label_double_jump 1033.862549 -862.224976 215.969864 569.733276 d35f5f
 hide_wasd_script 260.383636 24.900909 125.925934 209.259262 a1e764
 21
+;; TODO(#1106): level 01 functionality that was provided by script doesn't work anymore
 (set args '())
 (set jump-count 0)
 
@@ -56,7 +57,6 @@ hide_wasd_script 260.383636 24.900909 125.925934 209.259262 a1e764
     (send `(game level label "label_space_to_jump" hide))))
 
 (defun on-region-enter (region-id)
-  ;; TODO(#880): Implement cond for ebisp
   (when (equal region-id "script_goal_1")
    (send `(game level goal "goal1" hide)))
   (when (equal region-id "script_show_goal_2")
