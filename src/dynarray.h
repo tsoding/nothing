@@ -1,6 +1,7 @@
 #ifndef DYNARRAY_H_
 #define DYNARRAY_H_
 
+#include <stdlib.h>
 #include <stdbool.h>
 
 typedef struct Dynarray Dynarray;

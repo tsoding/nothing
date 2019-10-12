@@ -1,21 +1,14 @@
 #include "system/stacktrace.h"
 
-#include "ebisp/gc.h"
-#include "ebisp/interpreter.h"
-#include "ebisp/parser.h"
-#include "ebisp/scope.h"
-#include "ebisp/std.h"
 #include "game/level.h"
 #include "sdl/renderer.h"
 #include "system/log.h"
-#include "system/log_script.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "ui/console.h"
 #include "ui/console_log.h"
 #include "ui/edit_field.h"
 #include "ui/history.h"
-#include "broadcast.h"
 
 #define FONT_WIDTH_SCALE 3.0f
 #define FONT_HEIGHT_SCALE 3.0f
@@ -32,15 +25,10 @@
 #define CONSOLE_ALPHA (0.80f)
 #define CONSOLE_BACKGROUND (rgba(0.20f, 0.20f, 0.20f, CONSOLE_ALPHA))
 #define CONSOLE_FOREGROUND (rgba(0.80f, 0.80f, 0.80f, CONSOLE_ALPHA))
-#define CONSOLE_ERROR (rgba(0.80f, 0.50f, 0.50f, CONSOLE_ALPHA))
-
-#define CONSOLE_EVAL_RESULT_SIZE 256
 
 struct Console
 {
     Lt *lt;
-    Gc *gc;
-    struct Scope scope;
     Edit_field *edit_field;
     Console_Log *console_log;
     History *history;
@@ -48,13 +36,10 @@ struct Console
 };
 
 /* TODO(#356): Console does not support autocompletion */
-/* TODO(#357): Console does not show the state of the GC of the script */
 /* TODO(#358): Console does not support copy, cut, paste operations */
 
-Console *create_console(Broadcast *broadcast)
+Console *create_console(void)
 {
-    trace_assert(broadcast);
-
     Lt *lt = create_lt();
 
     Console *console = PUSH_LT(lt, nth_calloc(1, sizeof(Console)), free);
@@ -62,20 +47,6 @@ Console *create_console(Broadcast *broadcast)
         RETURN_LT(lt, NULL);
     }
     console->lt = lt;
-
-    console->gc = PUSH_LT(lt, create_gc(), destroy_gc);
-    if (console->gc == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    console->scope.expr = CONS(console->gc,
-                               NIL(console->gc),
-                               NIL(console->gc));
-
-    load_std_library(console->gc, &console->scope);
-    load_log_library(console->gc, &console->scope);
-    /* TODO(#669): how to report EvalResult error from create_console? */
-    broadcast_load_library(broadcast, console->gc, &console->scope);
 
     console->edit_field = PUSH_LT(
         lt,
@@ -126,46 +97,6 @@ static int console_eval_input(Console *console)
         return -1;
     }
 
-    while (*source_code != 0) {
-        struct ParseResult parse_result = read_expr_from_string(console->gc,
-                                                                source_code);
-
-        if (parse_result.is_error) {
-            if (console_log_push_line(console->console_log, parse_result.error_message, CONSOLE_ERROR)) {
-                return -1;
-            }
-
-            edit_field_clean(console->edit_field);
-
-            return 0;
-        }
-
-        struct EvalResult eval_result = eval(
-            console->gc,
-            &console->scope,
-            parse_result.expr);
-
-        char buffer[CONSOLE_EVAL_RESULT_SIZE];
-
-        if (expr_as_sexpr(
-                eval_result.expr,
-                buffer,
-                CONSOLE_EVAL_RESULT_SIZE) < 0) {
-            return -1;
-        }
-
-        if (console_log_push_line(console->console_log,
-                                  buffer,
-                                  eval_result.is_error ?
-                                  CONSOLE_ERROR :
-                                  CONSOLE_FOREGROUND)) {
-            return -1;
-        }
-
-        source_code = next_token(parse_result.end).begin;
-    }
-
-    gc_collect(console->gc, console->scope.expr);
     edit_field_clean(console->edit_field);
 
     return 0;

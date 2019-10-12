@@ -4,7 +4,6 @@
 #include <SDL.h>
 
 #include "game/level/explosion.h"
-#include "game/level/script.h"
 #include "game/level/rigid_bodies.h"
 #include "goals.h"
 #include "math/vec.h"
@@ -15,7 +14,6 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/stacktrace.h"
-#include "ebisp/builtins.h"
 #include "config.h"
 
 #define PLAYER_WIDTH 25.0f
@@ -48,12 +46,10 @@ struct Player {
 };
 
 Player *create_player_from_player_layer(const PlayerLayer *player_layer,
-                                        RigidBodies *rigid_bodies,
-                                        Broadcast *broadcast)
+                                        RigidBodies *rigid_bodies)
 {
     trace_assert(player_layer);
     trace_assert(rigid_bodies);
-    trace_assert(broadcast);
 
     Lt *lt = create_lt();
 
@@ -191,10 +187,9 @@ void player_stop(Player *player)
     rigid_bodies_move(player->rigid_bodies, player->alive_body_id, vec(0.0f, 0.0f));
 }
 
-void player_jump(Player *player, Script *supa_script)
+void player_jump(Player *player)
 {
     trace_assert(player);
-    trace_assert(supa_script);
 
     if (rigid_bodies_touches_ground(player->rigid_bodies, player->alive_body_id)) {
         player->jump_threshold = 0;
@@ -212,11 +207,6 @@ void player_jump(Player *player, Script *supa_script)
             player->alive_body_id,
             vec(0.0f, -PLAYER_JUMP));
         player->jump_threshold++;
-
-        if (script_has_scope_value(supa_script, "on-player-jump")) {
-            Gc *gc = script_gc(supa_script);
-            script_eval(supa_script, list(gc, "q", "on-player-jump"));
-        }
     }
 }
 

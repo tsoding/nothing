@@ -1,10 +1,7 @@
 #include <SDL.h>
 #include "system/stacktrace.h"
 
-#include "broadcast.h"
 #include "color.h"
-#include "ebisp/builtins.h"
-#include "ebisp/interpreter.h"
 #include "game/camera.h"
 #include "game/level.h"
 #include "game/level/background.h"
@@ -28,7 +25,6 @@
 #include "system/nth_alloc.h"
 #include "system/str.h"
 #include "game/level/level_editor.h"
-#include "game/level/script.h"
 #include "ui/console.h"
 
 #define LEVEL_GRAVITY 1500.0f
@@ -55,16 +51,13 @@ struct Level
     Boxes *boxes;
     Labels *labels;
     Regions *regions;
-    Script *supa_script;
     Console *console;
     int console_enabled;
 };
 
-Level *create_level_from_level_editor(const LevelEditor *level_editor,
-                                      Broadcast *broadcast)
+Level *create_level_from_level_editor(const LevelEditor *level_editor)
 {
     trace_assert(level_editor);
-    trace_assert(broadcast);
 
     Lt *lt = create_lt();
 
@@ -96,8 +89,7 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor,
         lt,
         create_player_from_player_layer(
             &level_editor->player_layer,
-            level->rigid_bodies,
-            broadcast),
+            level->rigid_bodies),
         destroy_player);
     if (level->player == NULL) {
         RETURN_LT(lt, NULL);
@@ -159,20 +151,9 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor,
         RETURN_LT(lt, NULL);
     }
 
-    level->supa_script = PUSH_LT(
-        lt,
-        create_script_from_string(
-            broadcast,
-            level_editor->supa_script_source),
-        destroy_script);
-    if (level->supa_script == NULL) {
-        log_fail("Could not construct Supa Script for the level\n");
-        RETURN_LT(lt, NULL);
-    }
-
     level->console = PUSH_LT(
         lt,
-        create_console(broadcast),
+        create_console(),
         destroy_console);
     if (level->console == NULL) {
         RETURN_LT(lt, NULL);
@@ -261,8 +242,8 @@ int level_update(Level *level, float delta_time)
 
     player_hide_goals(level->player, level->goals);
     player_die_from_lava(level->player, level->lava);
-    regions_player_enter(level->regions, level->player, level->supa_script);
-    regions_player_leave(level->regions, level->player, level->supa_script);
+    regions_player_enter(level->regions, level->player);
+    regions_player_leave(level->regions, level->player);
 
     goals_update(level->goals, delta_time);
     lava_update(level->lava, delta_time);
@@ -283,7 +264,7 @@ int level_event_idle(Level *level, const SDL_Event *event,
         case SDLK_w:
         case SDLK_UP:
         case SDLK_SPACE: {
-            player_jump(level->player, level->supa_script);
+            player_jump(level->player);
         } break;
 
         case SDLK_p: {
@@ -301,7 +282,7 @@ int level_event_idle(Level *level, const SDL_Event *event,
 
     case SDL_JOYBUTTONDOWN:
         if (event->jbutton.button == 1) {
-            player_jump(level->player, level->supa_script);
+            player_jump(level->player);
         }
         break;
     }
@@ -453,40 +434,4 @@ int level_enter_camera_event(Level *level, Camera *camera)
     goals_checkpoint(level->goals, level->player);
     labels_enter_camera_event(level->labels, camera);
     return 0;
-}
-
-struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct Expr path)
-{
-    trace_assert(level);
-    trace_assert(gc);
-    trace_assert(scope);
-
-    const char *target = NULL;
-    struct Expr rest = void_expr();
-    struct EvalResult res = match_list(gc, "q*", path, &target, &rest);
-    if (res.is_error) {
-        return res;
-    }
-
-    if (strcmp(target, "goal") == 0) {
-        return goals_send(level->goals, gc, scope, rest);
-    } else if (strcmp(target, "label") == 0) {
-        return labels_send(level->labels, gc, scope, rest);
-    } else if (strcmp(target, "box") == 0) {
-        return boxes_send(level->boxes, gc, scope, rest);
-    } else if (strcmp(target, "body-push") == 0) {
-        long int id = 0, x = 0, y = 0;
-        res = match_list(gc, "ddd", rest, &id, &x, &y);
-        if (res.is_error) {
-            return res;
-        }
-
-        rigid_bodies_apply_force(level->rigid_bodies, (size_t) id, vec((float) x, (float) y));
-
-        return eval_success(NIL(gc));
-    } else if (strcmp(target, "edit") == 0) {
-        return eval_success(NIL(gc));
-    }
-
-    return unknown_target(gc, "level", target);
 }

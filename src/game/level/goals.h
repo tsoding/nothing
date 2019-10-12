@@ -6,7 +6,6 @@
 #include "game/camera.h"
 #include "game/level/player.h"
 #include "game/sound_samples.h"
-#include "ebisp/expr.h"
 
 typedef struct Goals Goals;
 typedef struct LineStream LineStream;
@@ -30,7 +29,5 @@ void goals_checkpoint(const Goals *goals,
                       Player *player);
 void goals_cue(Goals *goals,
                const Camera *camera);
-
-struct EvalResult goals_send(Goals *goals, Gc *gc, struct Scope *scope, struct Expr path);
 
 #endif  // GOALS_H_

@@ -4,7 +4,6 @@
 #include "game/camera.h"
 #include "game/level/platforms.h"
 #include "lava.h"
-#include "ebisp/expr.h"
 
 typedef struct Boxes Boxes;
 typedef struct Player Player;
@@ -22,8 +21,5 @@ void boxes_float_in_lava(Boxes *boxes, Lava *lava);
 
 int boxes_add_box(Boxes *boxes, Rect rect, Color color);
 int boxes_delete_at(Boxes *boxes, Vec2f position);
-
-struct EvalResult
-boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path);
 
 #endif  // BOXES_H_

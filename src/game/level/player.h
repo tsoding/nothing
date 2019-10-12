@@ -13,13 +13,10 @@
 typedef struct Player Player;
 typedef struct Goals Goals;
 typedef struct LineStream LineStream;
-typedef struct Script Script;
-typedef struct Broadcast Broadcast;
 typedef struct RigidBodies RigidBodies;
 
 Player *create_player_from_player_layer(const PlayerLayer *player_layer,
-                                        RigidBodies *rigid_bodies,
-                                        Broadcast *broadcast);
+                                        RigidBodies *rigid_bodies);
 void destroy_player(Player * player);
 
 int player_render(const Player * player,
@@ -38,7 +35,7 @@ void player_checkpoint(Player *player,
 void player_move_left(Player *player);
 void player_move_right(Player *player);
 void player_stop(Player *player);
-void player_jump(Player *player, Script *supa_script);
+void player_jump(Player *player);
 void player_die(Player *player);
 
 void player_focus_camera(Player *player,
