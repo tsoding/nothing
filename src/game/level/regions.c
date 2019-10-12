@@ -1,12 +1,7 @@
 #include "system/stacktrace.h"
 
-#include "ebisp/gc.h"
-#include "ebisp/interpreter.h"
-#include "ebisp/parser.h"
-#include "ebisp/scope.h"
 #include "player.h"
 #include "regions.h"
-#include "script.h"
 #include "system/str.h"
 #include "system/line_stream.h"
 #include "system/log.h"
@@ -181,7 +176,7 @@ void destroy_regions(Regions *regions)
     RETURN_LT0(regions->lt);
 }
 
-void regions_player_enter(Regions *regions, Player *player, Script *supa_script)
+void regions_player_enter(Regions *regions, Player *player)
 {
     trace_assert(regions);
     trace_assert(player);
@@ -190,37 +185,19 @@ void regions_player_enter(Regions *regions, Player *player, Script *supa_script)
         if (regions->states[i] == RS_PLAYER_OUTSIDE &&
             player_overlaps_rect(player, regions->rects[i])) {
             regions->states[i] = RS_PLAYER_INSIDE;
-
-            Gc *gc = script_gc(supa_script);
-            if (script_has_scope_value(supa_script, "on-region-enter")) {
-                script_eval(
-                    supa_script,
-                    list(gc, "qs",
-                         "on-region-enter",
-                         regions->ids + i * ID_MAX_SIZE));
-            }
         }
     }
 }
 
-void regions_player_leave(Regions *regions, Player *player, Script *supa_script)
+void regions_player_leave(Regions *regions, Player *player)
 {
     trace_assert(regions);
     trace_assert(player);
-    trace_assert(supa_script);
 
     for (size_t i = 0; i < regions->count; ++i) {
         if (regions->states[i] == RS_PLAYER_INSIDE &&
             !player_overlaps_rect(player, regions->rects[i])) {
             regions->states[i] = RS_PLAYER_OUTSIDE;
-            Gc *gc = script_gc(supa_script);
-            if (script_has_scope_value(supa_script, "on-region-leave")) {
-                script_eval(
-                    supa_script,
-                    list(gc, "qs",
-                         "on-region-leave",
-                         regions->ids + i * ID_MAX_SIZE));
-            }
         }
     }
 }

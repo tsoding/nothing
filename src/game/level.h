@@ -7,14 +7,11 @@
 #include "game/level/platforms.h"
 #include "game/level/player.h"
 #include "sound_samples.h"
-#include "ebisp/expr.h"
 
-typedef struct Broadcast Broadcast;
 typedef struct Level Level;
 typedef struct LevelEditor LevelEditor;
 
-Level *create_level_from_level_editor(const LevelEditor *level_editor,
-                                      Broadcast *broadcast);
+Level *create_level_from_level_editor(const LevelEditor *level_editor);
 void destroy_level(Level *level);
 
 int level_render(const Level *level, const Camera *camera);
@@ -30,7 +27,5 @@ int level_input(Level *level,
 int level_enter_camera_event(Level *level, Camera *camera);
 
 void level_toggle_pause_mode(Level *level);
-
-struct EvalResult level_send(Level *level, Gc *gc, struct Scope *scope, struct Expr path);
 
 #endif  // LEVEL_H_

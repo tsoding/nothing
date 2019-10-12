@@ -12,8 +12,6 @@
 #include "ui/console.h"
 #include "ui/edit_field.h"
 #include "system/str.h"
-#include "ebisp/builtins.h"
-#include "broadcast.h"
 #include "sdl/texture.h"
 #include "game/level/level_editor/background_layer.h"
 #include "game/level/level_editor.h"
@@ -31,7 +29,6 @@ typedef struct Game {
     Lt *lt;
 
     Game_state state;
-    Broadcast *broadcast;
     Sprite_font *font;
     LevelPicker *level_picker;
     LevelEditor *level_editor;
@@ -65,15 +62,6 @@ Game *create_game(const char *level_folder,
         RETURN_LT(lt, NULL);
     }
     game->lt = lt;
-
-
-    game->broadcast = PUSH_LT(
-        lt,
-        create_broadcast(game),
-        destroy_broadcast);
-    if (game->broadcast == NULL) {
-        RETURN_LT(lt, NULL);
-    }
 
     game->font = PUSH_LT(
         lt,
@@ -240,16 +228,14 @@ int game_update(Game *game, float delta_time)
                 game->level = PUSH_LT(
                     game->lt,
                     create_level_from_level_editor(
-                        game->level_editor,
-                        game->broadcast),
+                        game->level_editor),
                     destroy_level);
             } else {
                 game->level = RESET_LT(
                     game->lt,
                     game->level,
                     create_level_from_level_editor(
-                        game->level_editor,
-                        game->broadcast));
+                        game->level_editor));
             }
 
             if (game->level == NULL) {
@@ -294,8 +280,7 @@ static int game_event_running(Game *game, const SDL_Event *event)
                     game->lt,
                     game->level,
                     create_level_from_level_editor(
-                        game->level_editor,
-                        game->broadcast));
+                        game->level_editor));
                 if (game->level == NULL) {
                     game_switch_state(game, GAME_STATE_QUIT);
                     return -1;
@@ -344,16 +329,14 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
                 game->level = PUSH_LT(
                     game->lt,
                     create_level_from_level_editor(
-                        game->level_editor,
-                        game->broadcast),
+                        game->level_editor),
                     destroy_level);
             } else {
                 game->level = RESET_LT(
                     game->lt,
                     game->level,
                     create_level_from_level_editor(
-                        game->level_editor,
-                        game->broadcast));
+                        game->level_editor));
             }
 
             if (game->level == NULL) {
@@ -382,8 +365,7 @@ static int game_event_level_editor(Game *game, const SDL_Event *event)
                 game->lt,
                 game->level,
                 create_level_from_level_editor(
-                    game->level_editor,
-                    game->broadcast));
+                    game->level_editor));
             if (game->level == NULL) {
                 return -1;
             }
@@ -463,32 +445,6 @@ int game_input(Game *game,
 int game_over_check(const Game *game)
 {
     return game->state == GAME_STATE_QUIT;
-}
-
-struct EvalResult
-game_send(Game *game, Gc *gc, struct Scope *scope,
-          struct Expr path)
-{
-    trace_assert(game);
-    trace_assert(gc);
-    trace_assert(scope);
-
-    const char *target = NULL;
-    struct Expr rest = void_expr();
-    struct EvalResult res = match_list(gc, "q*", path, &target, &rest);
-    if (res.is_error) {
-        return res;
-    }
-
-    if (strcmp(target, "level") == 0) {
-        return level_send(game->level, gc, scope, rest);
-    } else if (strcmp(target, "menu") == 0) {
-        level_picker_clean_selection(game->level_picker);
-        game_switch_state(game, GAME_STATE_LEVEL_PICKER);
-        return eval_success(NIL(gc));
-    }
-
-    return unknown_target(gc, "game", target);
 }
 
 // Private Functions

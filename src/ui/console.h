@@ -2,13 +2,11 @@
 #define CONSOLE_H_
 
 #include <SDL.h>
-#include "ebisp/interpreter.h"
 
 typedef struct Console Console;
-typedef struct Broadcast Broadcast;
 typedef struct Sprite_font Sprite_font;
 
-Console *create_console(Broadcast *broadcast);
+Console *create_console(void);
 void destroy_console(Console *console);
 
 int console_handle_event(Console *console,

@@ -46,8 +46,6 @@ add_library(system STATIC
   src/system/line_stream.h
   src/system/log.c
   src/system/log.h
-  src/system/log_script.c
-  src/system/log_script.h
   src/system/lt.h
   src/system/lt_adapters.h
   src/system/lt_adapters.c
@@ -65,29 +63,7 @@ add_library(system STATIC
   src/system/file.c
   )
 
-add_library(ebisp STATIC
-  src/ebisp/builtins.c
-  src/ebisp/builtins.h
-  src/ebisp/expr.c
-  src/ebisp/expr.h
-  src/ebisp/gc.c
-  src/ebisp/gc.h
-  src/ebisp/interpreter.c
-  src/ebisp/interpreter.h
-  src/ebisp/parser.c
-  src/ebisp/parser.h
-  src/ebisp/scope.c
-  src/ebisp/scope.h
-  src/ebisp/std.c
-  src/ebisp/std.h
-  src/ebisp/tokenizer.c
-  src/ebisp/tokenizer.h
-  )
-target_link_libraries(ebisp system)
-
 add_executable(nothing 
-  src/broadcast.c
-  src/broadcast.h
   src/color.c
   src/color.h
   src/game.c
@@ -118,8 +94,6 @@ add_executable(nothing
   src/game/level/regions.h
   src/game/level/rigid_bodies.c
   src/game/level/rigid_bodies.h
-  src/game/level/script.c
-  src/game/level/script.h
   src/game/level_picker.c
   src/game/level_picker.h
   src/game/level_folder.h
@@ -180,20 +154,7 @@ add_executable(nothing
   src/game/level/level_editor/undo_history.h
   src/game/level/level_editor/undo_history.c
 )
-target_link_libraries(nothing ${SDL2_LIBRARIES} system ebisp)
-
-add_executable(repl
-  src/ebisp/repl.c
-  src/ebisp/repl_runtime.c
-  )
-target_link_libraries(repl ${SDL2_LIBRARIES} system ebisp)
-
-add_executable(nothing_test
-  test/main.c
-  test/test.h
-  test/tokenizer_suite.h
-  )
-target_link_libraries(nothing_test ${SDL2_LIBRARIES} system ebisp)
+target_link_libraries(nothing ${SDL2_LIBRARIES} system)
 
 if(("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"))
   set(CMAKE_C_FLAGS
@@ -251,5 +212,3 @@ if(MINGW)
 elseif(WIN32)
   target_link_libraries(nothing Imm32 Version winmm)
 endif()
-
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/test-data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

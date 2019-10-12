@@ -3,8 +3,6 @@
 
 #include <SDL.h>
 
-#include "broadcast.h"
-#include "ebisp/interpreter.h"
 #include "game/level/level_editor/point_layer.h"
 #include "goals.h"
 #include "math/pi.h"
@@ -304,53 +302,6 @@ void goals_checkpoint(const Goals *goals,
             player_checkpoint(player, goals->positions[i]);
         }
     }
-}
-
-static struct EvalResult
-goals_action(Goals *goals, size_t index, Gc *gc, struct Scope *scope, struct Expr path)
-{
-    trace_assert(goals);
-    trace_assert(gc);
-    trace_assert(scope);
-
-    const char *target = NULL;
-    struct EvalResult res = match_list(gc, "q*", path, &target, NULL);
-    if (res.is_error) {
-        return res;
-    }
-
-    if (strcmp(target, "show") == 0) {
-        goals->visible[index] = true;
-        return eval_success(NIL(gc));
-    } else if (strcmp(target, "hide") == 0) {
-        goals->visible[index] = false;
-        return eval_success(NIL(gc));
-    }
-
-    return unknown_target(gc, goals->ids[index], target);
-}
-
-struct EvalResult
-goals_send(Goals *goals, Gc *gc, struct Scope *scope, struct Expr path)
-{
-    trace_assert(goals);
-    trace_assert(gc);
-    trace_assert(scope);
-
-    const char *target = NULL;
-    struct Expr rest = void_expr();
-    struct EvalResult res = match_list(gc, "s*", path, &target, &rest);
-    if (res.is_error) {
-        return res;
-    }
-
-    for (size_t i = 0; i < goals->count; ++i) {
-        if (strcmp(target, goals->ids[i]) == 0) {
-            return goals_action(goals, i, gc, scope, rest);
-        }
-    }
-
-    return unknown_target(gc, "goals", target);
 }
 
 /* Private Functions */

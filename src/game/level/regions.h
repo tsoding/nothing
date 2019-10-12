@@ -15,7 +15,7 @@ void destroy_regions(Regions *regions);
 
 int regions_render(Regions *regions, const Camera *camera);
 
-void regions_player_enter(Regions *regions, Player *player, Script *supa_script);
-void regions_player_leave(Regions *regions, Player *player, Script *supa_script);
+void regions_player_enter(Regions *regions, Player *player);
+void regions_player_leave(Regions *regions, Player *player);
 
 #endif  // REGIONS_H_

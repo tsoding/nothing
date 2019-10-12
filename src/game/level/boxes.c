@@ -1,9 +1,6 @@
 #include "system/stacktrace.h"
 
-#include "broadcast.h"
 #include "dynarray.h"
-#include "ebisp/builtins.h"
-#include "ebisp/interpreter.h"
 #include "game/level/boxes.h"
 #include "game/level/level_editor/rect_layer.h"
 #include "game/level/player.h"
@@ -148,70 +145,6 @@ int boxes_add_box(Boxes *boxes, Rect rect, Color color)
 
     return 0;
 }
-
-struct EvalResult
-boxes_send(Boxes *boxes, Gc *gc, struct Scope *scope, struct Expr path)
-{
-    trace_assert(boxes);
-    trace_assert(gc);
-    trace_assert(scope);
-
-    struct Expr target = void_expr();
-    struct Expr rest = void_expr();
-    struct EvalResult res = match_list(gc, "e*", path, &target, &rest);
-    if (res.is_error) {
-        return res;
-    }
-
-    if (symbol_p(target)) {
-        const char *action = target.atom->str;
-
-        if (strcmp(action, "new") == 0) {
-            struct Expr optional_args = void_expr();
-            long int x, y, w, h;
-            res = match_list(gc, "dddd*", rest, &x, &y, &w, &h, &optional_args);
-            if (res.is_error) {
-                return res;
-            }
-
-            Color color = rgba(rand_float(1.0f), rand_float(1.0f), rand_float(1.0f), 1.0f);
-            if (!nil_p(optional_args)) {
-                const char *color_hex = NULL;
-                res = match_list(gc, "s*", optional_args, &color_hex, NULL);
-                color = hexstr(color_hex);
-            }
-
-            boxes_add_box(boxes, rect((float) x, (float) y, (float) w, (float) h), color);
-
-            return eval_success(NIL(gc));
-        } else if (strcmp(action, "coord") == 0) {
-            const char *box_id = NULL;
-            res = match_list(gc, "s", rest, &box_id);
-            if (res.is_error) {
-                return res;
-            }
-
-            size_t n = dynarray_count(boxes->boxes_ids);
-            RigidBodyId *body_ids = dynarray_data(boxes->body_ids);
-            for (size_t i = 0; i < n; ++i) {
-                if (strcmp(dynarray_pointer_at(boxes->boxes_ids, i), box_id) == 0) {
-                    Rect hitbox = rigid_bodies_hitbox(boxes->rigid_bodies, body_ids[i]);
-                    return eval_success(
-                        CONS(gc,
-                             INTEGER(gc, (long int)hitbox.x),
-                             INTEGER(gc, (long int)hitbox.y)));
-                }
-            }
-
-            return eval_failure(SYMBOL(gc, "box-not-found"));
-        }
-
-        return unknown_target(gc, "box", action);
-    }
-
-    return wrong_argument_type(gc, "string-or-symbol-p", target);
-}
-
 
 int boxes_delete_at(Boxes *boxes, Vec2f position)
 {
