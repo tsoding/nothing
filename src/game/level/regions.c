@@ -108,7 +108,7 @@ Regions *create_regions_from_rect_layer(const RectLayer *rect_layer, Labels *lab
     }
 
     // TODO(#1108): impossible to change the region action from the Level Editor
-    // TODO: region action is not a part of the level format
+    // TODO(#1109): region action is not a part of the level format
 
     // for (size_t i = 0; i < regions->count; ++i) {
     //     regions->actions[i].type = ACTION_HIDE_LABEL;
