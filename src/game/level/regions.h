@@ -8,9 +8,9 @@ typedef struct Player Player;
 typedef struct LineStream LineStream;
 typedef struct Level Level;
 typedef struct RectLayer RectLayer;
+typedef struct Labels Labels;
 
-Regions *create_regions_from_line_stream(LineStream *line_stream);
-Regions *create_regions_from_rect_layer(const RectLayer *rect_layer);
+Regions *create_regions_from_rect_layer(const RectLayer *rect_layer, Labels *labels);
 void destroy_regions(Regions *regions);
 
 int regions_render(Regions *regions, const Camera *camera);

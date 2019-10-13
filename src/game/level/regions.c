@@ -1,5 +1,6 @@
 #include "system/stacktrace.h"
 
+#include "config.h"
 #include "player.h"
 #include "regions.h"
 #include "system/str.h"
@@ -8,108 +9,39 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "game/level/level_editor/rect_layer.h"
-
-#define ID_MAX_SIZE 36
+#include "game/level/labels.h"
 
 enum RegionState {
     RS_PLAYER_OUTSIDE = 0,
     RS_PLAYER_INSIDE
 };
 
-struct Regions
-{
+typedef enum {
+    ACTION_NONE = 0,
+    ACTION_HIDE_LABEL
+} ActionType;
+
+typedef struct {
+    ActionType type;
+    char label_id[ENTITY_MAX_ID_SIZE];
+} Action;
+
+struct Regions {
     Lt *lt;
     size_t count;
     char *ids;
     Rect *rects;
     Color *colors;
     enum RegionState *states;
+    Action *actions;
+
+    Labels *labels;
 };
 
-Regions *create_regions_from_line_stream(LineStream *line_stream)
-{
-    trace_assert(line_stream);
-
-    Lt *lt = create_lt();
-
-    Regions *regions = PUSH_LT(
-        lt,
-        nth_calloc(1, sizeof(Regions)),
-        free);
-    if (regions == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    regions->lt = lt;
-
-    if(sscanf(
-           line_stream_next(line_stream),
-           "%zu",
-           &regions->count) < 0) {
-        log_fail("Could not read amount of script regions\n");
-        RETURN_LT(lt, NULL);
-    }
-
-    regions->ids = PUSH_LT(
-        lt,
-        nth_calloc(regions->count * ID_MAX_SIZE, sizeof(char)),
-        free);
-    if (regions->ids == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    regions->rects = PUSH_LT(
-        lt,
-        nth_calloc(1, sizeof(Rect) * regions->count),
-        free);
-    if (regions->rects == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    regions->colors = PUSH_LT(
-        lt,
-        nth_calloc(1, sizeof(Color) * regions->count),
-        free);
-    if (regions->colors == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    regions->states = PUSH_LT(
-        lt,
-        nth_calloc(1, sizeof(enum RegionState) * regions->count),
-        free);
-    if (regions->states == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    log_info("Amount of regions: %lu\n", regions->count);
-
-    char color[7];
-
-    for (size_t i = 0; i < regions->count; ++i) {
-        if (sscanf(
-                line_stream_next(line_stream),
-                "%" STRINGIFY(ID_MAX_SIZE) "s%f%f%f%f%6s",
-                regions->ids + ID_MAX_SIZE * i,
-                &regions->rects[i].x,
-                &regions->rects[i].y,
-                &regions->rects[i].w,
-                &regions->rects[i].h,
-                color) < 0) {
-            log_fail("Could not read size and color of %dth region\n");
-            RETURN_LT(lt, NULL);
-        }
-
-        regions->colors[i] = hexstr(color);
-        regions->states[i] = RS_PLAYER_OUTSIDE;
-    }
-
-
-    return regions;
-}
-
-Regions *create_regions_from_rect_layer(const RectLayer *rect_layer)
+Regions *create_regions_from_rect_layer(const RectLayer *rect_layer, Labels *labels)
 {
     trace_assert(rect_layer);
+    trace_assert(labels);
 
     Lt *lt = create_lt();
 
@@ -126,14 +58,14 @@ Regions *create_regions_from_rect_layer(const RectLayer *rect_layer)
 
     regions->ids = PUSH_LT(
         lt,
-        nth_calloc(regions->count * ID_MAX_SIZE, sizeof(char)),
+        nth_calloc(regions->count * ENTITY_MAX_ID_SIZE, sizeof(char)),
         free);
     if (regions->ids == NULL) {
         RETURN_LT(lt, NULL);
     }
     memcpy(regions->ids,
            rect_layer_ids(rect_layer),
-           regions->count * ID_MAX_SIZE * sizeof(char));
+           regions->count * ENTITY_MAX_ID_SIZE * sizeof(char));
 
 
     regions->rects = PUSH_LT(
@@ -167,6 +99,24 @@ Regions *create_regions_from_rect_layer(const RectLayer *rect_layer)
         RETURN_LT(lt, NULL);
     }
 
+    regions->actions = PUSH_LT(
+        lt,
+        nth_calloc(1, sizeof(Action) * regions->count),
+        free);
+    if (regions->actions == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    // TODO: impossible to change the region action from the Level Editor
+    // TODO: region action is not a part of the level format
+
+    // for (size_t i = 0; i < regions->count; ++i) {
+    //     regions->actions[i].type = ACTION_HIDE_LABEL;
+    //     memcpy(regions->actions[i].label_id, "label_wasd", 11);
+    // }
+
+    regions->labels = labels;
+
     return regions;
 }
 
@@ -185,6 +135,10 @@ void regions_player_enter(Regions *regions, Player *player)
         if (regions->states[i] == RS_PLAYER_OUTSIDE &&
             player_overlaps_rect(player, regions->rects[i])) {
             regions->states[i] = RS_PLAYER_INSIDE;
+
+            if (regions->actions[i].type == ACTION_HIDE_LABEL) {
+                labels_hide(regions->labels, regions->actions[i].label_id);
+            }
         }
     }
 }
