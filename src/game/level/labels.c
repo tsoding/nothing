@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#include "config.h"
 #include "game/camera.h"
 #include "game/level/labels.h"
 #include "game/level/level_editor/label_layer.h"
@@ -10,8 +11,6 @@
 #include "system/nth_alloc.h"
 #include "system/stacktrace.h"
 #include "system/str.h"
-
-#define LABEL_MAX_ID_SIZE 36
 
 enum LabelState
 {
@@ -55,7 +54,7 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    labels->ids = PUSH_LT(lt, nth_calloc(labels->count, sizeof(char) * LABEL_MAX_ID_SIZE), free);
+    labels->ids = PUSH_LT(lt, nth_calloc(labels->count, sizeof(char) * ENTITY_MAX_ID_SIZE), free);
     if (labels->ids == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -94,8 +93,8 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
     for (size_t i = 0; i < labels->count; ++i) {
         if (sscanf(
                 line_stream_next(line_stream),
-                "%" STRINGIFY(LABEL_MAX_ID_SIZE) "s%f%f%6s\n",
-                labels->ids + i * LABEL_MAX_ID_SIZE,
+                "%" STRINGIFY(ENTITY_MAX_ID_SIZE) "s%f%f%6s\n",
+                labels->ids + i * ENTITY_MAX_ID_SIZE,
                 &labels->positions[i].x,
                 &labels->positions[i].y,
                 color) == EOF) {
@@ -139,13 +138,13 @@ Labels *create_labels_from_label_layer(const LabelLayer *label_layer)
 
     labels->count = label_layer_count(label_layer);
 
-    labels->ids = PUSH_LT(lt, nth_calloc(labels->count, sizeof(char) * LABEL_MAX_ID_SIZE), free);
+    labels->ids = PUSH_LT(lt, nth_calloc(labels->count, sizeof(char) * ENTITY_MAX_ID_SIZE), free);
     if (labels->ids == NULL) {
         RETURN_LT(lt, NULL);
     }
     memcpy(labels->ids,
            label_layer_ids(label_layer),
-           labels->count * sizeof(char) * LABEL_MAX_ID_SIZE);
+           labels->count * sizeof(char) * ENTITY_MAX_ID_SIZE);
 
     labels->positions = PUSH_LT(lt, nth_calloc(1, sizeof(Vec2f) * labels->count), free);
     if (labels->positions == NULL) {
@@ -264,6 +263,23 @@ void labels_enter_camera_event(Labels *labels,
             labels->states[i] = LABEL_STATE_APPEARED;
             labels->alphas[i] = 0.0f;
             labels->delta_alphas[i] = 1.0f;
+        }
+    }
+}
+
+void labels_hide(Labels *labels, char id[ENTITY_MAX_ID_SIZE])
+{
+    trace_assert(labels);
+    trace_assert(id);
+
+    for (size_t i = 0; i < labels->count; ++i) {
+        if (strncmp(id, labels->ids + i * ENTITY_MAX_ID_SIZE, ENTITY_MAX_ID_SIZE) == 0) {
+            if (labels->states[i] != LABEL_STATE_HIDDEN) {
+                labels->states[i] = LABEL_STATE_HIDDEN;
+                labels->alphas[i] = 1.0f;
+                labels->delta_alphas[i] = -3.0f;
+            }
+            return;
         }
     }
 }

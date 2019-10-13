@@ -145,7 +145,9 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor)
 
     level->regions = PUSH_LT(
         lt,
-        create_regions_from_rect_layer(level_editor->regions_layer),
+        create_regions_from_rect_layer(
+            level_editor->regions_layer,
+            level->labels),
         destroy_regions);
     if (level->regions == NULL) {
         RETURN_LT(lt, NULL);

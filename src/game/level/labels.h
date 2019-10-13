@@ -3,6 +3,7 @@
 
 #include "math/vec.h"
 #include "color.h"
+#include "config.h"
 
 typedef struct Labels Labels;
 typedef struct LineStream LineStream;
@@ -18,5 +19,6 @@ void labels_update(Labels *label,
                    float delta_time);
 void labels_enter_camera_event(Labels *label,
                                const Camera *camera);
+void labels_hide(Labels *label, char id[ENTITY_MAX_ID_SIZE]);
 
 #endif  // LABELS_H_
