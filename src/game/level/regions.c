@@ -107,7 +107,7 @@ Regions *create_regions_from_rect_layer(const RectLayer *rect_layer, Labels *lab
         RETURN_LT(lt, NULL);
     }
 
-    // TODO: impossible to change the region action from the Level Editor
+    // TODO(#1108): impossible to change the region action from the Level Editor
     // TODO: region action is not a part of the level format
 
     // for (size_t i = 0; i < regions->count; ++i) {
