@@ -94,6 +94,7 @@ add_executable(nothing
   src/game/level/regions.h
   src/game/level/rigid_bodies.c
   src/game/level/rigid_bodies.h
+  src/game/level/action.h
   src/game/level_picker.c
   src/game/level_picker.h
   src/game/level_folder.h

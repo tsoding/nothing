@@ -2,8 +2,7 @@
 #define RECT_LAYER_H_
 
 #include "layer.h"
-
-#define RECT_LAYER_ID_MAX_SIZE 36
+#include "game/level/action.h"
 
 typedef struct RectLayer RectLayer;
 typedef struct LineStream LineStream;
@@ -27,5 +26,6 @@ size_t rect_layer_count(const RectLayer *layer);
 const Rect *rect_layer_rects(const RectLayer *layer);
 const Color *rect_layer_colors(const RectLayer *layer);
 const char *rect_layer_ids(const RectLayer *layer);
+const Action *rect_layer_actions(const RectLayer *layer);
 
 #endif  // RECT_LAYER_H_

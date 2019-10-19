@@ -2,6 +2,7 @@
 #define REGIONS_H_
 
 #include "math/rect.h"
+#include "action.h"
 
 typedef struct Regions Regions;
 typedef struct Player Player;

@@ -16,16 +16,6 @@ enum RegionState {
     RS_PLAYER_INSIDE
 };
 
-typedef enum {
-    ACTION_NONE = 0,
-    ACTION_HIDE_LABEL
-} ActionType;
-
-typedef struct {
-    ActionType type;
-    char label_id[ENTITY_MAX_ID_SIZE];
-} Action;
-
 struct Regions {
     Lt *lt;
     size_t count;
@@ -106,14 +96,12 @@ Regions *create_regions_from_rect_layer(const RectLayer *rect_layer, Labels *lab
     if (regions->actions == NULL) {
         RETURN_LT(lt, NULL);
     }
+    memcpy(regions->actions,
+           rect_layer_actions(rect_layer),
+           regions->count * sizeof(Action));
 
     // TODO(#1108): impossible to change the region action from the Level Editor
-    // TODO(#1109): region action is not a part of the level format
 
-    // for (size_t i = 0; i < regions->count; ++i) {
-    //     regions->actions[i].type = ACTION_HIDE_LABEL;
-    //     memcpy(regions->actions[i].label_id, "label_wasd", 11);
-    // }
 
     regions->labels = labels;
 
