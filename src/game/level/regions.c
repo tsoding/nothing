@@ -10,6 +10,7 @@
 #include "system/nth_alloc.h"
 #include "game/level/level_editor/rect_layer.h"
 #include "game/level/labels.h"
+#include "game/level/goals.h"
 
 enum RegionState {
     RS_PLAYER_OUTSIDE = 0,
@@ -26,9 +27,12 @@ struct Regions {
     Action *actions;
 
     Labels *labels;
+    Goals *goals;
 };
 
-Regions *create_regions_from_rect_layer(const RectLayer *rect_layer, Labels *labels)
+Regions *create_regions_from_rect_layer(const RectLayer *rect_layer,
+                                        Labels *labels,
+                                        Goals *goals)
 {
     trace_assert(rect_layer);
     trace_assert(labels);
@@ -104,6 +108,7 @@ Regions *create_regions_from_rect_layer(const RectLayer *rect_layer, Labels *lab
 
 
     regions->labels = labels;
+    regions->goals = goals;
 
     return regions;
 }
@@ -124,8 +129,16 @@ void regions_player_enter(Regions *regions, Player *player)
             player_overlaps_rect(player, regions->rects[i])) {
             regions->states[i] = RS_PLAYER_INSIDE;
 
-            if (regions->actions[i].type == ACTION_HIDE_LABEL) {
-                labels_hide(regions->labels, regions->actions[i].label_id);
+            switch (regions->actions[i].type) {
+            case ACTION_HIDE_LABEL: {
+                labels_hide(regions->labels, regions->actions[i].entity_id);
+            } break;
+
+            case ACTION_TOGGLE_GOAL: {
+                goals_hide(regions->goals, regions->actions[i].entity_id);
+            } break;
+
+            default: {}
             }
         }
     }
@@ -140,6 +153,14 @@ void regions_player_leave(Regions *regions, Player *player)
         if (regions->states[i] == RS_PLAYER_INSIDE &&
             !player_overlaps_rect(player, regions->rects[i])) {
             regions->states[i] = RS_PLAYER_OUTSIDE;
+
+            switch (regions->actions[i].type) {
+            case ACTION_TOGGLE_GOAL: {
+                goals_show(regions->goals, regions->actions[i].entity_id);
+            } break;
+
+            default: {}
+            }
         }
     }
 }

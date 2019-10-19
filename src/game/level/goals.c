@@ -15,7 +15,6 @@
 #include "system/str.h"
 
 #define GOAL_RADIUS 10.0f
-#define GOAL_MAX_ID_SIZE 36
 
 static int goals_is_goal_hidden(const Goals *goals, size_t i);
 
@@ -33,7 +32,6 @@ struct Goals {
     Cue_state *cue_states;
     bool *visible;
     size_t count;
-    Rect player_hitbox;
     float angle;
 };
 
@@ -65,7 +63,7 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
     for (size_t i = 0; i < goals->count; ++i) {
-        goals->ids[i] = PUSH_LT(lt, nth_calloc(1, sizeof(char) * GOAL_MAX_ID_SIZE), free);
+        goals->ids[i] = PUSH_LT(lt, nth_calloc(1, sizeof(char) * ENTITY_MAX_ID_SIZE), free);
         if (goals->ids[i] == NULL) {
             RETURN_LT(lt, NULL);
         }
@@ -95,7 +93,7 @@ Goals *create_goals_from_line_stream(LineStream *line_stream)
     for (size_t i = 0; i < goals->count; ++i) {
         if (sscanf(
                 line_stream_next(line_stream),
-                "%" STRINGIFY(GOAL_MAX_ID_SIZE) "s%f%f%6s",
+                "%" STRINGIFY(ENTITY_MAX_ID_SIZE) "s%f%f%6s",
                 goals->ids[i],
                 &goals->positions[i].x,
                 &goals->positions[i].y,
@@ -135,7 +133,7 @@ Goals *create_goals_from_point_layer(const PointLayer *point_layer)
         RETURN_LT(lt, NULL);
     }
     for (size_t i = 0; i < goals->count; ++i) {
-        goals->ids[i] = PUSH_LT(lt, nth_calloc(1, sizeof(char) * GOAL_MAX_ID_SIZE), free);
+        goals->ids[i] = PUSH_LT(lt, nth_calloc(1, sizeof(char) * ENTITY_MAX_ID_SIZE), free);
         if (goals->ids[i] == NULL) {
             RETURN_LT(lt, NULL);
         }
@@ -244,13 +242,6 @@ void goals_update(Goals *goals,
     goals->angle = fmodf(goals->angle + 2.0f * delta_time, 2.0f * PI);
 }
 
-void goals_hide_from_player(Goals *goals,
-                            Rect player_hitbox)
-{
-    goals->player_hitbox = player_hitbox;
-
-}
-
 int goals_sound(Goals *goals,
                 Sound_samples *sound_samples)
 {
@@ -309,4 +300,27 @@ void goals_checkpoint(const Goals *goals,
 static int goals_is_goal_hidden(const Goals *goals, size_t i)
 {
     return !goals->visible[i];
+}
+
+void goals_hide(Goals *goals, char goal_id[ENTITY_MAX_ID_SIZE])
+{
+    trace_assert(goals);
+    trace_assert(goal_id);
+
+    for (size_t i = 0; i < goals->count; ++i) {
+        if (strncmp(goal_id, goals->ids[i], ENTITY_MAX_ID_SIZE) == 0) {
+            goals->visible[i] = false;
+        }
+    }
+}
+
+void goals_show(Goals *goals, char goal_id[ENTITY_MAX_ID_SIZE])
+{
+    trace_assert(goals);
+    trace_assert(goal_id);
+    for (size_t i = 0; i < goals->count; ++i) {
+        if (strncmp(goal_id, goals->ids[i], ENTITY_MAX_ID_SIZE) == 0) {
+            goals->visible[i] = true;
+        }
+    }
 }

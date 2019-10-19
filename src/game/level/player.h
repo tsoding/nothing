@@ -40,8 +40,6 @@ void player_die(Player *player);
 
 void player_focus_camera(Player *player,
                          Camera *camera);
-void player_hide_goals(const Player *player,
-                       Goals *goal);
 void player_die_from_lava(Player *player,
                           const Lava *lava);
 

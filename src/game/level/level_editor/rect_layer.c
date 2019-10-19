@@ -723,13 +723,15 @@ RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream, const cha
         if (sscanf(line, "%d%n", (int*)&action.type, &n) != EOF) {
             line += n;
             switch (action.type) {
+            case ACTION_NONE: break;
+
+            case ACTION_TOGGLE_GOAL:
             case ACTION_HIDE_LABEL: {
-                if (sscanf(line, "%"STRINGIFY(ENTITY_MAX_ID_SIZE)"s", action.label_id) == EOF) {
+                if (sscanf(line, "%"STRINGIFY(ENTITY_MAX_ID_SIZE)"s", action.entity_id) == EOF) {
                     log_fail("%s\n", strerror(errno));
                     RETURN_LT(layer->lt, NULL);
                 }
             } break;
-            default: {}
             }
         }
 
@@ -952,12 +954,14 @@ int rect_layer_dump_stream(const RectLayer *layer, FILE *filedump)
         color_hex_to_stream(colors[i], filedump);
 
         switch (actions[i].type) {
+        case ACTION_NONE: {} break;
+
+        case ACTION_TOGGLE_GOAL:
         case ACTION_HIDE_LABEL: {
             fprintf(filedump, " %d %.*s ",
                     (int)actions[i].type,
-                    ENTITY_MAX_ID_SIZE, actions[i].label_id);
+                    ENTITY_MAX_ID_SIZE, actions[i].entity_id);
         } break;
-        default: {}
         }
 
         fprintf(filedump, "\n");

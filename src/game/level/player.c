@@ -244,18 +244,6 @@ void player_focus_camera(Player *player,
             vec(0.0f, -player_hitbox.h * 0.5f)));
 }
 
-void player_hide_goals(const Player *player,
-                       Goals *goals)
-{
-    trace_assert(player);
-    trace_assert(goals);
-    goals_hide_from_player(
-        goals,
-        rigid_bodies_hitbox(
-            player->rigid_bodies,
-            player->alive_body_id));
-}
-
 void player_die_from_lava(Player *player,
                           const Lava *lava)
 {

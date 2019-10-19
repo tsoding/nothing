@@ -6,6 +6,7 @@
 #include "game/camera.h"
 #include "game/level/player.h"
 #include "game/sound_samples.h"
+#include "config.h"
 
 typedef struct Goals Goals;
 typedef struct LineStream LineStream;
@@ -23,11 +24,12 @@ int goals_sound(Goals *goals,
                 Sound_samples *sound_samples);
 void goals_update(Goals *goals,
                   float delta_time);
-void goals_hide_from_player(Goals *goals,
-                            Rect player_hitbox);
 void goals_checkpoint(const Goals *goals,
                       Player *player);
 void goals_cue(Goals *goals,
                const Camera *camera);
+
+void goals_hide(Goals *goals, char goal_id[ENTITY_MAX_ID_SIZE]);
+void goals_show(Goals *goals, char goal_id[ENTITY_MAX_ID_SIZE]);
 
 #endif  // GOALS_H_
