@@ -47,27 +47,4 @@ script_show_goal_2 1249.832397 -862.224976 323.924408 544.635071 deaa87
 script_hide_label_double_jump 1033.862549 -862.224976 215.969864 569.733276 d35f5f 1 label_double_jump
 hide_wasd_script 260.383636 24.900909 125.925934 209.259262 a1e764 1 label_wasd
 hide_space_to_jump 1449.166626 -122.291687 104.166626 165.000015 1ae5a0 1 label_space_to_jump
-21
-;; TODO(#1106): level 01 functionality that was provided by script doesn't work anymore
-(set args '())
-(set jump-count 0)
-
-(defun on-player-jump ()
-  (set jump-count (+ jump-count 1))
-  (when (> jump-count 3)
-    (send `(game level label "label_space_to_jump" hide))))
-
-(defun on-region-enter (region-id)
-  (when (equal region-id "script_goal_1")
-   (send `(game level goal "goal1" hide)))
-  (when (equal region-id "script_show_goal_2")
-   (send `(game level goal "goal2" show)))
-  (when (equal region-id "script_hide_label_double_jump")
-   (send `(game level label "label_double_jump" hide)))
-  (when (equal region-id "hide_wasd_script")
-   (send `(game level label "label_wasd" hide))))
-
-(defun on-region-leave (region-id)
-  (when (equal region-id "script_goal_1")
-    (send `(game level goal "goal1" show))))
 

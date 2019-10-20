@@ -123,9 +123,6 @@ LevelEditor *create_level_editor(void)
         RETURN_LT(lt, NULL);
     }
 
-    level_editor->supa_script_source =
-        PUSH_LT(lt, string_duplicate("", NULL), free);
-
     level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(level_editor->boxes_layer);
     level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
     level_editor->layers[LAYER_PICKER_BACK_PLATFORMS] = rect_layer_as_layer(level_editor->back_platforms_layer);
@@ -267,15 +264,6 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
             create_rect_layer_from_line_stream(level_stream, "region"),
             destroy_rect_layer);
     if (level_editor->regions_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level_editor->supa_script_source =
-        PUSH_LT(
-            lt,
-            line_stream_collect_until_end(level_stream),
-            free);
-    if (level_editor->supa_script_source == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -581,8 +569,6 @@ static int level_editor_dump(LevelEditor *level_editor)
             return -1;
         }
     }
-
-    fprintf(filedump, "%s", level_editor->supa_script_source);
 
     fclose(RELEASE_LT(level_editor->lt, filedump));
 

@@ -38,7 +38,6 @@ struct LevelEditor
     RectLayer *regions_layer;
     BackgroundLayer background_layer;
     LabelLayer *label_layer;
-    char *supa_script_source;
 
     LayerPtr layers[LAYER_PICKER_N];
 
