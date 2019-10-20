@@ -228,6 +228,8 @@ static int rect_layer_add_rect(RectLayer *layer,
         return -1;
     }
 
+    dynarray_push_empty(layer->actions);
+
     UNDO_PUSH(
         undo_history,
         create_undo_add_context(
