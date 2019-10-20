@@ -116,7 +116,8 @@ int main(int argc, char *argv[])
 
     const char * sound_sample_files[] = {
         "./sounds/nothing.wav",
-        "./sounds/something.wav"
+        "./sounds/something.wav",
+        "./sounds/dev/ding.wav",
     };
     const size_t sound_sample_files_count = sizeof(sound_sample_files) / sizeof(char*);
 

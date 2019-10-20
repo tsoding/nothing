@@ -1,6 +1,7 @@
 #include <stdbool.h>
 
 #include "game/camera.h"
+#include "game/sound_samples.h"
 #include "game/level_metadata.h"
 #include "game/level/boxes.h"
 #include "game/level/level_editor/color_picker.h"
@@ -432,7 +433,9 @@ int level_editor_idle_event(LevelEditor *level_editor,
 
         case SDLK_z: {
             if (event->key.keysym.mod & KMOD_CTRL) {
-                log_info("Undo\n");
+                if (undo_history_empty(&level_editor->undo_history)) {
+                    level_editor->bell = 1;
+                }
                 undo_history_pop(&level_editor->undo_history);
             }
         } break;
@@ -580,4 +583,15 @@ static int level_editor_dump(LevelEditor *level_editor)
 int level_editor_update(LevelEditor *level_editor, float delta_time)
 {
     return fading_wiggly_text_update(&level_editor->notice, delta_time);
+}
+
+void level_editor_sound(LevelEditor *level_editor, Sound_samples *sound_samples)
+{
+    // trace_assert(level_editor);
+    trace_assert(sound_samples);
+
+    if (level_editor && level_editor->bell) {
+        level_editor->bell = 0;
+        sound_samples_play_sound(sound_samples, 2);
+    }
 }

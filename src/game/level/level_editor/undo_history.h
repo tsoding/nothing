@@ -21,4 +21,10 @@ void undo_history_push(UndoHistory *undo_history,
                        size_t context_data_size);
 void undo_history_pop(UndoHistory *undo_history);
 
+static inline
+int undo_history_empty(UndoHistory *undo_history)
+{
+    return undo_history->actions.size == 0;
+}
+
 #endif  // UNDO_HISTORY_H_

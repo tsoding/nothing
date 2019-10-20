@@ -171,7 +171,10 @@ int game_sound(Game *game)
     case GAME_STATE_LEVEL:
         return level_sound(game->level, game->sound_samples);
     case GAME_STATE_LEVEL_PICKER:
+        return 0;
     case GAME_STATE_LEVEL_EDITOR:
+        level_editor_sound(game->level_editor, game->sound_samples);
+        return 0;
     case GAME_STATE_QUIT:
         return 0;
     }
