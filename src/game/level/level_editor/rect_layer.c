@@ -1,3 +1,5 @@
+#include <errno.h>
+
 #include "game/camera.h"
 #include "system/lt.h"
 #include "system/stacktrace.h"
@@ -12,12 +14,11 @@
 #include "system/str.h"
 #include "ui/edit_field.h"
 #include "undo_history.h"
+#include "game/level/action.h"
 
 #define RECT_LAYER_SELECTION_THICCNESS 10.0f
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
 #define CREATE_AREA_THRESHOLD 10.0
-
-
 
 static int clipboard = 0;
 static Rect clipboard_rect;
@@ -39,6 +40,7 @@ struct RectLayer {
     Dynarray *ids;
     Dynarray *rects;
     Dynarray *colors;
+    Dynarray *actions;
     ColorPicker color_picker;
     Vec2f create_begin;
     Vec2f create_end;
@@ -65,7 +67,8 @@ typedef struct {
     size_t index;
     Rect rect;
     Color color;
-    char id[RECT_LAYER_ID_MAX_SIZE];
+    Action action;
+    char id[ENTITY_MAX_ID_SIZE];
 } UndoElementContext;
 
 // Add
@@ -116,6 +119,7 @@ UndoContext create_undo_element_context(RectLayer *layer)
     dynarray_copy_to(layer->rects, &undo_context.element.rect, index);
     dynarray_copy_to(layer->colors, &undo_context.element.color, index);
     dynarray_copy_to(layer->ids, undo_context.element.id, index);
+    dynarray_copy_to(layer->actions, &undo_context.element.action, index);
     return undo_context;
 }
 
@@ -160,6 +164,7 @@ void rect_layer_undo(void *context, size_t context_size)
         dynarray_delete_at(layer->rects, undo_context->add.index);
         dynarray_delete_at(layer->colors, undo_context->add.index);
         dynarray_delete_at(layer->ids, undo_context->add.index);
+        dynarray_delete_at(layer->actions, undo_context->add.index);
         layer->selection = -1;
     } break;
 
@@ -168,6 +173,7 @@ void rect_layer_undo(void *context, size_t context_size)
         dynarray_insert_before(layer->rects, undo_context->element.index, &undo_context->element.rect);
         dynarray_insert_before(layer->colors, undo_context->element.index, &undo_context->element.color);
         dynarray_insert_before(layer->ids, undo_context->element.index, &undo_context->element.id);
+        dynarray_insert_before(layer->actions, undo_context->element.index, &undo_context->element.action);
         layer->selection = -1;
     } break;
 
@@ -176,6 +182,7 @@ void rect_layer_undo(void *context, size_t context_size)
         dynarray_replace_at(layer->rects, undo_context->element.index, &undo_context->element.rect);
         dynarray_replace_at(layer->colors, undo_context->element.index, &undo_context->element.color);
         dynarray_replace_at(layer->ids, undo_context->element.index, &undo_context->element.id);
+        dynarray_replace_at(layer->actions, undo_context->element.index, &undo_context->element.action);
     } break;
 
     case UNDO_SWAP: {
@@ -183,6 +190,7 @@ void rect_layer_undo(void *context, size_t context_size)
         dynarray_swap(layer->rects, undo_context->swap.index1, undo_context->swap.index2);
         dynarray_swap(layer->colors, undo_context->swap.index1, undo_context->swap.index2);
         dynarray_swap(layer->ids, undo_context->swap.index1, undo_context->swap.index2);
+        dynarray_swap(layer->actions, undo_context->swap.index1, undo_context->swap.index2);
     } break;
     }
 }
@@ -212,8 +220,8 @@ static int rect_layer_add_rect(RectLayer *layer,
         return -1;
     }
 
-    char id[RECT_LAYER_ID_MAX_SIZE];
-    snprintf(id, RECT_LAYER_ID_MAX_SIZE, "%s_%d",
+    char id[ENTITY_MAX_ID_SIZE];
+    snprintf(id, ENTITY_MAX_ID_SIZE, "%s_%d",
              layer->id_name_prefix,
              layer->id_name_counter++);
     if (dynarray_push(layer->ids, id)) {
@@ -255,6 +263,7 @@ static void rect_layer_swap_elements(RectLayer *layer, size_t a, size_t b,
     dynarray_swap(layer->rects, a, b);
     dynarray_swap(layer->colors, a, b);
     dynarray_swap(layer->ids, a, b);
+    dynarray_swap(layer->actions, a, b);
 
     UNDO_PUSH(undo_history, create_undo_swap_context(layer, a, b));
 }
@@ -284,6 +293,7 @@ static int rect_layer_delete_rect_at(RectLayer *layer,
     dynarray_delete_at(layer->rects, i);
     dynarray_delete_at(layer->colors, i);
     dynarray_delete_at(layer->ids, i);
+    dynarray_delete_at(layer->actions, i);
 
     return 0;
 }
@@ -407,7 +417,7 @@ static int rect_layer_event_idle(RectLayer *layer,
                 layer->state = RECT_LAYER_ID_RENAME;
                 edit_field_replace(
                     layer->id_edit_field,
-                    ids + layer->selection * RECT_LAYER_ID_MAX_SIZE);
+                    ids + layer->selection * ENTITY_MAX_ID_SIZE);
                 SDL_StartTextInput();
             }
         } break;
@@ -577,8 +587,8 @@ static int rect_layer_event_id_rename(RectLayer *layer,
             UNDO_PUSH(undo_history, create_undo_update_context(layer));
 
             char *id = dynarray_pointer_at(layer->ids, (size_t)layer->selection);
-            memset(id, 0, RECT_LAYER_ID_MAX_SIZE);
-            memcpy(id, edit_field_as_text(layer->id_edit_field), RECT_LAYER_ID_MAX_SIZE - 1);
+            memset(id, 0, ENTITY_MAX_ID_SIZE);
+            memcpy(id, edit_field_as_text(layer->id_edit_field), ENTITY_MAX_ID_SIZE - 1);
             layer->state = RECT_LAYER_IDLE;
             SDL_StopTextInput();
         } break;
@@ -615,7 +625,7 @@ RectLayer *create_rect_layer(const char *id_name_prefix)
 
     layer->ids = PUSH_LT(
         lt,
-        create_dynarray(sizeof(char) * RECT_LAYER_ID_MAX_SIZE),
+        create_dynarray(sizeof(char) * ENTITY_MAX_ID_SIZE),
         destroy_dynarray);
     if (layer->ids == NULL) {
         RETURN_LT(lt, NULL);
@@ -634,6 +644,14 @@ RectLayer *create_rect_layer(const char *id_name_prefix)
         create_dynarray(sizeof(Color)),
         destroy_dynarray);
     if (layer->colors == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    layer->actions = PUSH_LT(
+        lt,
+        create_dynarray(sizeof(Action)),
+        destroy_dynarray);
+    if (layer->actions == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -681,22 +699,43 @@ RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream, const cha
 
         char hex[7];
         Rect rect;
-        char id[RECT_LAYER_ID_MAX_SIZE];
+        char id[ENTITY_MAX_ID_SIZE];
 
+        int n = 0;
         if (sscanf(line,
-                   "%"STRINGIFY(RECT_LAYER_ID_MAX_SIZE)"s%f%f%f%f%6s\n",
+                   "%"STRINGIFY(ENTITY_MAX_ID_SIZE)"s%f%f%f%f%6s%n",
                    id,
                    &rect.x, &rect.y,
                    &rect.w, &rect.h,
-                   hex) < 0) {
+                   hex, &n) == EOF) {
+            log_fail("%s\n", strerror(errno));
             RETURN_LT(layer->lt, NULL);
         }
+        line += n;
 
         Color color = hexstr(hex);
-
         dynarray_push(layer->rects, &rect);
         dynarray_push(layer->ids, id);
         dynarray_push(layer->colors, &color);
+
+        Action action = {0};
+
+        if (sscanf(line, "%d%n", (int*)&action.type, &n) != EOF) {
+            line += n;
+            switch (action.type) {
+            case ACTION_NONE: break;
+
+            case ACTION_TOGGLE_GOAL:
+            case ACTION_HIDE_LABEL: {
+                if (sscanf(line, "%"STRINGIFY(ENTITY_MAX_ID_SIZE)"s", action.entity_id) == EOF) {
+                    log_fail("%s\n", strerror(errno));
+                    RETURN_LT(layer->lt, NULL);
+                }
+            } break;
+            }
+        }
+
+        dynarray_push(layer->actions, &action);
     }
 
     return layer;
@@ -781,7 +820,7 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
                 // Id text
                 if (camera_render_text(
                         camera,
-                        ids + layer->selection * RECT_LAYER_ID_MAX_SIZE,
+                        ids + layer->selection * ENTITY_MAX_ID_SIZE,
                         RECT_LAYER_ID_LABEL_SIZE,
                         color_invert(color),
                         rect_position(rect)) < 0) {
@@ -905,15 +944,33 @@ int rect_layer_dump_stream(const RectLayer *layer, FILE *filedump)
     char *ids = dynarray_data(layer->ids);
     Rect *rects = dynarray_data(layer->rects);
     Color *colors = dynarray_data(layer->colors);
+    Action *actions = dynarray_data(layer->actions);
 
     fprintf(filedump, "%zd\n", n);
     for (size_t i = 0; i < n; ++i) {
         fprintf(filedump, "%s %f %f %f %f ",
-                ids + RECT_LAYER_ID_MAX_SIZE * i,
+                ids + ENTITY_MAX_ID_SIZE * i,
                 rects[i].x, rects[i].y, rects[i].w, rects[i].h);
         color_hex_to_stream(colors[i], filedump);
+
+        switch (actions[i].type) {
+        case ACTION_NONE: {} break;
+
+        case ACTION_TOGGLE_GOAL:
+        case ACTION_HIDE_LABEL: {
+            fprintf(filedump, " %d %.*s ",
+                    (int)actions[i].type,
+                    ENTITY_MAX_ID_SIZE, actions[i].entity_id);
+        } break;
+        }
+
         fprintf(filedump, "\n");
     }
 
     return 0;
+}
+
+const Action *rect_layer_actions(const RectLayer *layer)
+{
+    return dynarray_data(layer->actions);
 }

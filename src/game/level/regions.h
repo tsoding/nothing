@@ -2,6 +2,7 @@
 #define REGIONS_H_
 
 #include "math/rect.h"
+#include "action.h"
 
 typedef struct Regions Regions;
 typedef struct Player Player;
@@ -9,8 +10,9 @@ typedef struct LineStream LineStream;
 typedef struct Level Level;
 typedef struct RectLayer RectLayer;
 typedef struct Labels Labels;
+typedef struct Goals Goals;
 
-Regions *create_regions_from_rect_layer(const RectLayer *rect_layer, Labels *labels);
+Regions *create_regions_from_rect_layer(const RectLayer *rect_layer, Labels *labels, Goals *goals);
 void destroy_regions(Regions *regions);
 
 int regions_render(Regions *regions, const Camera *camera);

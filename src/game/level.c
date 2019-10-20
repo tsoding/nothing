@@ -147,7 +147,8 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor)
         lt,
         create_regions_from_rect_layer(
             level_editor->regions_layer,
-            level->labels),
+            level->labels,
+            level->goals),
         destroy_regions);
     if (level->regions == NULL) {
         RETURN_LT(lt, NULL);
@@ -242,7 +243,6 @@ int level_update(Level *level, float delta_time)
 
     rigid_bodies_collide(level->rigid_bodies, level->platforms);
 
-    player_hide_goals(level->player, level->goals);
     player_die_from_lava(level->player, level->lava);
     regions_player_enter(level->regions, level->player);
     regions_player_leave(level->regions, level->player);

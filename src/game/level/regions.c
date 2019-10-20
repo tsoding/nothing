@@ -10,21 +10,12 @@
 #include "system/nth_alloc.h"
 #include "game/level/level_editor/rect_layer.h"
 #include "game/level/labels.h"
+#include "game/level/goals.h"
 
 enum RegionState {
     RS_PLAYER_OUTSIDE = 0,
     RS_PLAYER_INSIDE
 };
-
-typedef enum {
-    ACTION_NONE = 0,
-    ACTION_HIDE_LABEL
-} ActionType;
-
-typedef struct {
-    ActionType type;
-    char label_id[ENTITY_MAX_ID_SIZE];
-} Action;
 
 struct Regions {
     Lt *lt;
@@ -36,9 +27,12 @@ struct Regions {
     Action *actions;
 
     Labels *labels;
+    Goals *goals;
 };
 
-Regions *create_regions_from_rect_layer(const RectLayer *rect_layer, Labels *labels)
+Regions *create_regions_from_rect_layer(const RectLayer *rect_layer,
+                                        Labels *labels,
+                                        Goals *goals)
 {
     trace_assert(rect_layer);
     trace_assert(labels);
@@ -106,16 +100,15 @@ Regions *create_regions_from_rect_layer(const RectLayer *rect_layer, Labels *lab
     if (regions->actions == NULL) {
         RETURN_LT(lt, NULL);
     }
+    memcpy(regions->actions,
+           rect_layer_actions(rect_layer),
+           regions->count * sizeof(Action));
 
     // TODO(#1108): impossible to change the region action from the Level Editor
-    // TODO(#1109): region action is not a part of the level format
 
-    // for (size_t i = 0; i < regions->count; ++i) {
-    //     regions->actions[i].type = ACTION_HIDE_LABEL;
-    //     memcpy(regions->actions[i].label_id, "label_wasd", 11);
-    // }
 
     regions->labels = labels;
+    regions->goals = goals;
 
     return regions;
 }
@@ -136,8 +129,16 @@ void regions_player_enter(Regions *regions, Player *player)
             player_overlaps_rect(player, regions->rects[i])) {
             regions->states[i] = RS_PLAYER_INSIDE;
 
-            if (regions->actions[i].type == ACTION_HIDE_LABEL) {
-                labels_hide(regions->labels, regions->actions[i].label_id);
+            switch (regions->actions[i].type) {
+            case ACTION_HIDE_LABEL: {
+                labels_hide(regions->labels, regions->actions[i].entity_id);
+            } break;
+
+            case ACTION_TOGGLE_GOAL: {
+                goals_hide(regions->goals, regions->actions[i].entity_id);
+            } break;
+
+            default: {}
             }
         }
     }
@@ -152,6 +153,14 @@ void regions_player_leave(Regions *regions, Player *player)
         if (regions->states[i] == RS_PLAYER_INSIDE &&
             !player_overlaps_rect(player, regions->rects[i])) {
             regions->states[i] = RS_PLAYER_OUTSIDE;
+
+            switch (regions->actions[i].type) {
+            case ACTION_TOGGLE_GOAL: {
+                goals_show(regions->goals, regions->actions[i].entity_id);
+            } break;
+
+            default: {}
+            }
         }
     }
 }

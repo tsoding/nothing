@@ -11,6 +11,7 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/str.h"
+#include "config.h"
 
 struct Boxes
 {
@@ -38,7 +39,7 @@ Boxes *create_boxes_from_rect_layer(const RectLayer *layer, RigidBodies *rigid_b
 
     boxes->boxes_ids = PUSH_LT(
         lt,
-        create_dynarray(RECT_LAYER_ID_MAX_SIZE),
+        create_dynarray(ENTITY_MAX_ID_SIZE),
         destroy_dynarray);
     if (boxes->boxes_ids == NULL) {
         RETURN_LT(lt, NULL);
@@ -63,7 +64,7 @@ Boxes *create_boxes_from_rect_layer(const RectLayer *layer, RigidBodies *rigid_b
         RigidBodyId body_id = rigid_bodies_add(rigid_bodies, rects[i]);
         dynarray_push(boxes->body_ids, &body_id);
         dynarray_push(boxes->body_colors, &colors[i]);
-        dynarray_push(boxes->boxes_ids, ids + i * RECT_LAYER_ID_MAX_SIZE);
+        dynarray_push(boxes->boxes_ids, ids + i * ENTITY_MAX_ID_SIZE);
     }
 
     return boxes;
