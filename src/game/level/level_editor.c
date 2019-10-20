@@ -4,6 +4,7 @@
 #include "game/sound_samples.h"
 #include "game/level_metadata.h"
 #include "game/level/boxes.h"
+#include "game/level/level_editor/action_picker.h"
 #include "game/level/level_editor/color_picker.h"
 #include "game/level/level_editor/rect_layer.h"
 #include "game/level/level_editor/point_layer.h"
@@ -291,6 +292,8 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
 
     level_editor->camera_scale = 1.0f;
 
+    level_editor->test_picker.action.type = ACTION_HIDE_LABEL;
+
     return level_editor;
 }
 
@@ -367,6 +370,11 @@ int level_editor_render(const LevelEditor *level_editor,
     const Vec2f text_size = fading_wiggly_text_size(
         &level_editor->notice,
         camera);
+
+    action_picker_render(
+        &level_editor->test_picker,
+        camera,
+        vec(500.0f, 500.0f));
 
     fading_wiggly_text_render(
         &level_editor->notice, camera,

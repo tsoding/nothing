@@ -4,6 +4,7 @@
 #include "game/level/level_editor/layer.h"
 #include "game/level/level_editor/layer_picker.h"
 #include "game/level/level_editor/undo_history.h"
+#include "game/level/level_editor/action_picker.h"
 #include "ui/wiggly_text.h"
 
 typedef struct LevelMetadata LevelMetadata;
@@ -48,6 +49,8 @@ struct LevelEditor
     int bell;
     int click;
     int save;
+
+    ActionPicker test_picker;
 
     const char *file_name;
 };
