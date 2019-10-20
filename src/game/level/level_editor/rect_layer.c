@@ -707,7 +707,7 @@ RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream, const cha
                    id,
                    &rect.x, &rect.y,
                    &rect.w, &rect.h,
-                   hex, &n) == EOF) {
+                   hex, &n) <= 0) {
             log_fail("%s\n", strerror(errno));
             RETURN_LT(layer->lt, NULL);
         }
@@ -720,14 +720,14 @@ RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream, const cha
 
         Action action = {0};
 
-        if (sscanf(line, "%d%n", (int*)&action.type, &n) != EOF) {
+        if (sscanf(line, "%d%n", (int*)&action.type, &n) > 0) {
             line += n;
             switch (action.type) {
             case ACTION_NONE: break;
 
             case ACTION_TOGGLE_GOAL:
             case ACTION_HIDE_LABEL: {
-                if (sscanf(line, "%"STRINGIFY(ENTITY_MAX_ID_SIZE)"s", action.entity_id) == EOF) {
+                if (sscanf(line, "%"STRINGIFY(ENTITY_MAX_ID_SIZE)"s", action.entity_id) <= 0) {
                     log_fail("%s\n", strerror(errno));
                     RETURN_LT(layer->lt, NULL);
                 }
@@ -958,7 +958,7 @@ int rect_layer_dump_stream(const RectLayer *layer, FILE *filedump)
 
         case ACTION_TOGGLE_GOAL:
         case ACTION_HIDE_LABEL: {
-            fprintf(filedump, " %d %.*s ",
+            fprintf(filedump, " %d %.*s",
                     (int)actions[i].type,
                     ENTITY_MAX_ID_SIZE, actions[i].entity_id);
         } break;
