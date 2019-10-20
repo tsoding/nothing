@@ -35,5 +35,5 @@ void __trace_assert(const char *file, int line, const char *function, const char
         function,
         message);
     print_stacktrace();
-    exit(1);
+    abort();
 }
