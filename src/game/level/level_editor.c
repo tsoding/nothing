@@ -506,6 +506,8 @@ int level_editor_idle_event(LevelEditor *level_editor,
                 &level_editor->undo_history) < 0) {
             return -1;
         }
+    } else {
+        level_editor->click = 1;
     }
 
 
@@ -576,6 +578,7 @@ static int level_editor_dump(LevelEditor *level_editor)
     fclose(RELEASE_LT(level_editor->lt, filedump));
 
     fading_wiggly_text_reset(&level_editor->notice);
+    level_editor->save = 1;
 
     return 0;
 }
@@ -587,11 +590,22 @@ int level_editor_update(LevelEditor *level_editor, float delta_time)
 
 void level_editor_sound(LevelEditor *level_editor, Sound_samples *sound_samples)
 {
-    // trace_assert(level_editor);
     trace_assert(sound_samples);
 
-    if (level_editor && level_editor->bell) {
-        level_editor->bell = 0;
-        sound_samples_play_sound(sound_samples, 2);
+    if (level_editor) {
+        if (level_editor->bell) {
+            level_editor->bell = 0;
+            sound_samples_play_sound(sound_samples, 2);
+        }
+
+        if (level_editor->click) {
+            level_editor->click = 0;
+            sound_samples_play_sound(sound_samples, 3);
+        }
+
+        if (level_editor->save) {
+            level_editor->save = 0;
+            sound_samples_play_sound(sound_samples, 4);
+        }
     }
 }

@@ -118,6 +118,8 @@ int main(int argc, char *argv[])
         "./sounds/nothing.wav",
         "./sounds/something.wav",
         "./sounds/dev/ding.wav",
+        "./sounds/dev/click.wav",
+        "./sounds/dev/save.wav"
     };
     const size_t sound_sample_files_count = sizeof(sound_sample_files) / sizeof(char*);
 

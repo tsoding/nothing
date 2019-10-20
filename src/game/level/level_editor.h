@@ -46,6 +46,8 @@ struct LevelEditor
 
     bool drag;
     int bell;
+    int click;
+    int save;
 
     const char *file_name;
 };
