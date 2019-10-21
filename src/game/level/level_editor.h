@@ -50,8 +50,6 @@ struct LevelEditor
     int click;
     int save;
 
-    ActionPicker test_picker;
-
     const char *file_name;
 };
 
