@@ -154,6 +154,8 @@ add_executable(nothing
   src/game/level/level_editor/background_layer.h
   src/game/level/level_editor/undo_history.h
   src/game/level/level_editor/undo_history.c
+  src/game/level/level_editor/action_picker.h
+  src/game/level/level_editor/action_picker.c
 )
 target_link_libraries(nothing ${SDL2_LIBRARIES} system)
 

@@ -228,6 +228,8 @@ static int rect_layer_add_rect(RectLayer *layer,
         return -1;
     }
 
+    dynarray_push_empty(layer->actions);
+
     UNDO_PUSH(
         undo_history,
         create_undo_add_context(
@@ -271,7 +273,7 @@ static void rect_layer_swap_elements(RectLayer *layer, size_t a, size_t b,
 static Rect rect_layer_resize_anchor(const Camera *camera, Rect boundary_rect)
 {
     const Rect overlay_rect =
-        rect_scale(
+        rect_pad(
             camera_rect(camera, boundary_rect),
             RECT_LAYER_SELECTION_THICCNESS * 0.5f);
 
@@ -732,6 +734,8 @@ RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream, const cha
                     RETURN_LT(layer->lt, NULL);
                 }
             } break;
+
+            case ACTION_N: break;
             }
         }
 
@@ -784,7 +788,7 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
         // Selection Overlay
         if (active && (size_t) layer->selection == i) {
             const Rect overlay_rect =
-                rect_scale(
+                rect_pad(
                     camera_rect(camera, rect),
                     RECT_LAYER_SELECTION_THICCNESS * 0.5f);
             const Color overlay_color = color_invert(color);
@@ -962,6 +966,7 @@ int rect_layer_dump_stream(const RectLayer *layer, FILE *filedump)
                     (int)actions[i].type,
                     ENTITY_MAX_ID_SIZE, actions[i].entity_id);
         } break;
+        case ACTION_N: break;
         }
 
         fprintf(filedump, "\n");

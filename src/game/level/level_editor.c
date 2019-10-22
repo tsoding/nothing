@@ -1,8 +1,10 @@
 #include <stdbool.h>
 
 #include "game/camera.h"
+#include "game/sound_samples.h"
 #include "game/level_metadata.h"
 #include "game/level/boxes.h"
+#include "game/level/level_editor/action_picker.h"
 #include "game/level/level_editor/color_picker.h"
 #include "game/level/level_editor/rect_layer.h"
 #include "game/level/level_editor/point_layer.h"
@@ -122,9 +124,6 @@ LevelEditor *create_level_editor(void)
     if (level_editor->regions_layer == NULL) {
         RETURN_LT(lt, NULL);
     }
-
-    level_editor->supa_script_source =
-        PUSH_LT(lt, string_duplicate("", NULL), free);
 
     level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(level_editor->boxes_layer);
     level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
@@ -267,15 +266,6 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
             create_rect_layer_from_line_stream(level_stream, "region"),
             destroy_rect_layer);
     if (level_editor->regions_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level_editor->supa_script_source =
-        PUSH_LT(
-            lt,
-            line_stream_collect_until_end(level_stream),
-            free);
-    if (level_editor->supa_script_source == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -444,7 +434,9 @@ int level_editor_idle_event(LevelEditor *level_editor,
 
         case SDLK_z: {
             if (event->key.keysym.mod & KMOD_CTRL) {
-                log_info("Undo\n");
+                if (undo_history_empty(&level_editor->undo_history)) {
+                    level_editor->bell = 1;
+                }
                 undo_history_pop(&level_editor->undo_history);
             }
         } break;
@@ -515,6 +507,8 @@ int level_editor_idle_event(LevelEditor *level_editor,
                 &level_editor->undo_history) < 0) {
             return -1;
         }
+    } else {
+        level_editor->click = 1;
     }
 
 
@@ -582,11 +576,10 @@ static int level_editor_dump(LevelEditor *level_editor)
         }
     }
 
-    fprintf(filedump, "%s", level_editor->supa_script_source);
-
     fclose(RELEASE_LT(level_editor->lt, filedump));
 
     fading_wiggly_text_reset(&level_editor->notice);
+    level_editor->save = 1;
 
     return 0;
 }
@@ -594,4 +587,26 @@ static int level_editor_dump(LevelEditor *level_editor)
 int level_editor_update(LevelEditor *level_editor, float delta_time)
 {
     return fading_wiggly_text_update(&level_editor->notice, delta_time);
+}
+
+void level_editor_sound(LevelEditor *level_editor, Sound_samples *sound_samples)
+{
+    trace_assert(sound_samples);
+
+    if (level_editor) {
+        if (level_editor->bell) {
+            level_editor->bell = 0;
+            sound_samples_play_sound(sound_samples, 2);
+        }
+
+        if (level_editor->click) {
+            level_editor->click = 0;
+            sound_samples_play_sound(sound_samples, 3);
+        }
+
+        if (level_editor->save) {
+            level_editor->save = 0;
+            sound_samples_play_sound(sound_samples, 4);
+        }
+    }
 }

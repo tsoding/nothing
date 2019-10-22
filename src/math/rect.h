@@ -51,7 +51,7 @@ static inline Vec2f rect_position(Rect rect)
     return vec(rect.x, rect.y);
 }
 
-static inline Rect rect_scale(Rect rect, float d)
+static inline Rect rect_pad(Rect rect, float d)
 {
     rect.x -= d;
     rect.y -= d;

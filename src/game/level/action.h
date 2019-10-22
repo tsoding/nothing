@@ -7,6 +7,8 @@ typedef enum {
     ACTION_NONE = 0,
     ACTION_HIDE_LABEL,
     ACTION_TOGGLE_GOAL,
+
+    ACTION_N
 } ActionType;
 
 typedef struct {
