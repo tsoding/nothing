@@ -66,7 +66,7 @@ Game *create_game(const char *level_folder,
     game->font = PUSH_LT(
         lt,
         create_sprite_font_from_file(
-            "images/charmap-oldschool.bmp",
+            "./assets/images/charmap-oldschool.bmp",
             renderer),
         destroy_sprite_font);
     if (game->font == NULL) {
@@ -96,7 +96,7 @@ Game *create_game(const char *level_folder,
     game->renderer = renderer;
     game->texture_cursor = PUSH_LT(
         lt,
-        texture_from_bmp("images/cursor.bmp", renderer),
+        texture_from_bmp("./assets/images/cursor.bmp", renderer),
         SDL_DestroyTexture);
     if (SDL_SetTextureBlendMode(
             game->texture_cursor,
