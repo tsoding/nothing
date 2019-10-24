@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.13)
 project(nothing)
 
 if(WIN32)
@@ -158,6 +158,9 @@ add_executable(nothing
   src/game/level/level_editor/action_picker.c
 )
 target_link_libraries(nothing ${SDL2_LIBRARIES} system)
+
+ADD_CUSTOM_TARGET(link_assets ALL
+                  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets)
 
 if(("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"))
   set(CMAKE_C_FLAGS
