@@ -18,6 +18,10 @@ static const char *action_labels[ACTION_N] = {
 #define WIDGET_WIDTH (ELEMENT_WIDTH + 2 * WIDGET_PADDING)
 #define WIDGET_HEIGHT (ACTION_N * ELEMENT_HEIGHT + WIDGET_PADDING * (ACTION_N + 1))
 
+#define TEXT_COLOR COLOR_WHITE
+#define SELECTION_COLOR COLOR_WHITE
+#define BACKGROUND_COLOR COLOR_BLACK
+
 static size_t longest_label(void)
 {
     size_t result = 0;
@@ -40,7 +44,7 @@ void action_picker_render(const ActionPicker *picker,
         rect_from_vecs(
             picker->position,
             vec(WIDGET_WIDTH,WIDGET_HEIGHT)),
-        COLOR_BLACK);
+        BACKGROUND_COLOR);
 
     for (size_t i = 0; i < ACTION_N; ++i) {
         const Vec2f element_position =
@@ -54,7 +58,7 @@ void action_picker_render(const ActionPicker *picker,
             camera,
             action_labels[i],
             TEXT_SCALE,
-            COLOR_RED,
+            TEXT_COLOR,
             element_position);
 
         if (i == picker->action.type) {
@@ -63,7 +67,7 @@ void action_picker_render(const ActionPicker *picker,
                 rect_from_vecs(
                     element_position,
                     vec(ELEMENT_WIDTH, ELEMENT_HEIGHT)),
-                COLOR_RED,
+                SELECTION_COLOR,
                 5.0f);
         }
     }
