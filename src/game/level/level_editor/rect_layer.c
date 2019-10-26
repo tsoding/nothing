@@ -15,6 +15,7 @@
 #include "ui/edit_field.h"
 #include "undo_history.h"
 #include "game/level/action.h"
+#include "action_picker.h"
 
 #define RECT_LAYER_SELECTION_THICCNESS 10.0f
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
@@ -42,6 +43,7 @@ struct RectLayer {
     Dynarray *colors;
     Dynarray *actions;
     ColorPicker color_picker;
+    ActionPicker action_picker;
     Vec2f create_begin;
     Vec2f create_end;
     int selection;
@@ -670,6 +672,7 @@ RectLayer *create_rect_layer(const char *id_name_prefix)
     layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
     layer->selection = -1;
     layer->id_name_prefix = id_name_prefix;
+    layer->action_picker.position = vec(400.0f, 200.0f);
 
     return layer;
 }
@@ -852,6 +855,10 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
 
     if (active && color_picker_render(&layer->color_picker, camera) < 0) {
         return -1;
+    }
+
+    if (layer->selection >= 0) {
+        action_picker_render(&layer->action_picker, camera);
     }
 
     return 0;

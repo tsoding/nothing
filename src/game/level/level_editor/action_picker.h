@@ -7,6 +7,7 @@
 typedef struct {
     Action action;
     Vec2f position;
+    Vec2f size;
 } ActionPicker;
 
 

@@ -40,7 +40,6 @@ struct LevelEditor
     RectLayer *regions_layer;
     BackgroundLayer background_layer;
     LabelLayer *label_layer;
-    ActionPicker action_picker;
 
     LayerPtr layers[LAYER_PICKER_N];
 
