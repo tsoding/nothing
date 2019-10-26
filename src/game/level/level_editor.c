@@ -374,6 +374,11 @@ int level_editor_render(const LevelEditor *level_editor,
         vec(screen_viewport.w * 0.5f - text_size.x * 0.5f,
             LEVEL_EDITOR_NOTICE_PADDING_TOP));
 
+    action_picker_render(
+        &level_editor->action_picker,
+        camera,
+        vec(400.0f, 200.0f));
+
     return 0;
 }
 
@@ -522,6 +527,8 @@ int level_editor_event(LevelEditor *level_editor,
     trace_assert(level_editor);
     trace_assert(event);
     trace_assert(camera);
+
+    action_picker_event(&level_editor->action_picker, event);
 
     switch (level_editor->state) {
     case LEVEL_EDITOR_IDLE:

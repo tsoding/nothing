@@ -1,5 +1,8 @@
+#include <string.h>
+
 #include "system/stacktrace.h"
 #include "action_picker.h"
+#include "math/extrema.h"
 
 static const char *action_labels[ACTION_N] = {
     [ACTION_NONE]        = "None",
@@ -7,7 +10,14 @@ static const char *action_labels[ACTION_N] = {
     [ACTION_TOGGLE_GOAL] = "Toggle Goal"
 };
 
-#define ACTION_PICKER_PADDING 20.0f
+static size_t longest_label(void)
+{
+    size_t result = 0;
+    for (size_t i = 0; i < ACTION_N; ++i) {
+        result = max_size_t(result, strlen(action_labels[i]));
+    }
+    return result;
+}
 
 void action_picker_render(const ActionPicker *picker,
                           const Camera *camera,
@@ -19,23 +29,31 @@ void action_picker_render(const ActionPicker *picker,
 
     Vec2f text_scale = vec(5.0f, 5.0f);
 
+#define WIDGET_PADDING 20.0f
+#define ELEMENT_WIDTH ((float)(longest_label() * FONT_CHAR_WIDTH) * text_scale.x)
+#define ELEMENT_HEIGHT (FONT_CHAR_HEIGHT * text_scale.y)
+#define WIDGET_WIDTH (ELEMENT_WIDTH + 2 * WIDGET_PADDING)
+#define WIDGET_HEIGHT (ACTION_N * ELEMENT_HEIGHT + WIDGET_PADDING * (ACTION_N + 1))
+
     camera_fill_rect_screen(
         camera,
-        rect_pad(
-            camera_text_boundary_box(
-                camera,
-                position,
-                text_scale,
-                action_labels[picker->action.type]),
-            ACTION_PICKER_PADDING),
+        rect_from_vecs(
+            position,
+            vec(WIDGET_WIDTH,WIDGET_HEIGHT)),
         COLOR_BLACK);
 
-    camera_render_text_screen(
-        camera,
-        action_labels[picker->action.type],
-        text_scale,
-        COLOR_RED,
-        position);
+    for (size_t i = 0; i < ACTION_N; ++i) {
+        camera_render_text_screen(
+            camera,
+            action_labels[i],
+            text_scale,
+            COLOR_RED,
+            vec_sum(
+                position,
+                vec(
+                    WIDGET_PADDING,
+                    WIDGET_PADDING + (float)i * (ELEMENT_HEIGHT + WIDGET_PADDING))));
+    }
 }
 
 void action_picker_event(ActionPicker *action_picker,
