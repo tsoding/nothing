@@ -14,6 +14,7 @@ static size_t longest_label(void)
 {
     size_t result = 0;
     for (size_t i = 0; i < ACTION_N; ++i) {
+        trace_assert(action_labels[i]);
         result = max_size_t(result, strlen(action_labels[i]));
     }
     return result;
@@ -29,7 +30,7 @@ void action_picker_render(const ActionPicker *picker,
 
     Vec2f text_scale = vec(5.0f, 5.0f);
 
-#define WIDGET_PADDING 20.0f
+#define WIDGET_PADDING 30.0f
 #define ELEMENT_WIDTH ((float)(longest_label() * FONT_CHAR_WIDTH) * text_scale.x)
 #define ELEMENT_HEIGHT (FONT_CHAR_HEIGHT * text_scale.y)
 #define WIDGET_WIDTH (ELEMENT_WIDTH + 2 * WIDGET_PADDING)
@@ -43,16 +44,29 @@ void action_picker_render(const ActionPicker *picker,
         COLOR_BLACK);
 
     for (size_t i = 0; i < ACTION_N; ++i) {
+        const Vec2f element_position =
+            vec_sum(
+                position,
+                vec(
+                    WIDGET_PADDING,
+                    WIDGET_PADDING + (float)i * (ELEMENT_HEIGHT + WIDGET_PADDING)));
+
         camera_render_text_screen(
             camera,
             action_labels[i],
             text_scale,
             COLOR_RED,
-            vec_sum(
-                position,
-                vec(
-                    WIDGET_PADDING,
-                    WIDGET_PADDING + (float)i * (ELEMENT_HEIGHT + WIDGET_PADDING))));
+            element_position);
+
+        if (i == picker->action.type) {
+            camera_draw_thicc_rect_screen(
+                camera,
+                rect_from_vecs(
+                    element_position,
+                    vec(ELEMENT_WIDTH, ELEMENT_HEIGHT)),
+                COLOR_RED,
+                5.0f);
+        }
     }
 }
 
