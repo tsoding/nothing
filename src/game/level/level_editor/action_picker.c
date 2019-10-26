@@ -106,5 +106,21 @@ void action_picker_event(ActionPicker *action_picker,
         } break;
         }
     } break;
+
+    case SDL_KEYDOWN: {
+        switch (event->key.keysym.sym) {
+        case SDLK_UP: {
+            if (action_picker->action.type > 0) {
+                action_picker->action.type--;
+            }
+        } break;
+
+        case SDLK_DOWN: {
+            if (action_picker->action.type < ACTION_N) {
+                action_picker->action.type++;
+            }
+        } break;
+        }
+    } break;
     }
 }
