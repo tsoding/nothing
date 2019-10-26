@@ -376,8 +376,7 @@ int level_editor_render(const LevelEditor *level_editor,
 
     action_picker_render(
         &level_editor->action_picker,
-        camera,
-        vec(400.0f, 200.0f));
+        camera);
 
     return 0;
 }
@@ -528,6 +527,7 @@ int level_editor_event(LevelEditor *level_editor,
     trace_assert(event);
     trace_assert(camera);
 
+    level_editor->action_picker.position = vec(400.0f, 200.0f);
     action_picker_event(&level_editor->action_picker, event);
 
     switch (level_editor->state) {
