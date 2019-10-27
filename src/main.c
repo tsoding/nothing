@@ -115,18 +115,18 @@ int main(int argc, char *argv[])
     // ------------------------------
 
     const char * sound_sample_files[] = {
-        "./sounds/nothing.wav",
-        "./sounds/something.wav",
-        "./sounds/dev/ding.wav",
-        "./sounds/dev/click.wav",
-        "./sounds/dev/save.wav"
+        "./assets/sounds/nothing.wav",
+        "./assets/sounds/something.wav",
+        "./assets/sounds/dev/ding.wav",
+        "./assets/sounds/dev/click.wav",
+        "./assets/sounds/dev/save.wav"
     };
     const size_t sound_sample_files_count = sizeof(sound_sample_files) / sizeof(char*);
 
     Game *const game = PUSH_LT(
         lt,
         create_game(
-            "./levels/",
+            "./assets/levels/",
             sound_sample_files,
             sound_sample_files_count,
             renderer),
