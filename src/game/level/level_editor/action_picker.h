@@ -3,13 +3,12 @@
 
 #include "game/level/action.h"
 #include "game/camera.h"
+#include "ui/grid.h"
 
 typedef struct {
+    Widget widget;
     Action action;
-    Vec2f position;
-    Vec2f size;
 } ActionPicker;
-
 
 void action_picker_render(const ActionPicker *action_picker,
                           const Camera *camera);

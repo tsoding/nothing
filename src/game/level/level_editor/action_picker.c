@@ -12,11 +12,11 @@ static const char *action_labels[ACTION_N] = {
 };
 
 #define TEXT_SCALE vec(5.0f, 5.0f)
-#define WIDGET_PADDING 30.0f
+// #define WIDGET_PADDING 30.0f
 #define ELEMENT_WIDTH ((float)(longest_label() * FONT_CHAR_WIDTH) * TEXT_SCALE.x)
 #define ELEMENT_HEIGHT (FONT_CHAR_HEIGHT * TEXT_SCALE.y)
-#define WIDGET_WIDTH (ELEMENT_WIDTH + 2 * WIDGET_PADDING)
-#define WIDGET_HEIGHT (ACTION_N * ELEMENT_HEIGHT + WIDGET_PADDING * (ACTION_N + 1))
+// #define WIDGET_WIDTH (ELEMENT_WIDTH + 2 * WIDGET_PADDING)
+// #define WIDGET_HEIGHT (ACTION_N * ELEMENT_HEIGHT + WIDGET_PADDING * (ACTION_N + 1))
 
 #define TEXT_COLOR COLOR_WHITE
 #define SELECTION_COLOR COLOR_WHITE
@@ -41,18 +41,15 @@ void action_picker_render(const ActionPicker *picker,
 
     camera_fill_rect_screen(
         camera,
-        rect_from_vecs(
-            picker->position,
-            vec(WIDGET_WIDTH,WIDGET_HEIGHT)),
+        picker->widget.boundary,
         BACKGROUND_COLOR);
 
+    const float element_height = picker->widget.boundary.h / (float)ACTION_N;
     for (size_t i = 0; i < ACTION_N; ++i) {
         const Vec2f element_position =
             vec_sum(
-                picker->position,
-                vec(
-                    WIDGET_PADDING,
-                    WIDGET_PADDING + (float)i * (ELEMENT_HEIGHT + WIDGET_PADDING)));
+                vec(picker->widget.boundary.x, picker->widget.boundary.y),
+                vec(0.0f, (float)i * element_height));
 
         camera_render_text_screen(
             camera,
@@ -73,10 +70,10 @@ void action_picker_render(const ActionPicker *picker,
     }
 }
 
-void action_picker_event(ActionPicker *action_picker,
+void action_picker_event(ActionPicker *picker,
                          const SDL_Event *event)
 {
-    trace_assert(action_picker);
+    trace_assert(picker);
     trace_assert(event);
 
     switch (event->type) {
@@ -87,19 +84,19 @@ void action_picker_event(ActionPicker *action_picker,
                 vec((float)event->button.x,
                     (float)event->button.y);
 
+            const float element_height = picker->widget.boundary.h / (float)ACTION_N;
 
             for (size_t i = 0; i < ACTION_N; ++i) {
+                const Vec2f element_position =
+                    vec_sum(
+                        vec(picker->widget.boundary.x, picker->widget.boundary.y),
+                        vec(0.0f, (float)i * element_height));
                 const Rect element_box =
-                    rect_from_vecs(
-                        vec_sum(
-                            action_picker->position,
-                            vec(
-                                WIDGET_PADDING,
-                                WIDGET_PADDING + (float) i * (ELEMENT_HEIGHT + WIDGET_PADDING))),
-                        vec(ELEMENT_WIDTH, ELEMENT_HEIGHT));
+                    rect_from_vecs(element_position,
+                                   vec(picker->widget.boundary.w, element_height));
 
                 if (rect_contains_point(element_box, mouse_position)) {
-                    action_picker->action.type = i;
+                    picker->action.type = i;
                     break;
                 }
             }
@@ -110,14 +107,14 @@ void action_picker_event(ActionPicker *action_picker,
     case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
         case SDLK_UP: {
-            if (action_picker->action.type > 0) {
-                action_picker->action.type--;
+            if (picker->action.type > 0) {
+                picker->action.type--;
             }
         } break;
 
         case SDLK_DOWN: {
-            if (action_picker->action.type < ACTION_N) {
-                action_picker->action.type++;
+            if (picker->action.type < ACTION_N) {
+                picker->action.type++;
             }
         } break;
         }

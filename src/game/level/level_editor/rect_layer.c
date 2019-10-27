@@ -53,6 +53,7 @@ struct RectLayer {
     Rect inter_rect;
     int id_name_counter;
     const char *id_name_prefix;
+    Grid grid;
 };
 
 typedef enum {
@@ -669,10 +670,13 @@ RectLayer *create_rect_layer(const char *id_name_prefix)
         RETURN_LT(lt, NULL);
     }
 
+    layer->grid = create_grid(3, 6);
+
     layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
     layer->selection = -1;
     layer->id_name_prefix = id_name_prefix;
-    layer->action_picker.position = vec(400.0f, 200.0f);
+
+    grid_put_widget(layer->grid, &layer->action_picker.widget, 0, 5);
 
     return layer;
 }
@@ -751,6 +755,7 @@ RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream, const cha
 void destroy_rect_layer(RectLayer *layer)
 {
     trace_assert(layer);
+    destroy_grid(layer->grid);
     RETURN_LT0(layer->lt);
 }
 
@@ -857,6 +862,10 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
         return -1;
     }
 
+    if (layer->selection >= 0) {
+        action_picker_render(&layer->action_picker, camera);
+    }
+
     return 0;
 }
 
@@ -898,6 +907,18 @@ int rect_layer_event(RectLayer *layer,
     trace_assert(layer);
     trace_assert(event);
     trace_assert(undo_history);
+
+    switch (event->type) {
+    case SDL_WINDOWEVENT: {
+        switch (event->window.event) {
+        case SDL_WINDOWEVENT_RESIZED: {
+            grid_relayout(layer->grid, rect(0.0f, 0.0f,
+                                            (float) event->window.data1,
+                                            (float) event->window.data2));
+        } break;
+        }
+    } break;
+    }
 
     switch (layer->state) {
     case RECT_LAYER_IDLE:

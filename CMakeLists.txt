@@ -132,6 +132,8 @@ add_executable(nothing
   src/ui/wiggly_text.c
   src/ui/slider.h
   src/ui/slider.c
+  src/ui/grid.h
+  src/ui/grid.c
   src/game/level_metadata.h
   src/game/level_metadata.c
   src/game/level/level_editor.h
