@@ -25,7 +25,7 @@ install:
           }
        } else {
            bash -c "sudo apt-get update -qq"
-           bash -c "sudo apt-get install -qq cmake cmake-data libsdl2-dev libxml2-dev"
+           bash -c "sudo apt-get install -qq libsdl2-dev libxml2-dev"
        }
 build_script:
   - mkdir build
