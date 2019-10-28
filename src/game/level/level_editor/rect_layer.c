@@ -55,7 +55,7 @@ struct RectLayer {
     Rect inter_rect;
     int id_name_counter;
     const char *id_name_prefix;
-    Grid grid;
+    Grid *grid;
 };
 
 typedef enum {
@@ -672,13 +672,23 @@ RectLayer *create_rect_layer(const char *id_name_prefix)
         RETURN_LT(lt, NULL);
     }
 
-    layer->grid = create_grid(RECT_LAYER_GRID_ROWS, RECT_LAYER_GRID_COLUMNS);
+    layer->grid =
+        PUSH_LT(
+            lt,
+            nth_calloc(
+                1,
+                sizeof(Grid) + sizeof(Widget*) * RECT_LAYER_GRID_ROWS * RECT_LAYER_GRID_COLUMNS),
+            free);
+    if (layer->grid == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    layer->grid->rows = RECT_LAYER_GRID_ROWS;
+    layer->grid->columns = RECT_LAYER_GRID_COLUMNS;
+    grid_put_widget(layer->grid, &layer->action_picker.widget, 0, RECT_LAYER_GRID_COLUMNS - 1);
 
     layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
     layer->selection = -1;
     layer->id_name_prefix = id_name_prefix;
-
-    grid_put_widget(layer->grid, &layer->action_picker.widget, 0, RECT_LAYER_GRID_COLUMNS - 1);
 
     return layer;
 }
@@ -757,7 +767,6 @@ RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream, const cha
 void destroy_rect_layer(RectLayer *layer)
 {
     trace_assert(layer);
-    destroy_grid(layer->grid);
     RETURN_LT0(layer->lt);
 }
 
