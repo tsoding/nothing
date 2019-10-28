@@ -12,25 +12,9 @@ static const char *action_labels[ACTION_N] = {
 };
 
 #define TEXT_SCALE vec(5.0f, 5.0f)
-// #define WIDGET_PADDING 30.0f
-#define ELEMENT_WIDTH ((float)(longest_label() * FONT_CHAR_WIDTH) * TEXT_SCALE.x)
-#define ELEMENT_HEIGHT (FONT_CHAR_HEIGHT * TEXT_SCALE.y)
-// #define WIDGET_WIDTH (ELEMENT_WIDTH + 2 * WIDGET_PADDING)
-// #define WIDGET_HEIGHT (ACTION_N * ELEMENT_HEIGHT + WIDGET_PADDING * (ACTION_N + 1))
-
 #define TEXT_COLOR COLOR_WHITE
 #define SELECTION_COLOR COLOR_WHITE
 #define BACKGROUND_COLOR COLOR_BLACK
-
-static size_t longest_label(void)
-{
-    size_t result = 0;
-    for (size_t i = 0; i < ACTION_N; ++i) {
-        trace_assert(action_labels[i]);
-        result = max_size_t(result, strlen(action_labels[i]));
-    }
-    return result;
-}
 
 void action_picker_render(const ActionPicker *picker,
                           const Camera *camera)
@@ -50,6 +34,10 @@ void action_picker_render(const ActionPicker *picker,
             vec_sum(
                 vec(picker->widget.boundary.x, picker->widget.boundary.y),
                 vec(0.0f, (float)i * element_height));
+        const Rect element_box =
+            rect_from_vecs(element_position,
+                           vec(picker->widget.boundary.w, element_height));
+
 
         camera_render_text_screen(
             camera,
@@ -61,9 +49,7 @@ void action_picker_render(const ActionPicker *picker,
         if (i == picker->action.type) {
             camera_draw_thicc_rect_screen(
                 camera,
-                rect_from_vecs(
-                    element_position,
-                    vec(ELEMENT_WIDTH, ELEMENT_HEIGHT)),
+                element_box,
                 SELECTION_COLOR,
                 5.0f);
         }

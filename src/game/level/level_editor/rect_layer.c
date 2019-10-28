@@ -20,6 +20,8 @@
 #define RECT_LAYER_SELECTION_THICCNESS 10.0f
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
 #define CREATE_AREA_THRESHOLD 10.0
+#define RECT_LAYER_GRID_ROWS 3
+#define RECT_LAYER_GRID_COLUMNS 4
 
 static int clipboard = 0;
 static Rect clipboard_rect;
@@ -670,13 +672,13 @@ RectLayer *create_rect_layer(const char *id_name_prefix)
         RETURN_LT(lt, NULL);
     }
 
-    layer->grid = create_grid(3, 6);
+    layer->grid = create_grid(RECT_LAYER_GRID_ROWS, RECT_LAYER_GRID_COLUMNS);
 
     layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
     layer->selection = -1;
     layer->id_name_prefix = id_name_prefix;
 
-    grid_put_widget(layer->grid, &layer->action_picker.widget, 0, 5);
+    grid_put_widget(layer->grid, &layer->action_picker.widget, 0, RECT_LAYER_GRID_COLUMNS - 1);
 
     return layer;
 }
