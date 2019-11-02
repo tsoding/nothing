@@ -631,8 +631,22 @@ int point_layer_move_event(PointLayer *point_layer,
     } break;
 
     case SDL_MOUSEMOTION: {
-        point_layer->inter_position =
-            camera_map_screen(camera, event->motion.x, event->motion.y);
+        const Uint8 *state = SDL_GetKeyboardState(NULL);
+        const Vec2f mouse_pos = camera_map_screen(camera, event->motion.x, event->motion.y);
+        const Vec2f point_pos = positions[point_layer->selection];
+
+        if (!(state[SDL_SCANCODE_LCTRL] || state[SDL_SCANCODE_RCTRL])) {
+            point_layer->inter_position = mouse_pos;
+        } else {
+            const float dx = fabsf(point_pos.x - mouse_pos.x);
+            const float dy = fabsf(point_pos.y - mouse_pos.y);
+
+            if (dx > dy) {
+                point_layer->inter_position = vec(mouse_pos.x, point_pos.y);
+            } else {
+                point_layer->inter_position = vec(point_pos.x, mouse_pos.y);
+            }
+        }
     } break;
     }
 
