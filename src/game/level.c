@@ -41,7 +41,7 @@ struct Level
 
     LevelState state;
     LevelMetadata *metadata;
-    Background *background;
+    Background background;
     RigidBodies *rigid_bodies;
     Player *player;
     Platforms *platforms;
@@ -70,15 +70,9 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor)
     }
     level->lt = lt;
 
-    level->background = PUSH_LT(
-        lt,
-        create_background(
-            color_picker_rgba(
-                &level_editor->background_layer.color_picker)),
-        destroy_background);
-    if (level->background == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    level->background = create_background(
+        color_picker_rgba(
+            &level_editor->background_layer.color_picker));
 
     level->rigid_bodies = PUSH_LT(lt, create_rigid_bodies(1024), destroy_rigid_bodies);
     if (level->rigid_bodies == NULL) {
@@ -175,7 +169,7 @@ int level_render(const Level *level, const Camera *camera)
 {
     trace_assert(level);
 
-    if (background_render(level->background, camera) < 0) {
+    if (background_render(&level->background, camera) < 0) {
         return -1;
     }
 

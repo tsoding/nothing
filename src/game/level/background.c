@@ -22,44 +22,6 @@ int render_chunk(const Camera *camera,
                  Vec2i chunk,
                  Color color);
 
-struct Background
-{
-    Lt *lt;
-    Color base_color;
-};
-
-Background *create_background(Color base_color)
-{
-    Lt *lt = create_lt();
-
-    Background *background = PUSH_LT(lt, nth_calloc(1, sizeof(Background)), free);
-    if (background == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    background->base_color = base_color;
-    background->lt = lt;
-
-    return background;
-}
-
-Background *create_background_from_line_stream(LineStream *line_stream)
-{
-    char color[7];
-    if (sscanf(line_stream_next(line_stream), "%6s", color) == EOF) {
-        log_fail("Could not read background's color\n");
-        return NULL;
-    }
-
-    return create_background(hexstr(color));
-}
-
-void destroy_background(Background *background)
-{
-    trace_assert(background);
-    RETURN_LT0(background->lt);
-}
-
 int background_render(const Background *background,
                       const Camera *camera0)
 {

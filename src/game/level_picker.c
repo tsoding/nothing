@@ -19,7 +19,7 @@
 struct LevelPicker
 {
     Lt *lt;
-    Background *background;
+    Background background;
     Vec2f camera_position;
     LevelFolder *level_folder;
     WigglyText wiggly_text;
@@ -41,13 +41,7 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
     }
     level_picker->lt = lt;
 
-    level_picker->background = PUSH_LT(
-        lt,
-        create_background(hexstr("073642")),
-        destroy_background);
-    if (level_picker->background == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    level_picker->background = create_background(hexstr("073642"));
 
     level_picker->camera_position = vec(0.0f, 0.0f);
 
@@ -94,7 +88,7 @@ int level_picker_render(const LevelPicker *level_picker,
 
     const Rect viewport = camera_view_port_screen(camera);
 
-    if (background_render(level_picker->background, camera) < 0) {
+    if (background_render(&level_picker->background, camera) < 0) {
         return -1;
     }
 
