@@ -18,50 +18,9 @@ Vec2i chunk_of_point(Vec2f p)
         (int) floorf(p.y / BACKGROUND_CHUNK_HEIGHT));
 }
 
-int render_chunk(const Background *background,
-                 const Camera *camera,
+int render_chunk(const Camera *camera,
                  Vec2i chunk,
                  Color color);
-
-struct Background
-{
-    Lt *lt;
-    Color base_color;
-    int debug_mode;
-};
-
-Background *create_background(Color base_color)
-{
-    Lt *lt = create_lt();
-
-    Background *background = PUSH_LT(lt, nth_calloc(1, sizeof(Background)), free);
-    if (background == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    background->base_color = base_color;
-    background->debug_mode = 0;
-    background->lt = lt;
-
-    return background;
-}
-
-Background *create_background_from_line_stream(LineStream *line_stream)
-{
-    char color[7];
-    if (sscanf(line_stream_next(line_stream), "%6s", color) == EOF) {
-        log_fail("Could not read background's color\n");
-        return NULL;
-    }
-
-    return create_background(hexstr(color));
-}
-
-void destroy_background(Background *background)
-{
-    trace_assert(background);
-    RETURN_LT0(background->lt);
-}
 
 int background_render(const Background *background,
                       const Camera *camera0)
@@ -89,7 +48,6 @@ int background_render(const Background *background,
         for (int x = min.x - 1; x <= max.x; ++x) {
             for (int y = min.y - 1; y <= max.y; ++y) {
                 if (render_chunk(
-                        background,
                         &camera,
                         vec2i(x, y),
                         color_darker(background->base_color, 0.05f * (float)(l + 1))) < 0) {
@@ -106,14 +64,13 @@ int background_render(const Background *background,
 
 /* Private Function */
 
-int render_chunk(const Background *background,
-                 const Camera *camera,
+int render_chunk(const Camera *camera,
                  Vec2i chunk,
                  Color color)
 {
-    (void) color;
+    trace_assert(camera);
 
-    if (background->debug_mode) {
+    if (camera->debug_mode) {
         return 0;
     }
 
@@ -138,11 +95,6 @@ int render_chunk(const Background *background,
     }
 
     return 0;
-}
-
-void background_toggle_debug_mode(Background *background)
-{
-    background->debug_mode = !background->debug_mode;
 }
 
 Color background_base_color(const Background *background)

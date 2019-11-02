@@ -97,6 +97,8 @@ add_executable(nothing
   src/game/level/action.h
   src/game/level_picker.c
   src/game/level_picker.h
+  src/game/settings.c
+  src/game/settings.h
   src/game/level_folder.h
   src/game/level_folder.c
   src/game/sound_samples.c
