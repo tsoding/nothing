@@ -117,7 +117,7 @@ Game *create_game(const char *level_folder,
     game->cursor_x = 0;
     game->cursor_y = 0;
 
-    game_switch_state(game, GAME_STATE_SETTINGS);
+    game_switch_state(game, GAME_STATE_LEVEL_PICKER);
 
     return game;
 }
@@ -352,6 +352,10 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
 
             game_switch_state(game, GAME_STATE_LEVEL);
         } break;
+
+        case SDLK_s: {
+            game_switch_state(game, GAME_STATE_SETTINGS);
+        } break;
         }
     } break;
     }
@@ -420,6 +424,15 @@ int game_event(Game *game, const SDL_Event *event)
         return game_event_level_editor(game, event);
 
     case GAME_STATE_SETTINGS: {
+        switch (event->type) {
+        case SDL_KEYDOWN: {
+            if (event->key.keysym.sym == SDLK_ESCAPE) {
+                game_switch_state(game, GAME_STATE_LEVEL_PICKER);
+                return 0;
+            }
+        } break;
+        }
+
         settings_event(&game->settings, &game->camera, event);
         return 0;
     } break;
