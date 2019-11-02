@@ -96,6 +96,13 @@ Game *create_game(const char *level_folder,
         RETURN_LT(lt, NULL);
     }
 
+    game->settings.volume_slider = (Slider) {
+        .drag = 0,
+        .value = 80.0f,
+        .max_value = 100.0f,
+    };
+    game->settings.volume_slider_scale = vec(0.25f, 0.10f);
+
     game->renderer = renderer;
     game->texture_cursor = PUSH_LT(
         lt,
@@ -252,8 +259,8 @@ int game_update(Game *game, float delta_time)
                 return -1;
             }
 
-            //TODO(#1071): Move level picker volume update to a more appropriate place
-            sound_samples_update_volume(game->sound_samples, level_picker_get_volume(game->level_picker));
+            // TODO(#1071): Move level picker volume update to a more appropriate place
+            // sound_samples_update_volume(game->sound_samples, level_picker_get_volume(game->level_picker));
             game_switch_state(game, GAME_STATE_LEVEL);
         }
 
@@ -427,7 +434,7 @@ int game_event(Game *game, const SDL_Event *event)
         return game_event_level_editor(game, event);
 
     case GAME_STATE_SETTINGS: {
-        settings_event(&game->settings, event);
+        settings_event(&game->settings, &game->camera, event);
     } break;
 
     case GAME_STATE_QUIT:

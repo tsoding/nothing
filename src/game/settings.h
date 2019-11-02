@@ -10,7 +10,7 @@ typedef struct {
 } Settings;
 
 void settings_render(const Settings *settings, const Camera *camera);
-void settings_event(Settings *settings, const SDL_Event *event);
+void settings_event(Settings *settings, Camera *camera, const SDL_Event *event);
 void settings_update(Settings *settings, float dt);
 
 #endif  // SETTINGS_H_
