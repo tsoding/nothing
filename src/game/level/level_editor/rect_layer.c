@@ -49,7 +49,8 @@ struct RectLayer {
     Vec2f create_begin;
     Vec2f create_end;
     int selection;
-    Vec2f move_anchor;
+    Vec2f move_anchor;          // The mouse offset from the left-top
+                                // corner of the rect during moving it
     Edit_field *id_edit_field;
     Color inter_color;
     Rect inter_rect;
@@ -548,17 +549,31 @@ static int rect_layer_event_move(RectLayer *layer,
 
     switch (event->type) {
     case SDL_MOUSEMOTION: {
-        Vec2f position = vec_sub(
+        const Uint8 *state = SDL_GetKeyboardState(NULL);
+        const Vec2f mouse_pos = vec_sub(
             camera_map_screen(
                 camera,
                 event->button.x,
                 event->button.y),
             layer->move_anchor);
 
-        trace_assert(layer->selection >= 0);
+        if (!(state[SDL_SCANCODE_LCTRL] || state[SDL_SCANCODE_RCTRL])) {
+            layer->inter_rect.x = mouse_pos.x;
+            layer->inter_rect.y = mouse_pos.y;
+        } else {
+            const Vec2f rect_pos = rect_position(rects[layer->selection]);
 
-        layer->inter_rect.x = position.x;
-        layer->inter_rect.y = position.y;
+            const float dx = fabsf(rect_pos.x - mouse_pos.x);
+            const float dy = fabsf(rect_pos.y - mouse_pos.y);
+
+            if (dx > dy) {
+                layer->inter_rect.x = mouse_pos.x;
+                layer->inter_rect.y = rect_pos.y;
+            } else {
+                layer->inter_rect.x = rect_pos.x;
+                layer->inter_rect.y = mouse_pos.y;
+            }
+        }
     } break;
 
     case SDL_MOUSEBUTTONUP: {
