@@ -18,8 +18,7 @@ Vec2i chunk_of_point(Vec2f p)
         (int) floorf(p.y / BACKGROUND_CHUNK_HEIGHT));
 }
 
-int render_chunk(const Background *background,
-                 const Camera *camera,
+int render_chunk(const Camera *camera,
                  Vec2i chunk,
                  Color color);
 
@@ -27,7 +26,6 @@ struct Background
 {
     Lt *lt;
     Color base_color;
-    int debug_mode;
 };
 
 Background *create_background(Color base_color)
@@ -40,7 +38,6 @@ Background *create_background(Color base_color)
     }
 
     background->base_color = base_color;
-    background->debug_mode = 0;
     background->lt = lt;
 
     return background;
@@ -89,7 +86,6 @@ int background_render(const Background *background,
         for (int x = min.x - 1; x <= max.x; ++x) {
             for (int y = min.y - 1; y <= max.y; ++y) {
                 if (render_chunk(
-                        background,
                         &camera,
                         vec2i(x, y),
                         color_darker(background->base_color, 0.05f * (float)(l + 1))) < 0) {
@@ -106,14 +102,13 @@ int background_render(const Background *background,
 
 /* Private Function */
 
-int render_chunk(const Background *background,
-                 const Camera *camera,
+int render_chunk(const Camera *camera,
                  Vec2i chunk,
                  Color color)
 {
-    (void) color;
+    trace_assert(camera);
 
-    if (background->debug_mode) {
+    if (camera->debug_mode) {
         return 0;
     }
 
@@ -138,11 +133,6 @@ int render_chunk(const Background *background,
     }
 
     return 0;
-}
-
-void background_toggle_debug_mode(Background *background)
-{
-    background->debug_mode = !background->debug_mode;
 }
 
 Color background_base_color(const Background *background)

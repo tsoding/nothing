@@ -277,7 +277,6 @@ int level_event_idle(Level *level, const SDL_Event *event,
 
         case SDLK_l: {
             camera_toggle_debug_mode(camera);
-            background_toggle_debug_mode(level->background);
         } break;
         }
         break;

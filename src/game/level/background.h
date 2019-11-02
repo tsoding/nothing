@@ -18,6 +18,4 @@ int background_render(const Background *background,
 
 Color background_base_color(const Background *background);
 
-void background_toggle_debug_mode(Background *background);
-
 #endif  // BACKGROUND_H_
