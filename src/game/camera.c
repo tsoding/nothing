@@ -525,3 +525,35 @@ Rect camera_text_boundary_box(const Camera *camera,
     return sprite_font_boundary_box(
         camera->font, position, scale, text);
 }
+
+int camera_draw_line(const Camera *camera,
+                     Vec2f begin, Vec2f end,
+                     Color color)
+{
+    trace_assert(camera);
+
+    const Vec2f camera_begin = camera_point(camera, begin);
+    const Vec2f camera_end = camera_point(camera, end);
+
+    // TODO: introduce internal function camera_set_render_draw_color
+    // that wraps SDL_SetRenderDrawColor and takes
+    // camera->blackwhite_mode into account
+    const SDL_Color sdl_color = color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
+
+    if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
+        log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());
+        return -1;
+    }
+
+    if (SDL_RenderDrawLine(
+            camera->renderer,
+            (int)roundf(camera_begin.x),
+            (int)roundf(camera_begin.y),
+            (int)roundf(camera_end.x),
+            (int)roundf(camera_end.y)) < 0) {
+        log_fail("SDL_RenderDrawRect: %s\n", SDL_GetError());
+        return -1;
+    }
+
+    return 0;
+}

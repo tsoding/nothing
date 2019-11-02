@@ -41,6 +41,10 @@ int camera_draw_thicc_rect_screen(const Camera *camera,
                                   Color color,
                                   float thiccness);
 
+int camera_draw_line(const Camera *camera,
+                     Vec2f begin, Vec2f end,
+                     Color color);
+
 int camera_draw_triangle(Camera *camera,
                          Triangle t,
                          Color color);
