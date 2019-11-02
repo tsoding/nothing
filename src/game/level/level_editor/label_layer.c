@@ -680,12 +680,28 @@ int label_layer_move_event(LabelLayer *label_layer,
 
     switch (event->type) {
     case SDL_MOUSEMOTION: {
-        label_layer->inter_position = vec_sub(
+        const Uint8 *state = SDL_GetKeyboardState(NULL);
+        const Vec2f mouse_pos = vec_sub(
             camera_map_screen(
                 camera,
                 event->motion.x,
                 event->motion.y),
             label_layer->move_anchor);
+
+        if (!(state[SDL_SCANCODE_LCTRL] || state[SDL_SCANCODE_RCTRL])) {
+            label_layer->inter_position = mouse_pos;
+        } else {
+            const Vec2f label_pos = positions[label_layer->selection];
+
+            const float dx = fabsf(label_pos.x - mouse_pos.x);
+            const float dy = fabsf(label_pos.y - mouse_pos.y);
+
+            if (dx > dy) {
+                label_layer->inter_position = vec(mouse_pos.x, label_pos.y);
+            } else {
+                label_layer->inter_position = vec(label_pos.x, mouse_pos.y);
+            }
+        }
     } break;
 
     case SDL_MOUSEBUTTONUP: {
