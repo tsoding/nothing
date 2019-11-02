@@ -96,12 +96,7 @@ Game *create_game(const char *level_folder,
         RETURN_LT(lt, NULL);
     }
 
-    game->settings.volume_slider = (Slider) {
-        .drag = 0,
-        .value = 80.0f,
-        .max_value = 100.0f,
-    };
-    game->settings.volume_slider_scale = vec(0.25f, 0.10f);
+    game->settings = create_settings();
 
     game->renderer = renderer;
     game->texture_cursor = PUSH_LT(
@@ -122,7 +117,7 @@ Game *create_game(const char *level_folder,
     game->cursor_x = 0;
     game->cursor_y = 0;
 
-    game_switch_state(game, GAME_STATE_LEVEL_PICKER);
+    game_switch_state(game, GAME_STATE_SETTINGS);
 
     return game;
 }
@@ -142,29 +137,16 @@ int game_render(const Game *game)
         if (level_render(game->level, &game->camera) < 0) {
             return -1;
         }
-
-        if (game_render_cursor(game) < 0) {
-            return -1;
-        }
-
     } break;
 
     case GAME_STATE_LEVEL_PICKER: {
         if (level_picker_render(game->level_picker, &game->camera) < 0) {
             return -1;
         }
-
-        if (game_render_cursor(game) < 0) {
-            return -1;
-        }
     } break;
 
     case GAME_STATE_LEVEL_EDITOR: {
         if (level_editor_render(game->level_editor, &game->camera) < 0) {
-            return -1;
-        }
-
-        if (game_render_cursor(game) < 0) {
             return -1;
         }
     } break;
@@ -174,6 +156,10 @@ int game_render(const Game *game)
     } break;
 
     case GAME_STATE_QUIT: break;
+    }
+
+    if (game_render_cursor(game) < 0) {
+        return -1;
     }
 
     return 0;
@@ -277,7 +263,7 @@ int game_update(Game *game, float delta_time)
     } break;
 
     case GAME_STATE_SETTINGS: {
-        settings_update(&game->settings, delta_time);
+        settings_update(&game->settings, &game->camera, delta_time);
     } break;
 
     case GAME_STATE_QUIT:
