@@ -15,6 +15,7 @@
 #include "sdl/texture.h"
 #include "game/level/level_editor/background_layer.h"
 #include "game/level/level_editor.h"
+#include "game/settings.h"
 
 static int game_render_cursor(const Game *game);
 
@@ -22,6 +23,7 @@ typedef enum Game_state {
     GAME_STATE_LEVEL = 0,
     GAME_STATE_LEVEL_PICKER,
     GAME_STATE_LEVEL_EDITOR,
+    GAME_STATE_SETTINGS,
     GAME_STATE_QUIT
 } Game_state;
 
@@ -33,6 +35,7 @@ typedef struct Game {
     LevelPicker *level_picker;
     LevelEditor *level_editor;
     Level *level;
+    Settings settings;
     Sound_samples *sound_samples;
     Camera camera;
     SDL_Renderer *renderer;
@@ -159,6 +162,10 @@ int game_render(const Game *game)
         }
     } break;
 
+    case GAME_STATE_SETTINGS: {
+        settings_render(&game->settings, &game->camera);
+    } break;
+
     case GAME_STATE_QUIT: break;
     }
 
@@ -170,11 +177,11 @@ int game_sound(Game *game)
     switch (game->state) {
     case GAME_STATE_LEVEL:
         return level_sound(game->level, game->sound_samples);
-    case GAME_STATE_LEVEL_PICKER:
-        return 0;
     case GAME_STATE_LEVEL_EDITOR:
         level_editor_sound(game->level_editor, game->sound_samples);
         return 0;
+    case GAME_STATE_LEVEL_PICKER:
+    case GAME_STATE_SETTINGS:
     case GAME_STATE_QUIT:
         return 0;
     }
@@ -260,6 +267,10 @@ int game_update(Game *game, float delta_time)
         }
 
         level_editor_update(game->level_editor, delta_time);
+    } break;
+
+    case GAME_STATE_SETTINGS: {
+        settings_update(&game->settings, delta_time);
     } break;
 
     case GAME_STATE_QUIT:
@@ -415,6 +426,10 @@ int game_event(Game *game, const SDL_Event *event)
     case GAME_STATE_LEVEL_EDITOR:
         return game_event_level_editor(game, event);
 
+    case GAME_STATE_SETTINGS: {
+        settings_event(&game->settings, event);
+    } break;
+
     case GAME_STATE_QUIT:
         return 0;
     }
@@ -423,6 +438,8 @@ int game_event(Game *game, const SDL_Event *event)
 }
 
 
+// TODO: get rid of keyboard_state (because it's a global var and can
+// be check anywhere anyway). And introduce *_joystick methods.
 int game_input(Game *game,
                const Uint8 *const keyboard_state,
                SDL_Joystick *the_stick_of_joy)
@@ -431,6 +448,7 @@ int game_input(Game *game,
     trace_assert(keyboard_state);
 
     switch (game->state) {
+    case GAME_STATE_SETTINGS:
     case GAME_STATE_QUIT:
     case GAME_STATE_LEVEL_EDITOR:
         return 0;
