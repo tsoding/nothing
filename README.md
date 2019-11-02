@@ -61,8 +61,7 @@ $ mkdir build
 $ cd build/
 $ cmake ..
 $ make
-$ cd ../assets/
-$ ../build/nothing
+$ ./nothing
 ```
 
 ### Windows
@@ -81,8 +80,7 @@ $ ../build/nothing
 > cd build
 > cmake ..
 > cmake --build .
-> cd ../assets/
-> ..\build\nothing
+> .\nothing
 ```
 
 #### MinGW (with MSYS)
@@ -96,8 +94,7 @@ $ rm SDL2-devel-2.0.10-mingw.tar.gz
 $ mkdir build && cd build
 $ cmake .. -G "MSYS Makefiles"
 $ cmake --build .
-$ cd ../assets/
-$ ../build/nothing
+$ ./nothing
 ```
 
 #### MinGW (without MSYS)
@@ -112,8 +109,7 @@ $ ../build/nothing
 > cd build
 > cmake .. -G "MinGW Makefiles"
 > cmake --build .
-> cd ../assets/
-> ..\build\nothing
+> .\nothing
 ```
 
 ## Controls
