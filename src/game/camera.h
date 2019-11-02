@@ -32,7 +32,7 @@ int camera_draw_rect(const Camera *camera,
                      Rect rect,
                      Color color);
 
-int camera_draw_rect_screen(Camera *camera,
+int camera_draw_rect_screen(const Camera *camera,
                             Rect rect,
                             Color color);
 

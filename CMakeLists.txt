@@ -132,6 +132,8 @@ add_executable(nothing
   src/ui/wiggly_text.c
   src/ui/slider.h
   src/ui/slider.c
+  src/ui/grid.h
+  src/ui/grid.c
   src/game/level_metadata.h
   src/game/level_metadata.c
   src/game/level/level_editor.h
@@ -211,6 +213,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     /wd4777 \
     /wd4820 \
     /wd5045 \
+    /wd4200 \
     /D \"_CRT_SECURE_NO_WARNINGS\"")
 endif()
 if(MINGW)

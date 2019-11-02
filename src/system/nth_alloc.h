@@ -1,6 +1,8 @@
 #ifndef NTH_ALLOC_H_
 #define NTH_ALLOC_H_
 
+#include <stdlib.h>
+
 void *nth_calloc(size_t num, size_t size);
 void *nth_realloc(void *ptr, size_t new_size);
 

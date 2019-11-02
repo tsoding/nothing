@@ -3,15 +3,15 @@
 
 #include "game/level/action.h"
 #include "game/camera.h"
+#include "ui/grid.h"
 
 typedef struct {
+    Widget widget;
     Action action;
 } ActionPicker;
 
-
 void action_picker_render(const ActionPicker *action_picker,
-                          const Camera *camera,
-                          Vec2f position);
+                          const Camera *camera);
 void action_picker_event(ActionPicker *action_picker,
                          const SDL_Event *event);
 

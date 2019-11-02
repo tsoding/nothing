@@ -15,10 +15,13 @@
 #include "ui/edit_field.h"
 #include "undo_history.h"
 #include "game/level/action.h"
+#include "action_picker.h"
 
 #define RECT_LAYER_SELECTION_THICCNESS 10.0f
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
 #define CREATE_AREA_THRESHOLD 10.0
+#define RECT_LAYER_GRID_ROWS 3
+#define RECT_LAYER_GRID_COLUMNS 4
 
 static int clipboard = 0;
 static Rect clipboard_rect;
@@ -42,6 +45,7 @@ struct RectLayer {
     Dynarray *colors;
     Dynarray *actions;
     ColorPicker color_picker;
+    ActionPicker action_picker;
     Vec2f create_begin;
     Vec2f create_end;
     int selection;
@@ -51,6 +55,7 @@ struct RectLayer {
     Rect inter_rect;
     int id_name_counter;
     const char *id_name_prefix;
+    Grid *grid;
 };
 
 typedef enum {
@@ -667,6 +672,20 @@ RectLayer *create_rect_layer(const char *id_name_prefix)
         RETURN_LT(lt, NULL);
     }
 
+    layer->grid =
+        PUSH_LT(
+            lt,
+            nth_calloc(
+                1,
+                sizeof(Grid) + sizeof(Widget*) * RECT_LAYER_GRID_ROWS * RECT_LAYER_GRID_COLUMNS),
+            free);
+    if (layer->grid == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    layer->grid->rows = RECT_LAYER_GRID_ROWS;
+    layer->grid->columns = RECT_LAYER_GRID_COLUMNS;
+    grid_put_widget(layer->grid, &layer->action_picker.widget, 0, RECT_LAYER_GRID_COLUMNS - 1);
+
     layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
     layer->selection = -1;
     layer->id_name_prefix = id_name_prefix;
@@ -854,6 +873,10 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
         return -1;
     }
 
+    if (layer->selection >= 0) {
+        action_picker_render(&layer->action_picker, camera);
+    }
+
     return 0;
 }
 
@@ -895,6 +918,18 @@ int rect_layer_event(RectLayer *layer,
     trace_assert(layer);
     trace_assert(event);
     trace_assert(undo_history);
+
+    switch (event->type) {
+    case SDL_WINDOWEVENT: {
+        switch (event->window.event) {
+        case SDL_WINDOWEVENT_RESIZED: {
+            grid_relayout(layer->grid, rect(0.0f, 0.0f,
+                                            (float) event->window.data1,
+                                            (float) event->window.data2));
+        } break;
+        }
+    } break;
+    }
 
     switch (layer->state) {
     case RECT_LAYER_IDLE:
