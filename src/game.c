@@ -245,8 +245,6 @@ int game_update(Game *game, float delta_time)
                 return -1;
             }
 
-            // TODO(#1071): Move level picker volume update to a more appropriate place
-            // sound_samples_update_volume(game->sound_samples, level_picker_get_volume(game->level_picker));
             game_switch_state(game, GAME_STATE_LEVEL);
         }
 
@@ -264,6 +262,9 @@ int game_update(Game *game, float delta_time)
 
     case GAME_STATE_SETTINGS: {
         settings_update(&game->settings, &game->camera, delta_time);
+        sound_samples_update_volume(
+            game->sound_samples,
+            game->settings.volume_slider.value);
     } break;
 
     case GAME_STATE_QUIT:
