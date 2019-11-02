@@ -873,10 +873,6 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
         return -1;
     }
 
-    if (layer->selection >= 0) {
-        action_picker_render(&layer->action_picker, camera);
-    }
-
     return 0;
 }
 
