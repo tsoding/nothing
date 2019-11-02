@@ -435,6 +435,7 @@ int game_event(Game *game, const SDL_Event *event)
 
     case GAME_STATE_SETTINGS: {
         settings_event(&game->settings, &game->camera, event);
+        return 0;
     } break;
 
     case GAME_STATE_QUIT:
