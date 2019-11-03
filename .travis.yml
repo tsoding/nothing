@@ -13,5 +13,5 @@ compiler:
 script:
   - mkdir build/
   - cd build/
-  - cmake ..
+  - cmake -DNOTHING_CI=ON ..
   - make -k
