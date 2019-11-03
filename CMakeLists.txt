@@ -168,6 +168,9 @@ target_link_libraries(nothing ${SDL2_LIBRARIES} system)
 ADD_CUSTOM_TARGET(link_assets ALL
                   COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets)
 
+message("------------------------------")
+message("CMAKE_C_COMPILER_ID: ${CMAKE_C_COMPILER_ID}")
+message("------------------------------")
 if(("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"))
   message("------------------------------")
   message("THE UNIX BRANCH")
