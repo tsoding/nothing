@@ -169,6 +169,9 @@ ADD_CUSTOM_TARGET(link_assets ALL
                   COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets)
 
 if(("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"))
+  message("------------------------------")
+  message("THE UNIX BRANCH")
+  message("------------------------------")
   set(CMAKE_C_FLAGS
     "${CMAKE_C_FLAGS} \
      -Wall \
