@@ -16,6 +16,7 @@ int console_log_render(const Console_Log *console_log,
 
 int console_log_push_line(Console_Log *console_log,
                           const char *line,
+                          const char *line_end,
                           Color color);
 
 #endif  // CONSOLE_LOG_H_

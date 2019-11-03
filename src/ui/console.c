@@ -26,6 +26,46 @@
 #define CONSOLE_BACKGROUND (rgba(0.20f, 0.20f, 0.20f, CONSOLE_ALPHA))
 #define CONSOLE_FOREGROUND (rgba(0.80f, 0.80f, 0.80f, CONSOLE_ALPHA))
 
+typedef struct {
+    const char *begin;
+    const char *end;
+} Token;
+
+
+static inline
+Token token(const char *begin, const char *end)
+{
+    Token t = {begin, end};
+    return t;
+}
+
+static inline
+Token token_nt(const char *s)
+{
+    return token(s, s + strlen(s));
+}
+
+static inline
+void ltrim(Token *t)
+{
+    while (t->begin < t->end && isspace(*t->begin)) {
+        t->begin++;
+    }
+}
+
+static inline
+Token chop_word(Token *t)
+{
+    ltrim(t);
+    const char *end = t->begin;
+    while (end < t->end && !isspace(*end)) {
+        end++;
+    }
+    Token result = token(t->begin, end);
+    t->begin = end;
+    return result;
+}
+
 struct Console
 {
     Lt *lt;
@@ -93,8 +133,15 @@ static int console_eval_input(Console *console)
         return -1;
     }
 
-    if (console_log_push_line(console->console_log, source_code, CONSOLE_FOREGROUND) < 0) {
+    if (console_log_push_line(console->console_log, source_code, NULL, CONSOLE_FOREGROUND) < 0) {
         return -1;
+    }
+
+    Token t = token_nt(source_code);
+
+    while (t.begin < t.end) {
+        Token w = chop_word(&t);
+        console_log_push_line(console->console_log, w.begin, w.end, rgba(0.0f, 1.0f, 0.0f, 1.0f));
     }
 
     edit_field_clean(console->edit_field);
