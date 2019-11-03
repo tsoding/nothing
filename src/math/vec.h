@@ -19,6 +19,12 @@ Vec2f vec(float x, float y)
 }
 
 static inline
+Vec2f vec_mult(Vec2f v1, Vec2f v2)
+{
+    return vec(v1.x * v2.x, v1.y * v2.y);
+}
+
+static inline
 Vec2f vec_scala_mult(Vec2f v, float scalar)
 {
     Vec2f result = {

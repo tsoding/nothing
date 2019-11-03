@@ -29,4 +29,11 @@ Color color_invert(Color c);
 
 Color color_scale(Color c, Color fc);
 
+static inline
+Color color_set_alpha(Color c, float a)
+{
+    c.a = a;
+    return c;
+}
+
 #endif  // COLOR_H_
