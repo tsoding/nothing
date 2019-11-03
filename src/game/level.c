@@ -51,8 +51,6 @@ struct Level
     Boxes *boxes;
     Labels *labels;
     Regions *regions;
-    Console *console;
-    int console_enabled;
 };
 
 Level *create_level_from_level_editor(const LevelEditor *level_editor)
@@ -148,14 +146,6 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor)
         RETURN_LT(lt, NULL);
     }
 
-    level->console = PUSH_LT(
-        lt,
-        create_console(),
-        destroy_console);
-    if (level->console == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
     return level;
 }
 
@@ -205,12 +195,6 @@ int level_render(const Level *level, const Camera *camera)
         return -1;
     }
 
-    if (level->console_enabled) {
-        if (console_render(level->console, camera) < 0) {
-            return -1;
-        }
-    }
-
     return 0;
 }
 
@@ -218,12 +202,6 @@ int level_update(Level *level, float delta_time)
 {
     trace_assert(level);
     trace_assert(delta_time > 0);
-
-    if (level->console_enabled) {
-        if (console_update(level->console, delta_time) < 0) {
-            return -1;
-        }
-    }
 
     if (level->state == LEVEL_STATE_PAUSE) {
         return 0;
@@ -306,55 +284,11 @@ int level_event_pause(Level *level, const SDL_Event *event,
     return 0;
 }
 
-static
-int level_event_console(Level *level, const SDL_Event *event)
-{
-    trace_assert(level);
-    trace_assert(event);
-
-    if (level->console_enabled) {
-        switch (event->type) {
-        case SDL_KEYDOWN:
-            switch (event->key.keysym.sym) {
-            case SDLK_ESCAPE:
-                SDL_StopTextInput();
-                level->console_enabled = 0;
-                return 0;
-
-            default: {}
-            }
-
-        default: {}
-        }
-    } else {
-        switch (event->type) {
-        case SDL_KEYUP: {
-            switch (event->key.keysym.sym) {
-            case SDLK_BACKQUOTE:
-            case SDLK_c: {
-                SDL_StartTextInput();
-                level->console_enabled = 1;
-                console_slide_down(level->console);
-            } break;
-            }
-        } break;
-        }
-    }
-
-    return console_handle_event(level->console, event);
-}
-
 int level_event(Level *level, const SDL_Event *event,
                 Camera *camera, Sound_samples *sound_samples)
 {
     trace_assert(level);
     trace_assert(event);
-
-    level_event_console(level, event);
-
-    if (level->console_enabled) {
-        return 0;
-    }
 
     switch (level->state) {
     case LEVEL_STATE_IDLE: {
@@ -375,10 +309,6 @@ int level_input(Level *level,
 {
     trace_assert(level);
     trace_assert(keyboard_state);
-
-    if (level->console_enabled) {
-        return 0;
-    }
 
     if (level->state == LEVEL_STATE_PAUSE) {
         return 0;

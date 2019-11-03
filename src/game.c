@@ -40,6 +40,8 @@ typedef struct Game {
     Camera camera;
     SDL_Renderer *renderer;
     SDL_Texture *texture_cursor;
+    Console *console;
+    int console_enabled;
     int cursor_x;
     int cursor_y;
 } Game;
@@ -114,6 +116,16 @@ Game *create_game(const char *level_folder,
                 SDL_BLENDOPERATION_ADD)) < 0) {
         log_warn("SDL error: %s\n", SDL_GetError());
     }
+
+    game->console = PUSH_LT(
+        lt,
+        create_console(),
+        destroy_console);
+    if (game->console == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    game->console_enabled = 0;
+
     game->cursor_x = 0;
     game->cursor_y = 0;
 
@@ -158,6 +170,12 @@ int game_render(const Game *game)
     case GAME_STATE_QUIT: break;
     }
 
+    if (game->console_enabled) {
+        if (console_render(game->console, &game->camera) < 0) {
+            return -1;
+        }
+    }
+
     if (game_render_cursor(game) < 0) {
         return -1;
     }
@@ -186,6 +204,12 @@ int game_update(Game *game, float delta_time)
 {
     trace_assert(game);
     trace_assert(delta_time > 0.0f);
+
+    if (game->console_enabled) {
+        if (console_update(game->console, delta_time) < 0) {
+            return -1;
+        }
+    }
 
     switch (game->state) {
     case GAME_STATE_LEVEL: {
@@ -395,6 +419,7 @@ int game_event(Game *game, const SDL_Event *event)
     trace_assert(game);
     trace_assert(event);
 
+    // Global event handling
     switch (event->type) {
     case SDL_QUIT: {
         game_switch_state(game, GAME_STATE_QUIT);
@@ -414,6 +439,38 @@ int game_event(Game *game, const SDL_Event *event)
     } break;
     }
 
+    // Console event handling
+    if (game->console_enabled) {
+        switch (event->type) {
+        case SDL_KEYDOWN:
+            switch (event->key.keysym.sym) {
+            case SDLK_ESCAPE:
+                SDL_StopTextInput();
+                game->console_enabled = 0;
+                return 0;
+            default: {}
+            }
+
+        default: {}
+        }
+
+        return console_handle_event(game->console, event);
+    } else {
+        switch (event->type) {
+        case SDL_KEYUP: {
+            switch (event->key.keysym.sym) {
+            case SDLK_BACKQUOTE:
+            case SDLK_c: {
+                SDL_StartTextInput();
+                game->console_enabled = 1;
+                console_slide_down(game->console);
+            } break;
+            }
+        } break;
+        }
+    }
+
+    // State event handling
     switch (game->state) {
     case GAME_STATE_LEVEL:
         return game_event_running(game, event);
@@ -454,6 +511,10 @@ int game_input(Game *game,
 {
     trace_assert(game);
     trace_assert(keyboard_state);
+
+    if (game->console_enabled) {
+        return 0;
+    }
 
     switch (game->state) {
     case GAME_STATE_SETTINGS:
