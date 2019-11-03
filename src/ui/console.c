@@ -25,6 +25,7 @@
 #define CONSOLE_ALPHA (0.80f)
 #define CONSOLE_BACKGROUND (rgba(0.20f, 0.20f, 0.20f, CONSOLE_ALPHA))
 #define CONSOLE_FOREGROUND (rgba(0.80f, 0.80f, 0.80f, CONSOLE_ALPHA))
+#define CONSOLE_ERROR (rgba(0.80f, 0.50f, 0.50f, CONSOLE_ALPHA))
 
 typedef struct {
     const char *begin;
@@ -37,6 +38,16 @@ Token token(const char *begin, const char *end)
 {
     Token t = {begin, end};
     return t;
+}
+
+static inline
+int token_equals_str(Token t, const char *s)
+{
+    trace_assert(t.begin <= t.end);
+    size_t n1 = (size_t) (t.end - t.begin);
+    size_t n2 = strlen(s);
+    if (n1 != n2) return 0;
+    return memcmp(t.begin, s, n1) == 0;
 }
 
 static inline
@@ -137,11 +148,15 @@ static int console_eval_input(Console *console)
         return -1;
     }
 
-    Token t = token_nt(source_code);
+    Token input = token_nt(source_code);
 
-    while (t.begin < t.end) {
-        Token w = chop_word(&t);
-        console_log_push_line(console->console_log, w.begin, w.end, rgba(0.0f, 1.0f, 0.0f, 1.0f));
+    Token command = chop_word(&input);
+    if (token_equals_str(command, "load")) {
+        Token level = chop_word(&input);
+        console_log_push_line(console->console_log, "Loading level:", NULL, CONSOLE_FOREGROUND);
+        console_log_push_line(console->console_log, level.begin, level.end, CONSOLE_FOREGROUND);
+    } else {
+        console_log_push_line(console->console_log, "Unknown command", NULL, CONSOLE_ERROR);
     }
 
     edit_field_clean(console->edit_field);
