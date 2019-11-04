@@ -278,16 +278,12 @@ static void rect_layer_swap_elements(RectLayer *layer, size_t a, size_t b,
 
 static Rect rect_layer_resize_anchor(const Camera *camera, Rect boundary_rect)
 {
-    const Rect overlay_rect =
-        rect_pad(
-            camera_rect(camera, boundary_rect),
-            RECT_LAYER_SELECTION_THICCNESS * 0.5f);
-
+    const Rect overlay_rect = camera_rect(camera, boundary_rect);
     return rect(
         overlay_rect.x + overlay_rect.w,
         overlay_rect.y + overlay_rect.h,
-        RECT_LAYER_SELECTION_THICCNESS * 2.0f,
-        RECT_LAYER_SELECTION_THICCNESS * 2.0f);
+        RECT_LAYER_SELECTION_THICCNESS * 2.0,
+        RECT_LAYER_SELECTION_THICCNESS * 2.0);
 }
 
 static int rect_layer_delete_rect_at(RectLayer *layer,
@@ -754,7 +750,10 @@ RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream, const cha
         dynarray_push(layer->ids, id);
         dynarray_push(layer->colors, &color);
 
-        Action action = {0};
+        Action action = {
+            .type = ACTION_NONE,
+            .entity_id = {0}
+        };
 
         if (sscanf(line, "%d%n", (int*)&action.type, &n) > 0) {
             line += n;
@@ -810,6 +809,7 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
             }
         }
 
+        // Main Rectangle
         if (camera_fill_rect(
                 camera,
                 rect,
@@ -818,61 +818,69 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
                     rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f))) < 0) {
             return -1;
         }
+    }
 
-        // Selection Overlay
-        if (active && (size_t) layer->selection == i) {
-            const Rect overlay_rect =
-                rect_pad(
-                    camera_rect(camera, rect),
-                    RECT_LAYER_SELECTION_THICCNESS * 0.5f);
-            const Color overlay_color = color_invert(color);
+    // Selection Overlay
+    if (active && layer->selection >= 0) {
+        Rect rect = rects[layer->selection];
+        Color color = colors[layer->selection];
 
-            // Main Rectangle
-            if (camera_fill_rect(
+        if (layer->state == RECT_LAYER_RESIZE || layer->state == RECT_LAYER_MOVE) {
+            rect = layer->inter_rect;
+        }
+
+        if (layer->state == RECT_LAYER_RECOLOR) {
+            color = layer->inter_color;
+        }
+
+        const Rect overlay_rect =
+            rect_pad(
+                camera_rect(camera, rect),
+                -RECT_LAYER_SELECTION_THICCNESS * 0.5f);
+        const Color overlay_color = color_invert(color);
+
+        // Selection
+        if (camera_draw_thicc_rect_screen(
+                camera,
+                overlay_rect,
+                overlay_color,
+                RECT_LAYER_SELECTION_THICCNESS) < 0) {
+            return -1;
+        }
+
+        const Vec2f rect_id_pos = vec_sub(
+            rect_position(rect),
+            vec_mult(
+                RECT_LAYER_ID_LABEL_SIZE,
+                vec(0.0f, FONT_CHAR_HEIGHT)));
+
+        // Rectangle Id
+        if (layer->state == RECT_LAYER_ID_RENAME) {
+            // ID renaming Edit Field
+            if (edit_field_render_world(
+                    layer->id_edit_field,
                     camera,
-                    rect,
-                    color_scale(
-                        color,
-                        rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f))) < 0) {
+                    rect_id_pos) < 0) {
                 return -1;
             }
-
-            if (camera_draw_thicc_rect_screen(
+        } else {
+            // Id text
+            if (camera_render_text(
                     camera,
-                    overlay_rect,
-                    overlay_color,
-                    RECT_LAYER_SELECTION_THICCNESS) < 0) {
+                    ids + layer->selection * ENTITY_MAX_ID_SIZE,
+                    RECT_LAYER_ID_LABEL_SIZE,
+                    color_invert(color),
+                    rect_id_pos) < 0) {
                 return -1;
             }
+        }
 
-            // Rectangle Id
-            if (layer->state == RECT_LAYER_ID_RENAME) {
-                // ID renaming Edit Field
-                if (edit_field_render_world(
-                        layer->id_edit_field,
-                        camera,
-                        rect_position(rect)) < 0) {
-                    return -1;
-                }
-            } else {
-                // Id text
-                if (camera_render_text(
-                        camera,
-                        ids + layer->selection * ENTITY_MAX_ID_SIZE,
-                        RECT_LAYER_ID_LABEL_SIZE,
-                        color_invert(color),
-                        rect_position(rect)) < 0) {
-                    return -1;
-                }
-            }
-
-            // Resize Anchor
-            if (camera_fill_rect_screen(
-                    camera,
-                    rect_layer_resize_anchor(camera, rect),
-                    overlay_color) < 0) {
-                return -1;
-            }
+        // Resize Anchor
+        if (camera_fill_rect_screen(
+                camera,
+                rect_layer_resize_anchor(camera, rect),
+                overlay_color) < 0) {
+            return -1;
         }
     }
 

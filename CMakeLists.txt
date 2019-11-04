@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.13)
 project(nothing)
 
+set(NOTHING_CI OFF CACHE BOOL "Indicates whether the build is running on CI or not")
+
 if(WIN32)
   if(MINGW)
     add_compile_definitions(SDL_MAIN_HANDLED) # https://stackoverflow.com/a/25089610
@@ -166,11 +168,10 @@ target_link_libraries(nothing ${SDL2_LIBRARIES} system)
 ADD_CUSTOM_TARGET(link_assets ALL
                   COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets)
 
-if(("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"))
+if(("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang"))
   set(CMAKE_C_FLAGS
     "${CMAKE_C_FLAGS} \
      -Wall \
-     -Werror \
      -Wextra \
      -Wconversion \
      -Wunused \
@@ -193,17 +194,19 @@ if(("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_C_COMPILER_ID}" STREQU
      -Wswitch \
      -Wmissing-field-initializers \
      -fno-common \
-	   -fno-strict-aliasing \
+     -fno-strict-aliasing \
      -pedantic \
      -std=c11 \
      -ggdb \
      -O3")
+  if (${NOTHING_CI})
+     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror")
+  endif()
   target_link_libraries(nothing m)
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
   set(CMAKE_C_FLAGS
     "${CMAKE_C_FLAGS} \
     /Wall \
-    /WX \
     /wd4127 \
     /wd4201 \
     /wd4204 \
@@ -217,6 +220,9 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     /wd5045 \
     /wd4200 \
     /D \"_CRT_SECURE_NO_WARNINGS\"")
+  if (${NOTHING_CI})
+     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX")
+  endif()
 endif()
 if(MINGW)
   target_link_libraries(nothing hid setupapi Imm32 Version winmm)

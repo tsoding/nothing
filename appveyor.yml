@@ -32,9 +32,9 @@ build_script:
   - cd build
   - ps: |
        if ($isWindows -and $env:BUILD_TYPE -eq 'mingw') {
-           C:\msys64\usr\bin\bash.exe -lc "cmake .. -G 'MSYS Makefiles'"
+           C:\msys64\usr\bin\bash.exe -lc "cmake .. -G 'MSYS Makefiles' -DNOTHING_CI=ON"
            C:\msys64\usr\bin\bash.exe -lc "cmake --build ."
        } else {
-           cmake ..
+           cmake .. -DNOTHING_CI=ON
            cmake --build .
        }

@@ -55,7 +55,9 @@ size_t stack_top_size(const Stack *stack)
     trace_assert(stack);
     trace_assert(stack->size > 0);
     trace_assert(stack->bottom);
-    return *(size_t *)(stack->bottom + stack->size - sizeof(size_t));
+    size_t stack_size = 0;
+    memcpy(&stack_size, stack->bottom + stack->size - sizeof(size_t), sizeof(size_t));
+    return stack_size;
 }
 
 static inline
