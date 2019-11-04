@@ -750,7 +750,10 @@ RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream, const cha
         dynarray_push(layer->ids, id);
         dynarray_push(layer->colors, &color);
 
-        Action action = {0};
+        Action action = {
+            .type = ACTION_NONE,
+            .entity_id = {0}
+        };
 
         if (sscanf(line, "%d%n", (int*)&action.type, &n) > 0) {
             line += n;

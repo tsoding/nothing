@@ -27,7 +27,6 @@ static void print_usage(FILE *stream)
 
 int main(int argc, char *argv[])
 {
-    int a = 5;
     srand((unsigned int) time(NULL));
 
     Lt *lt = create_lt();

@@ -134,7 +134,7 @@ int layer_picker_event(LayerPicker *layer_picker,
 
     switch (event->type) {
     case SDL_MOUSEBUTTONDOWN: {
-        for (size_t i = 0; i < LAYER_PICKER_N; ++i) {
+        for (LayerPicker i = 0; i < LAYER_PICKER_N; ++i) {
             const Rect cell = rect(
                 position.x,
                 size.y * (float) i + position.y,

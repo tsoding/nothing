@@ -81,7 +81,7 @@ void rect_object_impact(Rect object, Rect obstacle, int *sides)
     Rect int_area = rects_overlap_area(object, obstacle);
 
     if (int_area.w * int_area.h > 0.0f) {
-        for (int side = 0; side < RECT_SIDE_N; ++side) {
+        for (Rect_side side = 0; side < RECT_SIDE_N; ++side) {
             Line object_side = rect_side(object, side);
             Line int_side = rect_side(int_area, side);
 
@@ -105,7 +105,10 @@ Line rect_side(Rect rect, Rect_side side)
     const float x2 = rect.x + rect.w;
     const float y2 = rect.y + rect.h;
 
-    Line result = { 0 };
+    Line result = {
+        .p1 = {0, 0},
+        .p2 = {0, 0}
+    };
 
     switch (side) {
     case RECT_SIDE_LEFT:

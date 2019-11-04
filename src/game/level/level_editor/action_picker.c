@@ -72,7 +72,7 @@ void action_picker_event(ActionPicker *picker,
 
             const float element_height = picker->widget.boundary.h / (float)ACTION_N;
 
-            for (size_t i = 0; i < ACTION_N; ++i) {
+            for (ActionType i = 0; i < ACTION_N; ++i) {
                 const Vec2f element_position =
                     vec_sum(
                         vec(picker->widget.boundary.x, picker->widget.boundary.y),
