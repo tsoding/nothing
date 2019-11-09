@@ -5,6 +5,8 @@
 //   Should be customizable in the Level Editor
 #define PLAYER_DEATH_LEVEL 1000.0f
 
+#define SOUND_SAMPLES_DEFAULT_VOLUME 80.0f
+
 #define LEVEL_EDITOR_DETH_LEVEL_COLOR hsla(0.0f, 0.8f, 0.6f, 1.0f)
 
 #define BACKGROUND_LAYERS_COUNT 3

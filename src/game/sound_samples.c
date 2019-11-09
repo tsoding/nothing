@@ -8,6 +8,7 @@
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "config.h"
 
 // TODO(#1022): Sound_samples does not implement volume control.
 
@@ -125,7 +126,7 @@ Sound_samples *create_sound_samples(const char *sample_files[],
         RETURN_LT(lt, NULL);
     }
     sound_samples->lt = lt;
-    sound_samples->volume = 80.0f;
+    sound_samples->volume = SOUND_SAMPLES_DEFAULT_VOLUME;
 
     sound_samples->samples_count = sample_files_count;
     if (init_buffer_and_device(sound_samples, sample_files) < 0) {
