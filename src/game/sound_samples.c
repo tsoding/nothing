@@ -125,6 +125,7 @@ Sound_samples *create_sound_samples(const char *sample_files[],
         RETURN_LT(lt, NULL);
     }
     sound_samples->lt = lt;
+    sound_samples->volume = 80.0f;
 
     sound_samples->samples_count = sample_files_count;
     if (init_buffer_and_device(sound_samples, sample_files) < 0) {
