@@ -1,5 +1,9 @@
+#include <ctype.h>
+#include <math.h>
+
 #include "system/stacktrace.h"
 
+#include "game.h"
 #include "game/level.h"
 #include "sdl/renderer.h"
 #include "system/log.h"
@@ -9,6 +13,7 @@
 #include "ui/console_log.h"
 #include "ui/edit_field.h"
 #include "ui/history.h"
+#include "math/extrema.h"
 
 #define FONT_WIDTH_SCALE 3.0f
 #define FONT_HEIGHT_SCALE 3.0f
@@ -25,6 +30,57 @@
 #define CONSOLE_ALPHA (0.80f)
 #define CONSOLE_BACKGROUND (rgba(0.20f, 0.20f, 0.20f, CONSOLE_ALPHA))
 #define CONSOLE_FOREGROUND (rgba(0.80f, 0.80f, 0.80f, CONSOLE_ALPHA))
+#define CONSOLE_ERROR (rgba(0.80f, 0.50f, 0.50f, CONSOLE_ALPHA))
+
+typedef struct {
+    const char *begin;
+    const char *end;
+} Token;
+
+
+static inline
+Token token(const char *begin, const char *end)
+{
+    Token t = {begin, end};
+    return t;
+}
+
+static inline
+int token_equals_str(Token t, const char *s)
+{
+    trace_assert(t.begin <= t.end);
+    size_t n1 = (size_t) (t.end - t.begin);
+    size_t n2 = strlen(s);
+    if (n1 != n2) return 0;
+    return memcmp(t.begin, s, n1) == 0;
+}
+
+static inline
+Token token_nt(const char *s)
+{
+    return token(s, s + strlen(s));
+}
+
+static inline
+void ltrim(Token *t)
+{
+    while (t->begin < t->end && isspace(*t->begin)) {
+        t->begin++;
+    }
+}
+
+static inline
+Token chop_word(Token *t)
+{
+    ltrim(t);
+    const char *end = t->begin;
+    while (end < t->end && !isspace(*end)) {
+        end++;
+    }
+    Token result = token(t->begin, end);
+    t->begin = end;
+    return result;
+}
 
 struct Console
 {
@@ -32,13 +88,14 @@ struct Console
     Edit_field *edit_field;
     Console_Log *console_log;
     History *history;
+    Game *game;
     float a;
 };
 
 /* TODO(#356): Console does not support autocompletion */
 /* TODO(#358): Console does not support copy, cut, paste operations */
 
-Console *create_console(void)
+Console *create_console(Game *game)
 {
     Lt *lt = create_lt();
 
@@ -75,6 +132,8 @@ Console *create_console(void)
         RETURN_LT(lt, NULL);
     }
 
+    console->game = game;
+
     return console;
 }
 
@@ -93,8 +152,26 @@ static int console_eval_input(Console *console)
         return -1;
     }
 
-    if (console_log_push_line(console->console_log, source_code, CONSOLE_FOREGROUND) < 0) {
+    if (console_log_push_line(console->console_log, source_code, NULL, CONSOLE_FOREGROUND) < 0) {
         return -1;
+    }
+
+    Token input = token_nt(source_code);
+
+    Token command = chop_word(&input);
+    if (token_equals_str(command, "load")) {
+        Token level = chop_word(&input);
+        console_log_push_line(console->console_log, "Loading level:", NULL, CONSOLE_FOREGROUND);
+        console_log_push_line(console->console_log, level.begin, level.end, CONSOLE_FOREGROUND);
+        char level_name[256];
+        memset(level_name, 0, 256);
+        memcpy(level_name, level.begin, min_size_t((size_t)(level.end - level.begin), 255));
+
+        if (game_load_level(console->game, level_name) < 0) {
+            console_log_push_line(console->console_log, "Could not load level", NULL, CONSOLE_ERROR);
+        }
+    } else {
+        console_log_push_line(console->console_log, "Unknown command", NULL, CONSOLE_ERROR);
     }
 
     edit_field_clean(console->edit_field);

@@ -40,6 +40,8 @@ typedef struct Game {
     Camera camera;
     SDL_Renderer *renderer;
     SDL_Texture *texture_cursor;
+    Console *console;
+    int console_enabled;
     int cursor_x;
     int cursor_y;
 } Game;
@@ -114,6 +116,16 @@ Game *create_game(const char *level_folder,
                 SDL_BLENDOPERATION_ADD)) < 0) {
         log_warn("SDL error: %s\n", SDL_GetError());
     }
+
+    game->console = PUSH_LT(
+        lt,
+        create_console(game),
+        destroy_console);
+    if (game->console == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    game->console_enabled = 0;
+
     game->cursor_x = 0;
     game->cursor_y = 0;
 
@@ -158,6 +170,12 @@ int game_render(const Game *game)
     case GAME_STATE_QUIT: break;
     }
 
+    if (game->console_enabled) {
+        if (console_render(game->console, &game->camera) < 0) {
+            return -1;
+        }
+    }
+
     if (game_render_cursor(game) < 0) {
         return -1;
     }
@@ -187,6 +205,12 @@ int game_update(Game *game, float delta_time)
     trace_assert(game);
     trace_assert(delta_time > 0.0f);
 
+    if (game->console_enabled) {
+        if (console_update(game->console, delta_time) < 0) {
+            return -1;
+        }
+    }
+
     switch (game->state) {
     case GAME_STATE_LEVEL: {
         if (level_update(game->level, delta_time) < 0) {
@@ -211,43 +235,10 @@ int game_update(Game *game, float delta_time)
         const char *level_filename = level_picker_selected_level(game->level_picker);
 
         if (level_filename != NULL) {
-            if (game->level_editor == NULL) {
-                game->level_editor = PUSH_LT(
-                    game->lt,
-                    create_level_editor_from_file(level_filename),
-                    destroy_level_editor);
-            } else {
-                game->level_editor = RESET_LT(
-                    game->lt,
-                    game->level_editor,
-                    create_level_editor_from_file(level_filename));
-            }
-
-            if (game->level_editor == NULL) {
+            if (game_load_level(game, level_filename) < 0) {
                 return -1;
             }
-
-            if (game->level == NULL) {
-                game->level = PUSH_LT(
-                    game->lt,
-                    create_level_from_level_editor(
-                        game->level_editor),
-                    destroy_level);
-            } else {
-                game->level = RESET_LT(
-                    game->lt,
-                    game->level,
-                    create_level_from_level_editor(
-                        game->level_editor));
-            }
-
-            if (game->level == NULL) {
-                return -1;
-            }
-
-            game_switch_state(game, GAME_STATE_LEVEL);
         }
-
     } break;
 
     case GAME_STATE_LEVEL_EDITOR: {
@@ -395,6 +386,7 @@ int game_event(Game *game, const SDL_Event *event)
     trace_assert(game);
     trace_assert(event);
 
+    // Global event handling
     switch (event->type) {
     case SDL_QUIT: {
         game_switch_state(game, GAME_STATE_QUIT);
@@ -414,6 +406,38 @@ int game_event(Game *game, const SDL_Event *event)
     } break;
     }
 
+    // Console event handling
+    if (game->console_enabled) {
+        switch (event->type) {
+        case SDL_KEYDOWN:
+            switch (event->key.keysym.sym) {
+            case SDLK_ESCAPE:
+                SDL_StopTextInput();
+                game->console_enabled = 0;
+                return 0;
+            default: {}
+            }
+
+        default: {}
+        }
+
+        return console_handle_event(game->console, event);
+    } else {
+        switch (event->type) {
+        case SDL_KEYUP: {
+            switch (event->key.keysym.sym) {
+            case SDLK_BACKQUOTE:
+            case SDLK_c: {
+                SDL_StartTextInput();
+                game->console_enabled = 1;
+                console_slide_down(game->console);
+            } break;
+            }
+        } break;
+        }
+    }
+
+    // State event handling
     switch (game->state) {
     case GAME_STATE_LEVEL:
         return game_event_running(game, event);
@@ -455,6 +479,10 @@ int game_input(Game *game,
     trace_assert(game);
     trace_assert(keyboard_state);
 
+    if (game->console_enabled) {
+        return 0;
+    }
+
     switch (game->state) {
     case GAME_STATE_SETTINGS:
     case GAME_STATE_QUIT:
@@ -487,6 +515,50 @@ static int game_render_cursor(const Game *game)
     if (SDL_RenderCopy(game->renderer, game->texture_cursor, &src, &dest) < 0) {
         return -1;
     }
+
+    return 0;
+}
+
+int game_load_level(Game *game, const char *level_filename)
+{
+    trace_assert(game);
+    trace_assert(level_filename);
+
+    if (game->level_editor == NULL) {
+        game->level_editor = PUSH_LT(
+            game->lt,
+            create_level_editor_from_file(level_filename),
+            destroy_level_editor);
+    } else {
+        game->level_editor = RESET_LT(
+            game->lt,
+            game->level_editor,
+            create_level_editor_from_file(level_filename));
+    }
+
+    if (game->level_editor == NULL) {
+        return -1;
+    }
+
+    if (game->level == NULL) {
+        game->level = PUSH_LT(
+            game->lt,
+            create_level_from_level_editor(
+                game->level_editor),
+            destroy_level);
+    } else {
+        game->level = RESET_LT(
+            game->lt,
+            game->level,
+            create_level_from_level_editor(
+                game->level_editor));
+    }
+
+    if (game->level == NULL) {
+        return -1;
+    }
+
+    game_switch_state(game, GAME_STATE_LEVEL);
 
     return 0;
 }

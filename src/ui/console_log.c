@@ -85,7 +85,10 @@ int console_log_render(const Console_Log *console_log,
     return 0;
 }
 
-int console_log_push_line(Console_Log *console_log, const char *line, Color color)
+int console_log_push_line(Console_Log *console_log,
+                          const char *line,
+                          const char *line_end,
+                          Color color)
 {
     trace_assert(console_log);
     trace_assert(line);
@@ -96,7 +99,7 @@ int console_log_push_line(Console_Log *console_log, const char *line, Color colo
         free(console_log->buffer[console_log->cursor]);
     }
 
-    console_log->buffer[console_log->cursor] = string_duplicate(line, NULL);
+    console_log->buffer[console_log->cursor] = string_duplicate(line, line_end);
     console_log->colors[console_log->cursor] = color;
 
     if (console_log->buffer[console_log->cursor] == NULL) {
