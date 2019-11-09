@@ -5,8 +5,9 @@
 
 typedef struct Console Console;
 typedef struct Sprite_font Sprite_font;
+typedef struct Game Game;
 
-Console *create_console(void);
+Console *create_console(Game *game);
 void destroy_console(Console *console);
 
 int console_handle_event(Console *console,

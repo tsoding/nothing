@@ -1,7 +1,9 @@
 #include <ctype.h>
+#include <math.h>
 
 #include "system/stacktrace.h"
 
+#include "game.h"
 #include "game/level.h"
 #include "sdl/renderer.h"
 #include "system/log.h"
@@ -11,6 +13,7 @@
 #include "ui/console_log.h"
 #include "ui/edit_field.h"
 #include "ui/history.h"
+#include "math/extrema.h"
 
 #define FONT_WIDTH_SCALE 3.0f
 #define FONT_HEIGHT_SCALE 3.0f
@@ -85,13 +88,14 @@ struct Console
     Edit_field *edit_field;
     Console_Log *console_log;
     History *history;
+    Game *game;
     float a;
 };
 
 /* TODO(#356): Console does not support autocompletion */
 /* TODO(#358): Console does not support copy, cut, paste operations */
 
-Console *create_console(void)
+Console *create_console(Game *game)
 {
     Lt *lt = create_lt();
 
@@ -128,6 +132,8 @@ Console *create_console(void)
         RETURN_LT(lt, NULL);
     }
 
+    console->game = game;
+
     return console;
 }
 
@@ -157,6 +163,13 @@ static int console_eval_input(Console *console)
         Token level = chop_word(&input);
         console_log_push_line(console->console_log, "Loading level:", NULL, CONSOLE_FOREGROUND);
         console_log_push_line(console->console_log, level.begin, level.end, CONSOLE_FOREGROUND);
+        char level_name[256];
+        memset(level_name, 0, 256);
+        memcpy(level_name, level.begin, min_size_t((size_t)(level.end - level.begin), 255));
+
+        if (game_load_level(console->game, level_name) < 0) {
+            console_log_push_line(console->console_log, "Could not load level", NULL, CONSOLE_ERROR);
+        }
     } else {
         console_log_push_line(console->console_log, "Unknown command", NULL, CONSOLE_ERROR);
     }

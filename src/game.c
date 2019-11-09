@@ -119,7 +119,7 @@ Game *create_game(const char *level_folder,
 
     game->console = PUSH_LT(
         lt,
-        create_console(),
+        create_console(game),
         destroy_console);
     if (game->console == NULL) {
         RETURN_LT(lt, NULL);
@@ -235,43 +235,10 @@ int game_update(Game *game, float delta_time)
         const char *level_filename = level_picker_selected_level(game->level_picker);
 
         if (level_filename != NULL) {
-            if (game->level_editor == NULL) {
-                game->level_editor = PUSH_LT(
-                    game->lt,
-                    create_level_editor_from_file(level_filename),
-                    destroy_level_editor);
-            } else {
-                game->level_editor = RESET_LT(
-                    game->lt,
-                    game->level_editor,
-                    create_level_editor_from_file(level_filename));
-            }
-
-            if (game->level_editor == NULL) {
+            if (game_load_level(game, level_filename) < 0) {
                 return -1;
             }
-
-            if (game->level == NULL) {
-                game->level = PUSH_LT(
-                    game->lt,
-                    create_level_from_level_editor(
-                        game->level_editor),
-                    destroy_level);
-            } else {
-                game->level = RESET_LT(
-                    game->lt,
-                    game->level,
-                    create_level_from_level_editor(
-                        game->level_editor));
-            }
-
-            if (game->level == NULL) {
-                return -1;
-            }
-
-            game_switch_state(game, GAME_STATE_LEVEL);
         }
-
     } break;
 
     case GAME_STATE_LEVEL_EDITOR: {
@@ -548,6 +515,50 @@ static int game_render_cursor(const Game *game)
     if (SDL_RenderCopy(game->renderer, game->texture_cursor, &src, &dest) < 0) {
         return -1;
     }
+
+    return 0;
+}
+
+int game_load_level(Game *game, const char *level_filename)
+{
+    trace_assert(game);
+    trace_assert(level_filename);
+
+    if (game->level_editor == NULL) {
+        game->level_editor = PUSH_LT(
+            game->lt,
+            create_level_editor_from_file(level_filename),
+            destroy_level_editor);
+    } else {
+        game->level_editor = RESET_LT(
+            game->lt,
+            game->level_editor,
+            create_level_editor_from_file(level_filename));
+    }
+
+    if (game->level_editor == NULL) {
+        return -1;
+    }
+
+    if (game->level == NULL) {
+        game->level = PUSH_LT(
+            game->lt,
+            create_level_from_level_editor(
+                game->level_editor),
+            destroy_level);
+    } else {
+        game->level = RESET_LT(
+            game->lt,
+            game->level,
+            create_level_from_level_editor(
+                game->level_editor));
+    }
+
+    if (game->level == NULL) {
+        return -1;
+    }
+
+    game_switch_state(game, GAME_STATE_LEVEL);
 
     return 0;
 }

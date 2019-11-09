@@ -24,4 +24,6 @@ int game_input(Game *game,
 
 int game_over_check(const Game *game);
 
+int game_load_level(Game *game, const char *filepath);
+
 #endif  // GAME_H_
