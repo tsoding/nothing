@@ -7,7 +7,7 @@
 
 typedef struct {
     Background background;
-    // TODO: the volume_slider is not fully synced with the volume of sound_samples
+    // TODO(#1123): the volume_slider is not fully synced with the volume of sound_samples
     Slider volume_slider;
     Vec2f volume_slider_scale;
     Vec2f camera_position;
