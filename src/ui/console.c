@@ -1,3 +1,5 @@
+#include <ctype.h>
+
 #include "system/stacktrace.h"
 
 #include "game/level.h"
