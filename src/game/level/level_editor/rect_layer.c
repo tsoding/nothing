@@ -31,7 +31,7 @@ typedef enum {
     RECT_LAYER_IDLE = 0,
     RECT_LAYER_CREATE,
     // TODO(#955): Rectangles in Level Editor have only one resize anchor to work with
-    // TODO: different cursor image in resize mode
+    // TODO(#1129): different cursor image in resize mode
     RECT_LAYER_RESIZE,
     RECT_LAYER_MOVE,
     RECT_LAYER_ID_RENAME,
