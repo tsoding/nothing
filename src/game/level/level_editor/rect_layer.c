@@ -17,7 +17,7 @@
 #include "game/level/action.h"
 #include "action_picker.h"
 
-#define RECT_LAYER_SELECTION_THICCNESS 10.0f
+#define RECT_LAYER_SELECTION_THICCNESS 15.0f
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
 #define CREATE_AREA_THRESHOLD 10.0
 #define RECT_LAYER_GRID_ROWS 3
@@ -294,7 +294,6 @@ static int rect_layer_delete_rect_at(RectLayer *layer,
     return 0;
 }
 
-// TODO: rect in calc_resize_mask is not mapped to the screen
 static int calc_resize_mask(Vec2f point, Rect rect)
 {
     int mask = 0;
@@ -344,7 +343,9 @@ static int rect_layer_event_idle(RectLayer *layer,
 
             if (layer->selection >= 0 &&
                 layer->selection == rect_at_position &&
-                (layer->resize_mask = calc_resize_mask(position, rects[layer->selection]))) {
+                (layer->resize_mask = calc_resize_mask(
+                    vec((float) event->button.x, (float)event->button.y),
+                    camera_rect(camera, rects[layer->selection])))) {
                 layer->state = RECT_LAYER_RESIZE;
                 dynarray_copy_to(layer->rects, &layer->inter_rect, (size_t) layer->selection);
             } else if (rect_at_position >= 0) {

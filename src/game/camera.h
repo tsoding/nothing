@@ -95,7 +95,7 @@ Rect camera_view_port(const Camera *camera);
 Rect camera_view_port_screen(const Camera *camera);
 
 Vec2f camera_map_screen(const Camera *camera,
-                      Sint32 x, Sint32 y);
+                        Sint32 x, Sint32 y);
 
 Vec2f camera_point(const Camera *camera, const Vec2f p);
 Rect camera_rect(const Camera *camera, const Rect rect);
