@@ -1,12 +1,13 @@
 #include "system/stacktrace.h"
 #include "settings.h"
+#include "config.h"
 
 Settings create_settings(void)
 {
     Settings settings = {
         .volume_slider = {
             .drag = 0,
-            .value = 80.0f,
+            .value = SOUND_SAMPLES_DEFAULT_VOLUME,
             .max_value = 100.0f,
         },
 

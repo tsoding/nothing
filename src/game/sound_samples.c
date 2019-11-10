@@ -8,6 +8,7 @@
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "config.h"
 
 // TODO(#1022): Sound_samples does not implement volume control.
 
@@ -23,9 +24,9 @@ struct Sound_samples
     float volume;
 };
 
-static 
-int init_buffer_and_device(Sound_samples *sound_samples, 
-                           const char *sample_files[]) 
+static
+int init_buffer_and_device(Sound_samples *sound_samples,
+                           const char *sample_files[])
 {
     // TODO(#1023): init_buffer_and_device uses hard-coded audio specification
     SDL_AudioSpec destination_spec = { // stereo float32 44100Hz
@@ -38,7 +39,7 @@ int init_buffer_and_device(Sound_samples *sound_samples,
         log_fail("No audio in 2019 LULW\n");
         return -1;
     }
-    
+
     sound_samples->audio_buf_array = PUSH_LT(sound_samples->lt, nth_calloc(sound_samples->samples_count, sizeof(uint8_t*)), free);
     if (sound_samples->audio_buf_array == NULL) {
         log_fail("Failed to allocate memory for audio buffer pointer array\n");
@@ -59,7 +60,7 @@ int init_buffer_and_device(Sound_samples *sound_samples,
         }
         PUSH_LT(sound_samples->lt, wav_buf, SDL_FreeWAV);
         SDL_AudioCVT cvt;
-        int result = SDL_BuildAudioCVT(&cvt, wav_spec.format, (uint8_t)wav_spec.channels, (int)wav_spec.freq, 
+        int result = SDL_BuildAudioCVT(&cvt, wav_spec.format, (uint8_t)wav_spec.channels, (int)wav_spec.freq,
                           destination_spec.format, (uint8_t)destination_spec.channels, (int)destination_spec.freq);
         if (result < 0) {
             log_fail("SDL_BuildAudioCVT failed: %s\n", SDL_GetError());
@@ -84,7 +85,7 @@ int init_buffer_and_device(Sound_samples *sound_samples,
             sound_samples->audio_buf_size_array[i] = (uint32_t)cvt.len_cvt;
         }
     }
-    
+
     /* Allocating active audio buffer location*/
     //TODO(#1072): Allocate one huge active audio buffer with length of the maximum of all audio buffer, instead of one active buffer for each audio
     sound_samples->active_audio_buf_array = PUSH_LT(sound_samples->lt, nth_calloc(sound_samples->samples_count, sizeof(uint8_t*)), free);
@@ -125,6 +126,7 @@ Sound_samples *create_sound_samples(const char *sample_files[],
         RETURN_LT(lt, NULL);
     }
     sound_samples->lt = lt;
+    sound_samples->volume = SOUND_SAMPLES_DEFAULT_VOLUME;
 
     sound_samples->samples_count = sample_files_count;
     if (init_buffer_and_device(sound_samples, sample_files) < 0) {
