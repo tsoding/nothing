@@ -153,10 +153,9 @@ int sound_samples_play_sound(Sound_samples *sound_samples,
                              size_t sound_index)
 {
     trace_assert(sound_samples);
+    if (sound_samples->failed) return 0;
     trace_assert(sound_index < sound_samples->samples_count);
     trace_assert(sound_samples->dev);
-
-    if (sound_samples->failed) return 0;
 
     /* Premix the audio volume */
     memset(sound_samples->active_audio_buf_array[sound_index], 0, sound_samples->audio_buf_size_array[sound_index]);
