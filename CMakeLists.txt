@@ -219,6 +219,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     /wd4820 \
     /wd5045 \
     /wd4200 \
+    /wd4706 \
     /D \"_CRT_SECURE_NO_WARNINGS\"")
   if (${NOTHING_CI})
      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX")

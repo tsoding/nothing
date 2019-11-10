@@ -17,7 +17,7 @@
 #include "game/level/action.h"
 #include "action_picker.h"
 
-#define RECT_LAYER_SELECTION_THICCNESS 10.0f
+#define RECT_LAYER_SELECTION_THICCNESS 15.0f
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
 #define CREATE_AREA_THRESHOLD 10.0
 #define RECT_LAYER_GRID_ROWS 3
@@ -31,6 +31,7 @@ typedef enum {
     RECT_LAYER_IDLE = 0,
     RECT_LAYER_CREATE,
     // TODO(#955): Rectangles in Level Editor have only one resize anchor to work with
+    // TODO(#1129): different cursor image in resize mode
     RECT_LAYER_RESIZE,
     RECT_LAYER_MOVE,
     RECT_LAYER_ID_RENAME,
@@ -40,6 +41,7 @@ typedef enum {
 struct RectLayer {
     Lt *lt;
     RectLayerState state;
+    int resize_mask;
     Dynarray *ids;
     Dynarray *rects;
     Dynarray *colors;
@@ -276,16 +278,6 @@ static void rect_layer_swap_elements(RectLayer *layer, size_t a, size_t b,
     UNDO_PUSH(undo_history, create_undo_swap_context(layer, a, b));
 }
 
-static Rect rect_layer_resize_anchor(const Camera *camera, Rect boundary_rect)
-{
-    const Rect overlay_rect = camera_rect(camera, boundary_rect);
-    return rect(
-        overlay_rect.x + overlay_rect.w,
-        overlay_rect.y + overlay_rect.h,
-        RECT_LAYER_SELECTION_THICCNESS * 2.0,
-        RECT_LAYER_SELECTION_THICCNESS * 2.0);
-}
-
 static int rect_layer_delete_rect_at(RectLayer *layer,
                                      size_t i,
                                      UndoHistory *undo_history)
@@ -300,6 +292,17 @@ static int rect_layer_delete_rect_at(RectLayer *layer,
     dynarray_delete_at(layer->actions, i);
 
     return 0;
+}
+
+static int calc_resize_mask(Vec2f point, Rect rect)
+{
+    int mask = 0;
+    for (Rect_side side = 0; side < RECT_SIDE_N; ++side) {
+        if (rect_side_distance(rect, point, side) < RECT_LAYER_SELECTION_THICCNESS) {
+            mask = mask | (1 << side);
+        }
+    }
+    return mask;
 }
 
 static int rect_layer_event_idle(RectLayer *layer,
@@ -338,13 +341,11 @@ static int rect_layer_event_idle(RectLayer *layer,
             Rect *rects = dynarray_data(layer->rects);
             Color *colors = dynarray_data(layer->colors);
 
-            if (layer->selection >= 0 && rect_contains_point(
-                    rect_layer_resize_anchor(
-                        camera,
-                        rects[layer->selection]),
-                    vec(
-                        (float) event->button.x,
-                        (float) event->button.y))) {
+            if (layer->selection >= 0 &&
+                layer->selection == rect_at_position &&
+                (layer->resize_mask = calc_resize_mask(
+                    vec((float) event->button.x, (float)event->button.y),
+                    camera_rect(camera, rects[layer->selection])))) {
                 layer->state = RECT_LAYER_RESIZE;
                 dynarray_copy_to(layer->rects, &layer->inter_rect, (size_t) layer->selection);
             } else if (rect_at_position >= 0) {
@@ -508,17 +509,68 @@ static int rect_layer_event_resize(RectLayer *layer,
     trace_assert(camera);
     trace_assert(layer->selection >= 0);
 
+    Rect *rects = dynarray_data(layer->rects);
+
     switch (event->type) {
     case SDL_MOUSEMOTION: {
-        layer->inter_rect = rect_from_points(
-            vec(layer->inter_rect.x, layer->inter_rect.y),
-            vec_sum(
-                camera_map_screen(
-                    camera,
-                    event->button.x,
-                    event->button.y),
-                vec(RECT_LAYER_SELECTION_THICCNESS * -0.5f,
-                    RECT_LAYER_SELECTION_THICCNESS * -0.5f)));
+        Vec2f position = camera_map_screen(
+            camera,
+            event->button.x,
+            event->button.y);
+
+        switch (layer->resize_mask) {
+        case 1: {               // TOP
+            layer->inter_rect = rect_from_points(
+                vec(rects[layer->selection].x, position.y),
+                rect_position2(rects[layer->selection]));
+        } break;
+
+        case 2: {               // LEFT
+            layer->inter_rect = rect_from_points(
+                vec(position.x, rects[layer->selection].y),
+                rect_position2(rects[layer->selection]));
+        } break;
+
+        case 3: {               // TOP,LEFT
+            layer->inter_rect = rect_from_points(
+                position,
+                rect_position2(rects[layer->selection]));
+        } break;
+
+        case 4: {               // BOTTOM
+            layer->inter_rect = rect_from_points(
+                rect_position(rects[layer->selection]),
+                vec(rects[layer->selection].x + rects[layer->selection].w,
+                    position.y));
+        } break;
+
+        case 6: {               // BOTTOM,LEFT
+            layer->inter_rect = rect_from_points(
+                vec(position.x, rects[layer->selection].y),
+                vec(rects[layer->selection].x + rects[layer->selection].w,
+                    position.y));
+        } break;
+
+        case 8: {               // RIGHT
+            layer->inter_rect = rect_from_points(
+                rect_position(rects[layer->selection]),
+                vec(position.x,
+                    rects[layer->selection].y + rects[layer->selection].h));
+        } break;
+
+        case 9: {               // TOP,RIGHT
+            layer->inter_rect = rect_from_points(
+                vec(rects[layer->selection].x, position.y),
+                vec(position.x,
+                    rects[layer->selection].y + rects[layer->selection].h));
+        } break;
+
+        case 12: {              // BOTTOM,RIGHT
+            layer->inter_rect = rect_from_points(
+                rect_position(rects[layer->selection]),
+                position);
+        } break;
+        }
     } break;
 
     case SDL_MOUSEBUTTONUP: {
@@ -873,14 +925,6 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
                     rect_id_pos) < 0) {
                 return -1;
             }
-        }
-
-        // Resize Anchor
-        if (camera_fill_rect_screen(
-                camera,
-                rect_layer_resize_anchor(camera, rect),
-                overlay_color) < 0) {
-            return -1;
         }
     }
 
