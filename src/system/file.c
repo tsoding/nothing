@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "system/nth_alloc.h"
-#if defined(__linux__) || defined(__FreeBSD__)
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__DragonFly__)
 #include <sys/stat.h>
 #include <sys/types.h>
 #elif defined(_WIN32)
@@ -20,7 +20,7 @@ int last_modified(const char *filepath, time_t *time)
     trace_assert(filepath);
     trace_assert(time);
 
-#if defined(__linux__) || defined(__FreeBSD__)
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__DragonFly__)
 
     struct stat attr;
     if (stat(filepath, &attr) < 0) {
