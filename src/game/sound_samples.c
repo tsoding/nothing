@@ -21,7 +21,7 @@ struct Sound_samples
     size_t samples_count;
     int paused;
     float volume;
-    // TODO: A better solution for optional sound support
+    // TODO(#1127): A better solution for optional sound support
     int failed;                 // This is hackish
 };
 
