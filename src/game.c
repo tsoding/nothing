@@ -19,6 +19,24 @@
 
 static int game_render_cursor(const Game *game);
 
+typedef enum {
+    CURSOR_STYLE_POINTER = 0,
+    CURSOR_STYLE_RESIZE_VERT,
+    CURSOR_STYLE_RESIZE_HORIS,
+    CURSOR_STYLE_RESIZE_DIAG1,
+    CURSOR_STYLE_RESIZE_DIAG2,
+
+    CURSOR_STYLE_N
+} Cursor_Style;
+
+const char *cursor_style_tex_files[CURSOR_STYLE_N] = {
+    "./assets/images/cursor.bmp",
+    "./assets/images/cursor-resize-vert.bmp",
+    "./assets/images/cursor-resize-horis.bmp",
+    "./assets/images/cursor-resize-diag1.bmp",
+    "./assets/images/cursor-resize-diag2.bmp"
+};
+
 typedef enum Game_state {
     GAME_STATE_LEVEL = 0,
     GAME_STATE_LEVEL_PICKER,
@@ -39,7 +57,8 @@ typedef struct Game {
     Sound_samples *sound_samples;
     Camera camera;
     SDL_Renderer *renderer;
-    SDL_Texture *texture_cursor;
+    SDL_Texture *cursor_texs[CURSOR_STYLE_N];
+    Cursor_Style cursor_style;
     Console *console;
     int console_enabled;
     int cursor_x;
@@ -101,21 +120,25 @@ Game *create_game(const char *level_folder,
     game->settings = create_settings();
 
     game->renderer = renderer;
-    game->texture_cursor = PUSH_LT(
-        lt,
-        texture_from_bmp("./assets/images/cursor.bmp", renderer),
-        SDL_DestroyTexture);
-    if (SDL_SetTextureBlendMode(
-            game->texture_cursor,
-            SDL_ComposeCustomBlendMode(
-                SDL_BLENDFACTOR_ONE_MINUS_DST_COLOR,
-                SDL_BLENDFACTOR_ONE_MINUS_SRC_COLOR,
-                SDL_BLENDOPERATION_ADD,
-                SDL_BLENDFACTOR_ONE,
-                SDL_BLENDFACTOR_ZERO,
-                SDL_BLENDOPERATION_ADD)) < 0) {
-        log_warn("SDL error: %s\n", SDL_GetError());
+
+    for (Cursor_Style style = 0; style < CURSOR_STYLE_N; ++style) {
+        game->cursor_texs[style] = PUSH_LT(
+            lt,
+            texture_from_bmp(cursor_style_tex_files[style], renderer),
+            SDL_DestroyTexture);
+        if (SDL_SetTextureBlendMode(
+                game->cursor_texs[style],
+                SDL_ComposeCustomBlendMode(
+                    SDL_BLENDFACTOR_ONE_MINUS_DST_COLOR,
+                    SDL_BLENDFACTOR_ONE_MINUS_SRC_COLOR,
+                    SDL_BLENDOPERATION_ADD,
+                    SDL_BLENDFACTOR_ONE,
+                    SDL_BLENDFACTOR_ZERO,
+                    SDL_BLENDOPERATION_ADD)) < 0) {
+            log_warn("SDL error: %s\n", SDL_GetError());
+        }
     }
+
 
     game->console = PUSH_LT(
         lt,
@@ -512,7 +535,10 @@ static int game_render_cursor(const Game *game)
 
     SDL_Rect src = {0, 0, 32, 32};
     SDL_Rect dest = {game->cursor_x, game->cursor_y, 32, 32};
-    if (SDL_RenderCopy(game->renderer, game->texture_cursor, &src, &dest) < 0) {
+    if (SDL_RenderCopy(
+            game->renderer,
+            game->cursor_texs[game->cursor_style],
+            &src, &dest) < 0) {
         return -1;
     }
 
