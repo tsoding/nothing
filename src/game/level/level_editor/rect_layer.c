@@ -276,16 +276,6 @@ static void rect_layer_swap_elements(RectLayer *layer, size_t a, size_t b,
     UNDO_PUSH(undo_history, create_undo_swap_context(layer, a, b));
 }
 
-static Rect rect_layer_resize_anchor(const Camera *camera, Rect boundary_rect)
-{
-    const Rect overlay_rect = camera_rect(camera, boundary_rect);
-    return rect(
-        overlay_rect.x + overlay_rect.w,
-        overlay_rect.y + overlay_rect.h,
-        RECT_LAYER_SELECTION_THICCNESS * 2.0,
-        RECT_LAYER_SELECTION_THICCNESS * 2.0);
-}
-
 static int rect_layer_delete_rect_at(RectLayer *layer,
                                      size_t i,
                                      UndoHistory *undo_history)
@@ -300,6 +290,12 @@ static int rect_layer_delete_rect_at(RectLayer *layer,
     dynarray_delete_at(layer->actions, i);
 
     return 0;
+}
+
+static int is_on_border(Vec2f point, Rect rect)
+{
+    const Rect smol_rect = rect_pad(rect, -RECT_LAYER_SELECTION_THICCNESS);
+    return rect_contains_point(rect, point) && !rect_contains_point(smol_rect, point);
 }
 
 static int rect_layer_event_idle(RectLayer *layer,
@@ -338,13 +334,9 @@ static int rect_layer_event_idle(RectLayer *layer,
             Rect *rects = dynarray_data(layer->rects);
             Color *colors = dynarray_data(layer->colors);
 
-            if (layer->selection >= 0 && rect_contains_point(
-                    rect_layer_resize_anchor(
-                        camera,
-                        rects[layer->selection]),
-                    vec(
-                        (float) event->button.x,
-                        (float) event->button.y))) {
+            if (layer->selection >= 0 &&
+                layer->selection == rect_at_position &&
+                is_on_border(position, rects[layer->selection])) {
                 layer->state = RECT_LAYER_RESIZE;
                 dynarray_copy_to(layer->rects, &layer->inter_rect, (size_t) layer->selection);
             } else if (rect_at_position >= 0) {
@@ -873,14 +865,6 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
                     rect_id_pos) < 0) {
                 return -1;
             }
-        }
-
-        // Resize Anchor
-        if (camera_fill_rect_screen(
-                camera,
-                rect_layer_resize_anchor(camera, rect),
-                overlay_color) < 0) {
-            return -1;
         }
     }
 
