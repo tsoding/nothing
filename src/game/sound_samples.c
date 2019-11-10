@@ -22,6 +22,8 @@ struct Sound_samples
     size_t samples_count;
     int paused;
     float volume;
+    // TODO(#1127): A better solution for optional sound support
+    int failed;                 // This is hackish
 };
 
 static
@@ -131,7 +133,7 @@ Sound_samples *create_sound_samples(const char *sample_files[],
     sound_samples->samples_count = sample_files_count;
     if (init_buffer_and_device(sound_samples, sample_files) < 0) {
         log_fail("init_buffer_and_device failed\n");
-        RETURN_LT(lt, NULL);
+        sound_samples->failed = 1;
     }
 
     sound_samples->paused = 0;
@@ -153,8 +155,10 @@ int sound_samples_play_sound(Sound_samples *sound_samples,
                              size_t sound_index)
 {
     trace_assert(sound_samples);
+    if (sound_samples->failed) return 0;
     trace_assert(sound_index < sound_samples->samples_count);
     trace_assert(sound_samples->dev);
+
     /* Premix the audio volume */
     memset(sound_samples->active_audio_buf_array[sound_index], 0, sound_samples->audio_buf_size_array[sound_index]);
 
@@ -179,6 +183,7 @@ int sound_samples_play_sound(Sound_samples *sound_samples,
 int sound_samples_toggle_pause(Sound_samples *sound_samples)
 {
     trace_assert(sound_samples);
+    if (sound_samples->failed) return 0;
     sound_samples->paused = !sound_samples->paused;
     trace_assert(sound_samples->dev);
     SDL_PauseAudioDevice(sound_samples->dev, sound_samples->paused);
@@ -188,6 +193,7 @@ int sound_samples_toggle_pause(Sound_samples *sound_samples)
 void sound_samples_update_volume(Sound_samples *sound_samples,
                                  float volume)
 {
-  trace_assert(sound_samples);
-  sound_samples->volume = volume;
+    trace_assert(sound_samples);
+    if (sound_samples->failed) return;
+    sound_samples->volume = volume;
 }
