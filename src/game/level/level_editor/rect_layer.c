@@ -543,9 +543,23 @@ static int rect_layer_event_resize(RectLayer *layer,
                     position.y));
         } break;
 
+        case 6: {               // BOTTOM,LEFT
+            layer->inter_rect = rect_from_points(
+                vec(position.x, rects[layer->selection].y),
+                vec(rects[layer->selection].x + rects[layer->selection].w,
+                    position.y));
+        } break;
+
         case 8: {               // RIGHT
             layer->inter_rect = rect_from_points(
                 rect_position(rects[layer->selection]),
+                vec(position.x,
+                    rects[layer->selection].y + rects[layer->selection].h));
+        } break;
+
+        case 9: {               // TOP,RIGHT
+            layer->inter_rect = rect_from_points(
+                vec(rects[layer->selection].x, position.y),
                 vec(position.x,
                     rects[layer->selection].y + rects[layer->selection].h));
         } break;
