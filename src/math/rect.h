@@ -5,12 +5,13 @@
 #include <math.h>
 
 #include "math/vec.h"
+#include "system/stacktrace.h"
 
 typedef enum Rect_side {
-    RECT_SIDE_LEFT = 0,
-    RECT_SIDE_RIGHT,
-    RECT_SIDE_TOP,
+    RECT_SIDE_TOP = 0,
+    RECT_SIDE_LEFT,
     RECT_SIDE_BOTTOM,
+    RECT_SIDE_RIGHT,
 
     RECT_SIDE_N
 } Rect_side;
@@ -51,6 +52,11 @@ static inline Vec2f rect_position(Rect rect)
     return vec(rect.x, rect.y);
 }
 
+static inline Vec2f rect_position2(Rect rect)
+{
+    return vec(rect.x + rect.w, rect.y + rect.h);
+}
+
 static inline Rect rect_pad(Rect rect, float d)
 {
     rect.x -= d;
@@ -80,5 +86,33 @@ Vec2f rect_center(Rect rect);
 
 Vec2f rect_snap(Rect pivot, Rect *rect);
 Vec2f rect_impulse(Rect *r1, Rect *r2);
+
+static inline
+float rect_side_distance(Rect rect, Vec2f point, Rect_side side)
+{
+    switch (side) {
+    case RECT_SIDE_LEFT: {
+        return fabsf(rect.x - point.x);
+    } break;
+
+    case RECT_SIDE_RIGHT: {
+        return fabsf((rect.x + rect.w) - point.x);
+    } break;
+
+    case RECT_SIDE_TOP: {
+        return fabsf(rect.y - point.y);
+    } break;
+
+    case RECT_SIDE_BOTTOM: {
+        return fabsf((rect.y + rect.h) - point.y);
+    } break;
+
+    case RECT_SIDE_N: {
+        trace_assert(0 && "Incorrect rect side");
+    } break;
+    }
+
+    return 0;
+}
 
 #endif  // RECT_H_

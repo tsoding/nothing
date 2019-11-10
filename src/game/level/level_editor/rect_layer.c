@@ -31,6 +31,7 @@ typedef enum {
     RECT_LAYER_IDLE = 0,
     RECT_LAYER_CREATE,
     // TODO(#955): Rectangles in Level Editor have only one resize anchor to work with
+    // TODO: different cursor image in resize mode
     RECT_LAYER_RESIZE,
     RECT_LAYER_MOVE,
     RECT_LAYER_ID_RENAME,
@@ -40,6 +41,7 @@ typedef enum {
 struct RectLayer {
     Lt *lt;
     RectLayerState state;
+    int resize_mask;
     Dynarray *ids;
     Dynarray *rects;
     Dynarray *colors;
@@ -292,10 +294,16 @@ static int rect_layer_delete_rect_at(RectLayer *layer,
     return 0;
 }
 
-static int is_on_border(Vec2f point, Rect rect)
+// TODO: rect in calc_resize_mask is not mapped to the screen
+static int calc_resize_mask(Vec2f point, Rect rect)
 {
-    const Rect smol_rect = rect_pad(rect, -RECT_LAYER_SELECTION_THICCNESS);
-    return rect_contains_point(rect, point) && !rect_contains_point(smol_rect, point);
+    int mask = 0;
+    for (Rect_side side = 0; side < RECT_SIDE_N; ++side) {
+        if (rect_side_distance(rect, point, side) < RECT_LAYER_SELECTION_THICCNESS) {
+            mask = mask | (1 << side);
+        }
+    }
+    return mask;
 }
 
 static int rect_layer_event_idle(RectLayer *layer,
@@ -336,7 +344,7 @@ static int rect_layer_event_idle(RectLayer *layer,
 
             if (layer->selection >= 0 &&
                 layer->selection == rect_at_position &&
-                is_on_border(position, rects[layer->selection])) {
+                (layer->resize_mask = calc_resize_mask(position, rects[layer->selection]))) {
                 layer->state = RECT_LAYER_RESIZE;
                 dynarray_copy_to(layer->rects, &layer->inter_rect, (size_t) layer->selection);
             } else if (rect_at_position >= 0) {
@@ -500,17 +508,42 @@ static int rect_layer_event_resize(RectLayer *layer,
     trace_assert(camera);
     trace_assert(layer->selection >= 0);
 
+    Rect *rects = dynarray_data(layer->rects);
+
     switch (event->type) {
     case SDL_MOUSEMOTION: {
-        layer->inter_rect = rect_from_points(
-            vec(layer->inter_rect.x, layer->inter_rect.y),
-            vec_sum(
-                camera_map_screen(
-                    camera,
-                    event->button.x,
-                    event->button.y),
-                vec(RECT_LAYER_SELECTION_THICCNESS * -0.5f,
-                    RECT_LAYER_SELECTION_THICCNESS * -0.5f)));
+        Vec2f position = camera_map_screen(
+            camera,
+            event->button.x,
+            event->button.y);
+
+        switch (layer->resize_mask) {
+        case 1: {               // TOP
+            layer->inter_rect = rect_from_points(
+                vec(rects[layer->selection].x, position.y),
+                rect_position2(rects[layer->selection]));
+        } break;
+
+        case 2: {               // LEFT
+            layer->inter_rect = rect_from_points(
+                vec(position.x, rects[layer->selection].y),
+                rect_position2(rects[layer->selection]));
+        } break;
+
+        case 4: {               // BOTTOM
+            layer->inter_rect = rect_from_points(
+                rect_position(rects[layer->selection]),
+                vec(rects[layer->selection].x + rects[layer->selection].w,
+                    position.y));
+        } break;
+
+        case 8: {               // RIGHT
+            layer->inter_rect = rect_from_points(
+                rect_position(rects[layer->selection]),
+                vec(position.x,
+                    rects[layer->selection].y + rects[layer->selection].h));
+        } break;
+        }
     } break;
 
     case SDL_MOUSEBUTTONUP: {
