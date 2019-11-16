@@ -3,6 +3,7 @@
 
 #include "layer.h"
 #include "game/level/action.h"
+#include "ui/cursor.h"
 
 typedef struct RectLayer RectLayer;
 typedef struct LineStream LineStream;
@@ -10,8 +11,12 @@ typedef struct LineStream LineStream;
 LayerPtr rect_layer_as_layer(RectLayer *layer);
 // NOTE: create_rect_layer and create_rect_layer_from_line_stream does
 // not own id_name_prefix
-RectLayer *create_rect_layer(const char *id_name_prefix);
-RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream, const char *id_name_prefix);
+RectLayer *create_rect_layer(const char *id_name_prefix,
+                             Cursor *cursor);
+RectLayer *create_rect_layer_from_line_stream(
+    LineStream *line_stream,
+    const char *id_name_prefix,
+    Cursor *cursor);
 void destroy_rect_layer(RectLayer *layer);
 
 int rect_layer_render(const RectLayer *layer, const Camera *camera, int active);

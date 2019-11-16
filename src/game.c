@@ -309,13 +309,13 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
             if (game->level_editor == NULL) {
                 game->level_editor = PUSH_LT(
                     game->lt,
-                    create_level_editor(),
+                    create_level_editor(&game->cursor),
                     destroy_level_editor);
             } else {
                 game->level_editor = RESET_LT(
                     game->lt,
                     game->level_editor,
-                    create_level_editor());
+                    create_level_editor(&game->cursor));
             }
 
             if (game->level_editor == NULL) {
@@ -505,13 +505,13 @@ int game_load_level(Game *game, const char *level_filename)
     if (game->level_editor == NULL) {
         game->level_editor = PUSH_LT(
             game->lt,
-            create_level_editor_from_file(level_filename),
+            create_level_editor_from_file(level_filename, &game->cursor),
             destroy_level_editor);
     } else {
         game->level_editor = RESET_LT(
             game->lt,
             game->level_editor,
-            create_level_editor_from_file(level_filename));
+            create_level_editor_from_file(level_filename, &game->cursor));
     }
 
     if (game->level_editor == NULL) {
