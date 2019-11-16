@@ -6,6 +6,7 @@
 #include "game/level/level_editor/undo_history.h"
 #include "game/level/level_editor/action_picker.h"
 #include "ui/wiggly_text.h"
+#include "ui/cursor.h"
 
 typedef struct LevelMetadata LevelMetadata;
 typedef struct LevelEditor LevelEditor;
@@ -53,8 +54,8 @@ struct LevelEditor
     const char *file_name;
 };
 
-LevelEditor *create_level_editor(void);
-LevelEditor *create_level_editor_from_file(const char *file_name);
+LevelEditor *create_level_editor(Cursor *cursor);
+LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor);
 void destroy_level_editor(LevelEditor *level_editor);
 
 int level_editor_render(const LevelEditor *level_editor,

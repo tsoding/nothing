@@ -122,6 +122,8 @@ add_executable(nothing
   src/sdl/renderer.c
   src/sdl/texture.h
   src/sdl/texture.c
+  src/ui/cursor.c
+  src/ui/cursor.h
   src/ui/console.h
   src/ui/console.c
   src/ui/console_log.h

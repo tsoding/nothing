@@ -34,7 +34,7 @@ static int level_editor_dump(LevelEditor *level_editor);
 
 // TODO(#994): too much duplicate code between create_level_editor and create_level_editor_from_file
 
-LevelEditor *create_level_editor(void)
+LevelEditor *create_level_editor(Cursor *cursor)
 {
     Lt *lt = create_lt();
     LevelEditor *level_editor = PUSH_LT(
@@ -71,7 +71,7 @@ LevelEditor *create_level_editor(void)
 
     level_editor->platforms_layer = PUSH_LT(
         lt,
-        create_rect_layer("platform"),
+        create_rect_layer("platform", cursor),
         destroy_rect_layer);
     if (level_editor->platforms_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -87,7 +87,7 @@ LevelEditor *create_level_editor(void)
 
     level_editor->lava_layer = PUSH_LT(
         lt,
-        create_rect_layer("lava"),
+        create_rect_layer("lava", cursor),
         destroy_rect_layer);
     if (level_editor->lava_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -95,7 +95,7 @@ LevelEditor *create_level_editor(void)
 
     level_editor->back_platforms_layer = PUSH_LT(
         lt,
-        create_rect_layer("back_platform"),
+        create_rect_layer("back_platform", cursor),
         destroy_rect_layer);
     if (level_editor->back_platforms_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -103,7 +103,7 @@ LevelEditor *create_level_editor(void)
 
     level_editor->boxes_layer = PUSH_LT(
         lt,
-        create_rect_layer("box"),
+        create_rect_layer("box", cursor),
         destroy_rect_layer);
     if (level_editor->boxes_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -119,7 +119,7 @@ LevelEditor *create_level_editor(void)
 
     level_editor->regions_layer = PUSH_LT(
         lt,
-        create_rect_layer("region"),
+        create_rect_layer("region", cursor),
         destroy_rect_layer);
     if (level_editor->regions_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -149,7 +149,7 @@ LevelEditor *create_level_editor(void)
     return level_editor;
 }
 
-LevelEditor *create_level_editor_from_file(const char *file_name)
+LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor)
 {
     trace_assert(file_name);
 
@@ -210,7 +210,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->platforms_layer =
         PUSH_LT(
             lt,
-            create_rect_layer_from_line_stream(level_stream, "platform"),
+            create_rect_layer_from_line_stream(level_stream, "platform", cursor),
             destroy_rect_layer);
     if (level_editor->platforms_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -227,7 +227,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->lava_layer =
         PUSH_LT(
             lt,
-            create_rect_layer_from_line_stream(level_stream, "lava"),
+            create_rect_layer_from_line_stream(level_stream, "lava", cursor),
             destroy_rect_layer);
     if (level_editor->lava_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -236,7 +236,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->back_platforms_layer =
         PUSH_LT(
             lt,
-            create_rect_layer_from_line_stream(level_stream, "back_platform"),
+            create_rect_layer_from_line_stream(level_stream, "back_platform", cursor),
             destroy_rect_layer);
     if (level_editor->back_platforms_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -245,7 +245,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->boxes_layer =
         PUSH_LT(
             lt,
-            create_rect_layer_from_line_stream(level_stream, "box"),
+            create_rect_layer_from_line_stream(level_stream, "box", cursor),
             destroy_rect_layer);
     if (level_editor->boxes_layer == NULL) {
         RETURN_LT(lt, NULL);
@@ -263,7 +263,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name)
     level_editor->regions_layer =
         PUSH_LT(
             lt,
-            create_rect_layer_from_line_stream(level_stream, "region"),
+            create_rect_layer_from_line_stream(level_stream, "region", cursor),
             destroy_rect_layer);
     if (level_editor->regions_layer == NULL) {
         RETURN_LT(lt, NULL);

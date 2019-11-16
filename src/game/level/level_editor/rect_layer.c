@@ -16,6 +16,7 @@
 #include "undo_history.h"
 #include "game/level/action.h"
 #include "action_picker.h"
+#include "game.h"
 
 #define RECT_LAYER_SELECTION_THICCNESS 15.0f
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
@@ -26,6 +27,22 @@
 static int clipboard = 0;
 static Rect clipboard_rect;
 static Color clipboard_color;
+
+static Cursor_Style resize_styles[1 << RECT_SIDE_N] = {
+    0,                         // [0]
+    CURSOR_STYLE_RESIZE_VERT,  // [1]
+    CURSOR_STYLE_RESIZE_HORIS, // [2]
+    CURSOR_STYLE_RESIZE_DIAG1, // [3]
+    CURSOR_STYLE_RESIZE_VERT,  // [4]
+    0,                         // [5]
+    CURSOR_STYLE_RESIZE_DIAG2, // [6]
+    0,                         // [7]
+    CURSOR_STYLE_RESIZE_HORIS, // [8]
+    CURSOR_STYLE_RESIZE_DIAG2, // [9]
+    0,                         // [10]
+    0,                         // [11]
+    CURSOR_STYLE_RESIZE_DIAG1  // [12]
+};
 
 typedef enum {
     RECT_LAYER_IDLE = 0,
@@ -59,6 +76,7 @@ struct RectLayer {
     int id_name_counter;
     const char *id_name_prefix;
     Grid *grid;
+    Cursor *cursor;
 };
 
 typedef enum {
@@ -327,6 +345,8 @@ static int rect_layer_event_idle(RectLayer *layer,
         return 0;
     }
 
+    Rect *rects = dynarray_data(layer->rects);
+
     switch (event->type) {
     case SDL_MOUSEBUTTONDOWN: {
         switch (event->button.button) {
@@ -338,7 +358,6 @@ static int rect_layer_event_idle(RectLayer *layer,
             int rect_at_position =
                 rect_layer_rect_at(layer, position);
 
-            Rect *rects = dynarray_data(layer->rects);
             Color *colors = dynarray_data(layer->colors);
 
             if (layer->selection >= 0 &&
@@ -371,6 +390,23 @@ static int rect_layer_event_idle(RectLayer *layer,
                 }
             }
         } break;
+        }
+    } break;
+
+    case SDL_MOUSEMOTION: {
+        int resize_mask = 0;
+        Vec2f position = camera_map_screen(
+            camera,
+            event->button.x,
+            event->button.y);
+        if (layer->selection >= 0 &&
+            layer->selection == rect_layer_rect_at(layer, position) &&
+            (resize_mask = calc_resize_mask(
+                vec((float) event->button.x, (float)event->button.y),
+                camera_rect(camera, rects[layer->selection])))) {
+            layer->cursor->style = resize_styles[resize_mask];
+        } else {
+            layer->cursor->style = CURSOR_STYLE_POINTER;
         }
     } break;
 
@@ -683,8 +719,10 @@ LayerPtr rect_layer_as_layer(RectLayer *rect_layer)
     return layer;
 }
 
-RectLayer *create_rect_layer(const char *id_name_prefix)
+RectLayer *create_rect_layer(const char *id_name_prefix, Cursor *cursor)
 {
+    trace_assert(cursor);
+
     Lt *lt = create_lt();
 
     RectLayer *layer = PUSH_LT(lt, nth_calloc(1, sizeof(RectLayer)), free);
@@ -752,15 +790,18 @@ RectLayer *create_rect_layer(const char *id_name_prefix)
     layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
     layer->selection = -1;
     layer->id_name_prefix = id_name_prefix;
+    layer->cursor = cursor;
 
     return layer;
 }
 
-RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream, const char *id_name_prefix)
+RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream,
+                                              const char *id_name_prefix,
+                                              Cursor *cursor)
 {
     trace_assert(line_stream);
 
-    RectLayer *layer = create_rect_layer(id_name_prefix);
+    RectLayer *layer = create_rect_layer(id_name_prefix, cursor);
     if (layer == NULL) {
         return NULL;
     }
@@ -1013,6 +1054,7 @@ int rect_layer_event(RectLayer *layer,
     case RECT_LAYER_RECOLOR:
         return rect_layer_event_recolor(layer, event, camera, undo_history);
     }
+
 
     return 0;
 }
