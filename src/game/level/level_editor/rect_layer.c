@@ -997,12 +997,6 @@ int rect_layer_event(RectLayer *layer,
     } break;
     }
 
-    if (layer->state == RECT_LAYER_RESIZE) {
-        game_set_cursor(game, CURSOR_STYLE_RESIZE_VERT);
-    } else {
-        game_set_cursor(game, CURSOR_STYLE_POINTER);
-    }
-
     switch (layer->state) {
     case RECT_LAYER_IDLE:
         return rect_layer_event_idle(layer, event, camera, undo_history);

@@ -11,21 +11,12 @@
 #include "system/nth_alloc.h"
 #include "ui/console.h"
 #include "ui/edit_field.h"
+#include "ui/cursor.h"
 #include "system/str.h"
 #include "sdl/texture.h"
 #include "game/level/level_editor/background_layer.h"
 #include "game/level/level_editor.h"
 #include "game/settings.h"
-
-static int game_render_cursor(const Game *game);
-
-const char *cursor_style_tex_files[CURSOR_STYLE_N] = {
-    "./assets/images/cursor.bmp",
-    "./assets/images/cursor-resize-vert.bmp",
-    "./assets/images/cursor-resize-horis.bmp",
-    "./assets/images/cursor-resize-diag1.bmp",
-    "./assets/images/cursor-resize-diag2.bmp"
-};
 
 typedef enum Game_state {
     GAME_STATE_LEVEL = 0,
@@ -47,12 +38,9 @@ typedef struct Game {
     Sound_samples *sound_samples;
     Camera camera;
     SDL_Renderer *renderer;
-    SDL_Texture *cursor_texs[CURSOR_STYLE_N];
-    Cursor_Style cursor_style;
     Console *console;
+    Cursor cursor;
     int console_enabled;
-    int cursor_x;
-    int cursor_y;
 } Game;
 
 static
@@ -112,12 +100,12 @@ Game *create_game(const char *level_folder,
     game->renderer = renderer;
 
     for (Cursor_Style style = 0; style < CURSOR_STYLE_N; ++style) {
-        game->cursor_texs[style] = PUSH_LT(
+        game->cursor.texs[style] = PUSH_LT(
             lt,
             texture_from_bmp(cursor_style_tex_files[style], renderer),
             SDL_DestroyTexture);
         if (SDL_SetTextureBlendMode(
-                game->cursor_texs[style],
+                game->cursor.texs[style],
                 SDL_ComposeCustomBlendMode(
                     SDL_BLENDFACTOR_ONE_MINUS_DST_COLOR,
                     SDL_BLENDFACTOR_ONE_MINUS_SRC_COLOR,
@@ -138,9 +126,6 @@ Game *create_game(const char *level_folder,
         RETURN_LT(lt, NULL);
     }
     game->console_enabled = 0;
-
-    game->cursor_x = 0;
-    game->cursor_y = 0;
 
     game_switch_state(game, GAME_STATE_LEVEL_PICKER);
 
@@ -189,7 +174,7 @@ int game_render(const Game *game)
         }
     }
 
-    if (game_render_cursor(game) < 0) {
+    if (cursor_render(&game->cursor, game->renderer) < 0) {
         return -1;
     }
 
@@ -406,11 +391,6 @@ int game_event(Game *game, const SDL_Event *event)
         return 0;
     } break;
 
-    case SDL_MOUSEMOTION: {
-        game->cursor_x = event->motion.x;
-        game->cursor_y = event->motion.y;
-    } break;
-
     case SDL_KEYDOWN: {
         if (event->key.keysym.sym == SDLK_q && event->key.keysym.mod & KMOD_CTRL) {
             game_switch_state(game, GAME_STATE_QUIT);
@@ -517,24 +497,6 @@ int game_over_check(const Game *game)
     return game->state == GAME_STATE_QUIT;
 }
 
-// Private Functions
-
-static int game_render_cursor(const Game *game)
-{
-    trace_assert(game);
-
-    SDL_Rect src = {0, 0, 32, 32};
-    SDL_Rect dest = {game->cursor_x, game->cursor_y, 32, 32};
-    if (SDL_RenderCopy(
-            game->renderer,
-            game->cursor_texs[game->cursor_style],
-            &src, &dest) < 0) {
-        return -1;
-    }
-
-    return 0;
-}
-
 int game_load_level(Game *game, const char *level_filename)
 {
     trace_assert(game);
@@ -577,11 +539,4 @@ int game_load_level(Game *game, const char *level_filename)
     game_switch_state(game, GAME_STATE_LEVEL);
 
     return 0;
-}
-
-void game_set_cursor(Game *game, Cursor_Style style)
-{
-    trace_assert(game);
-    trace_assert(style < CURSOR_STYLE_N);
-    game->cursor_style = style;
 }
