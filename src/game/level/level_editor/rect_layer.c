@@ -977,13 +977,11 @@ int rect_layer_event_recolor(RectLayer *layer,
 int rect_layer_event(RectLayer *layer,
                      const SDL_Event *event,
                      const Camera *camera,
-                     UndoHistory *undo_history,
-                     Game *game)
+                     UndoHistory *undo_history)
 {
     trace_assert(layer);
     trace_assert(event);
     trace_assert(undo_history);
-    trace_assert(game);
 
     switch (event->type) {
     case SDL_WINDOWEVENT: {

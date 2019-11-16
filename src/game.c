@@ -376,7 +376,7 @@ static int game_event_level_editor(Game *game, const SDL_Event *event)
     } break;
     }
 
-    return level_editor_event(game->level_editor, event, &game->camera, game);
+    return level_editor_event(game->level_editor, event, &game->camera);
 }
 
 int game_event(Game *game, const SDL_Event *event)

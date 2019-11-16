@@ -411,8 +411,7 @@ int level_editor_saveas_event(LevelEditor *level_editor,
 static
 int level_editor_idle_event(LevelEditor *level_editor,
                             const SDL_Event *event,
-                            Camera *camera,
-                            Game *game)
+                            Camera *camera)
 {
     trace_assert(level_editor);
     trace_assert(event);
@@ -505,8 +504,7 @@ int level_editor_idle_event(LevelEditor *level_editor,
                 level_editor->layers[level_editor->layer_picker],
                 event,
                 camera,
-                &level_editor->undo_history,
-                game) < 0) {
+                &level_editor->undo_history) < 0) {
             return -1;
         }
     } else {
@@ -519,8 +517,7 @@ int level_editor_idle_event(LevelEditor *level_editor,
 
 int level_editor_event(LevelEditor *level_editor,
                        const SDL_Event *event,
-                       Camera *camera,
-                       Game *game)
+                       Camera *camera)
 {
     trace_assert(level_editor);
     trace_assert(event);
@@ -528,7 +525,7 @@ int level_editor_event(LevelEditor *level_editor,
 
     switch (level_editor->state) {
     case LEVEL_EDITOR_IDLE:
-        return level_editor_idle_event(level_editor, event, camera, game);
+        return level_editor_idle_event(level_editor, event, camera);
 
     case LEVEL_EDITOR_SAVEAS:
         return level_editor_saveas_event(level_editor, event, camera);
