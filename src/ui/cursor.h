@@ -1,7 +1,7 @@
 #ifndef CURSOR_H_
 #define CURSOR_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #define CURSOR_ICON_WIDTH 32
 #define CURSOR_ICON_HEIGHT 32
