@@ -404,7 +404,6 @@ static int rect_layer_event_idle(RectLayer *layer,
             (resize_mask = calc_resize_mask(
                 vec((float) event->button.x, (float)event->button.y),
                 camera_rect(camera, rects[layer->selection])))) {
-            printf("resize_mask: %d\n", resize_mask);
             layer->cursor->style = resize_styles[resize_mask];
         } else {
             layer->cursor->style = CURSOR_STYLE_POINTER;
