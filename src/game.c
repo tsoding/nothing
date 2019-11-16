@@ -11,13 +11,12 @@
 #include "system/nth_alloc.h"
 #include "ui/console.h"
 #include "ui/edit_field.h"
+#include "ui/cursor.h"
 #include "system/str.h"
 #include "sdl/texture.h"
 #include "game/level/level_editor/background_layer.h"
 #include "game/level/level_editor.h"
 #include "game/settings.h"
-
-static int game_render_cursor(const Game *game);
 
 typedef enum Game_state {
     GAME_STATE_LEVEL = 0,
@@ -39,11 +38,9 @@ typedef struct Game {
     Sound_samples *sound_samples;
     Camera camera;
     SDL_Renderer *renderer;
-    SDL_Texture *texture_cursor;
     Console *console;
+    Cursor cursor;
     int console_enabled;
-    int cursor_x;
-    int cursor_y;
 } Game;
 
 static
@@ -101,21 +98,25 @@ Game *create_game(const char *level_folder,
     game->settings = create_settings();
 
     game->renderer = renderer;
-    game->texture_cursor = PUSH_LT(
-        lt,
-        texture_from_bmp("./assets/images/cursor.bmp", renderer),
-        SDL_DestroyTexture);
-    if (SDL_SetTextureBlendMode(
-            game->texture_cursor,
-            SDL_ComposeCustomBlendMode(
-                SDL_BLENDFACTOR_ONE_MINUS_DST_COLOR,
-                SDL_BLENDFACTOR_ONE_MINUS_SRC_COLOR,
-                SDL_BLENDOPERATION_ADD,
-                SDL_BLENDFACTOR_ONE,
-                SDL_BLENDFACTOR_ZERO,
-                SDL_BLENDOPERATION_ADD)) < 0) {
-        log_warn("SDL error: %s\n", SDL_GetError());
+
+    for (Cursor_Style style = 0; style < CURSOR_STYLE_N; ++style) {
+        game->cursor.texs[style] = PUSH_LT(
+            lt,
+            texture_from_bmp(cursor_style_tex_files[style], renderer),
+            SDL_DestroyTexture);
+        if (SDL_SetTextureBlendMode(
+                game->cursor.texs[style],
+                SDL_ComposeCustomBlendMode(
+                    SDL_BLENDFACTOR_ONE_MINUS_DST_COLOR,
+                    SDL_BLENDFACTOR_ONE_MINUS_SRC_COLOR,
+                    SDL_BLENDOPERATION_ADD,
+                    SDL_BLENDFACTOR_ONE,
+                    SDL_BLENDFACTOR_ZERO,
+                    SDL_BLENDOPERATION_ADD)) < 0) {
+            log_warn("SDL error: %s\n", SDL_GetError());
+        }
     }
+
 
     game->console = PUSH_LT(
         lt,
@@ -125,9 +126,6 @@ Game *create_game(const char *level_folder,
         RETURN_LT(lt, NULL);
     }
     game->console_enabled = 0;
-
-    game->cursor_x = 0;
-    game->cursor_y = 0;
 
     game_switch_state(game, GAME_STATE_LEVEL_PICKER);
 
@@ -176,7 +174,7 @@ int game_render(const Game *game)
         }
     }
 
-    if (game_render_cursor(game) < 0) {
+    if (cursor_render(&game->cursor, game->renderer) < 0) {
         return -1;
     }
 
@@ -311,13 +309,13 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
             if (game->level_editor == NULL) {
                 game->level_editor = PUSH_LT(
                     game->lt,
-                    create_level_editor(),
+                    create_level_editor(&game->cursor),
                     destroy_level_editor);
             } else {
                 game->level_editor = RESET_LT(
                     game->lt,
                     game->level_editor,
-                    create_level_editor());
+                    create_level_editor(&game->cursor));
             }
 
             if (game->level_editor == NULL) {
@@ -391,11 +389,6 @@ int game_event(Game *game, const SDL_Event *event)
     case SDL_QUIT: {
         game_switch_state(game, GAME_STATE_QUIT);
         return 0;
-    } break;
-
-    case SDL_MOUSEMOTION: {
-        game->cursor_x = event->motion.x;
-        game->cursor_y = event->motion.y;
     } break;
 
     case SDL_KEYDOWN: {
@@ -504,21 +497,6 @@ int game_over_check(const Game *game)
     return game->state == GAME_STATE_QUIT;
 }
 
-// Private Functions
-
-static int game_render_cursor(const Game *game)
-{
-    trace_assert(game);
-
-    SDL_Rect src = {0, 0, 32, 32};
-    SDL_Rect dest = {game->cursor_x, game->cursor_y, 32, 32};
-    if (SDL_RenderCopy(game->renderer, game->texture_cursor, &src, &dest) < 0) {
-        return -1;
-    }
-
-    return 0;
-}
-
 int game_load_level(Game *game, const char *level_filename)
 {
     trace_assert(game);
@@ -527,13 +505,13 @@ int game_load_level(Game *game, const char *level_filename)
     if (game->level_editor == NULL) {
         game->level_editor = PUSH_LT(
             game->lt,
-            create_level_editor_from_file(level_filename),
+            create_level_editor_from_file(level_filename, &game->cursor),
             destroy_level_editor);
     } else {
         game->level_editor = RESET_LT(
             game->lt,
             game->level_editor,
-            create_level_editor_from_file(level_filename));
+            create_level_editor_from_file(level_filename, &game->cursor));
     }
 
     if (game->level_editor == NULL) {

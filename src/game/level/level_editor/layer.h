@@ -17,6 +17,8 @@ typedef struct {
     void *ptr;
 } LayerPtr;
 
+typedef struct Game Game;
+
 int layer_render(LayerPtr layer, const Camera *camera, int active);
 int layer_event(LayerPtr layer,
                 const SDL_Event *event,
