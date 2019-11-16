@@ -17,11 +17,14 @@ typedef struct {
     void *ptr;
 } LayerPtr;
 
+typedef struct Game Game;
+
 int layer_render(LayerPtr layer, const Camera *camera, int active);
 int layer_event(LayerPtr layer,
                 const SDL_Event *event,
                 const Camera *camera,
-                UndoHistory *undo_history);
+                UndoHistory *undo_history,
+                Game *game);
 int layer_dump_stream(LayerPtr layer, FILE *stream);
 
 #endif  // LAYER_H_

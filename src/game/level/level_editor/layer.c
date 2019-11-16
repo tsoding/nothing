@@ -31,11 +31,12 @@ int layer_render(LayerPtr layer, const Camera *camera, int active)
 int layer_event(LayerPtr layer,
                 const SDL_Event *event,
                 const Camera *camera,
-                UndoHistory *undo_history)
+                UndoHistory *undo_history,
+                Game *game)
 {
     switch (layer.type) {
     case LAYER_RECT:
-        return rect_layer_event(layer.ptr, event, camera, undo_history);
+        return rect_layer_event(layer.ptr, event, camera, undo_history, game);
 
     case LAYER_POINT:
         return point_layer_event(layer.ptr, event, camera, undo_history);

@@ -14,6 +14,7 @@ typedef struct PointLayer PointLayer;
 typedef struct LabelLayer LabelLayer;
 typedef struct Edit_field Edit_field;
 typedef struct Sound_samples Sound_samples;
+typedef struct Game Game;
 
 typedef enum {
     LEVEL_EDITOR_IDLE = 0,
@@ -61,7 +62,8 @@ int level_editor_render(const LevelEditor *level_editor,
                         const Camera *camera);
 int level_editor_event(LevelEditor *level_editor,
                        const SDL_Event *event,
-                       Camera *camera);
+                       Camera *camera,
+                       Game *game);
 int level_editor_focus_camera(LevelEditor *level_editor,
                               Camera *camera);
 int level_editor_update(LevelEditor *level_editor, float delta_time);

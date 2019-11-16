@@ -7,6 +7,16 @@
 
 typedef struct Game Game;
 
+typedef enum {
+    CURSOR_STYLE_POINTER = 0,
+    CURSOR_STYLE_RESIZE_VERT,
+    CURSOR_STYLE_RESIZE_HORIS,
+    CURSOR_STYLE_RESIZE_DIAG1,
+    CURSOR_STYLE_RESIZE_DIAG2,
+
+    CURSOR_STYLE_N
+} Cursor_Style;
+
 Game *create_game(const char *platforms_file_path,
                     const char *sound_sample_files[],
                     size_t sound_sample_files_count,
@@ -25,5 +35,6 @@ int game_input(Game *game,
 int game_over_check(const Game *game);
 
 int game_load_level(Game *game, const char *filepath);
+void game_set_cursor(Game *game, Cursor_Style style);
 
 #endif  // GAME_H_

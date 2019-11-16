@@ -19,16 +19,6 @@
 
 static int game_render_cursor(const Game *game);
 
-typedef enum {
-    CURSOR_STYLE_POINTER = 0,
-    CURSOR_STYLE_RESIZE_VERT,
-    CURSOR_STYLE_RESIZE_HORIS,
-    CURSOR_STYLE_RESIZE_DIAG1,
-    CURSOR_STYLE_RESIZE_DIAG2,
-
-    CURSOR_STYLE_N
-} Cursor_Style;
-
 const char *cursor_style_tex_files[CURSOR_STYLE_N] = {
     "./assets/images/cursor.bmp",
     "./assets/images/cursor-resize-vert.bmp",
@@ -401,7 +391,7 @@ static int game_event_level_editor(Game *game, const SDL_Event *event)
     } break;
     }
 
-    return level_editor_event(game->level_editor, event, &game->camera);
+    return level_editor_event(game->level_editor, event, &game->camera, game);
 }
 
 int game_event(Game *game, const SDL_Event *event)
@@ -587,4 +577,11 @@ int game_load_level(Game *game, const char *level_filename)
     game_switch_state(game, GAME_STATE_LEVEL);
 
     return 0;
+}
+
+void game_set_cursor(Game *game, Cursor_Style style)
+{
+    trace_assert(game);
+    trace_assert(style < CURSOR_STYLE_N);
+    game->cursor_style = style;
 }

@@ -16,6 +16,7 @@
 #include "undo_history.h"
 #include "game/level/action.h"
 #include "action_picker.h"
+#include "game.h"
 
 #define RECT_LAYER_SELECTION_THICCNESS 15.0f
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
@@ -976,11 +977,13 @@ int rect_layer_event_recolor(RectLayer *layer,
 int rect_layer_event(RectLayer *layer,
                      const SDL_Event *event,
                      const Camera *camera,
-                     UndoHistory *undo_history)
+                     UndoHistory *undo_history,
+                     Game *game)
 {
     trace_assert(layer);
     trace_assert(event);
     trace_assert(undo_history);
+    trace_assert(game);
 
     switch (event->type) {
     case SDL_WINDOWEVENT: {
@@ -992,6 +995,12 @@ int rect_layer_event(RectLayer *layer,
         } break;
         }
     } break;
+    }
+
+    if (layer->state == RECT_LAYER_RESIZE) {
+        game_set_cursor(game, CURSOR_STYLE_RESIZE_VERT);
+    } else {
+        game_set_cursor(game, CURSOR_STYLE_POINTER);
     }
 
     switch (layer->state) {
@@ -1013,6 +1022,7 @@ int rect_layer_event(RectLayer *layer,
     case RECT_LAYER_RECOLOR:
         return rect_layer_event_recolor(layer, event, camera, undo_history);
     }
+
 
     return 0;
 }

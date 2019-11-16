@@ -6,6 +6,7 @@
 
 typedef struct RectLayer RectLayer;
 typedef struct LineStream LineStream;
+typedef struct Game Game;
 
 LayerPtr rect_layer_as_layer(RectLayer *layer);
 // NOTE: create_rect_layer and create_rect_layer_from_line_stream does
@@ -18,7 +19,8 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active);
 int rect_layer_event(RectLayer *layer,
                      const SDL_Event *event,
                      const Camera *camera,
-                     UndoHistory *undo_history);
+                     UndoHistory *undo_history,
+                     Game *game);
 
 int rect_layer_dump_stream(const RectLayer *layer, FILE *filedump);
 
