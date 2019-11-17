@@ -728,7 +728,8 @@ static int rect_layer_event_move(RectLayer *layer,
         Rect_side closest_side = 0;
         size_t closest = 0;
 
-        if (closest_rect(
+        if (dynarray_count(layer->rects) >= 2 &&
+            closest_rect(
                 (size_t) layer->selection, layer->inter_rect,
                 rects, dynarray_count(layer->rects),
                 &closest_side, &closest) < SNAPPING_THRESHOLD) {
