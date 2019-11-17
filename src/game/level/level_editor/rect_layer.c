@@ -1,3 +1,4 @@
+#include <float.h>
 #include <errno.h>
 
 #include "game/camera.h"
@@ -619,6 +620,69 @@ static int rect_layer_event_resize(RectLayer *layer,
     return 0;
 }
 
+static
+float rect_distance(Rect a, Rect b, Rect_side *best_side)
+{
+    float best_distance = FLT_MAX;
+    for (Rect_side side = 0; side < RECT_SIDE_N; ++side) {
+        float distance = FLT_MAX;
+        switch (side) {
+        case RECT_SIDE_TOP:
+            distance = fabsf((a.y + a.h) - b.y);
+            break;
+
+        case RECT_SIDE_LEFT:
+            distance = fabsf((a.x + a.w) - b.x);
+            break;
+
+        case RECT_SIDE_BOTTOM:
+            distance = fabsf(a.y - (b.y + b.h));
+            break;
+
+        case RECT_SIDE_RIGHT:
+            distance = fabsf(a.x - (b.x + b.w));
+            break;
+
+        default:
+            trace_assert(0 && "Unexpected Rect side");
+        };
+
+        if (distance < best_distance) {
+            best_distance = distance;
+            *best_side = side;
+        }
+    }
+
+    return best_distance;
+}
+
+// NOTE: the best_side is the side of the rect which we are snapping to
+static
+float closest_rect(size_t pivot, Rect effective_rect,
+                   Rect *rects, size_t rects_size,
+                   Rect_side *best_side, size_t *best)
+{
+    trace_assert(rects);
+    trace_assert(rects_size >= 2);
+    trace_assert(pivot < rects_size);
+
+    float best_distance = FLT_MAX;
+
+    for (size_t i = 0; i < rects_size; ++i) {
+        if (i == pivot) continue;
+
+        Rect_side side = 0;
+        float distance = rect_distance(effective_rect, rects[i], &side);
+        if (best_distance < 0.0f || distance < best_distance) {
+            *best_side = side;
+            best_distance = distance;
+            *best = i;
+        }
+    }
+
+    return best_distance;
+}
+
 static int rect_layer_event_move(RectLayer *layer,
                                  const SDL_Event *event,
                                  const Camera *camera,
@@ -656,6 +720,35 @@ static int rect_layer_event_move(RectLayer *layer,
             } else {
                 layer->inter_rect.x = rect_pos.x;
                 layer->inter_rect.y = mouse_pos.y;
+            }
+        }
+
+        // TODO: Resize mode of Rect Layer does not support Snapping
+#define SNAPPING_THRESHOLD 10.0f
+        Rect_side closest_side = 0;
+        size_t closest = 0;
+
+        if (closest_rect(
+                (size_t) layer->selection, layer->inter_rect,
+                rects, dynarray_count(layer->rects),
+                &closest_side, &closest) < SNAPPING_THRESHOLD) {
+            switch (closest_side) {
+            case RECT_SIDE_TOP:
+                layer->inter_rect.y = rects[closest].y - layer->inter_rect.h;
+                break;
+            case RECT_SIDE_LEFT:
+                layer->inter_rect.x = rects[closest].x - layer->inter_rect.w;
+                break;
+            case RECT_SIDE_BOTTOM:
+                layer->inter_rect.y = rects[closest].y + rects[closest].h;
+                break;
+
+            case RECT_SIDE_RIGHT:
+                layer->inter_rect.x = rects[closest].x + rects[closest].w;
+                break;
+
+            default:
+                trace_assert(0 && "Unexpected Rect side");
             }
         }
     } break;
