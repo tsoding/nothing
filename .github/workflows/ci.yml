@@ -1,0 +1,78 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v1
+    - name: fetch ppa for cmake
+      run: |
+        wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | sudo apt-key add -
+        sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
+    - name: install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -qq cmake libsdl2-dev libxml2-dev
+    - name: build nothing
+      # we need to hardcode this path, because whoever made this environment is overriding their version
+      # in PATH before /usr/bin. see: https://travis-ci.community/t/install-cmake-using-apt-again/4062
+      # (probably the same issue).
+      env:
+        CMAKE_PATH: /usr/bin/cmake
+      run: |
+        mkdir build
+        cd build
+        $CMAKE_PATH .. -DNOTHING_CI=ON
+        $CMAKE_PATH --build .
+        
+  build-macos:
+    runs-on: macOS-10.14
+    steps:
+      - uses: actions/checkout@v1
+      - name: install dependencies
+        run: brew install cmake sdl2
+      - name: build nothing
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DNOTHING_CI=ON
+          cmake --build .
+
+  build-windows-msvc:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v1
+        # this runs vcvarsall for us, so we get the MSVC toolchain in PATH.
+      - uses: seanmiddleditch/gha-setup-vsdevenv@master
+      - name: download sdl2
+        run: |
+          curl -fsSL -o SDL2-devel-2.0.9-VC.zip https://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip
+          7z x SDL2-devel-2.0.9-VC.zip
+          mv SDL2-2.0.9 SDL2
+      - name: build nothing
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DNOTHING_CI=ON
+          cmake --build .
+          
+  build-windows-mingw:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v1
+        # this gives us msys.
+      - uses: numworks/setup-msys2@v1
+      - name: install dependencies
+        run: msys2do pacman -S --noconfirm mingw-w64-x86_64-gcc mingw64/mingw-w64-x86_64-SDL2 mingw64/mingw-w64-x86_64-SDL2_mixer mingw64/mingw-w64-x86_64-SDL2_image mingw64/mingw-w64-x86_64-SDL2_ttf mingw64/mingw-w64-x86_64-SDL2_net mingw64/mingw-w64-x86_64-cmake make
+
+        # make a script and run that, because people who write software in 2019 are incapable
+        # of passing quoted strings between programs.
+      - name: build nothing
+        run: |
+          mkdir build
+          cd build
+          Set-Content -Value 'cmake .. -G "MSYS Makefiles" -DNOTHING_CI=ON && cmake --build .' -Path dumb_workaround_file.sh
+          cat dumb_workaround_file.sh
+          msys2do chmod +x dumb_workaround_file.sh
+          msys2do ./dumb_workaround_file.sh
