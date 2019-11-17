@@ -13,7 +13,7 @@ if(WIN32)
   # then try to find SDL2 using normal means (eg. the user may have installed SDL2 using pacman on msys2)
   # note we don't use REQUIRED here, because it can fail -- in which case we fall back to looking for the 
   # library "directly" using local files.
-  find_package(SDL2)
+  find_package(SDL2 QUIET)
   if(NOT SDL2_FOUND)
     if(MINGW)
       # Support both 32 and 64 bit builds
