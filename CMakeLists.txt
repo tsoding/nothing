@@ -4,31 +4,38 @@ project(nothing)
 set(NOTHING_CI OFF CACHE BOOL "Indicates whether the build is running on CI or not")
 
 if(WIN32)
+  # do the flags thing first.
   if(MINGW)
     add_compile_definitions(SDL_MAIN_HANDLED) # https://stackoverflow.com/a/25089610
     add_compile_definitions(__USE_MINGW_ANSI_STDIO) # https://github.com/trink/symtseries/issues/49#issuecomment-160843756
-    # Support both 32 and 64 bit builds
-    if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
-      set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/x86_64-w64-mingw32/include/SDL2")
-      set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/x86_64-w64-mingw32/lib/libSDL2.a;${CMAKE_SOURCE_DIR}/SDL2/x86_64-w64-mingw32/lib/libSDL2main.a")
-    else()
-      set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/i686-w64-mingw32/include/SDL2")
-      set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/i686-w64-mingw32/lib/libSDL2.a;${CMAKE_SOURCE_DIR}/SDL2/i686-w64-mingw32/lib/libSDL2main.a")
-    endif()
-	  
-  else()
-    set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/include")
-
-    # Support both 32 and 64 bit builds
-    if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
-      set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/lib/x64/SDL2.lib;${CMAKE_SOURCE_DIR}/SDL2/lib/x64/SDL2main.lib")
-    else()
-      set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/lib/x86/SDL2.lib;${CMAKE_SOURCE_DIR}/SDL2/lib/x86/SDL2main.lib")
-    endif()
-
   endif()
-  string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
-  
+
+  # then try to find SDL2 using normal means (eg. the user may have installed SDL2 using pacman on msys2)
+  # note we don't use REQUIRED here, because it can fail -- in which case we fall back to looking for the 
+  # library "directly" using local files.
+  find_package(SDL2)
+  if(NOT SDL2_FOUND)
+    if(MINGW)
+      # Support both 32 and 64 bit builds
+      if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
+        set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/x86_64-w64-mingw32/include/SDL2")
+        set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/x86_64-w64-mingw32/lib/libSDL2.a;${CMAKE_SOURCE_DIR}/SDL2/x86_64-w64-mingw32/lib/libSDL2main.a")
+      else()
+        set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/i686-w64-mingw32/include/SDL2")
+        set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/i686-w64-mingw32/lib/libSDL2.a;${CMAKE_SOURCE_DIR}/SDL2/i686-w64-mingw32/lib/libSDL2main.a")
+      endif()
+    else()
+      set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/include")
+
+      # Support both 32 and 64 bit builds
+      if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
+        set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/lib/x64/SDL2.lib;${CMAKE_SOURCE_DIR}/SDL2/lib/x64/SDL2main.lib")
+      else()
+        set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/lib/x86/SDL2.lib;${CMAKE_SOURCE_DIR}/SDL2/lib/x86/SDL2main.lib")
+      endif()
+    endif()
+    string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
+  endif()
 else()
   find_package(SDL2 REQUIRED)
 endif()
