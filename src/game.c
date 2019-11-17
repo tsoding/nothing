@@ -421,9 +421,11 @@ int game_event(Game *game, const SDL_Event *event)
             switch (event->key.keysym.sym) {
             case SDLK_BACKQUOTE:
             case SDLK_c: {
-                SDL_StartTextInput();
-                game->console_enabled = 1;
-                console_slide_down(game->console);
+                if (event->key.keysym.mod == 0) {
+                    SDL_StartTextInput();
+                    game->console_enabled = 1;
+                    console_slide_down(game->console);
+                }
             } break;
             }
         } break;
