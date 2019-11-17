@@ -19,6 +19,7 @@
 
 #define LABEL_LAYER_SELECTION_THICCNESS 5.0f
 
+// TODO: Label Layer does not support snapping
 
 typedef enum {
     LABEL_LAYER_IDLE = 0,

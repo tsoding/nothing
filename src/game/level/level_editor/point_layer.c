@@ -24,6 +24,8 @@
 static int clipboard = 0;
 static Color clipboard_color;
 
+// TODO: PointLayer does not support snapping
+
 typedef enum {
     POINT_LAYER_IDLE = 0,
     POINT_LAYER_EDIT_ID,

@@ -751,6 +751,7 @@ static int rect_layer_event_move(RectLayer *layer,
             }
         }
 
+        // TODO: Rect Snapping in Level Editor should be optional
         // TODO: Resize mode of Rect Layer does not support Snapping
         snap_rects((size_t) layer->selection, &layer->inter_rect,
                    rects, dynarray_count(layer->rects));
