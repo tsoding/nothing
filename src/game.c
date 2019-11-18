@@ -6,6 +6,7 @@
 #include "game/level.h"
 #include "game/sound_samples.h"
 #include "game/level_picker.h"
+#include "game/credits.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
@@ -17,12 +18,13 @@
 #include "game/level/level_editor/background_layer.h"
 #include "game/level/level_editor.h"
 #include "game/settings.h"
-//TODO: open credits on key press
+
 typedef enum Game_state {
     GAME_STATE_LEVEL = 0,
     GAME_STATE_LEVEL_PICKER,
     GAME_STATE_LEVEL_EDITOR,
     GAME_STATE_SETTINGS,
+    GAME_STATE_CREDITS,
     GAME_STATE_QUIT
 } Game_state;
 
@@ -35,6 +37,7 @@ typedef struct Game {
     LevelEditor *level_editor;
     Level *level;
     Settings settings;
+    Credits *credits;
     Sound_samples *sound_samples;
     Camera camera;
     SDL_Renderer *renderer;
@@ -82,6 +85,15 @@ Game *create_game(const char *level_folder,
             level_folder),
         destroy_level_picker);
     if (game->level_picker == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    game->credits = PUSH_LT(
+        lt,
+        create_credits(
+            game->font),
+        destroy_credits);
+    if (game->credits == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -155,6 +167,12 @@ int game_render(const Game *game)
         }
     } break;
 
+    case GAME_STATE_CREDITS: {
+        if (credits_render(game->credits, &game->camera) < 0) {
+            return -1;
+        }
+    } break;
+
     case GAME_STATE_LEVEL_EDITOR: {
         if (level_editor_render(game->level_editor, &game->camera) < 0) {
             return -1;
@@ -191,6 +209,7 @@ int game_sound(Game *game)
         return 0;
     case GAME_STATE_LEVEL_PICKER:
     case GAME_STATE_SETTINGS:
+    case GAME_STATE_CREDITS:
     case GAME_STATE_QUIT:
         return 0;
     }
@@ -236,6 +255,15 @@ int game_update(Game *game, float delta_time)
             if (game_load_level(game, level_filename) < 0) {
                 return -1;
             }
+        }
+    } break;
+
+    case GAME_STATE_CREDITS: {
+        if (credits_update(game->credits, delta_time) < 0) {
+            return -1;
+        }
+        if (credits_enter_camera_event(game->credits, &game->camera) < 0) {
+            return -1;
         }
     } break;
 
@@ -346,6 +374,10 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
         case SDLK_s: {
             game_switch_state(game, GAME_STATE_SETTINGS);
         } break;
+
+        case SDLK_i: {
+            game_switch_state(game, GAME_STATE_CREDITS);
+        } break;
         }
     } break;
     }
@@ -421,11 +453,9 @@ int game_event(Game *game, const SDL_Event *event)
             switch (event->key.keysym.sym) {
             case SDLK_BACKQUOTE:
             case SDLK_c: {
-                if (event->key.keysym.mod == 0) {
-                    SDL_StartTextInput();
-                    game->console_enabled = 1;
-                    console_slide_down(game->console);
-                }
+                SDL_StartTextInput();
+                game->console_enabled = 1;
+                console_slide_down(game->console);
             } break;
             }
         } break;
@@ -457,6 +487,20 @@ int game_event(Game *game, const SDL_Event *event)
         return 0;
     } break;
 
+    case GAME_STATE_CREDITS: {
+        switch (event->type) {
+        case SDL_KEYDOWN: {
+            if (event->key.keysym.sym == SDLK_ESCAPE) {
+                game_switch_state(game, GAME_STATE_LEVEL_PICKER);
+                return 0;
+            }
+        } break;
+        }
+
+        credits_event(&game->credits, &game->camera, event);
+        return 0;
+    } break;
+
     case GAME_STATE_QUIT:
         return 0;
     }
@@ -480,6 +524,7 @@ int game_input(Game *game,
 
     switch (game->state) {
     case GAME_STATE_SETTINGS:
+    case GAME_STATE_CREDITS:
     case GAME_STATE_QUIT:
     case GAME_STATE_LEVEL_EDITOR:
         return 0;
