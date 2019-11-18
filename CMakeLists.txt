@@ -4,38 +4,31 @@ project(nothing)
 set(NOTHING_CI OFF CACHE BOOL "Indicates whether the build is running on CI or not")
 
 if(WIN32)
-  # do the flags thing first.
   if(MINGW)
     add_compile_definitions(SDL_MAIN_HANDLED) # https://stackoverflow.com/a/25089610
     add_compile_definitions(__USE_MINGW_ANSI_STDIO) # https://github.com/trink/symtseries/issues/49#issuecomment-160843756
-  endif()
-
-  # then try to find SDL2 using normal means (eg. the user may have installed SDL2 using pacman on msys2)
-  # note we don't use REQUIRED here, because it can fail -- in which case we fall back to looking for the 
-  # library "directly" using local files.
-  find_package(SDL2 QUIET)
-  if(NOT SDL2_FOUND)
-    if(MINGW)
-      # Support both 32 and 64 bit builds
-      if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
-        set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/x86_64-w64-mingw32/include/SDL2")
-        set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/x86_64-w64-mingw32/lib/libSDL2.a;${CMAKE_SOURCE_DIR}/SDL2/x86_64-w64-mingw32/lib/libSDL2main.a")
-      else()
-        set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/i686-w64-mingw32/include/SDL2")
-        set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/i686-w64-mingw32/lib/libSDL2.a;${CMAKE_SOURCE_DIR}/SDL2/i686-w64-mingw32/lib/libSDL2main.a")
-      endif()
+    # Support both 32 and 64 bit builds
+    if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
+      set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/x86_64-w64-mingw32/include/SDL2")
+      set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/x86_64-w64-mingw32/lib/libSDL2.a;${CMAKE_SOURCE_DIR}/SDL2/x86_64-w64-mingw32/lib/libSDL2main.a")
     else()
-      set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/include")
-
-      # Support both 32 and 64 bit builds
-      if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
-        set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/lib/x64/SDL2.lib;${CMAKE_SOURCE_DIR}/SDL2/lib/x64/SDL2main.lib")
-      else()
-        set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/lib/x86/SDL2.lib;${CMAKE_SOURCE_DIR}/SDL2/lib/x86/SDL2main.lib")
-      endif()
+      set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/i686-w64-mingw32/include/SDL2")
+      set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/i686-w64-mingw32/lib/libSDL2.a;${CMAKE_SOURCE_DIR}/SDL2/i686-w64-mingw32/lib/libSDL2main.a")
     endif()
-    string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
+	  
+  else()
+    set(SDL2_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/SDL2/include")
+
+    # Support both 32 and 64 bit builds
+    if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
+      set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/lib/x64/SDL2.lib;${CMAKE_SOURCE_DIR}/SDL2/lib/x64/SDL2main.lib")
+    else()
+      set(SDL2_LIBRARIES "${CMAKE_SOURCE_DIR}/SDL2/lib/x86/SDL2.lib;${CMAKE_SOURCE_DIR}/SDL2/lib/x86/SDL2main.lib")
+    endif()
+
   endif()
+  string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
+  
 else()
   find_package(SDL2 REQUIRED)
 endif()
@@ -51,19 +44,19 @@ include_directories(src/)
 include_directories(${SDL2_INCLUDE_DIRS})
 
 add_library(system STATIC
-  src/system/line_stream.h
   src/system/line_stream.c
-  src/system/log.h
+  src/system/line_stream.h
   src/system/log.c
+  src/system/log.h
   src/system/lt.h
   src/system/lt_adapters.h
   src/system/lt_adapters.c
-  src/system/nth_alloc.h
   src/system/nth_alloc.c
-  src/system/stacktrace.h
+  src/system/nth_alloc.h
   src/system/stacktrace.c
-  src/system/str.h
+  src/system/stacktrace.h
   src/system/str.c
+  src/system/str.h
   src/dynarray.h
   src/dynarray.c
   src/hashset.h
@@ -73,72 +66,76 @@ add_library(system STATIC
   )
 
 add_executable(nothing 
-  src/color.h
   src/color.c
-  src/game.h
+  src/color.h
   src/game.c
-  src/game/camera.h
+  src/game.h
   src/game/camera.c
-  src/game/level.h
+  src/game/camera.h
   src/game/level.c
-  src/game/level/background.h
+  src/game/level.h
   src/game/level/background.c
-  src/game/level/boxes.h
+  src/game/level/background.h
   src/game/level/boxes.c
-  src/game/level/goals.h
+  src/game/level/boxes.h
   src/game/level/goals.c
-  src/game/level/labels.h
+  src/game/level/goals.h
   src/game/level/labels.c
-  src/game/level/lava.h
+  src/game/level/labels.h
   src/game/level/lava.c
-  src/game/level/lava/wavy_rect.h
+  src/game/level/lava.h
   src/game/level/lava/wavy_rect.c
-  src/game/level/platforms.h
+  src/game/level/lava/wavy_rect.h
   src/game/level/platforms.c
-  src/game/level/player.h
+  src/game/level/platforms.h
   src/game/level/player.c
-  src/game/level/explosion.h
+  src/game/level/player.h
   src/game/level/explosion.c
-  src/game/level/regions.h
+  src/game/level/explosion.h
   src/game/level/regions.c
-  src/game/level/rigid_bodies.h
+  src/game/level/regions.h
   src/game/level/rigid_bodies.c
+  src/game/level/rigid_bodies.h
   src/game/level/action.h
-  src/game/level_picker.h
   src/game/level_picker.c
-  src/game/settings.h
+  src/game/level_picker.h
   src/game/settings.c
-  src/game/level_folder.c
+  src/game/settings.h
+  src/game/credits.h
+  src/game/credits.c
+  src/game/contributors.h
+  src/game/contributors.c
   src/game/level_folder.h
-  src/game/sound_samples.h
+  src/game/level_folder.c
   src/game/sound_samples.c
-  src/game/sprite_font.h
+  src/game/sound_samples.h
   src/game/sprite_font.c
+  src/game/sprite_font.h
   src/main.c
   src/math/extrema.h
   src/math/mat3x3.h
   src/math/pi.h
   src/math/vec.h
-  src/math/rand.h
   src/math/rand.c
-  src/math/rect.h
+  src/math/rand.h
   src/math/rect.c
-  src/math/triangle.h
+  src/math/rect.h
   src/math/triangle.c
-  src/sdl/renderer.h
+  src/math/triangle.h
   src/sdl/renderer.c
+  src/sdl/renderer.h
   src/sdl/texture.h
   src/sdl/texture.c
-  src/ui/cursor.c
   src/ui/cursor.h
-  src/ui/console.h
+  src/ui/cursor.c
   src/ui/console.c
-  src/ui/console_log.h
+  src/ui/console.h
   src/ui/console_log.c
-  src/ui/edit_field.h
+  src/ui/console_log.h
   src/ui/edit_field.c
-  src/ui/history.h
+  src/ui/edit_field.h
   src/ui/history.c
+  src/ui/history.h
   src/ui/list_selector.h
   src/ui/list_selector.c
   src/ui/wiggly_text.h
@@ -163,10 +160,10 @@ add_executable(nothing
   src/game/level/level_editor/player_layer.c
   src/game/level/level_editor/layer.h
   src/game/level/level_editor/layer.c
-  src/game/level/level_editor/label_layer.h
   src/game/level/level_editor/label_layer.c
-  src/game/level/level_editor/background_layer.h
+  src/game/level/level_editor/label_layer.h
   src/game/level/level_editor/background_layer.c
+  src/game/level/level_editor/background_layer.h
   src/game/level/level_editor/undo_history.h
   src/game/level/level_editor/undo_history.c
   src/game/level/level_editor/action_picker.h

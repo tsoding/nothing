@@ -17,7 +17,7 @@
 #include "game/level/level_editor/background_layer.h"
 #include "game/level/level_editor.h"
 #include "game/settings.h"
-
+//TODO: open credits on key press
 typedef enum Game_state {
     GAME_STATE_LEVEL = 0,
     GAME_STATE_LEVEL_PICKER,
