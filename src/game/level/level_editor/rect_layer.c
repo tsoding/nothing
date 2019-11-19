@@ -1,3 +1,4 @@
+#include <float.h>
 #include <errno.h>
 
 #include "game/camera.h"
@@ -23,6 +24,7 @@
 #define CREATE_AREA_THRESHOLD 10.0
 #define RECT_LAYER_GRID_ROWS 3
 #define RECT_LAYER_GRID_COLUMNS 4
+#define SNAPPING_THRESHOLD 10.0f
 
 static int clipboard = 0;
 static Rect clipboard_rect;
@@ -619,6 +621,64 @@ static int rect_layer_event_resize(RectLayer *layer,
     return 0;
 }
 
+static inline
+int segment_overlap(Vec2f a, Vec2f b)
+{
+    trace_assert(a.x <= a.y);
+    trace_assert(b.x <= b.y);
+    return a.y >= b.x && b.y >= a.x;
+}
+
+static
+void snap_rects(size_t ignore_index, Rect *a,
+                Rect *rects, size_t rects_size)
+{
+    trace_assert(rects);
+    trace_assert(a);
+
+    for (size_t i = 0; i < rects_size; ++i) {
+        if (i == ignore_index) continue;
+
+        const Rect b = rects[i];
+
+        if (segment_overlap(vec(a->x, a->x + a->w), vec(b.x,  b.x  + b.w))) {
+            if (fabsf(a->y - b.y) < SNAPPING_THRESHOLD) {
+                a->y = b.y;
+            }
+
+            if (fabsf((a->y + a->h) - b.y) < SNAPPING_THRESHOLD) {
+                a->y = b.y - a->h;
+            }
+
+            if (fabsf(a->y - (b.y + b.h)) < SNAPPING_THRESHOLD) {
+                a->y = b.y + b.h;
+            }
+
+            if (fabsf((a->y + a->h) - (b.y + b.h)) < SNAPPING_THRESHOLD) {
+                a->y = b.y + b.h - a->h;
+            }
+        }
+
+        if (segment_overlap(vec(a->y, a->y + a->h), vec(b.y,  b.y  + b.h))) {
+            if (fabs(a->x - b.x) < SNAPPING_THRESHOLD) {
+                a->x = b.x;
+            }
+
+            if (fabs((a->x + a->w) - b.x) < SNAPPING_THRESHOLD) {
+                a->x = b.x - a->w;
+            }
+
+            if (fabsf(a->x - (b.x + b.w)) < SNAPPING_THRESHOLD) {
+                a->x = b.x + b.w;
+            }
+
+            if (fabsf((a->x + a->w) - (b.x + b.w)) < SNAPPING_THRESHOLD) {
+                a->x = b.x + b.w - a->w;
+            }
+        }
+    }
+}
+
 static int rect_layer_event_move(RectLayer *layer,
                                  const SDL_Event *event,
                                  const Camera *camera,
@@ -658,6 +718,11 @@ static int rect_layer_event_move(RectLayer *layer,
                 layer->inter_rect.y = mouse_pos.y;
             }
         }
+
+        // TODO(#1141): Rect Snapping in Level Editor should be optional
+        // TODO(#1142): Resize mode of Rect Layer does not support Snapping
+        snap_rects((size_t) layer->selection, &layer->inter_rect,
+                   rects, dynarray_count(layer->rects));
     } break;
 
     case SDL_MOUSEBUTTONUP: {
