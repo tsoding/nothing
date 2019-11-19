@@ -635,66 +635,60 @@ void snap_rect(Rect *a, Rect b)
 
 #define SNAPPING_THRESHOLD 10.0f
 
-    for (Rect_side a_side = 0; a_side < RECT_SIDE_N; ++a_side) {
-        for (Rect_side b_side = 0; b_side < RECT_SIDE_N; ++b_side) {
-            if (a_side == RECT_SIDE_BOTTOM &&
-                b_side == RECT_SIDE_TOP &&
-                segment_overlap(
-                    vec(a->x, a->x + a->w),
-                    vec(b.x,  b.x  + b.w)) &&
-                fabsf((a->y + a->h) - b.y) < SNAPPING_THRESHOLD) {
-                a->y = b.y - a->h;
-            } else if (a_side == RECT_SIDE_TOP &&
-                       b_side == RECT_SIDE_TOP &&
-                       segment_overlap(
-                           vec(a->x, a->x + a->w),
-                           vec(b.x,  b.x  + b.w)) &&
-                       fabsf(a->y - b.y) < SNAPPING_THRESHOLD) {
-                a->y = b.y;
-            } else if (a_side == RECT_SIDE_LEFT &&
-                       b_side == RECT_SIDE_RIGHT &&
-                       segment_overlap(
-                           vec(a->y, a->y + a->h),
-                           vec(b.y,  b.y  + b.h)) &&
-                       fabsf(a->x - (b.x + b.w)) < SNAPPING_THRESHOLD) {
-                a->x = b.x + b.w;
-            } else if (a_side == RECT_SIDE_RIGHT &&
-                       b_side == RECT_SIDE_RIGHT &&
-                       segment_overlap(
-                           vec(a->y, a->y + a->h),
-                           vec(b.y,  b.y  + b.h)) &&
-                       fabsf((a->x + a->w) - (b.x + b.w)) < SNAPPING_THRESHOLD) {
-                a->x = b.x + b.w - a->w;
-            } else if (a_side == RECT_SIDE_TOP &&
-                       b_side == RECT_SIDE_BOTTOM &&
-                       segment_overlap(
-                           vec(a->x, a->x + a->w),
-                           vec(b.x,  b.x  + b.w)) &&
-                       fabsf(a->y - (b.y + b.h)) < SNAPPING_THRESHOLD) {
-                a->y = b.y + b.h;
-            } else if (a_side == RECT_SIDE_BOTTOM &&
-                       b_side == RECT_SIDE_BOTTOM &&
-                       segment_overlap(
-                           vec(a->x, a->x + a->w),
-                           vec(b.x,  b.x  + b.w)) &&
-                       fabsf((a->y + a->h) - (b.y + b.h)) < SNAPPING_THRESHOLD) {
-                a->y = b.y + b.h - a->h;
-            } else if (a_side == RECT_SIDE_RIGHT &&
-                       b_side == RECT_SIDE_LEFT &&
-                       segment_overlap(
-                           vec(a->y, a->y + a->h),
-                           vec(b.y,  b.y  + b.h)) &&
-                       fabs((a->x + a->w) - b.x) < SNAPPING_THRESHOLD) {
-                a->x = b.x - a->w;
-            } else if (a_side == RECT_SIDE_LEFT &&
-                       b_side == RECT_SIDE_LEFT &&
-                       segment_overlap(
-                           vec(a->y, a->y + a->h),
-                           vec(b.y,  b.y  + b.h)) &&
-                       fabs(a->x - b.x) < SNAPPING_THRESHOLD) {
-                a->x = b.x;
-            }
-        }
+    if (segment_overlap(
+            vec(a->x, a->x + a->w),
+            vec(b.x,  b.x  + b.w)) &&
+        fabsf((a->y + a->h) - b.y) < SNAPPING_THRESHOLD) {
+        a->y = b.y - a->h;
+    }
+
+    if (segment_overlap(
+            vec(a->x, a->x + a->w),
+            vec(b.x,  b.x  + b.w)) &&
+        fabsf(a->y - b.y) < SNAPPING_THRESHOLD) {
+        a->y = b.y;
+    }
+
+    if (segment_overlap(
+            vec(a->y, a->y + a->h),
+            vec(b.y,  b.y  + b.h)) &&
+        fabsf(a->x - (b.x + b.w)) < SNAPPING_THRESHOLD) {
+        a->x = b.x + b.w;
+    }
+
+    if (segment_overlap(
+            vec(a->y, a->y + a->h),
+            vec(b.y,  b.y  + b.h)) &&
+        fabsf((a->x + a->w) - (b.x + b.w)) < SNAPPING_THRESHOLD) {
+        a->x = b.x + b.w - a->w;
+    }
+
+    if (segment_overlap(
+            vec(a->x, a->x + a->w),
+            vec(b.x,  b.x  + b.w)) &&
+        fabsf(a->y - (b.y + b.h)) < SNAPPING_THRESHOLD) {
+        a->y = b.y + b.h;
+    }
+
+    if (segment_overlap(
+            vec(a->x, a->x + a->w),
+            vec(b.x,  b.x  + b.w)) &&
+        fabsf((a->y + a->h) - (b.y + b.h)) < SNAPPING_THRESHOLD) {
+        a->y = b.y + b.h - a->h;
+    }
+
+    if (segment_overlap(
+            vec(a->y, a->y + a->h),
+            vec(b.y,  b.y  + b.h)) &&
+        fabs((a->x + a->w) - b.x) < SNAPPING_THRESHOLD) {
+        a->x = b.x - a->w;
+    }
+
+    if (segment_overlap(
+            vec(a->y, a->y + a->h),
+            vec(b.y,  b.y  + b.h)) &&
+        fabs(a->x - b.x) < SNAPPING_THRESHOLD) {
+        a->x = b.x;
     }
 }
 
