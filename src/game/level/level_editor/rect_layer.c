@@ -679,8 +679,8 @@ void snap_rect(Rect *a, Rect b)
                            vec(b.x,  b.x  + b.w)) &&
                        fabsf((a->y + a->h) - (b.y + b.h)) < SNAPPING_THRESHOLD) {
                 a->y = b.y + b.h - a->h;
-            } else if (a_side == RECT_SIDE_LEFT &&
-                       b_side == RECT_SIDE_RIGHT &&
+            } else if (a_side == RECT_SIDE_RIGHT &&
+                       b_side == RECT_SIDE_LEFT &&
                        segment_overlap(
                            vec(a->y, a->y + a->h),
                            vec(b.y,  b.y  + b.h)) &&
