@@ -464,9 +464,9 @@ int game_event(Game *game, const SDL_Event *event)
     return -1;
 }
 
-
-// TODO: get rid of keyboard_state (because it's a global var and can
-// be check anywhere anyway). And introduce *_joystick methods.
+// TODO(#1145): get rid of keyboard_state and introduce *_joystick methods
+//
+// keyboard_state is a global var and can be check anywhere anyway 
 int game_input(Game *game,
                const Uint8 *const keyboard_state,
                SDL_Joystick *the_stick_of_joy)
