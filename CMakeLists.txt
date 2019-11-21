@@ -106,6 +106,8 @@ add_executable(nothing
   src/game/level/action.h
   src/game/level_picker.h
   src/game/level_picker.c
+  src/game/credits.h
+  src/game/credits.c
   src/game/settings.h
   src/game/settings.c
   src/game/level_folder.c
