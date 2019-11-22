@@ -26,6 +26,7 @@ int level_input(Level *level,
                 SDL_Joystick *the_stick_of_joy);
 int level_enter_camera_event(Level *level, Camera *camera);
 
-void level_toggle_pause_mode(Level *level);
+void level_disable_pause_mode(Level *level, Camera *camera,
+                              Sound_samples *sound_samples);
 
 #endif  // LEVEL_H_

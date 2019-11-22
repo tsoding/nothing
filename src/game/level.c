@@ -360,3 +360,14 @@ int level_enter_camera_event(Level *level, Camera *camera)
     labels_enter_camera_event(level->labels, camera);
     return 0;
 }
+
+void level_disable_pause_mode(Level *level, Camera *camera,
+                              Sound_samples *sound_samples)
+{
+    trace_assert(level);
+    trace_assert(camera);
+    trace_assert(sound_samples);
+    level->state = LEVEL_STATE_IDLE;
+    camera->blackwhite_mode = false;
+    sound_samples_toggle_pause(sound_samples);
+}
