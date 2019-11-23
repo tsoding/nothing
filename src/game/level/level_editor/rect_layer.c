@@ -649,10 +649,27 @@ static int rect_layer_event_resize(RectLayer *layer,
         } break;
 
         case 6: {               // BOTTOM,LEFT
+            float x = position.x;
+            float y = position.y;
+            float w = rects[layer->selection].w;
+            float h = rects[layer->selection].h;
+            for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
+                if (i == (size_t) layer->selection) continue;
+
+                const Rect b = rects[i];
+                if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
+                    temp_snap(&x, b.x, b.w, SNAPPING_THRESHOLD);
+                }
+
+                if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
+                    temp_snap(&y, b.y, b.h, SNAPPING_THRESHOLD);
+                }
+            }
+
             layer->inter_rect = rect_from_points(
-                vec(position.x, rects[layer->selection].y),
+                vec(x, rects[layer->selection].y),
                 vec(rects[layer->selection].x + rects[layer->selection].w,
-                    position.y));
+                    y));
         } break;
 
         case 8: {               // RIGHT
