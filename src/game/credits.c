@@ -69,7 +69,7 @@ int credits_render(const Credits *credits, const Camera *camera)
             vec(viewport.w * 0.5f - title_size.x * 0.5f, TITLE_MARGIN_TOP)) < 0) {
         return -1;
     }
-    // TODO: Credits page don't display list of subs and contributors
+    // TODO(#1150): Credits page don't display list of subs and contributors
     return 0;
 }
 
