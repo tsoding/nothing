@@ -535,6 +535,21 @@ static int rect_layer_event_create(RectLayer *layer,
     return 0;
 }
 
+static inline
+int segment_overlap(Vec2f a, Vec2f b)
+{
+    trace_assert(a.x <= a.y);
+    trace_assert(b.x <= b.y);
+    return a.y >= b.x && b.y >= a.x;
+}
+
+static
+void temp_snap(float *ys, float yd, float hd, float st)
+{
+    if (fabsf(*ys - yd) < st)        *ys = yd;
+    if (fabsf(*ys - (yd + hd)) < st) *ys = yd + hd;
+}
+
 static int rect_layer_event_resize(RectLayer *layer,
                                    const SDL_Event *event,
                                    const Camera *camera,
@@ -556,15 +571,37 @@ static int rect_layer_event_resize(RectLayer *layer,
 
         switch (layer->resize_mask) {
         case 1: {               // TOP
-            layer->inter_rect = rect_from_points(
-                vec(rects[layer->selection].x, position.y),
-                rect_position2(rects[layer->selection]));
+            float y = position.y;
+            float x = rects[layer->selection].x;
+            float w = rects[layer->selection].w;
+            for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
+                if (i == (size_t) layer->selection) continue;
+
+                const Rect b = rects[i];
+                if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
+                    temp_snap(&y, b.y, b.h, SNAPPING_THRESHOLD);
+                    layer->inter_rect = rect_from_points(
+                        vec(x, y),
+                        rect_position2(rects[layer->selection]));
+                }
+            }
         } break;
 
         case 2: {               // LEFT
-            layer->inter_rect = rect_from_points(
-                vec(position.x, rects[layer->selection].y),
-                rect_position2(rects[layer->selection]));
+            float y = rects[layer->selection].y;
+            float x = position.x;
+            float h = rects[layer->selection].w;
+            for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
+                if (i == (size_t) layer->selection) continue;
+
+                const Rect b = rects[i];
+                if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
+                    temp_snap(&x, b.x, b.w, SNAPPING_THRESHOLD);
+                    layer->inter_rect = rect_from_points(
+                        vec(x, y),
+                        rect_position2(rects[layer->selection]));
+                }
+            }
         } break;
 
         case 3: {               // TOP,LEFT
@@ -617,14 +654,6 @@ static int rect_layer_event_resize(RectLayer *layer,
     }
 
     return 0;
-}
-
-static inline
-int segment_overlap(Vec2f a, Vec2f b)
-{
-    trace_assert(a.x <= a.y);
-    trace_assert(b.x <= b.y);
-    return a.y >= b.x && b.y >= a.x;
 }
 
 static
