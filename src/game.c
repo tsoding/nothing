@@ -17,11 +17,13 @@
 #include "game/level/level_editor/background_layer.h"
 #include "game/level/level_editor.h"
 #include "game/settings.h"
+#include "game/credits.h"
 
 typedef enum Game_state {
     GAME_STATE_LEVEL = 0,
     GAME_STATE_LEVEL_PICKER,
     GAME_STATE_LEVEL_EDITOR,
+    GAME_STATE_CREDITS,
     GAME_STATE_SETTINGS,
     GAME_STATE_QUIT
 } Game_state;
@@ -33,6 +35,7 @@ typedef struct Game {
     Sprite_font *font;
     LevelPicker *level_picker;
     LevelEditor *level_editor;
+    Credits *credits;
     Level *level;
     Settings settings;
     Sound_samples *sound_samples;
@@ -82,6 +85,14 @@ Game *create_game(const char *level_folder,
             level_folder),
         destroy_level_picker);
     if (game->level_picker == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    game->credits = PUSH_LT(
+        lt,
+        create_credits(),
+        destroy_credits);
+    if (game->credits == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -161,6 +172,12 @@ int game_render(const Game *game)
         }
     } break;
 
+    case GAME_STATE_CREDITS: {
+        if (credits_render(game->credits, &game->camera) < 0) {
+            return -1;
+        }
+    } break;
+
     case GAME_STATE_SETTINGS: {
         settings_render(&game->settings, &game->camera);
     } break;
@@ -190,6 +207,7 @@ int game_sound(Game *game)
         level_editor_sound(game->level_editor, game->sound_samples);
         return 0;
     case GAME_STATE_LEVEL_PICKER:
+    case GAME_STATE_CREDITS:
     case GAME_STATE_SETTINGS:
     case GAME_STATE_QUIT:
         return 0;
@@ -247,6 +265,12 @@ int game_update(Game *game, float delta_time)
         }
 
         level_editor_update(game->level_editor, delta_time);
+    } break;
+
+    case GAME_STATE_CREDITS: {
+        if (credits_update(game->credits, &game->camera, delta_time) < 0) {
+            return -1;
+        }
     } break;
 
     case GAME_STATE_SETTINGS: {
@@ -345,6 +369,10 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
             }
 
             game_switch_state(game, GAME_STATE_LEVEL);
+        } break;
+
+        case SDLK_i: {
+            game_switch_state(game, GAME_STATE_CREDITS);
         } break;
 
         case SDLK_s: {
@@ -447,6 +475,19 @@ int game_event(Game *game, const SDL_Event *event)
     case GAME_STATE_LEVEL_EDITOR:
         return game_event_level_editor(game, event);
 
+    case GAME_STATE_CREDITS: {
+        switch (event->type) {
+        case SDL_KEYDOWN: {
+            if (event->key.keysym.sym == SDLK_ESCAPE) {
+                game_switch_state(game, GAME_STATE_LEVEL_PICKER);
+                return 0;
+            }
+        } break;
+        }
+
+        return 0;
+    } break;
+
     case GAME_STATE_SETTINGS: {
         switch (event->type) {
         case SDL_KEYDOWN: {
@@ -484,6 +525,7 @@ int game_input(Game *game,
 
     switch (game->state) {
     case GAME_STATE_SETTINGS:
+    case GAME_STATE_CREDITS:
     case GAME_STATE_QUIT:
     case GAME_STATE_LEVEL_EDITOR:
         return 0;
