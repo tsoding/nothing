@@ -642,39 +642,17 @@ void snap_rects(size_t ignore_index, Rect *a,
         const Rect b = rects[i];
 
         if (segment_overlap(vec(a->x, a->x + a->w), vec(b.x,  b.x  + b.w))) {
-            if (fabsf(a->y - b.y) < SNAPPING_THRESHOLD) {
-                a->y = b.y;
-            }
-
-            if (fabsf((a->y + a->h) - b.y) < SNAPPING_THRESHOLD) {
-                a->y = b.y - a->h;
-            }
-
-            if (fabsf(a->y - (b.y + b.h)) < SNAPPING_THRESHOLD) {
-                a->y = b.y + b.h;
-            }
-
-            if (fabsf((a->y + a->h) - (b.y + b.h)) < SNAPPING_THRESHOLD) {
-                a->y = b.y + b.h - a->h;
-            }
+            if (fabsf(a->y - b.y) < SNAPPING_THRESHOLD)                  a->y = b.y;
+            if (fabsf((a->y + a->h) - b.y) < SNAPPING_THRESHOLD)         a->y = b.y - a->h;
+            if (fabsf(a->y - (b.y + b.h)) < SNAPPING_THRESHOLD)          a->y = b.y + b.h;
+            if (fabsf((a->y + a->h) - (b.y + b.h)) < SNAPPING_THRESHOLD) a->y = b.y + b.h - a->h;
         }
 
         if (segment_overlap(vec(a->y, a->y + a->h), vec(b.y,  b.y  + b.h))) {
-            if (fabs(a->x - b.x) < SNAPPING_THRESHOLD) {
-                a->x = b.x;
-            }
-
-            if (fabs((a->x + a->w) - b.x) < SNAPPING_THRESHOLD) {
-                a->x = b.x - a->w;
-            }
-
-            if (fabsf(a->x - (b.x + b.w)) < SNAPPING_THRESHOLD) {
-                a->x = b.x + b.w;
-            }
-
-            if (fabsf((a->x + a->w) - (b.x + b.w)) < SNAPPING_THRESHOLD) {
-                a->x = b.x + b.w - a->w;
-            }
+            if (fabsf(a->x - b.x) < SNAPPING_THRESHOLD)                  a->x = b.x;
+            if (fabsf((a->x + a->w) - b.x) < SNAPPING_THRESHOLD)         a->x = b.x - a->w;
+            if (fabsf(a->x - (b.x + b.w)) < SNAPPING_THRESHOLD)          a->x = b.x + b.w;
+            if (fabsf((a->x + a->w) - (b.x + b.w)) < SNAPPING_THRESHOLD) a->x = b.x + b.w - a->w;
         }
     }
 }
