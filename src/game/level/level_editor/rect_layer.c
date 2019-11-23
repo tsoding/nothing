@@ -631,7 +631,8 @@ int segment_overlap(Vec2f a, Vec2f b)
 
 static
 void snap_rects(size_t ignore_index, Rect *a,
-                Rect *rects, size_t rects_size)
+                Rect *rects, size_t rects_size,
+                float snapping_threshold)
 {
     trace_assert(rects);
     trace_assert(a);
@@ -642,17 +643,17 @@ void snap_rects(size_t ignore_index, Rect *a,
         const Rect b = rects[i];
 
         if (segment_overlap(vec(a->x, a->x + a->w), vec(b.x,  b.x  + b.w))) {
-            if (fabsf(a->y - b.y) < SNAPPING_THRESHOLD)                  a->y = b.y;
-            if (fabsf((a->y + a->h) - b.y) < SNAPPING_THRESHOLD)         a->y = b.y - a->h;
-            if (fabsf(a->y - (b.y + b.h)) < SNAPPING_THRESHOLD)          a->y = b.y + b.h;
-            if (fabsf((a->y + a->h) - (b.y + b.h)) < SNAPPING_THRESHOLD) a->y = b.y + b.h - a->h;
+            if (fabsf(a->y - b.y) < snapping_threshold)                  a->y = b.y;
+            if (fabsf((a->y + a->h) - b.y) < snapping_threshold)         a->y = b.y - a->h;
+            if (fabsf(a->y - (b.y + b.h)) < snapping_threshold)          a->y = b.y + b.h;
+            if (fabsf((a->y + a->h) - (b.y + b.h)) < snapping_threshold) a->y = b.y + b.h - a->h;
         }
 
         if (segment_overlap(vec(a->y, a->y + a->h), vec(b.y,  b.y  + b.h))) {
-            if (fabsf(a->x - b.x) < SNAPPING_THRESHOLD)                  a->x = b.x;
-            if (fabsf((a->x + a->w) - b.x) < SNAPPING_THRESHOLD)         a->x = b.x - a->w;
-            if (fabsf(a->x - (b.x + b.w)) < SNAPPING_THRESHOLD)          a->x = b.x + b.w;
-            if (fabsf((a->x + a->w) - (b.x + b.w)) < SNAPPING_THRESHOLD) a->x = b.x + b.w - a->w;
+            if (fabsf(a->x - b.x) < snapping_threshold)                  a->x = b.x;
+            if (fabsf((a->x + a->w) - b.x) < snapping_threshold)         a->x = b.x - a->w;
+            if (fabsf(a->x - (b.x + b.w)) < snapping_threshold)          a->x = b.x + b.w;
+            if (fabsf((a->x + a->w) - (b.x + b.w)) < snapping_threshold) a->x = b.x + b.w - a->w;
         }
     }
 }
@@ -700,7 +701,8 @@ static int rect_layer_event_move(RectLayer *layer,
         // TODO(#1141): Rect Snapping in Level Editor should be optional
         // TODO(#1142): Resize mode of Rect Layer does not support Snapping
         snap_rects((size_t) layer->selection, &layer->inter_rect,
-                   rects, dynarray_count(layer->rects));
+                   rects, dynarray_count(layer->rects),
+                   SNAPPING_THRESHOLD / camera->scale);
     } break;
 
     case SDL_MOUSEBUTTONUP: {
