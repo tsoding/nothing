@@ -283,6 +283,10 @@ static int game_event_running(Game *game, const SDL_Event *event)
                     return -1;
                 }
 
+                level_disable_pause_mode(
+                    game->level,
+                    &game->camera,
+                    game->sound_samples);
                 camera_disable_debug_mode(&game->camera);
             } break;
 
