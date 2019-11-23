@@ -628,6 +628,15 @@ int segment_overlap(Vec2f a, Vec2f b)
 }
 
 static
+void snap_var(float *ys, float yd, float hs, float hd, float st)
+{
+    if (fabsf(*ys - yd) < st)               *ys = yd;
+    if (fabsf((*ys + hs) - yd) < st)        *ys = yd - hs;
+    if (fabsf(*ys - (yd + hd)) < st)        *ys = yd + hd;
+    if (fabsf((*ys + hs) - (yd + hd)) < st) *ys = yd + hd - hs;
+}
+
+static
 void snap_rects(size_t ignore_index, Rect *a,
                 Rect *rects, size_t rects_size,
                 float snapping_threshold)
@@ -641,17 +650,11 @@ void snap_rects(size_t ignore_index, Rect *a,
         const Rect b = rects[i];
 
         if (segment_overlap(vec(a->x, a->x + a->w), vec(b.x,  b.x  + b.w))) {
-            if (fabsf(a->y - b.y) < snapping_threshold)                  a->y = b.y;
-            if (fabsf((a->y + a->h) - b.y) < snapping_threshold)         a->y = b.y - a->h;
-            if (fabsf(a->y - (b.y + b.h)) < snapping_threshold)          a->y = b.y + b.h;
-            if (fabsf((a->y + a->h) - (b.y + b.h)) < snapping_threshold) a->y = b.y + b.h - a->h;
+            snap_var(&a->y, b.y, a->h, b.h, snapping_threshold);
         }
 
         if (segment_overlap(vec(a->y, a->y + a->h), vec(b.y,  b.y  + b.h))) {
-            if (fabsf(a->x - b.x) < snapping_threshold)                  a->x = b.x;
-            if (fabsf((a->x + a->w) - b.x) < snapping_threshold)         a->x = b.x - a->w;
-            if (fabsf(a->x - (b.x + b.w)) < snapping_threshold)          a->x = b.x + b.w;
-            if (fabsf((a->x + a->w) - (b.x + b.w)) < snapping_threshold) a->x = b.x + b.w - a->w;
+            snap_var(&a->x, b.x, a->w, b.w, snapping_threshold);
         }
     }
 }
