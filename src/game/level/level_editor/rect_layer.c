@@ -49,7 +49,6 @@ static Cursor_Style resize_styles[1 << RECT_SIDE_N] = {
 typedef enum {
     RECT_LAYER_IDLE = 0,
     RECT_LAYER_CREATE,
-    // TODO(#955): Rectangles in Level Editor have only one resize anchor to work with
     RECT_LAYER_RESIZE,
     RECT_LAYER_MOVE,
     RECT_LAYER_ID_RENAME,
