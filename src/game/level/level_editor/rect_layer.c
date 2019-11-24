@@ -49,8 +49,6 @@ static Cursor_Style resize_styles[1 << RECT_SIDE_N] = {
 typedef enum {
     RECT_LAYER_IDLE = 0,
     RECT_LAYER_CREATE,
-    // TODO(#955): Rectangles in Level Editor have only one resize anchor to work with
-    // TODO(#1129): different cursor image in resize mode
     RECT_LAYER_RESIZE,
     RECT_LAYER_MOVE,
     RECT_LAYER_ID_RENAME,
@@ -537,6 +535,43 @@ static int rect_layer_event_create(RectLayer *layer,
     return 0;
 }
 
+static inline
+int segment_overlap(Vec2f a, Vec2f b)
+{
+    trace_assert(a.x <= a.y);
+    trace_assert(b.x <= b.y);
+    return a.y >= b.x && b.y >= a.x;
+}
+
+static
+void snap_var(float *x,        // the value we are snapping
+               float y,         // the target we are snapping x to
+               float xo,        // x offset
+               float yo,        // y offset
+               float st)        // snap threshold
+{
+    if (fabsf((*x + xo) - (y + yo)) < st)
+        *x = y + yo - xo;
+}
+
+static
+void snap_var2seg(float *x, float y,
+               float xo, float yo,
+               float st)
+{
+    snap_var(x, y, xo,  0, st);
+    snap_var(x, y, xo, yo, st);
+}
+
+static
+void snap_seg2seg(float *x, float y, float xo, float yo, float st)
+{
+    snap_var(x, y,  0,  0, st);
+    snap_var(x, y,  0, yo, st);
+    snap_var(x, y, xo,  0, st);
+    snap_var(x, y, xo, yo, st);
+}
+
 static int rect_layer_event_resize(RectLayer *layer,
                                    const SDL_Event *event,
                                    const Camera *camera,
@@ -558,55 +593,171 @@ static int rect_layer_event_resize(RectLayer *layer,
 
         switch (layer->resize_mask) {
         case 1: {               // TOP
+            float y = position.y;
+            float x = rects[layer->selection].x;
+            float w = rects[layer->selection].w;
+            for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
+                if (i == (size_t) layer->selection) continue;
+
+                const Rect b = rects[i];
+                if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
+                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                }
+            }
+
             layer->inter_rect = rect_from_points(
-                vec(rects[layer->selection].x, position.y),
+                vec(x, y),
                 rect_position2(rects[layer->selection]));
         } break;
 
         case 2: {               // LEFT
+            float y = rects[layer->selection].y;
+            float x = position.x;
+            float h = rects[layer->selection].h;
+            for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
+                if (i == (size_t) layer->selection) continue;
+
+                const Rect b = rects[i];
+                if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
+                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                }
+            }
+
             layer->inter_rect = rect_from_points(
-                vec(position.x, rects[layer->selection].y),
+                vec(x, y),
                 rect_position2(rects[layer->selection]));
         } break;
 
         case 3: {               // TOP,LEFT
+            float x = position.x;
+            float y = position.y;
+            float w = rects[layer->selection].w;
+            float h = rects[layer->selection].h;
+            for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
+                if (i == (size_t) layer->selection) continue;
+
+                const Rect b = rects[i];
+                if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
+                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                }
+
+                if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
+                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                }
+            }
+
             layer->inter_rect = rect_from_points(
-                position,
+                vec(x, y),
                 rect_position2(rects[layer->selection]));
         } break;
 
         case 4: {               // BOTTOM
+            float y = position.y;
+            float x = rects[layer->selection].x;
+            float w = rects[layer->selection].w;
+            for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
+                if (i == (size_t) layer->selection) continue;
+
+                const Rect b = rects[i];
+                if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
+                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                }
+            }
+
             layer->inter_rect = rect_from_points(
                 rect_position(rects[layer->selection]),
                 vec(rects[layer->selection].x + rects[layer->selection].w,
-                    position.y));
+                    y));
         } break;
 
         case 6: {               // BOTTOM,LEFT
+            float x = position.x;
+            float y = position.y;
+            float w = rects[layer->selection].w;
+            float h = rects[layer->selection].h;
+            for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
+                if (i == (size_t) layer->selection) continue;
+
+                const Rect b = rects[i];
+                if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
+                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                }
+
+                if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
+                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                }
+            }
+
             layer->inter_rect = rect_from_points(
-                vec(position.x, rects[layer->selection].y),
+                vec(x, rects[layer->selection].y),
                 vec(rects[layer->selection].x + rects[layer->selection].w,
-                    position.y));
+                    y));
         } break;
 
         case 8: {               // RIGHT
+            float y = rects[layer->selection].y;
+            float x = position.x;
+            float h = rects[layer->selection].h;
+            for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
+                if (i == (size_t) layer->selection) continue;
+
+                const Rect b = rects[i];
+                if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
+                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                }
+            }
+
             layer->inter_rect = rect_from_points(
                 rect_position(rects[layer->selection]),
-                vec(position.x,
+                vec(x,
                     rects[layer->selection].y + rects[layer->selection].h));
         } break;
 
         case 9: {               // TOP,RIGHT
+            float x = position.x;
+            float y = position.y;
+            float w = rects[layer->selection].w;
+            float h = rects[layer->selection].h;
+            for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
+                if (i == (size_t) layer->selection) continue;
+
+                const Rect b = rects[i];
+                if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
+                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                }
+
+                if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
+                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                }
+            }
+
             layer->inter_rect = rect_from_points(
-                vec(rects[layer->selection].x, position.y),
-                vec(position.x,
+                vec(rects[layer->selection].x, y),
+                vec(x,
                     rects[layer->selection].y + rects[layer->selection].h));
         } break;
 
         case 12: {              // BOTTOM,RIGHT
+            float x = position.x;
+            float y = position.y;
+            float w = rects[layer->selection].w;
+            float h = rects[layer->selection].h;
+            for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
+                if (i == (size_t) layer->selection) continue;
+
+                const Rect b = rects[i];
+                if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
+                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                }
+
+                if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
+                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                }
+            }
+
             layer->inter_rect = rect_from_points(
                 rect_position(rects[layer->selection]),
-                position);
+                vec(x, y));
         } break;
         }
     } break;
@@ -619,14 +770,6 @@ static int rect_layer_event_resize(RectLayer *layer,
     }
 
     return 0;
-}
-
-static inline
-int segment_overlap(Vec2f a, Vec2f b)
-{
-    trace_assert(a.x <= a.y);
-    trace_assert(b.x <= b.y);
-    return a.y >= b.x && b.y >= a.x;
 }
 
 static
@@ -643,17 +786,11 @@ void snap_rects(size_t ignore_index, Rect *a,
         const Rect b = rects[i];
 
         if (segment_overlap(vec(a->x, a->x + a->w), vec(b.x,  b.x  + b.w))) {
-            if (fabsf(a->y - b.y) < snapping_threshold)                  a->y = b.y;
-            if (fabsf((a->y + a->h) - b.y) < snapping_threshold)         a->y = b.y - a->h;
-            if (fabsf(a->y - (b.y + b.h)) < snapping_threshold)          a->y = b.y + b.h;
-            if (fabsf((a->y + a->h) - (b.y + b.h)) < snapping_threshold) a->y = b.y + b.h - a->h;
+            snap_seg2seg(&a->y, b.y, a->h, b.h, snapping_threshold);
         }
 
         if (segment_overlap(vec(a->y, a->y + a->h), vec(b.y,  b.y  + b.h))) {
-            if (fabsf(a->x - b.x) < snapping_threshold)                  a->x = b.x;
-            if (fabsf((a->x + a->w) - b.x) < snapping_threshold)         a->x = b.x - a->w;
-            if (fabsf(a->x - (b.x + b.w)) < snapping_threshold)          a->x = b.x + b.w;
-            if (fabsf((a->x + a->w) - (b.x + b.w)) < snapping_threshold) a->x = b.x + b.w - a->w;
+            snap_seg2seg(&a->x, b.x, a->w, b.w, snapping_threshold);
         }
     }
 }
