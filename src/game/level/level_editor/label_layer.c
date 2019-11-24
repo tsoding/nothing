@@ -302,9 +302,11 @@ Rect boundary_of_element(const LabelLayer *label_layer,
             LABELS_SIZE,
             strlen(texts + i * LABEL_LAYER_TEXT_MAX_SIZE)),
         sprite_font_boundary_box(
-            vec_sub(
+            vec_sum(
                 position,
-                vec(0.0f, FONT_CHAR_HEIGHT)),
+                vec_mult(
+                    vec(0.0f, FONT_CHAR_HEIGHT),
+                    LABELS_SIZE)),
             vec(1.0f, 1.0f),
             strlen(ids + i * LABEL_LAYER_ID_MAX_SIZE)));
 }
@@ -363,9 +365,11 @@ int label_layer_render(const LabelLayer *label_layer,
             if (edit_field_render_world(
                     label_layer->edit_field,
                     camera,
-                    vec_sub(
+                    vec_sum(
                         position,
-                        vec(0.0f, FONT_CHAR_HEIGHT))) < 0) {
+                        vec_mult(
+                            vec(0.0f, FONT_CHAR_HEIGHT),
+                            LABELS_SIZE))) < 0) {
                 return -1;
             }
         } else {
@@ -376,7 +380,11 @@ int label_layer_render(const LabelLayer *label_layer,
                     color_scale(
                         color_invert(color),
                         rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f)),
-                    vec_sub(position, vec(0.0f, FONT_CHAR_HEIGHT))) < 0) {
+                    vec_sum(
+                        position,
+                        vec_mult(
+                            vec(0.0f, FONT_CHAR_HEIGHT),
+                            LABELS_SIZE))) < 0) {
                 return -1;
             }
         }
