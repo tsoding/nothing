@@ -544,15 +544,21 @@ int segment_overlap(Vec2f a, Vec2f b)
 }
 
 static
+void f(float *src, float dest,
+       float src_shift, float dest_shift,
+       float snap_threshold)
+{
+    if (fabsf((*src + src_shift) - (dest + dest_shift)) < snap_threshold)
+        *src = dest + dest_shift - src_shift;
+}
+
+static
 void temp_snap(float *src, float dest,
                float src_shift, float dest_shift,
                float snap_threshold)
 {
-    if (fabsf((*src + src_shift) - dest) < snap_threshold)
-        *src = dest - src_shift;
-
-    if (fabsf((*src + src_shift) - (dest + dest_shift)) < snap_threshold)
-        *src = dest + dest_shift - src_shift;
+    f(src, dest, src_shift,          0, snap_threshold);
+    f(src, dest, src_shift, dest_shift, snap_threshold);
 }
 
 static
