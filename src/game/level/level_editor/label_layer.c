@@ -390,8 +390,8 @@ int label_layer_render(const LabelLayer *label_layer,
             }
         }
 
-        // TODO: Label Selection has to be internal (just like in Rect Layer)
         // Label Selection
+        // TODO(#1160): Label Selection has to be internal (just like in Rect Layer)
         if (active && label_layer->selection == (int) i) {
             Rect selection =
                 rect_pad(
