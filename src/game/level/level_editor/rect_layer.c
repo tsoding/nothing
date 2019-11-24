@@ -535,43 +535,6 @@ static int rect_layer_event_create(RectLayer *layer,
     return 0;
 }
 
-static inline
-int segment_overlap(Vec2f a, Vec2f b)
-{
-    trace_assert(a.x <= a.y);
-    trace_assert(b.x <= b.y);
-    return a.y >= b.x && b.y >= a.x;
-}
-
-static
-void snap_var(float *x,        // the value we are snapping
-               float y,         // the target we are snapping x to
-               float xo,        // x offset
-               float yo,        // y offset
-               float st)        // snap threshold
-{
-    if (fabsf((*x + xo) - (y + yo)) < st)
-        *x = y + yo - xo;
-}
-
-static
-void snap_var2seg(float *x, float y,
-               float xo, float yo,
-               float st)
-{
-    snap_var(x, y, xo,  0, st);
-    snap_var(x, y, xo, yo, st);
-}
-
-static
-void snap_seg2seg(float *x, float y, float xo, float yo, float st)
-{
-    snap_var(x, y,  0,  0, st);
-    snap_var(x, y,  0, yo, st);
-    snap_var(x, y, xo,  0, st);
-    snap_var(x, y, xo, yo, st);
-}
-
 static int rect_layer_event_resize(RectLayer *layer,
                                    const SDL_Event *event,
                                    const Camera *camera,
