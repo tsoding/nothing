@@ -544,7 +544,7 @@ int segment_overlap(Vec2f a, Vec2f b)
 }
 
 static
-void snap_var1(float *x,        // the value we are snapping
+void snap_var(float *x,        // the value we are snapping
                float y,         // the target we are snapping x to
                float xo,        // x offset
                float yo,        // y offset
@@ -559,17 +559,17 @@ void snap_var2(float *x, float y,
                float xo, float yo,
                float st)
 {
-    snap_var1(x, y, xo,  0, st);
-    snap_var1(x, y, xo, yo, st);
+    snap_var(x, y, xo,  0, st);
+    snap_var(x, y, xo, yo, st);
 }
 
 static
 void snap_var4(float *x, float y, float xo, float yo, float st)
 {
-    snap_var1(x, y,  0,  0, st);
-    snap_var1(x, y,  0, yo, st);
-    snap_var1(x, y, xo,  0, st);
-    snap_var1(x, y, xo, yo, st);
+    snap_var(x, y,  0,  0, st);
+    snap_var(x, y,  0, yo, st);
+    snap_var(x, y, xo,  0, st);
+    snap_var(x, y, xo, yo, st);
 }
 
 static int rect_layer_event_resize(RectLayer *layer,
