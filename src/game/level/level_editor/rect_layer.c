@@ -69,7 +69,7 @@ struct RectLayer {
     Vec2f create_end;
     int selection;
     Vec2f move_anchor;          // The mouse offset from the left-top
-                                // corner of the rect during moving or resizing it
+                                // corner of the rect during moving it
     Edit_field *id_edit_field;
     Color inter_color;
     Rect inter_rect;
@@ -77,6 +77,10 @@ struct RectLayer {
     const char *id_name_prefix;
     Grid *grid;
     Cursor *cursor;
+
+    // this is the initial size of the selected rectangle during a resize.
+    // this is updated when the rectangle is clicked.
+    Vec2f initial_rectangle_size;
 
     // TODO(#1157): potentially refactor this out to exist game-wide.
     int modifier_flags;
@@ -369,12 +373,6 @@ static int rect_layer_event_idle(RectLayer *layer,
 
             Color *colors = dynarray_data(layer->colors);
 
-            // we need to recalculate the move_anchor here, because we use it as the original size
-            // of the rectangle (since it is offset from top-left). previously, we only updated the
-            // move_anchor if we go from <no_selection> -> <have_selection>, which means if we don't
-            // deselect the rectangle between resizes, then it will not be updated correctly when we
-            // want to do ratio-resize. so, update it for both RECT_LAYER_RESIZE and RECT_LAYER_MOVE.
-
             if (layer->selection >= 0 &&
                 layer->selection == rect_at_position &&
                 (layer->resize_mask = calc_resize_mask(
@@ -382,11 +380,6 @@ static int rect_layer_event_idle(RectLayer *layer,
                     camera_rect(camera, rects[layer->selection])))) {
                 layer->state = RECT_LAYER_RESIZE;
                 dynarray_copy_to(layer->rects, &layer->inter_rect, (size_t) layer->selection);
-                layer->move_anchor = vec_sub(
-                    position,
-                    vec(
-                        rects[layer->selection].x,
-                        rects[layer->selection].y));
             } else if (rect_at_position >= 0) {
                 layer->selection = rect_at_position;
                 layer->state = RECT_LAYER_MOVE;
@@ -406,6 +399,12 @@ static int rect_layer_event_idle(RectLayer *layer,
                     layer->create_begin = position;
                     layer->create_end = position;
                 }
+            }
+
+            // update the initial size if we selected a rectangle.
+            if (layer->selection >= 0) {
+                layer->initial_rectangle_size = vec(rects[layer->selection].w,
+                    rects[layer->selection].h);
             }
         } break;
         }
@@ -592,17 +591,14 @@ void snap_seg2seg(float *x, float y, float xo, float yo, float st)
 
 static
 void maybe_fix_to_ratio(RectLayer *layer,
-                        float *x, float *y, // the things we can change to fix the ratio
-                        Vec2f ref_pt)       // the (fixed) reference point of the rect
+                        float *x, float *y,         // the things we can change to fix the ratio
+                        Vec2f ref_pt)               // the (fixed) reference point of the rect
 {
     // if we're not holding down shift, don't bother.
     if (!(layer->modifier_flags & MODIFIER_FLAG_SHIFT))
         return;
 
-    // layer->move_anchor is the relative position of where we first clicked,
-    // where (0, 0) is the top-left corner of the rectangle. this lets us get
-    // the initial ratio, regardless of how you drag the rectangle.
-    float ratio = layer->move_anchor.x / layer->move_anchor.y;
+    float ratio = layer->initial_rectangle_size.x / layer->initial_rectangle_size.y;
 
     // if we are holding down control also, then make squares.
     if (layer->modifier_flags & MODIFIER_FLAG_CONTROL)
@@ -612,11 +608,12 @@ void maybe_fix_to_ratio(RectLayer *layer,
     float w = *x - ref_pt.x;
     float h = *y - ref_pt.y;
 
-    if (w <= 0 || h <= 0)
-        return;
+    float ab_w = fabsf(w);
+    float ab_h = fabsf(h);
 
-    if (w <= ratio * h)             *x = ref_pt.x + (ratio * h);
-    else if (h <= inv_ratio * w)    *y = ref_pt.y + inv_ratio * w;
+    // note: copysign takes (magnitude, sign).
+    if (ab_w <= ratio * ab_h)             { *x = ref_pt.x + (ratio * copysignf(h, w)); printf("*x = %.1f\n", *x); }
+    else if (ab_h <= inv_ratio * ab_w)    { *y = ref_pt.y + inv_ratio * copysignf(w, h); printf("*y = %.1f\n", *y); }
 }
 
 
@@ -694,6 +691,10 @@ static int rect_layer_event_resize(RectLayer *layer,
                 }
             }
 
+            // use the bottom-right as reference.
+            maybe_fix_to_ratio(layer, &x, &y, vec(rects[layer->selection].x + rects[layer->selection].w,
+                rects[layer->selection].y + rects[layer->selection].h));
+
             layer->inter_rect = rect_from_points(
                 vec(x, y),
                 rect_position2(rects[layer->selection]));
@@ -735,6 +736,10 @@ static int rect_layer_event_resize(RectLayer *layer,
                     snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
                 }
             }
+
+            // use the top-right as reference.
+            maybe_fix_to_ratio(layer, &x, &y, vec(rects[layer->selection].x + rects[layer->selection].w,
+                rects[layer->selection].y));
 
             layer->inter_rect = rect_from_points(
                 vec(x, rects[layer->selection].y),
@@ -779,6 +784,10 @@ static int rect_layer_event_resize(RectLayer *layer,
                 }
             }
 
+            // note: the reference position is always the opposite corner!
+            maybe_fix_to_ratio(layer, &x, &y, vec(rects[layer->selection].x,
+                rects[layer->selection].y + rects[layer->selection].h));
+
             layer->inter_rect = rect_from_points(
                 vec(rects[layer->selection].x, y),
                 vec(x,
@@ -804,8 +813,6 @@ static int rect_layer_event_resize(RectLayer *layer,
                 }
             }
 
-            // note: we want to maintain the ratio even when snapping,
-            // so do the fixed-ratio later.
             maybe_fix_to_ratio(layer, &x, &y, rect_position(rects[layer->selection]));
 
             layer->inter_rect = rect_from_points(
