@@ -544,28 +544,30 @@ int segment_overlap(Vec2f a, Vec2f b)
 }
 
 static
-void f(float *src, float dest,
-       float src_shift, float dest_shift,
-       float snap_threshold)
+void snap_var1(float *x, float y,
+               float xo, float yo,
+               float st)
 {
-    if (fabsf((*src + src_shift) - (dest + dest_shift)) < snap_threshold)
-        *src = dest + dest_shift - src_shift;
+    if (fabsf((*x + xo) - (y + yo)) < st)
+        *x = y + yo - xo;
 }
 
 static
-void temp_snap(float *src, float dest,
-               float src_shift, float dest_shift,
-               float snap_threshold)
+void snap_var2(float *x, float y,
+               float xo, float yo,
+               float st)
 {
-    f(src, dest, src_shift,          0, snap_threshold);
-    f(src, dest, src_shift, dest_shift, snap_threshold);
+    snap_var1(x, y, xo,  0, st);
+    snap_var1(x, y, xo, yo, st);
 }
 
 static
-void snap_var(float *ys, float yd, float hs, float hd, float st)
+void snap_var4(float *x, float y, float xo, float yo, float st)
 {
-    temp_snap(ys, yd,  0, hd, st);
-    temp_snap(ys, yd, hs, hd, st);
+    snap_var1(x, y,  0,  0, st);
+    snap_var1(x, y,  0, yo, st);
+    snap_var1(x, y, xo,  0, st);
+    snap_var1(x, y, xo, yo, st);
 }
 
 static int rect_layer_event_resize(RectLayer *layer,
@@ -597,7 +599,7 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    temp_snap(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    snap_var2(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
                 }
             }
 
@@ -615,7 +617,7 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    temp_snap(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    snap_var2(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
                 }
             }
 
@@ -634,11 +636,11 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    temp_snap(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    snap_var2(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
                 }
 
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    temp_snap(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    snap_var2(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
                 }
             }
 
@@ -656,7 +658,7 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    temp_snap(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    snap_var2(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
                 }
             }
 
@@ -676,11 +678,11 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    temp_snap(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    snap_var2(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
                 }
 
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    temp_snap(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    snap_var2(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
                 }
             }
 
@@ -699,7 +701,7 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    temp_snap(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    snap_var2(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
                 }
             }
 
@@ -719,11 +721,11 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    temp_snap(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    snap_var2(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
                 }
 
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    temp_snap(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    snap_var2(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
                 }
             }
 
@@ -743,11 +745,11 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    temp_snap(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    snap_var2(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
                 }
 
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    temp_snap(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    snap_var2(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
                 }
             }
 
@@ -782,11 +784,11 @@ void snap_rects(size_t ignore_index, Rect *a,
         const Rect b = rects[i];
 
         if (segment_overlap(vec(a->x, a->x + a->w), vec(b.x,  b.x  + b.w))) {
-            snap_var(&a->y, b.y, a->h, b.h, snapping_threshold);
+            snap_var4(&a->y, b.y, a->h, b.h, snapping_threshold);
         }
 
         if (segment_overlap(vec(a->y, a->y + a->h), vec(b.y,  b.y  + b.h))) {
-            snap_var(&a->x, b.x, a->w, b.w, snapping_threshold);
+            snap_var4(&a->x, b.x, a->w, b.w, snapping_threshold);
         }
     }
 }
