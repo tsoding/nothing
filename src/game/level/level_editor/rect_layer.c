@@ -544,9 +544,11 @@ int segment_overlap(Vec2f a, Vec2f b)
 }
 
 static
-void snap_var1(float *x, float y,
-               float xo, float yo,
-               float st)
+void snap_var1(float *x,        // the value we are snapping
+               float y,         // the target we are snapping x to
+               float xo,        // x offset
+               float yo,        // y offset
+               float st)        // snap threshold
 {
     if (fabsf((*x + xo) - (y + yo)) < st)
         *x = y + yo - xo;
