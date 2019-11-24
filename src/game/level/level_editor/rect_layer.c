@@ -26,9 +26,6 @@
 #define RECT_LAYER_GRID_COLUMNS 4
 #define SNAPPING_THRESHOLD 10.0f
 
-#define SHIFT_KEY_FLAG      1
-#define CONTROL_KEY_FLAG    2
-
 static int clipboard = 0;
 static Rect clipboard_rect;
 static Color clipboard_color;
@@ -81,9 +78,14 @@ struct RectLayer {
     Grid *grid;
     Cursor *cursor;
 
-    int modifier_keys;          // 1 if shift is held, 2 if ctrl is held,
-                                // 3 if both are held.
+    // TODO(#1157): potentially refactor this out to exist game-wide.
+    int modifier_flags;
 };
+
+#define MODIFIER_FLAG_CONTROL   0x1
+#define MODIFIER_FLAG_SHIFT     0x2
+#define MODIFIER_FLAG_ALT       0x4
+
 
 typedef enum {
     UNDO_ADD,
@@ -501,30 +503,6 @@ static int rect_layer_event_idle(RectLayer *layer,
                     undo_history);
             }
         } break;
-
-        case SDLK_RSHIFT:
-        case SDLK_LSHIFT: {
-            layer->modifier_keys |= SHIFT_KEY_FLAG;
-        } break;
-
-        case SDLK_RCTRL:
-        case SDLK_LCTRL: {
-            layer->modifier_keys |= CONTROL_KEY_FLAG;
-        } break;
-        }
-    } break;
-
-    case SDL_KEYUP: {
-        switch (event->key.keysym.sym) {
-        case SDLK_RSHIFT:
-        case SDLK_LSHIFT: {
-            layer->modifier_keys &= ~SHIFT_KEY_FLAG;
-        } break;
-
-        case SDLK_RCTRL:
-        case SDLK_LCTRL: {
-            layer->modifier_keys &= ~CONTROL_KEY_FLAG;
-        } break;
         }
     } break;
     }
@@ -618,7 +596,7 @@ void maybe_fix_to_ratio(RectLayer *layer,
                         Vec2f ref_pt)       // the (fixed) reference point of the rect
 {
     // if we're not holding down shift, don't bother.
-    if (!(layer->modifier_keys & SHIFT_KEY_FLAG))
+    if (!(layer->modifier_flags & MODIFIER_FLAG_SHIFT))
         return;
 
     // layer->move_anchor is the relative position of where we first clicked,
@@ -627,7 +605,7 @@ void maybe_fix_to_ratio(RectLayer *layer,
     float ratio = layer->move_anchor.x / layer->move_anchor.y;
 
     // if we are holding down control also, then make squares.
-    if (layer->modifier_keys & CONTROL_KEY_FLAG)
+    if (layer->modifier_flags & MODIFIER_FLAG_CONTROL)
         ratio = 1.0f;
 
     float inv_ratio = 1.0f / ratio;
@@ -1278,6 +1256,30 @@ int rect_layer_event(RectLayer *layer,
     trace_assert(layer);
     trace_assert(event);
     trace_assert(undo_history);
+
+    // TODO(#1157): we might want to refactor this out to the top-level event loop.
+    // right now, this thingy is restricted to the level editor, because I think the
+    // rest of the game doesn't care about modifier keys (yet!)
+    if (event->type == SDL_KEYUP) {
+        if (event->key.keysym.sym == SDLK_LCTRL || event->key.keysym.sym == SDLK_RCTRL)
+            layer->modifier_flags &= ~MODIFIER_FLAG_CONTROL;
+
+        if (event->key.keysym.sym == SDLK_LSHIFT || event->key.keysym.sym == SDLK_RSHIFT)
+            layer->modifier_flags &= ~MODIFIER_FLAG_SHIFT;
+
+        if (event->key.keysym.sym == SDLK_LALT || event->key.keysym.sym == SDLK_RALT)
+            layer->modifier_flags &= ~MODIFIER_FLAG_ALT;
+
+    } else if (event->type == SDL_KEYDOWN) {
+        if (event->key.keysym.sym == SDLK_LCTRL || event->key.keysym.sym == SDLK_RCTRL)
+            layer->modifier_flags |= MODIFIER_FLAG_CONTROL;
+
+        if (event->key.keysym.sym == SDLK_LSHIFT || event->key.keysym.sym == SDLK_RSHIFT)
+            layer->modifier_flags |= MODIFIER_FLAG_SHIFT;
+
+        if (event->key.keysym.sym == SDLK_LALT || event->key.keysym.sym == SDLK_RALT)
+            layer->modifier_flags |= MODIFIER_FLAG_ALT;
+    }
 
     switch (event->type) {
     case SDL_WINDOWEVENT: {
