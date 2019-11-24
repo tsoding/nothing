@@ -16,6 +16,7 @@
 #include "color_picker.h"
 #include "ui/edit_field.h"
 #include "math/extrema.h"
+#include "config.h"
 
 #define LABEL_LAYER_SELECTION_THICCNESS 5.0f
 
@@ -389,6 +390,7 @@ int label_layer_render(const LabelLayer *label_layer,
             }
         }
 
+        // TODO: Label Selection has to be internal (just like in Rect Layer)
         // Label Selection
         if (active && label_layer->selection == (int) i) {
             Rect selection =
@@ -676,6 +678,38 @@ int label_layer_idle_event(LabelLayer *label_layer,
 }
 
 static
+void snap_inter_position(LabelLayer *label_layer, float snap_threshold)
+{
+    trace_assert(label_layer);
+    trace_assert(label_layer->selection >= 0);
+    trace_assert(label_layer->state == LABEL_LAYER_MOVE);
+
+    const size_t n = dynarray_count(label_layer->positions);
+    Vec2f *positions = dynarray_data(label_layer->positions);
+
+    Rect a = boundary_of_element(
+        label_layer,
+        (size_t) label_layer->selection,
+        label_layer->inter_position);
+
+    for (size_t i = 0; i < n; ++i) {
+        if (i == (size_t) label_layer->selection) continue;
+
+        const Rect b = boundary_of_element(label_layer, i, positions[i]);
+
+        if (segment_overlap(vec(a.x, a.x + a.w), vec(b.x,  b.x + b.w))) {
+            snap_seg2seg(&label_layer->inter_position.y,
+                         b.y, a.h, b.h, snap_threshold);
+        }
+
+        if (segment_overlap(vec(a.y, a.y + a.h), vec(b.y,  b.y  + b.h))) {
+            snap_seg2seg(&label_layer->inter_position.x,
+                         b.x, a.w, b.w, snap_threshold);
+        }
+    }
+}
+
+static
 int label_layer_move_event(LabelLayer *label_layer,
                            const SDL_Event *event,
                            const Camera *camera,
@@ -712,6 +746,8 @@ int label_layer_move_event(LabelLayer *label_layer,
                 label_layer->inter_position = vec(label_pos.x, mouse_pos.y);
             }
         }
+
+        snap_inter_position(label_layer, SNAPPING_THRESHOLD);
     } break;
 
     case SDL_MOUSEBUTTONUP: {

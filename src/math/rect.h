@@ -130,14 +130,15 @@ void snap_var(float *x,        // the value we are snapping
               float yo,        // y offset
               float st)        // snap threshold
 {
-    if (fabsf((*x + xo) - (y + yo)) < st)
+    if (fabsf((*x + xo) - (y + yo)) < st) {
         *x = y + yo - xo;
+    }
 }
 
 static inline
 void snap_var2seg(float *x, float y,
-               float xo, float yo,
-               float st)
+                  float xo, float yo,
+                  float st)
 {
     snap_var(x, y, xo,  0, st);
     snap_var(x, y, xo, yo, st);
@@ -151,6 +152,5 @@ void snap_seg2seg(float *x, float y, float xo, float yo, float st)
     snap_var(x, y, xo,  0, st);
     snap_var(x, y, xo, yo, st);
 }
-
 
 #endif  // RECT_H_

@@ -24,7 +24,6 @@
 #define CREATE_AREA_THRESHOLD 10.0
 #define RECT_LAYER_GRID_ROWS 3
 #define RECT_LAYER_GRID_COLUMNS 4
-#define SNAPPING_THRESHOLD 10.0f
 
 static int clipboard = 0;
 static Rect clipboard_rect;
