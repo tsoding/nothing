@@ -21,9 +21,13 @@ int sprite_font_render_text(const Sprite_font *sprite_font,
                             Color color,
                             const char *text);
 
-Rect sprite_font_boundary_box(const Sprite_font *sprite_font,
-                              Vec2f position,
-                              Vec2f size,
-                              const char *text);
+static inline
+Rect sprite_font_boundary_box(Vec2f position, Vec2f size, size_t text_size)
+{
+    return rect(
+        position.x, position.y,
+        size.x * FONT_CHAR_WIDTH * (float) text_size,
+        size.y * FONT_CHAR_HEIGHT);
+}
 
 #endif  // SPRITE_FONT_H_

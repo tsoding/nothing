@@ -46,15 +46,14 @@ int wiggly_text_update(WigglyText *wiggly_text, float delta_time)
     return 0;
 }
 
-Vec2f wiggly_text_size(const WigglyText *wiggly_text, const Camera *camera)
+Vec2f wiggly_text_size(const WigglyText *wiggly_text)
 {
     trace_assert(wiggly_text);
 
-    const Rect boundary = camera_text_boundary_box(
-        camera,
+    const Rect boundary = sprite_font_boundary_box(
         vec(0.0f, 0.0f),
         wiggly_text->scale,
-        wiggly_text->text);
+        strlen(wiggly_text->text));
 
     return vec(boundary.w, boundary.h);
 }

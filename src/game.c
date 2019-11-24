@@ -382,7 +382,7 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
     } break;
     }
 
-    return level_picker_event(game->level_picker, event, &game->camera);
+    return level_picker_event(game->level_picker, event);
 }
 
 static int game_event_level_editor(Game *game, const SDL_Event *event)
@@ -511,7 +511,7 @@ int game_event(Game *game, const SDL_Event *event)
 
 // TODO(#1145): get rid of keyboard_state and introduce *_joystick methods
 //
-// keyboard_state is a global var and can be check anywhere anyway 
+// keyboard_state is a global var and can be check anywhere anyway
 int game_input(Game *game,
                const Uint8 *const keyboard_state,
                SDL_Joystick *the_stick_of_joy)

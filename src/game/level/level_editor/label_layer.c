@@ -288,7 +288,6 @@ void destroy_label_layer(LabelLayer *label_layer)
 
 static inline
 Rect boundary_of_element(const LabelLayer *label_layer,
-                         const Sprite_font *font,
                          size_t i,
                          Vec2f position)
 {
@@ -299,17 +298,15 @@ Rect boundary_of_element(const LabelLayer *label_layer,
 
     return rect_boundary2(
         sprite_font_boundary_box(
-            font,
             position,
             LABELS_SIZE,
-            texts + i * LABEL_LAYER_TEXT_MAX_SIZE),
+            strlen(texts + i * LABEL_LAYER_TEXT_MAX_SIZE)),
         sprite_font_boundary_box(
-            font,
             vec_sub(
                 position,
                 vec(0.0f, FONT_CHAR_HEIGHT)),
             vec(1.0f, 1.0f),
-            ids + i * LABEL_LAYER_ID_MAX_SIZE));
+            strlen(ids + i * LABEL_LAYER_ID_MAX_SIZE)));
 }
 
 int label_layer_render(const LabelLayer *label_layer,
@@ -392,7 +389,6 @@ int label_layer_render(const LabelLayer *label_layer,
                         camera,
                         boundary_of_element(
                             label_layer,
-                            camera->font,
                             i,
                             position)),
                     LABEL_LAYER_SELECTION_THICCNESS * 0.5f);
@@ -414,7 +410,6 @@ int label_layer_render(const LabelLayer *label_layer,
 
 static
 int label_layer_element_at(LabelLayer *label_layer,
-                           const Sprite_font *font,
                            Vec2f position)
 {
     trace_assert(label_layer);
@@ -426,7 +421,6 @@ int label_layer_element_at(LabelLayer *label_layer,
         if (rect_contains_point(
                 boundary_of_element(
                     label_layer,
-                    font,
                     (size_t) i,
                     positions[i]),
                 position)) {
@@ -547,7 +541,6 @@ int label_layer_idle_event(LabelLayer *label_layer,
 
             const int element = label_layer_element_at(
                 label_layer,
-                camera_font(camera),
                 position);
 
             if (element >= 0) {

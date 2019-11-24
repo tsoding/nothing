@@ -83,10 +83,9 @@ int list_selector_render(const ListSelector *list_selector,
         if (i == list_selector->cursor) {
             SDL_Rect boundary_box = rect_for_sdl(
                 sprite_font_boundary_box(
-                    list_selector->sprite_font,
                     current_position,
                     list_selector->font_scale,
-                    list_selector->items[i]));
+                    strlen(list_selector->items[i])));
             if (SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255) < 0) {
                 return -1;
             }
@@ -110,10 +109,9 @@ Vec2f list_selector_size(const ListSelector *list_selector,
 
     for (size_t i = 0; i < list_selector->count; ++i) {
         Rect boundary_box = sprite_font_boundary_box(
-            list_selector->sprite_font,
             vec(0.0f, 0.0f),
             font_scale,
-            list_selector->items[i]);
+            strlen(list_selector->items[i]));
 
         result.x = fmaxf(result.x, boundary_box.w);
         result.y += boundary_box.y + padding_bottom;
@@ -160,10 +158,9 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event)
 
         for (size_t i = 0; i < list_selector->count; ++i) {
             Rect boundary_box = sprite_font_boundary_box(
-                list_selector->sprite_font,
                 position,
                 list_selector->font_scale,
-                list_selector->items[i]);
+                strlen(list_selector->items[i]));
 
             if (rect_contains_point(boundary_box, mouse_pos)) {
                 list_selector->cursor = i;

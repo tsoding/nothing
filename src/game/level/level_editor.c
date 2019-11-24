@@ -365,9 +365,7 @@ int level_editor_render(const LevelEditor *level_editor,
     }
 
     const Rect screen_viewport = camera_view_port_screen(camera);
-    const Vec2f text_size = fading_wiggly_text_size(
-        &level_editor->notice,
-        camera);
+    const Vec2f text_size = fading_wiggly_text_size(&level_editor->notice);
 
     fading_wiggly_text_render(
         &level_editor->notice, camera,

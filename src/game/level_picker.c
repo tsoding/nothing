@@ -92,7 +92,7 @@ int level_picker_render(const LevelPicker *level_picker,
         return -1;
     }
 
-    const Vec2f title_size = wiggly_text_size(&level_picker->wiggly_text, camera);
+    const Vec2f title_size = wiggly_text_size(&level_picker->wiggly_text);
 
     if (wiggly_text_render(
             &level_picker->wiggly_text,
@@ -142,8 +142,7 @@ int level_picker_update(LevelPicker *level_picker,
 }
 
 int level_picker_event(LevelPicker *level_picker,
-                       const SDL_Event *event,
-                       const Camera *camera)
+                       const SDL_Event *event)
 {
     trace_assert(level_picker);
     trace_assert(event);
@@ -159,7 +158,7 @@ int level_picker_event(LevelPicker *level_picker,
             int width;
             SDL_GetWindowSize(SDL_GetWindowFromID(event->window.windowID), &width, NULL);
 
-            const Vec2f title_size = wiggly_text_size(&level_picker->wiggly_text, camera);
+            const Vec2f title_size = wiggly_text_size(&level_picker->wiggly_text);
 
             const Vec2f selector_size = list_selector_size(
                 level_picker->list_selector,
