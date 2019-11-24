@@ -555,7 +555,7 @@ void snap_var(float *x,        // the value we are snapping
 }
 
 static
-void snap_var2(float *x, float y,
+void snap_var2seg(float *x, float y,
                float xo, float yo,
                float st)
 {
@@ -601,7 +601,7 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    snap_var2(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
                 }
             }
 
@@ -619,7 +619,7 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    snap_var2(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
                 }
             }
 
@@ -638,11 +638,11 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    snap_var2(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
                 }
 
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    snap_var2(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
                 }
             }
 
@@ -660,7 +660,7 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    snap_var2(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
                 }
             }
 
@@ -680,11 +680,11 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    snap_var2(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
                 }
 
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    snap_var2(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
                 }
             }
 
@@ -703,7 +703,7 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    snap_var2(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
                 }
             }
 
@@ -723,11 +723,11 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    snap_var2(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
                 }
 
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    snap_var2(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
                 }
             }
 
@@ -747,11 +747,11 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    snap_var2(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
                 }
 
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    snap_var2(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
                 }
             }
 
