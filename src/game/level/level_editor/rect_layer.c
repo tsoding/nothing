@@ -832,6 +832,11 @@ static int rect_layer_event_resize(RectLayer *layer,
                 vec(x, y));
         } break;
         }
+
+        // note that we need to update the "initial size" even during the drag. this is because
+        // we can enter/exit the ratio mode in the middle of dragging!
+        layer->initial_rectangle_size = vec(layer->inter_rect.w, layer->inter_rect.h);
+
     } break;
 
     case SDL_MOUSEBUTTONUP: {
