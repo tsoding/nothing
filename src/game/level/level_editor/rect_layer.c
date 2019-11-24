@@ -564,7 +564,7 @@ void snap_var2seg(float *x, float y,
 }
 
 static
-void snap_var4(float *x, float y, float xo, float yo, float st)
+void snap_seg2seg(float *x, float y, float xo, float yo, float st)
 {
     snap_var(x, y,  0,  0, st);
     snap_var(x, y,  0, yo, st);
@@ -786,11 +786,11 @@ void snap_rects(size_t ignore_index, Rect *a,
         const Rect b = rects[i];
 
         if (segment_overlap(vec(a->x, a->x + a->w), vec(b.x,  b.x  + b.w))) {
-            snap_var4(&a->y, b.y, a->h, b.h, snapping_threshold);
+            snap_seg2seg(&a->y, b.y, a->h, b.h, snapping_threshold);
         }
 
         if (segment_overlap(vec(a->y, a->y + a->h), vec(b.y,  b.y  + b.h))) {
-            snap_var4(&a->x, b.x, a->w, b.w, snapping_threshold);
+            snap_seg2seg(&a->x, b.x, a->w, b.w, snapping_threshold);
         }
     }
 }
