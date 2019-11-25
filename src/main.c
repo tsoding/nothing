@@ -38,23 +38,12 @@ static
 void recalculate_display_scale(SDL_Window* win, SDL_Renderer* rend)
 {
     int w0 = 0;
-    int h0 = 0;
-    SDL_GetWindowSize(win, &w0, &h0);
+    SDL_GetWindowSize(win, &w0, NULL);
 
     int w1 = 0;
-    int h1 = 0;
-    SDL_GetRendererOutputSize(rend, &w1, &h1);
+    SDL_GetRendererOutputSize(rend, &w1, NULL);
 
-    float x_scale = (float) w1 / (float) w0;
-    float y_scale = (float) h1 / (float) h0;
-
-    if (x_scale != y_scale) {
-        log_fail("inconsistent dpi scale: horz: %.1f, vert: %.1f\n", x_scale, y_scale);
-    }
-
-    // if x_scale == y_scale then it doesn't matter either way. simplifies code.
-    // anyway fmax is cheap right?
-    current_display_scale = fmaxf(x_scale, y_scale);
+    current_display_scale = (float) w1 / (float) w0;
     log_info("Current display scale: %.1f\n", current_display_scale);
 }
 
