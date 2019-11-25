@@ -11,6 +11,7 @@
 struct LevelMetadata
 {
     Lt *lt;
+    const char *version;
     const char *title;
 };
 
@@ -32,6 +33,14 @@ LevelMetadata *create_level_metadata(const char *title)
         trim_endline(string_duplicate(title, NULL)),
         free);
     if (level_metadata->title == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    // TODO: Level version is hardcoded to level_metadata.
+    level_metadata->version = PUSH_LT(
+        lt,
+        trim_endline(string_duplicate("1", NULL)),
+        free);
+    if (level_metadata->version == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -57,18 +66,24 @@ LevelMetadata *create_level_metadata_from_line_stream(LineStream *line_stream)
 {
     trace_assert(line_stream);
 
-    const char *line = line_stream_next(line_stream);
-    if (line == NULL) {
+    const char *title_line = line_stream_next(line_stream);
+    if (title_line == NULL) {
         return NULL;
     }
 
-    return create_level_metadata(line);
+    return create_level_metadata(title_line);
 }
 
 void destroy_level_metadata(LevelMetadata *level_metadata)
 {
     trace_assert(level_metadata);
     RETURN_LT0(level_metadata->lt);
+}
+
+const char *level_metadata_version(const LevelMetadata *level_metadata)
+{
+    trace_assert(level_metadata);
+    return level_metadata->version;
 }
 
 const char *level_metadata_title(const LevelMetadata *level_metadata)
