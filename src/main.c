@@ -64,14 +64,15 @@ void maybe_fixup_input_for_display_scale(SDL_Window* win, SDL_Renderer* rend, SD
 
     // this is the fixup.
     case SDL_MOUSEMOTION: {
-        e->motion.x *= current_display_scale;
-        e->motion.y *= current_display_scale;
+        // note: do it this way *just in case* there are non-integer display scales out there.
+        e->motion.x = (int) ((float) e->motion.x * current_display_scale);
+        e->motion.y = (int) ((float) e->motion.y * current_display_scale);
     } break;
 
     case SDL_MOUSEBUTTONUP:
     case SDL_MOUSEBUTTONDOWN: {
-        e->button.x *= current_display_scale;
-        e->button.y *= current_display_scale;
+        e->button.x = (int) ((float) e->button.x * current_display_scale);
+        e->button.y = (int) ((float) e->button.y * current_display_scale);
     } break;
     }
 }
