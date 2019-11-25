@@ -62,10 +62,6 @@ void maybe_fixup_input_for_display_scale(SDL_Window* win, SDL_Renderer* rend, SD
         }
     } break;
 
-    // early-out.
-    if (current_display_scale == 1.0f)
-        return;
-
     // this is the fixup.
     case SDL_MOUSEMOTION: {
         // note: do it this way *just in case* there are non-integer display scales out there.
