@@ -1,5 +1,6 @@
 #include "system/stacktrace.h"
 #include "cursor.h"
+#include "game.h"
 
 int cursor_render(const Cursor *cursor, SDL_Renderer *renderer)
 {
@@ -8,6 +9,8 @@ int cursor_render(const Cursor *cursor, SDL_Renderer *renderer)
 
     int cursor_x, cursor_y;
     SDL_GetMouseState(&cursor_x, &cursor_y);
+    cursor_x *= get_display_scale();
+    cursor_y *= get_display_scale();
 
     const SDL_Rect src = {0, 0, CURSOR_ICON_WIDTH, CURSOR_ICON_HEIGHT};
     const SDL_Rect dest = {

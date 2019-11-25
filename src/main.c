@@ -25,6 +25,69 @@ static void print_usage(FILE *stream)
     fprintf(stream, "Usage: nothing [--fps <fps>]\n");
 }
 
+static float current_display_scale = 1.0f;
+
+
+// export this for other parts of the code to use.
+float get_display_scale(void)
+{
+    return current_display_scale;
+}
+
+static
+void recalculate_display_scale(SDL_Window* win, SDL_Renderer* rend)
+{
+    int w0 = 0;
+    int h0 = 0;
+    SDL_GetWindowSize(win, &w0, &h0);
+
+    int w1 = 0;
+    int h1 = 0;
+    SDL_GetRendererOutputSize(rend, &w1, &h1);
+
+    float x_scale = (float) w1 / (float) w0;
+    float y_scale = (float) h1 / (float) h0;
+
+    if (x_scale != y_scale) {
+        log_fail("inconsistent dpi scale: horz: %.1f, vert: %.1f\n", x_scale, y_scale);
+    }
+
+    // if x_scale == y_scale then it doesn't matter either way. simplifies code.
+    // anyway fmax is cheap right?
+    current_display_scale = fmaxf(x_scale, y_scale);
+    log_info("Current display scale: %.1f\n", current_display_scale);
+}
+
+static
+void maybe_fixup_input_for_display_scale(SDL_Window* win, SDL_Renderer* rend, SDL_Event* e)
+{
+    // note: we check for window move as well, because you may move the window to
+    // another monitor with a different display scale.
+    switch (e->type) {
+    case SDL_WINDOWEVENT: {
+        switch (e->window.event) {
+        case SDL_WINDOWEVENT_MOVED:
+        case SDL_WINDOWEVENT_SIZE_CHANGED:
+            recalculate_display_scale(win, rend);
+            break;
+        }
+    } break;
+
+    // this is the fixup.
+    case SDL_MOUSEMOTION: {
+        e->motion.x *= current_display_scale;
+        e->motion.y *= current_display_scale;
+    } break;
+
+    case SDL_MOUSEBUTTONUP:
+    case SDL_MOUSEBUTTONDOWN: {
+        e->button.x *= current_display_scale;
+        e->button.y *= current_display_scale;
+    } break;
+    }
+}
+
+
 int main(int argc, char *argv[])
 {
     srand((unsigned int) time(NULL));
@@ -70,7 +133,7 @@ int main(int argc, char *argv[])
             "Nothing",
             100, 100,
             SCREEN_WIDTH, SCREEN_HEIGHT,
-            SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE),
+            SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI),
         SDL_DestroyWindow);
 
     if (window == NULL) {
@@ -135,6 +198,9 @@ int main(int argc, char *argv[])
         RETURN_LT(lt, -1);
     }
 
+    // calculate the display scale for the first time.
+    recalculate_display_scale(window, renderer);
+
     const Uint8 *const keyboard_state = SDL_GetKeyboardState(NULL);
 
     SDL_StopTextInput();
@@ -145,6 +211,12 @@ int main(int argc, char *argv[])
         const int64_t begin_frame_time = (int64_t) SDL_GetTicks();
 
         while (!game_over_check(game) && SDL_PollEvent(&e)) {
+
+            // this function potentially fixes mouse events by scaling them according
+            // to the window DPI scale. (eg. *2 on retina displays). it also updates
+            // the cached DPI scale on window scale/move events.
+            maybe_fixup_input_for_display_scale(window, renderer, &e);
+
             if (game_event(game, &e) < 0) {
                 RETURN_LT(lt, -1);
             }

@@ -152,12 +152,12 @@ int level_picker_event(LevelPicker *level_picker,
     case SDL_WINDOWEVENT: {
         switch (event->window.event) {
         case SDL_WINDOWEVENT_SHOWN:
-        case SDL_WINDOWEVENT_RESIZED: {
+        case SDL_WINDOWEVENT_SIZE_CHANGED: {
             const Vec2f font_scale = vec(5.0f, 5.0f);
             const float padding_bottom = 50.0f;
 
             int width;
-            SDL_GetWindowSize(SDL_GetWindowFromID(event->window.windowID), &width, NULL);
+            SDL_GetRendererOutputSize(SDL_GetRenderer(SDL_GetWindowFromID(event->window.windowID)), &width, NULL);
 
             const Vec2f title_size = wiggly_text_size(&level_picker->wiggly_text, camera);
 
