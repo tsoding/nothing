@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "system/nth_alloc.h"
-#if defined(__linux__) || defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__DragonFly__) || defined(__APPLE__)
 #include <sys/stat.h>
 #include <sys/types.h>
 #elif defined(_WIN32)
@@ -20,7 +20,7 @@ int last_modified(const char *filepath, time_t *time)
     trace_assert(filepath);
     trace_assert(time);
 
-#if defined(__linux__) || defined(__FreeBSD__) || defined(__DragonFly__)
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__DragonFly__) || defined(__APPLE__)
 
     struct stat attr;
     if (stat(filepath, &attr) < 0) {
@@ -61,11 +61,6 @@ int last_modified(const char *filepath, time_t *time)
     // Taken from https://stackoverflow.com/a/6161842/1901561
     *time = (time_t)(mod_time / WINDOWS_TICK - SEC_TO_UNIX_EPOCH);
     return 0;
-
-#elif defined(__APPLE__)
-
-    // TODO(#901): implement last_modified for Mac OS X
-    return -1;
 
 #else
 
