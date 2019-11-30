@@ -373,9 +373,6 @@ static int rect_layer_event_idle(RectLayer *layer,
                     camera_rect(camera, rects[layer->selection])))) {
                 layer->state = RECT_LAYER_RESIZE;
                 dynarray_copy_to(layer->rects, &layer->inter_rect, (size_t) layer->selection);
-
-                layer->initial_rectangle_size = vec(rects[layer->selection].w,
-                    rects[layer->selection].h);
             } else if (rect_at_position >= 0) {
                 layer->selection = rect_at_position;
                 layer->state = RECT_LAYER_MOVE;
@@ -395,6 +392,11 @@ static int rect_layer_event_idle(RectLayer *layer,
                     layer->create_begin = position;
                     layer->create_end = position;
                 }
+            }
+
+            if (layer->selection >= 0) {
+                layer->initial_rectangle_size = vec(rects[layer->selection].w,
+                    rects[layer->selection].h);
             }
         } break;
         }
