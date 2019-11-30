@@ -94,6 +94,7 @@ Vec2f platforms_snap_rect(const Platforms *platforms,
     Vec2f result = vec(1.0f, 1.0f);
     for (size_t i = 0; i < platforms->rects_size; ++i) {
         if (rects_overlap(platforms->rects[i], *object)) {
+            // TODO(#1161): can we reuse the Level Editor snapping mechanism in physics snapping
             result = vec_entry_mult(result, rect_snap(platforms->rects[i], object));
         }
     }

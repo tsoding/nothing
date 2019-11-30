@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <math.h>
+#include <stdbool.h>
 
 #include "math/vec.h"
 #include "system/stacktrace.h"
@@ -113,6 +114,46 @@ float rect_side_distance(Rect rect, Vec2f point, Rect_side side)
     }
 
     return 0;
+}
+
+static inline
+int segment_overlap(Vec2f a, Vec2f b)
+{
+    trace_assert(a.x <= a.y);
+    trace_assert(b.x <= b.y);
+    return a.y >= b.x && b.y >= a.x;
+}
+
+static inline
+int snap_var(float *x,        // the value we are snapping
+             float y,         // the target we are snapping x to
+             float xo,        // x offset
+             float yo,        // y offset
+             float st)        // snap threshold
+{
+    if (fabsf((*x + xo) - (y + yo)) < st) {
+        *x = y + yo - xo;
+        return true;
+    }
+    return false;
+}
+
+static inline
+int snap_var2seg(float *x, float y,
+               float xo, float yo,
+               float st)
+{
+    // note: do not use || because we do *not* want short-circuiting, so use |.
+    return snap_var(x, y, xo,  0, st) | snap_var(x, y, xo, yo, st);
+}
+
+static inline
+void snap_seg2seg(float *x, float y, float xo, float yo, float st)
+{
+    snap_var(x, y,  0,  0, st);
+    snap_var(x, y,  0, yo, st);
+    snap_var(x, y, xo,  0, st);
+    snap_var(x, y, xo, yo, st);
 }
 
 #endif  // RECT_H_

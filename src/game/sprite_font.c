@@ -123,16 +123,3 @@ int sprite_font_render_text(const Sprite_font *sprite_font,
 
     return 0;
 }
-
-Rect sprite_font_boundary_box(const Sprite_font *sprite_font,
-                                Vec2f position,
-                                Vec2f size,
-                                const char *text)
-{
-    trace_assert(sprite_font);
-    trace_assert(text);
-    return rect(
-        position.x, position.y,
-        size.x * FONT_CHAR_WIDTH * (float) strlen(text),
-        size.y * FONT_CHAR_HEIGHT);
-}

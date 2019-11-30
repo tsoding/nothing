@@ -24,7 +24,6 @@
 #define CREATE_AREA_THRESHOLD 10.0
 #define RECT_LAYER_GRID_ROWS 3
 #define RECT_LAYER_GRID_COLUMNS 4
-#define SNAPPING_THRESHOLD 10.0f
 
 static int clipboard = 0;
 static Rect clipboard_rect;
@@ -544,50 +543,10 @@ static int rect_layer_event_create(RectLayer *layer,
     return 0;
 }
 
-static inline
-int segment_overlap(Vec2f a, Vec2f b)
-{
-    trace_assert(a.x <= a.y);
-    trace_assert(b.x <= b.y);
-    return a.y >= b.x && b.y >= a.x;
-}
-
-static
-int snap_var(float *x,         // the value we are snapping
-               float y,         // the target we are snapping x to
-               float xo,        // x offset
-               float yo,        // y offset
-               float st)        // snap threshold
-{
-    if (fabsf((*x + xo) - (y + yo)) < st) {
-        *x = y + yo - xo;
-        return true;
-    }
-    return false;
-}
-
-static
-int snap_var2seg(float *x, float y,
-               float xo, float yo,
-               float st)
-{
-    // note: do not use || because we do *not* want short-circuiting, so use |.
-    return snap_var(x, y, xo,  0, st) | snap_var(x, y, xo, yo, st);
-}
-
-static
-void snap_seg2seg(float *x, float y, float xo, float yo, float st)
-{
-    snap_var(x, y,  0,  0, st);
-    snap_var(x, y,  0, yo, st);
-    snap_var(x, y, xo,  0, st);
-    snap_var(x, y, xo, yo, st);
-}
-
 static
 void fix_rect_ratio(RectLayer *layer,
-                        float *x, float *y, // the things we can change to fix the ratio
-                        Vec2f ref_pt)       // the (fixed) reference point of the rect
+                    float *x, float *y, // the things we can change to fix the ratio
+                    Vec2f ref_pt)       // the (fixed) reference point of the rect
 {
     trace_assert(x);
     trace_assert(y);
@@ -619,7 +578,6 @@ void fix_rect_ratio(RectLayer *layer,
         *y = ref_pt.y + inv_ratio * copysignf(w, h);
     }
 }
-
 
 static int rect_layer_event_resize(RectLayer *layer,
                                    const SDL_Event *event,

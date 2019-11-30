@@ -17,4 +17,6 @@
 
 #define ENTITY_MAX_ID_SIZE 36
 
+#define SNAPPING_THRESHOLD 10.0f
+
 #endif  // CONFIG_H_

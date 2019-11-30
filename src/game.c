@@ -382,7 +382,7 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
     } break;
     }
 
-    return level_picker_event(game->level_picker, event, &game->camera);
+    return level_picker_event(game->level_picker, event);
 }
 
 static int game_event_level_editor(Game *game, const SDL_Event *event)

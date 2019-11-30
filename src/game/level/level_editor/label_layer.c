@@ -16,6 +16,7 @@
 #include "color_picker.h"
 #include "ui/edit_field.h"
 #include "math/extrema.h"
+#include "config.h"
 
 #define LABEL_LAYER_SELECTION_THICCNESS 5.0f
 
@@ -286,6 +287,31 @@ void destroy_label_layer(LabelLayer *label_layer)
     destroy_lt(label_layer->lt);
 }
 
+static inline
+Rect boundary_of_element(const LabelLayer *label_layer,
+                         size_t i,
+                         Vec2f position)
+{
+    trace_assert(i < dynarray_count(label_layer->texts));
+
+    char *ids = dynarray_data(label_layer->ids);
+    char *texts = dynarray_data(label_layer->texts);
+
+    return rect_boundary2(
+        sprite_font_boundary_box(
+            position,
+            LABELS_SIZE,
+            strlen(texts + i * LABEL_LAYER_TEXT_MAX_SIZE)),
+        sprite_font_boundary_box(
+            vec_sum(
+                position,
+                vec_mult(
+                    vec(0.0f, FONT_CHAR_HEIGHT),
+                    LABELS_SIZE)),
+            vec(1.0f, 1.0f),
+            strlen(ids + i * LABEL_LAYER_ID_MAX_SIZE)));
+}
+
 int label_layer_render(const LabelLayer *label_layer,
                        const Camera *camera,
                        int active)
@@ -340,9 +366,11 @@ int label_layer_render(const LabelLayer *label_layer,
             if (edit_field_render_world(
                     label_layer->edit_field,
                     camera,
-                    vec_sub(
+                    vec_sum(
                         position,
-                        vec(0.0f, FONT_CHAR_HEIGHT))) < 0) {
+                        vec_mult(
+                            vec(0.0f, FONT_CHAR_HEIGHT),
+                            LABELS_SIZE))) < 0) {
                 return -1;
             }
         } else {
@@ -353,30 +381,26 @@ int label_layer_render(const LabelLayer *label_layer,
                     color_scale(
                         color_invert(color),
                         rgba(1.0f, 1.0f, 1.0f, active ? 1.0f : 0.5f)),
-                    vec_sub(position, vec(0.0f, FONT_CHAR_HEIGHT))) < 0) {
+                    vec_sum(
+                        position,
+                        vec_mult(
+                            vec(0.0f, FONT_CHAR_HEIGHT),
+                            LABELS_SIZE))) < 0) {
                 return -1;
             }
         }
 
         // Label Selection
+        // TODO(#1160): Label Selection has to be internal (just like in Rect Layer)
         if (active && label_layer->selection == (int) i) {
             Rect selection =
                 rect_pad(
                     camera_rect(
                         camera,
-                        rect_boundary2(
-                            sprite_font_boundary_box(
-                                camera_font(camera),
-                                position,
-                                LABELS_SIZE,
-                                texts + label_layer->selection * LABEL_LAYER_TEXT_MAX_SIZE),
-                            sprite_font_boundary_box(
-                                camera_font(camera),
-                                vec_sub(
-                                    position,
-                                    vec(0.0f, FONT_CHAR_HEIGHT)),
-                                vec(1.0f, 1.0f),
-                                ids + label_layer->selection * LABEL_LAYER_ID_MAX_SIZE))),
+                        boundary_of_element(
+                            label_layer,
+                            i,
+                            position)),
                     LABEL_LAYER_SELECTION_THICCNESS * 0.5f);
 
 
@@ -396,32 +420,20 @@ int label_layer_render(const LabelLayer *label_layer,
 
 static
 int label_layer_element_at(LabelLayer *label_layer,
-                           const Sprite_font *font,
                            Vec2f position)
 {
     trace_assert(label_layer);
 
-    const int n = (int) dynarray_count(label_layer->texts);
-    char *ids = dynarray_data(label_layer->ids);
-    char *texts = dynarray_data(label_layer->texts);
     Vec2f *positions = dynarray_data(label_layer->positions);
 
+    const int n = (int) dynarray_count(label_layer->texts);
     for (int i = n - 1; i >= 0; --i) {
-        Rect boundary = rect_boundary2(
-            sprite_font_boundary_box(
-                font,
-                positions[i],
-                LABELS_SIZE,
-                texts + i * LABEL_LAYER_TEXT_MAX_SIZE),
-            sprite_font_boundary_box(
-                font,
-                vec_sub(
-                    positions[i],
-                    vec(0.0f, FONT_CHAR_HEIGHT)),
-                vec(1.0f, 1.0f),
-                ids + i * LABEL_LAYER_ID_MAX_SIZE));
-
-        if (rect_contains_point(boundary, position)) {
+        if (rect_contains_point(
+                boundary_of_element(
+                    label_layer,
+                    (size_t) i,
+                    positions[i]),
+                position)) {
             return i;
         }
     }
@@ -539,7 +551,6 @@ int label_layer_idle_event(LabelLayer *label_layer,
 
             const int element = label_layer_element_at(
                 label_layer,
-                camera_font(camera),
                 position);
 
             if (element >= 0) {
@@ -667,6 +678,38 @@ int label_layer_idle_event(LabelLayer *label_layer,
 }
 
 static
+void snap_inter_position(LabelLayer *label_layer, float snap_threshold)
+{
+    trace_assert(label_layer);
+    trace_assert(label_layer->selection >= 0);
+    trace_assert(label_layer->state == LABEL_LAYER_MOVE);
+
+    const size_t n = dynarray_count(label_layer->positions);
+    Vec2f *positions = dynarray_data(label_layer->positions);
+
+    Rect a = boundary_of_element(
+        label_layer,
+        (size_t) label_layer->selection,
+        label_layer->inter_position);
+
+    for (size_t i = 0; i < n; ++i) {
+        if (i == (size_t) label_layer->selection) continue;
+
+        const Rect b = boundary_of_element(label_layer, i, positions[i]);
+
+        if (segment_overlap(vec(a.x, a.x + a.w), vec(b.x,  b.x + b.w))) {
+            snap_seg2seg(&label_layer->inter_position.y,
+                         b.y, a.h, b.h, snap_threshold);
+        }
+
+        if (segment_overlap(vec(a.y, a.y + a.h), vec(b.y,  b.y  + b.h))) {
+            snap_seg2seg(&label_layer->inter_position.x,
+                         b.x, a.w, b.w, snap_threshold);
+        }
+    }
+}
+
+static
 int label_layer_move_event(LabelLayer *label_layer,
                            const SDL_Event *event,
                            const Camera *camera,
@@ -703,6 +746,8 @@ int label_layer_move_event(LabelLayer *label_layer,
                 label_layer->inter_position = vec(label_pos.x, mouse_pos.y);
             }
         }
+
+        snap_inter_position(label_layer, SNAPPING_THRESHOLD);
     } break;
 
     case SDL_MOUSEBUTTONUP: {

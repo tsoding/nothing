@@ -61,7 +61,7 @@ int credits_render(const Credits *credits, const Camera *camera)
         return -1;
     }
 
-    const Vec2f title_size = wiggly_text_size(&credits->wiggly_text, camera);
+    const Vec2f title_size = wiggly_text_size(&credits->wiggly_text);
 
     if (wiggly_text_render(
             &credits->wiggly_text,

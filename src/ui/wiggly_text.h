@@ -18,7 +18,7 @@ int wiggly_text_render(const WigglyText *wiggly_text,
                        const Camera *camera,
                        Vec2f position);
 int wiggly_text_update(WigglyText *wiggly_text, float delta_time);
-Vec2f wiggly_text_size(const WigglyText *wiggly_text, const Camera *camera);
+Vec2f wiggly_text_size(const WigglyText *wiggly_text);
 
 typedef struct {
     WigglyText wiggly_text;
@@ -56,10 +56,9 @@ void fading_wiggly_text_reset(FadingWigglyText *fading_wiggly_text)
 }
 
 static inline
-Vec2f fading_wiggly_text_size(const FadingWigglyText *fading_wiggly_text,
-                              const Camera *camera)
+Vec2f fading_wiggly_text_size(const FadingWigglyText *fading_wiggly_text)
 {
-    return wiggly_text_size(&fading_wiggly_text->wiggly_text, camera);
+    return wiggly_text_size(&fading_wiggly_text->wiggly_text);
 }
 
 #endif  // WIGGLY_TEXT_H_
