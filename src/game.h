@@ -26,4 +26,7 @@ int game_over_check(const Game *game);
 
 int game_load_level(Game *game, const char *filepath);
 
+// defined in main.c. is there a better place for this to be declared?
+float get_display_scale(void);
+
 #endif  // GAME_H_

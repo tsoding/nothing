@@ -1260,7 +1260,7 @@ int rect_layer_event(RectLayer *layer,
     switch (event->type) {
     case SDL_WINDOWEVENT: {
         switch (event->window.event) {
-        case SDL_WINDOWEVENT_RESIZED: {
+        case SDL_WINDOWEVENT_SIZE_CHANGED: {
             grid_relayout(layer->grid, rect(0.0f, 0.0f,
                                             (float) event->window.data1,
                                             (float) event->window.data2));
