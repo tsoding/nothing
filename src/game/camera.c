@@ -1,13 +1,15 @@
-#include <SDL.h>
-#include "system/stacktrace.h"
 #include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include <SDL.h>
 
 #include "camera.h"
 #include "sdl/renderer.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
+#include "system/stacktrace.h"
 
 #define RATIO_X 16.0f
 #define RATIO_Y 9.0f
