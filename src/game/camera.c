@@ -1,13 +1,15 @@
-#include <SDL.h>
-#include "system/stacktrace.h"
 #include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include <SDL.h>
 
 #include "camera.h"
 #include "sdl/renderer.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
+#include "system/stacktrace.h"
 
 #define RATIO_X 16.0f
 #define RATIO_Y 9.0f
@@ -304,11 +306,7 @@ int camera_is_text_visible(const Camera *camera,
     return rects_overlap(
         camera_rect(
             camera,
-            sprite_font_boundary_box(
-                camera->font,
-                position,
-                size,
-                text)),
+            sprite_font_boundary_box(position, size, strlen(text))),
         rect_from_sdl(&view_port));
 }
 
@@ -517,18 +515,6 @@ int camera_draw_thicc_rect_screen(const Camera *camera,
 const Sprite_font *camera_font(const Camera *camera)
 {
     return camera->font;
-}
-
-Rect camera_text_boundary_box(const Camera *camera,
-                              Vec2f position,
-                              Vec2f scale,
-                              const char *text)
-{
-    trace_assert(camera);
-    trace_assert(text);
-
-    return sprite_font_boundary_box(
-        camera->font, position, scale, text);
 }
 
 int camera_draw_line(const Camera *camera,

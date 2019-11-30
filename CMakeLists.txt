@@ -50,28 +50,6 @@ include_directories(src/)
 
 include_directories(${SDL2_INCLUDE_DIRS})
 
-add_library(system STATIC
-  src/system/line_stream.h
-  src/system/line_stream.c
-  src/system/log.h
-  src/system/log.c
-  src/system/lt.h
-  src/system/lt_adapters.h
-  src/system/lt_adapters.c
-  src/system/nth_alloc.h
-  src/system/nth_alloc.c
-  src/system/stacktrace.h
-  src/system/stacktrace.c
-  src/system/str.h
-  src/system/str.c
-  src/dynarray.h
-  src/dynarray.c
-  src/hashset.h
-  src/hashset.c
-  src/system/file.h
-  src/system/file.c
-  )
-
 add_executable(nothing 
   src/color.h
   src/color.c
@@ -173,8 +151,27 @@ add_executable(nothing
   src/game/level/level_editor/undo_history.c
   src/game/level/level_editor/action_picker.h
   src/game/level/level_editor/action_picker.c
+  src/system/line_stream.h
+  src/system/line_stream.c
+  src/system/log.h
+  src/system/log.c
+  src/system/lt.h
+  src/system/lt_adapters.h
+  src/system/lt_adapters.c
+  src/system/nth_alloc.h
+  src/system/nth_alloc.c
+  src/system/stacktrace.h
+  src/system/stacktrace.c
+  src/system/str.h
+  src/system/str.c
+  src/dynarray.h
+  src/dynarray.c
+  src/hashset.h
+  src/hashset.c
+  src/system/file.h
+  src/system/file.c
 )
-target_link_libraries(nothing ${SDL2_LIBRARIES} system)
+target_link_libraries(nothing ${SDL2_LIBRARIES})
 
 ADD_CUSTOM_TARGET(link_assets ALL
                   COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets)
