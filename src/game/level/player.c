@@ -221,6 +221,7 @@ void player_die(Player *player)
                 player->alive_body_id);
 
         player->play_die_cue = 1;
+        player->jump_threshold = 0;
         explosion_start(player->dying_body, vec(hitbox.x, hitbox.y));
         player->state = PLAYER_STATE_DYING;
         rigid_bodies_disable(player->rigid_bodies, player->alive_body_id, true);
