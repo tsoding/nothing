@@ -8,8 +8,6 @@
 #include "lt_adapters.h"
 
 #ifdef _WIN32
-#define WINDOWS_TICK 10000000
-#define SEC_TO_UNIX_EPOCH 11644473600LL
 
 struct DIR
 {
