@@ -76,6 +76,11 @@ struct RectLayer {
     const char *id_name_prefix;
     Grid *grid;
     Cursor *cursor;
+
+    // this is the initial size of the selected rectangle during a resize.
+    // we update this whenever the rectangle is resized, so we know the ratio
+    // to fix it to.
+    Vec2f initial_rectangle_size;
 };
 
 typedef enum {
@@ -357,6 +362,7 @@ static int rect_layer_event_idle(RectLayer *layer,
             int rect_at_position =
                 rect_layer_rect_at(layer, position);
 
+
             Color *colors = dynarray_data(layer->colors);
 
             if (layer->selection >= 0 &&
@@ -369,15 +375,13 @@ static int rect_layer_event_idle(RectLayer *layer,
             } else if (rect_at_position >= 0) {
                 layer->selection = rect_at_position;
                 layer->state = RECT_LAYER_MOVE;
-                layer->move_anchor =
-                    vec_sub(
-                        position,
-                        vec(
-                            rects[layer->selection].x,
-                            rects[layer->selection].y));
+                layer->move_anchor = vec_sub(
+                    position,
+                    vec(
+                        rects[layer->selection].x,
+                        rects[layer->selection].y));
                 layer->color_picker =
                     create_color_picker_from_rgba(colors[rect_at_position]);
-
                 dynarray_copy_to(layer->rects, &layer->inter_rect, (size_t) rect_at_position);
             } else {
                 layer->selection = rect_at_position;
@@ -387,6 +391,11 @@ static int rect_layer_event_idle(RectLayer *layer,
                     layer->create_begin = position;
                     layer->create_end = position;
                 }
+            }
+
+            if (layer->selection >= 0) {
+                layer->initial_rectangle_size = vec(rects[layer->selection].w,
+                    rects[layer->selection].h);
             }
         } break;
         }
@@ -534,6 +543,42 @@ static int rect_layer_event_create(RectLayer *layer,
     return 0;
 }
 
+static
+void fix_rect_ratio(RectLayer *layer,
+                    float *x, float *y, // the things we can change to fix the ratio
+                    Vec2f ref_pt)       // the (fixed) reference point of the rect
+{
+    trace_assert(x);
+    trace_assert(y);
+
+    // if we're not holding down shift, don't bother.
+    if (!(SDL_GetKeyboardState(NULL)[SDL_SCANCODE_LSHIFT] || SDL_GetKeyboardState(NULL)[SDL_SCANCODE_RSHIFT]))
+        return;
+
+    float ratio = layer->initial_rectangle_size.x / layer->initial_rectangle_size.y;
+
+    // if we are holding down control also, then make squares.
+    if (SDL_GetKeyboardState(NULL)[SDL_SCANCODE_LCTRL] || SDL_GetKeyboardState(NULL)[SDL_SCANCODE_RCTRL])
+        ratio = 1.0f;
+
+    // make some constants for us to use.
+    float inv_ratio = 1.0f / ratio;
+    float w = *x - ref_pt.x;
+    float h = *y - ref_pt.y;
+
+    float ab_w = fabsf(w);
+    float ab_h = fabsf(h);
+
+    // note: copysign takes (magnitude, sign). this thing basically lengthens the shorter side
+    // to fit the ratio. copysign is used to handle when the length is negative due to the
+    // different corner positions.
+    if (ab_w <= ratio * ab_h) {
+        *x = ref_pt.x + (ratio * copysignf(h, w));
+    } else if (ab_h <= inv_ratio * ab_w) {
+        *y = ref_pt.y + inv_ratio * copysignf(w, h);
+    }
+}
+
 static int rect_layer_event_resize(RectLayer *layer,
                                    const SDL_Event *event,
                                    const Camera *camera,
@@ -545,6 +590,8 @@ static int rect_layer_event_resize(RectLayer *layer,
     trace_assert(layer->selection >= 0);
 
     Rect *rects = dynarray_data(layer->rects);
+
+    float scaled_snap_threshold = SNAPPING_THRESHOLD / camera->scale;
 
     switch (event->type) {
     case SDL_MOUSEMOTION: {
@@ -563,7 +610,7 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    snap_var2seg(&y, b.y, 0, b.h, scaled_snap_threshold);
                 }
             }
 
@@ -581,7 +628,7 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    snap_var2seg(&x, b.x, 0, b.w, scaled_snap_threshold);
                 }
             }
 
@@ -595,16 +642,27 @@ static int rect_layer_event_resize(RectLayer *layer,
             float y = position.y;
             float w = rects[layer->selection].w;
             float h = rects[layer->selection].h;
+
+            // use the bottom-right as reference.
+            Vec2f ref_pos = rect_position2(rects[layer->selection]);
+            fix_rect_ratio(layer, &x, &y, ref_pos);
+
             for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
                 if (i == (size_t) layer->selection) continue;
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    if (snap_var2seg(&x, b.x, 0, b.w, scaled_snap_threshold)) {
+                        // if we did a snap, we need to update the rect to make sure it
+                        // still fits the ratio. same pattern repeats below.
+                        fix_rect_ratio(layer, &x, &y, ref_pos);
+                    }
                 }
 
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    if (snap_var2seg(&y, b.y, 0, b.h, scaled_snap_threshold)) {
+                        fix_rect_ratio(layer, &x, &y, ref_pos);
+                    }
                 }
             }
 
@@ -622,7 +680,7 @@ static int rect_layer_event_resize(RectLayer *layer,
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    snap_var2seg(&y, b.y, 0, b.h, scaled_snap_threshold);
                 }
             }
 
@@ -637,16 +695,25 @@ static int rect_layer_event_resize(RectLayer *layer,
             float y = position.y;
             float w = rects[layer->selection].w;
             float h = rects[layer->selection].h;
+
+            // use the top-right as reference.
+            Vec2f ref_pos = vec(rects[layer->selection].x + rects[layer->selection].w, rects[layer->selection].y);
+            fix_rect_ratio(layer, &x, &y, ref_pos);
+
             for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
                 if (i == (size_t) layer->selection) continue;
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    if (snap_var2seg(&x, b.x, 0, b.w, scaled_snap_threshold)) {
+                        fix_rect_ratio(layer, &x, &y, ref_pos);
+                    }
                 }
 
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    if (snap_var2seg(&y, b.y, 0, b.h, scaled_snap_threshold)) {
+                        fix_rect_ratio(layer, &x, &y, ref_pos);
+                    }
                 }
             }
 
@@ -660,12 +727,13 @@ static int rect_layer_event_resize(RectLayer *layer,
             float y = rects[layer->selection].y;
             float x = position.x;
             float h = rects[layer->selection].h;
+
             for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
                 if (i == (size_t) layer->selection) continue;
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    snap_var2seg(&x, b.x, 0, b.w, scaled_snap_threshold);
                 }
             }
 
@@ -680,16 +748,25 @@ static int rect_layer_event_resize(RectLayer *layer,
             float y = position.y;
             float w = rects[layer->selection].w;
             float h = rects[layer->selection].h;
+
+            // use bottom-left as reference.
+            Vec2f ref_pos = vec(rects[layer->selection].x, rects[layer->selection].y + rects[layer->selection].h);
+            fix_rect_ratio(layer, &x, &y, ref_pos);
+
             for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
                 if (i == (size_t) layer->selection) continue;
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    if (snap_var2seg(&x, b.x, 0, b.w, scaled_snap_threshold)) {
+                        fix_rect_ratio(layer, &x, &y, ref_pos);
+                    }
                 }
 
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    if (snap_var2seg(&y, b.y, 0, b.h, scaled_snap_threshold)) {
+                        fix_rect_ratio(layer, &x, &y, ref_pos);
+                    }
                 }
             }
 
@@ -704,16 +781,25 @@ static int rect_layer_event_resize(RectLayer *layer,
             float y = position.y;
             float w = rects[layer->selection].w;
             float h = rects[layer->selection].h;
+
+            // use top-left as reference.
+            Vec2f ref_pos = rect_position(rects[layer->selection]);
+            fix_rect_ratio(layer, &x, &y, ref_pos);
+
             for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
                 if (i == (size_t) layer->selection) continue;
 
                 const Rect b = rects[i];
                 if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    snap_var2seg(&x, b.x, 0, b.w, SNAPPING_THRESHOLD);
+                    if (snap_var2seg(&x, b.x, 0, b.w, scaled_snap_threshold)) {
+                        fix_rect_ratio(layer, &x, &y, ref_pos);
+                    }
                 }
 
                 if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    snap_var2seg(&y, b.y, 0, b.h, SNAPPING_THRESHOLD);
+                    if (snap_var2seg(&y, b.y, 0, b.h, scaled_snap_threshold)) {
+                        fix_rect_ratio(layer, &x, &y, ref_pos);
+                    }
                 }
             }
 
@@ -722,6 +808,11 @@ static int rect_layer_event_resize(RectLayer *layer,
                 vec(x, y));
         } break;
         }
+
+        // note that we need to update the "initial size" even during the drag. this is because
+        // we can enter/exit the ratio mode in the middle of dragging!
+        layer->initial_rectangle_size = vec(layer->inter_rect.w, layer->inter_rect.h);
+
     } break;
 
     case SDL_MOUSEBUTTONUP: {
