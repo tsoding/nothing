@@ -44,7 +44,6 @@ void recalculate_display_scale(SDL_Window* win, SDL_Renderer* rend)
     SDL_GetRendererOutputSize(rend, &w1, NULL);
 
     current_display_scale = (float) w1 / (float) w0;
-    log_info("Current display scale: %.1f\n", current_display_scale);
 }
 
 static
