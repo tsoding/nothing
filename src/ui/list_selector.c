@@ -153,7 +153,7 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event)
         break;
 
     case SDL_MOUSEMOTION: {
-        const Vec2f mouse_pos = vec((float)event->motion.x, (float)event->motion.y);
+        const Vec2f mouse_pos = vec((float) event->motion.x, (float) event->motion.y);
         Vec2f position = list_selector->position;
 
         for (size_t i = 0; i < list_selector->count; ++i) {
@@ -173,7 +173,33 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event)
     case SDL_MOUSEBUTTONDOWN: {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
-            list_selector->selected_item = (int) list_selector->cursor;
+            // check if the click position was actually inside...
+            // note: make sure there's actually stuff in the list! tsoding likes
+            // to remove all levels and change title to "SMOL BREAK"...
+            if (list_selector->count == 0)
+                break;
+
+            // note: this assumes that all list items are the same height!
+            // this is probably a valid assumption as long as we use a sprite font.
+            float single_item_height = sprite_font_boundary_box(
+                list_selector->sprite_font,
+                list_selector->position,
+                list_selector->font_scale,
+                list_selector->items[0]).h + list_selector->padding_bottom;
+
+            Vec2f position = list_selector->position;
+            vec_add(&position, vec(0.0f, (float) list_selector->cursor * single_item_height));
+
+            Rect boundary_box = sprite_font_boundary_box(
+                list_selector->sprite_font,
+                position,
+                list_selector->font_scale,
+                list_selector->items[list_selector->cursor]);
+
+            const Vec2f mouse_pos = vec((float) event->motion.x, (float) event->motion.y);
+            if (rect_contains_point(boundary_box, mouse_pos)) {
+                list_selector->selected_item = (int) list_selector->cursor;
+            }
         } break;
         }
     } break;
