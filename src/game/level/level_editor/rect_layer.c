@@ -81,6 +81,8 @@ struct RectLayer {
     // we update this whenever the rectangle is resized, so we know the ratio
     // to fix it to.
     Vec2f initial_rectangle_size;
+
+    int snapping_enabled;
 };
 
 typedef enum {
@@ -579,6 +581,30 @@ void fix_rect_ratio(RectLayer *layer,
     }
 }
 
+static
+void maybe_snap_rect_resize(RectLayer *layer, Rect *a, float snapping_threshold)
+{
+    trace_assert(layer);
+    trace_assert(layer->selection >= 0);
+
+    Rect *rects = dynarray_data(layer->rects);
+    size_t rects_size = dynarray_count(layer->rects);
+
+    for (size_t i = 0; i < rects_size; ++i) {
+        if (i == (size_t) layer->selection) continue;
+
+        const Rect b = rects[i];
+
+        if (segment_overlap(vec(a->x, a->x + a->w), vec(b.x, b.x + b.w))) {
+            snap_var2seg(&a->y, b.y, 0, b.h, snapping_threshold);
+        }
+
+        if (segment_overlap(vec(a->y, a->y + a->h), vec(b.y, b.y + b.h))) {
+            snap_var2seg(&a->x, b.x, 0, b.w, snapping_threshold);
+        }
+    }
+}
+
 static int rect_layer_event_resize(RectLayer *layer,
                                    const SDL_Event *event,
                                    const Camera *camera,
@@ -602,38 +628,28 @@ static int rect_layer_event_resize(RectLayer *layer,
 
         switch (layer->resize_mask) {
         case 1: {               // TOP
-            float y = position.y;
-            float x = rects[layer->selection].x;
-            float w = rects[layer->selection].w;
-            for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
-                if (i == (size_t) layer->selection) continue;
+            Rect a = rect(rects[layer->selection].x,
+                          position.y,
+                          rects[layer->selection].w,
+                          rects[layer->selection].h);
 
-                const Rect b = rects[i];
-                if (segment_overlap(vec(x, x + w), vec(b.x, b.x + b.w))) {
-                    snap_var2seg(&y, b.y, 0, b.h, scaled_snap_threshold);
-                }
-            }
+            maybe_snap_rect_resize(layer, &a, scaled_snap_threshold);
 
             layer->inter_rect = rect_from_points(
-                vec(x, y),
+                vec(a.x, a.y),
                 rect_position2(rects[layer->selection]));
         } break;
 
         case 2: {               // LEFT
-            float y = rects[layer->selection].y;
-            float x = position.x;
-            float h = rects[layer->selection].h;
-            for (size_t i = 0; i < dynarray_count(layer->rects); ++i) {
-                if (i == (size_t) layer->selection) continue;
+            Rect a = rect(position.x,
+                          rects[layer->selection].y,
+                          rects[layer->selection].w,
+                          rects[layer->selection].h);
 
-                const Rect b = rects[i];
-                if (segment_overlap(vec(y, y + h), vec(b.y, b.y + b.h))) {
-                    snap_var2seg(&x, b.x, 0, b.w, scaled_snap_threshold);
-                }
-            }
+            maybe_snap_rect_resize(layer, &a, scaled_snap_threshold);
 
             layer->inter_rect = rect_from_points(
-                vec(x, y),
+                vec(a.x, a.y),
                 rect_position2(rects[layer->selection]));
         } break;
 
@@ -888,10 +904,11 @@ static int rect_layer_event_move(RectLayer *layer,
             }
         }
 
-        // TODO(#1141): Rect Snapping in Level Editor should be optional
-        snap_rects((size_t) layer->selection, &layer->inter_rect,
-                   rects, dynarray_count(layer->rects),
-                   SNAPPING_THRESHOLD / camera->scale);
+        if (layer->snapping_enabled) {
+            snap_rects((size_t) layer->selection, &layer->inter_rect,
+                       rects, dynarray_count(layer->rects),
+                       SNAPPING_THRESHOLD / camera->scale);
+        }
     } break;
 
     case SDL_MOUSEBUTTONUP: {
