@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include <SDL.h>
 
@@ -182,19 +183,17 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event)
             // note: this assumes that all list items are the same height!
             // this is probably a valid assumption as long as we use a sprite font.
             float single_item_height = sprite_font_boundary_box(
-                list_selector->sprite_font,
                 list_selector->position,
                 list_selector->font_scale,
-                list_selector->items[0]).h + list_selector->padding_bottom;
+                strlen(list_selector->items[0])).h + list_selector->padding_bottom;
 
             Vec2f position = list_selector->position;
             vec_add(&position, vec(0.0f, (float) list_selector->cursor * single_item_height));
 
             Rect boundary_box = sprite_font_boundary_box(
-                list_selector->sprite_font,
                 position,
                 list_selector->font_scale,
-                list_selector->items[list_selector->cursor]);
+                strlen(list_selector->items[list_selector->cursor]));
 
             const Vec2f mouse_pos = vec((float) event->motion.x, (float) event->motion.y);
             if (rect_contains_point(boundary_box, mouse_pos)) {
