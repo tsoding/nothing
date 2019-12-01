@@ -446,7 +446,7 @@ static int rect_layer_event_idle(RectLayer *layer,
         } break;
 
         case SDLK_q: {
-            // TODO: there is no UI indication that we are in the snapping mode
+            // TODO(#1171): there is no UI indication that we are in the snapping mode
             layer->snapping_enabled = !layer->snapping_enabled;
         } break;
 
