@@ -842,15 +842,20 @@ static int rect_layer_event_resize(RectLayer *layer,
 }
 
 static
-void snap_rects(size_t ignore_index, Rect *a,
-                Rect *rects, size_t rects_size,
-                float snapping_threshold)
+void snap_rect_move_if_enabled(RectLayer *layer, Rect *a,
+                               float snapping_threshold)
 {
-    trace_assert(rects);
     trace_assert(a);
+    trace_assert(layer);
+    trace_assert(layer->selection >= 0);
+
+    if (!layer->snapping_enabled) return;
+
+    Rect *rects = dynarray_data(layer->rects);
+    size_t rects_size = dynarray_count(layer->rects);
 
     for (size_t i = 0; i < rects_size; ++i) {
-        if (i == ignore_index) continue;
+        if (i == (size_t) layer->selection) continue;
 
         const Rect b = rects[i];
 
@@ -904,11 +909,8 @@ static int rect_layer_event_move(RectLayer *layer,
             }
         }
 
-        if (layer->snapping_enabled) {
-            snap_rects((size_t) layer->selection, &layer->inter_rect,
-                       rects, dynarray_count(layer->rects),
-                       SNAPPING_THRESHOLD / camera->scale);
-        }
+        snap_rect_move_if_enabled(layer, &layer->inter_rect,
+                                  SNAPPING_THRESHOLD / camera->scale);
     } break;
 
     case SDL_MOUSEBUTTONUP: {
