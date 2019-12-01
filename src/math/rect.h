@@ -119,8 +119,18 @@ float rect_side_distance(Rect rect, Vec2f point, Rect_side side)
 static inline
 int segment_overlap(Vec2f a, Vec2f b)
 {
-    trace_assert(a.x <= a.y);
-    trace_assert(b.x <= b.y);
+    if (a.x > a.y) {
+        float t = a.x;
+        a.x = a.y;
+        a.y = t;
+    }
+
+    if (b.x > b.y) {
+        float t = b.x;
+        b.x = b.y;
+        b.y = t;
+    }
+
     return a.y >= b.x && b.y >= a.x;
 }
 
