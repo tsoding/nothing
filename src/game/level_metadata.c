@@ -15,8 +15,9 @@ struct LevelMetadata
     const char *title;
 };
 
-LevelMetadata *create_level_metadata(const char *title)
+LevelMetadata *create_level_metadata(const char *version, const char *title)
 {
+    trace_assert(version);
     trace_assert(title);
 
     Lt *lt = create_lt();
@@ -28,19 +29,19 @@ LevelMetadata *create_level_metadata(const char *title)
     }
     level_metadata->lt = lt;
 
+    level_metadata->version = PUSH_LT(
+        lt,
+        trim_endline(string_duplicate(version, NULL)),
+        free);
+    if (level_metadata->version == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
     level_metadata->title = PUSH_LT(
         lt,
         trim_endline(string_duplicate(title, NULL)),
         free);
     if (level_metadata->title == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    // TODO: Level version is hardcoded to level_metadata.
-    level_metadata->version = PUSH_LT(
-        lt,
-        trim_endline(string_duplicate("1", NULL)),
-        free);
-    if (level_metadata->version == NULL) {
         RETURN_LT(lt, NULL);
     }
 
@@ -66,12 +67,25 @@ LevelMetadata *create_level_metadata_from_line_stream(LineStream *line_stream)
 {
     trace_assert(line_stream);
 
-    const char *title_line = line_stream_next(line_stream);
-    if (title_line == NULL) {
-        return NULL;
+    Lt *lt = create_lt();
+
+    const char *version_line = PUSH_LT(
+            lt,
+            string_duplicate(line_stream_next(line_stream), NULL),
+            free);
+    if (version_line == NULL) {
+        RETURN_LT(lt, NULL);
     }
 
-    return create_level_metadata(title_line);
+    const char *title_line = PUSH_LT(
+            lt,
+            string_duplicate(line_stream_next(line_stream), NULL),
+            free);
+    if (title_line == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    return create_level_metadata(version_line, title_line);
 }
 
 void destroy_level_metadata(LevelMetadata *level_metadata)

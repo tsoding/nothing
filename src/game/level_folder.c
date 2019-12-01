@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "system/stacktrace.h"
 #include "system/lt.h"
@@ -73,14 +74,21 @@ LevelFolder *create_level_folder(const char *dirpath)
         if (level_metadata == NULL) {
             RETURN_LT(lt, NULL);
         }
+
+        const char *version = PUSH_LT(
+            lt,
+            string_duplicate(level_metadata_version(level_metadata), NULL),
+            free);
         const char *title = PUSH_LT(
             lt,
             string_duplicate(level_metadata_title(level_metadata), NULL),
             free);
         destroy_level_metadata(level_metadata);
 
-        dynarray_push(level_folder->titles, &title);
-        dynarray_push(level_folder->filenames, &filepath);
+        if(strcmp(version, VERSION) == 0) {
+            dynarray_push(level_folder->titles, &title);
+            dynarray_push(level_folder->filenames, &filepath);
+        }
     }
 
     closedir(RELEASE_LT(lt, level_dir));

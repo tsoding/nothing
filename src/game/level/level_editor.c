@@ -58,7 +58,7 @@ LevelEditor *create_level_editor(Cursor *cursor)
 
     level_editor->metadata = PUSH_LT(
         lt,
-        create_level_metadata("New Level"),
+        create_level_metadata(VERSION, "New Level"),
         destroy_level_metadata);
     if (level_editor->metadata == NULL) {
         RETURN_LT(lt, NULL);
