@@ -445,6 +445,11 @@ static int rect_layer_event_idle(RectLayer *layer,
             }
         } break;
 
+        case SDLK_q: {
+            // TODO: there is no UI indication that we are in the snapping mode
+            layer->snapping_enabled = !layer->snapping_enabled;
+        } break;
+
         case SDLK_F2: {
             if (layer->selection >= 0) {
                 const char *ids = dynarray_data(layer->ids);
