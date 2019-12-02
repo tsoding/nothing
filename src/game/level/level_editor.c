@@ -564,6 +564,10 @@ static int level_editor_dump(LevelEditor *level_editor)
         fopen(level_editor->file_name, "w"),
         fclose_lt);
 
+    if (fprintf(filedump, "%s\n", level_metadata_version(level_editor->metadata)) < 0) {
+        return -1;
+    }
+
     if (fprintf(filedump, "%s\n", level_metadata_title(level_editor->metadata)) < 0) {
         return -1;
     }

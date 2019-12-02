@@ -6,6 +6,7 @@
 #include "system/lt.h"
 #include "system/lt_adapters.h"
 #include "system/nth_alloc.h"
+#include "system/log.h"
 #include "system/line_stream.h"
 #include "system/str.h"
 #include "system/file.h"
@@ -88,6 +89,12 @@ LevelFolder *create_level_folder(const char *dirpath)
         if(strcmp(version, VERSION) == 0) {
             dynarray_push(level_folder->titles, &title);
             dynarray_push(level_folder->filenames, &filepath);
+        } else {
+            log_info(
+                "Level `%s` with unsupported version %s rejected, expected %s\n",
+                title,
+                version,
+                VERSION);
         }
     }
 
