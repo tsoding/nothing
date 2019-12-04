@@ -10,7 +10,7 @@
 
 typedef struct {
     RevertAction revert;
-} Action;
+} HistoryAction;
 
 void undo_history_push(UndoHistory *undo_history,
                        RevertAction revert,
@@ -19,7 +19,7 @@ void undo_history_push(UndoHistory *undo_history,
 {
     trace_assert(undo_history);
 
-    Action action = {
+    HistoryAction action = {
         .revert = revert,
     };
 
@@ -32,7 +32,7 @@ void undo_history_pop(UndoHistory *undo_history)
     trace_assert(undo_history);
 
     if (stack_empty(&undo_history->actions) > 0) {
-        Action action = *(Action *)stack_top_element(&undo_history->actions);
+        HistoryAction action = *(HistoryAction *)stack_top_element(&undo_history->actions);
         stack_pop(&undo_history->actions);
 
         size_t context_size = stack_top_size(&undo_history->actions);
