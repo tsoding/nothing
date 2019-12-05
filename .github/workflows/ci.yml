@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: install dependencies
-        run: brew install sdl2
+        run: brew install sdl2 pkg-config
       - name: build nothing
         run: |
           ./build-posix.sh
