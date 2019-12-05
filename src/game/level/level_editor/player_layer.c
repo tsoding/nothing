@@ -13,12 +13,12 @@ typedef struct {
     PlayerLayer *layer;
     Vec2f position;
     Color color;
-} UndoContext;
+} PlayerUndoContext;
 
 static
-UndoContext player_layer_create_undo_context(PlayerLayer *player_layer)
+PlayerUndoContext player_layer_create_undo_context(PlayerLayer *player_layer)
 {
-    UndoContext context = {
+    PlayerUndoContext context = {
         .layer = player_layer,
         .position = player_layer->position,
         .color = player_layer->prev_color
@@ -31,9 +31,9 @@ static
 void player_layer_undo(void *context, size_t context_size)
 {
     trace_assert(context);
-    trace_assert(sizeof(UndoContext) == context_size);
+    trace_assert(sizeof(PlayerUndoContext) == context_size);
 
-    UndoContext *undo_context = context;
+    PlayerUndoContext *undo_context = context;
     PlayerLayer *player_layer = undo_context->layer;
 
     player_layer->position = undo_context->position;
@@ -129,7 +129,7 @@ int player_layer_event(PlayerLayer *player_layer,
     }
 
     if (selected && !color_picker_drag(&player_layer->color_picker)) {
-        UndoContext context =
+        PlayerUndoContext context =
             player_layer_create_undo_context(player_layer);
         undo_history_push(
             undo_history,
@@ -143,7 +143,7 @@ int player_layer_event(PlayerLayer *player_layer,
         event->type == SDL_MOUSEBUTTONDOWN &&
         event->button.button == SDL_BUTTON_LEFT) {
 
-        UndoContext context =
+        PlayerUndoContext context =
             player_layer_create_undo_context(player_layer);
 
         undo_history_push(

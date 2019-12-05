@@ -8,7 +8,6 @@
 #include "background_layer.h"
 #include "undo_history.h"
 
-
 BackgroundLayer create_background_layer(Color color)
 {
     BackgroundLayer layer = {
@@ -51,15 +50,15 @@ int background_layer_render(BackgroundLayer *layer,
 typedef struct {
     BackgroundLayer *layer;
     Color color;
-} UndoContext;
+} BackgroundUndoContext;
 
 static
 void background_undo_color(void *context, size_t context_size)
 {
     trace_assert(context);
-    trace_assert(sizeof(UndoContext) == context_size);
+    trace_assert(sizeof(BackgroundUndoContext) == context_size);
 
-    UndoContext *undo_context = context;
+    BackgroundUndoContext *undo_context = context;
     BackgroundLayer *background_layer = undo_context->layer;
 
     background_layer->color_picker = create_color_picker_from_rgba(undo_context->color);
@@ -86,7 +85,7 @@ int background_layer_event(BackgroundLayer *layer,
     }
 
     if (selected && !color_picker_drag(&layer->color_picker)) {
-        UndoContext context = {
+        BackgroundUndoContext context = {
             .layer = layer,
             .color = layer->prev_color
         };
