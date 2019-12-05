@@ -48,7 +48,7 @@ Labels *create_labels_from_line_stream(LineStream *line_stream)
 
     if (sscanf(
             line_stream_next(line_stream),
-            "%zu",
+            "%lu",
             &labels->count) == EOF) {
         log_fail("Could not read amount of labels\n");
         RETURN_LT(lt, NULL);

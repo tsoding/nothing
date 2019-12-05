@@ -237,7 +237,7 @@ LabelLayer *create_label_layer_from_line_stream(LineStream *line_stream, const c
     }
 
     size_t n = 0;
-    if (sscanf(line, "%zu", &n) == EOF) {
+    if (sscanf(line, "%lu", &n) == EOF) {
         log_fail("Could not parse amount of labels\n");
         RETURN_LT(label_layer->lt, NULL);
     }
@@ -958,7 +958,7 @@ int label_layer_dump_stream(const LabelLayer *label_layer, FILE *filedump)
     Color *colors = dynarray_data(label_layer->colors);
     char *texts = dynarray_data(label_layer->texts);
 
-    fprintf(filedump, "%zd\n", n);
+    fprintf(filedump, "%ld\n", n);
     for (size_t i = 0; i < n; ++i) {
         fprintf(filedump, "%s %f %f ",
                 ids + LABEL_LAYER_ID_MAX_SIZE * i,

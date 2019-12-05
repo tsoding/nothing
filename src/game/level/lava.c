@@ -33,7 +33,7 @@ Lava *create_lava_from_line_stream(LineStream *line_stream)
 
     if (sscanf(
             line_stream_next(line_stream),
-            "%zu",
+            "%lu",
             &lava->rects_count) < 0) {
         log_fail("Could not read amount of lava\n");
         RETURN_LT(lt, NULL);
