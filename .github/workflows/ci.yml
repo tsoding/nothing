@@ -2,6 +2,7 @@ name: CI
 on: [push, pull_request]
 
 jobs:
+  # TODO: no clang on linux build on GitHub actions
   build-linux:
     runs-on: ubuntu-18.04
     steps:
@@ -54,7 +55,7 @@ jobs:
         # this gives us msys.
       - uses: numworks/setup-msys2@v1
       - name: install dependencies
-        run: msys2do pacman -S --noconfirm mingw-w64-x86_64-gcc mingw64/mingw-w64-x86_64-SDL2 make
+        run: msys2do pacman -S --noconfirm mingw-w64-x86_64-gcc mingw64/mingw-w64-x86_64-SDL2 make mingw-w64-x86_64-pkg-config
       - name: build nothing
         run: |
           msys2do ./build-posix.sh
