@@ -2,7 +2,7 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  # TODO: no clang on linux build on GitHub actions
+  # TODO(#1176): no clang on linux build on GitHub actions
   build-linux:
     runs-on: ubuntu-18.04
     steps:
