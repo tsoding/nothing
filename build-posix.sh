@@ -4,6 +4,10 @@ set -xe
 
 CFLAGS="$CFLAGS -Wall -Wextra -Wconversion -Wunused -Wunused-function -Wunused-label -Wunused-macros -Wunused-parameter -Wunused-value -Wunused-variable -Wcast-align -Wcast-qual -Wmissing-declarations -Wredundant-decls -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wshadow -Wstrict-prototypes -Wwrite-strings -Wswitch -Wmissing-field-initializers -fno-common -fno-strict-aliasing -pedantic -std=c11 -ggdb -O3 $(pkg-config --cflags sdl2) -I./src/"
 
+if [ ! -z "$NOTHING_CI" ]; then
+    CFLAGS="$CFLAGS -Werror"
+fi
+
 LIBS="$LIBS $(pkg-config --libs sdl2) -lm"
 
 $CC $CFLAGS -o nothing nothing.c $LIBS

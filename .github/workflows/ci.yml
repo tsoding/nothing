@@ -16,6 +16,7 @@ jobs:
           ./build-posix.sh 
         env: 
           CC: gcc
+          NOTHING_CI: on
 
   build-macos:
     runs-on: macOS-10.14
@@ -28,6 +29,7 @@ jobs:
           ./build-posix.sh
         env: 
           CC: clang
+          NOTHING_CI: on
 
   # TODO: build-windows-msvc on GitHub Actions does not support SCU
   build-windows-msvc:
@@ -61,3 +63,4 @@ jobs:
           msys2do ./build-posix.sh
         env: 
           CC: gcc
+          NOTHING_CI: on
