@@ -31,7 +31,7 @@ jobs:
           CC: clang
           NOTHING_CI: on
 
-  # TODO: build-windows-msvc on GitHub Actions does not support SCU
+  # TODO(#1177): build-windows-msvc on GitHub Actions does not support SCU
   build-windows-msvc:
     runs-on: windows-2019
     steps:
