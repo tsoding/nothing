@@ -10,4 +10,9 @@ fi
 
 LIBS="$LIBS $(pkg-config --libs sdl2) -lm"
 
+if [ ${#CC} -eq "0" ]; then
+    echo "CC variable is not set up!"
+    return
+fi
+
 $CC $CFLAGS -o nothing nothing.c $LIBS
