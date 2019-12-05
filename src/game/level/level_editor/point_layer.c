@@ -218,7 +218,7 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream,
     size_t count = 0;
     if (sscanf(
             line_stream_next(line_stream),
-            "%lu",
+            "%zu",
             &count) == EOF) {
         log_fail("Could not read amount of points");
         RETURN_LT(point_layer->lt, NULL);
@@ -761,7 +761,7 @@ int point_layer_dump_stream(const PointLayer *point_layer,
     Vec2f *positions = dynarray_data(point_layer->positions);
     Color *colors = dynarray_data(point_layer->colors);
 
-    fprintf(filedump, "%ld\n", n);
+    fprintf(filedump, "%zd\n", n);
     for (size_t i = 0; i < n; ++i) {
         fprintf(filedump, "%s %f %f ",
                 ids + ID_MAX_SIZE * i,
