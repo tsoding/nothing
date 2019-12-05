@@ -57,11 +57,20 @@ $ sudo pacman -S gcc cmake sdl2
 
 ### Linux
 
+#### CMake
+
 ```console
 $ mkdir build
 $ cd build/
 $ cmake ..
 $ make
+$ ./nothing
+```
+
+#### SCU
+
+```console
+$ ./build-posix.sh
 $ ./nothing
 ```
 
