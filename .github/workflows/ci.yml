@@ -50,7 +50,7 @@ jobs:
           cmake .. -DNOTHING_CI=ON
           cmake --build .
           
-  # TODO: %z related warnings on build-windows-mingw GitHub Action
+  # TODO(#1178): %z related warnings on build-windows-mingw GitHub Action
   build-windows-mingw:
     runs-on: windows-2019
     steps:
