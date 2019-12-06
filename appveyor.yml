@@ -1,4 +1,5 @@
-# TODO(#1179): Appveyor build does not support SCU 
+# TODO(#1183): appveyor linux build does not support clang
+# TODO(#1184): appveyor does not support macos build
 image:
   - ubuntu1804
   - Visual Studio 2015
@@ -26,16 +27,20 @@ install:
           }
        } else {
            bash -c "sudo apt-get update -qq"
-           bash -c "sudo apt-get install -qq libsdl2-dev libxml2-dev"
+           bash -c "sudo apt-get install -qq libsdl2-dev"
        }
 build_script:
-  - mkdir build
-  - cd build
   - ps: |
-       if ($isWindows -and $env:BUILD_TYPE -eq 'mingw') {
-           C:\msys64\usr\bin\bash.exe -lc "cmake .. -G 'MSYS Makefiles' -DNOTHING_CI=ON"
-           C:\msys64\usr\bin\bash.exe -lc "cmake --build ."
+       if ($isWindows) {
+           mkdir build
+           cd build
+           if ($env:BUILD_TYPE -eq 'mingw') {
+               C:\msys64\usr\bin\bash.exe -lc "cmake .. -G 'MSYS Makefiles' -DNOTHING_CI=ON"
+               C:\msys64\usr\bin\bash.exe -lc "cmake --build ."
+           } else {
+               cmake .. -DNOTHING_CI=ON
+               cmake --build .
+           }
        } else {
-           cmake .. -DNOTHING_CI=ON
-           cmake --build .
+           bash -c "CC=gcc ./build-posix.sh"
        }
