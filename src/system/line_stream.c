@@ -111,7 +111,7 @@ char *line_stream_collect_n_lines(LineStream *line_stream, size_t n)
             return NULL;
         }
 
-        result = string_append(result,line);
+        result = string_append(result, line);
     }
 
     return result;

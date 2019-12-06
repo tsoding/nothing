@@ -58,7 +58,7 @@ LevelEditor *create_level_editor(Cursor *cursor)
 
     level_editor->metadata = PUSH_LT(
         lt,
-        create_level_metadata("New Level"),
+        create_level_metadata(VERSION, "New Level"),
         destroy_level_metadata);
     if (level_editor->metadata == NULL) {
         RETURN_LT(lt, NULL);
@@ -561,6 +561,10 @@ static int level_editor_dump(LevelEditor *level_editor)
         level_editor->lt,
         fopen(level_editor->file_name, "w"),
         fclose_lt);
+
+    if (fprintf(filedump, "%s\n", level_metadata_version(level_editor->metadata)) < 0) {
+        return -1;
+    }
 
     if (fprintf(filedump, "%s\n", level_metadata_title(level_editor->metadata)) < 0) {
         return -1;
