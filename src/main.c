@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 
     Lt *lt = create_lt();
 
-    int fps = 30;
+    int fps = 60;
 
     for (int i = 1; i < argc;) {
         if (strcmp(argv[i], "--fps") == 0) {
