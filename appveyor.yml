@@ -42,5 +42,5 @@ build_script:
                cmake --build .
            }
        } else {
-           bash -c "./build-posix.sh"
+           bash -c "CC=gcc ./build-posix.sh"
        }
