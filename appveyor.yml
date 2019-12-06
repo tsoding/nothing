@@ -30,10 +30,10 @@ install:
            bash -c "sudo apt-get install -qq libsdl2-dev"
        }
 build_script:
-  - mkdir build
-  - cd build
   - ps: |
        if ($isWindows) {
+           mkdir build
+           cd build
            if ($env:BUILD_TYPE -eq 'mingw') {
                C:\msys64\usr\bin\bash.exe -lc "cmake .. -G 'MSYS Makefiles' -DNOTHING_CI=ON"
                C:\msys64\usr\bin\bash.exe -lc "cmake --build ."
