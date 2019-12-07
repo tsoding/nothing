@@ -22,6 +22,7 @@
 
 #include "level_editor.h"
 
+#define LEVEL_FOLDER_MAX_LENGTH 512
 #define LEVEL_LINE_MAX_LENGTH 512
 #define LEVEL_EDITOR_EDIT_FIELD_SIZE vec(5.0f, 5.0f)
 #define LEVEL_EDITOR_EDIT_FIELD_COLOR COLOR_BLACK
@@ -388,12 +389,15 @@ int level_editor_saveas_event(LevelEditor *level_editor,
     case SDL_KEYDOWN: {
         if (event->key.keysym.sym == SDLK_RETURN) {
             trace_assert(level_editor->file_name == NULL);
+            char path[LEVEL_FOLDER_MAX_LENGTH];
+            snprintf(
+                path,
+                LEVEL_FOLDER_MAX_LENGTH,
+                "./assets/levels//%s.txt",
+                edit_field_as_text(level_editor->edit_field_filename));
             level_editor->file_name = PUSH_LT(
                 level_editor->lt,
-                string_duplicate(
-                    edit_field_as_text(
-                        level_editor->edit_field_filename),
-                    NULL),
+                string_duplicate(path, NULL),
                 free);
             level_editor_dump(level_editor);
             SDL_StopTextInput();
