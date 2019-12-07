@@ -8,6 +8,10 @@ if [ ! -z "$NOTHING_CI" ]; then
     CFLAGS="$CFLAGS -Werror"
 fi
 
+if [ ! -z "$NOTHING_PROFILE" ]; then
+    CFLAGS="$CFLAGS -pg"
+fi
+
 LIBS="$LIBS $(pkg-config --libs sdl2) -lm"
 
 if [ ${#CC} -eq "0" ]; then
