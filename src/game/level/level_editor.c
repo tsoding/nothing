@@ -389,11 +389,11 @@ int level_editor_saveas_event(LevelEditor *level_editor,
         if (event->key.keysym.sym == SDLK_RETURN) {
             trace_assert(level_editor->file_name == NULL);
             char file_name_buffer[640] ="./assets/levels//";
-            strcat(file_name_buffer[, edit_field_as_text(level_editor->edit_field_filename));
-            strcat(file_name_buffer[, ".txt");
+            strcat(file_name_buffer, edit_field_as_text(level_editor->edit_field_filename));
+            strcat(file_name_buffer, ".txt");
             level_editor->file_name = PUSH_LT(
                 level_editor->lt,
-                string_duplicate(file_name_buffer[, NULL),
+                string_duplicate(file_name_buffer, NULL),
                 free);
             level_editor_dump(level_editor);
             SDL_StopTextInput();
