@@ -8,6 +8,7 @@
 #include "math/vec.h"
 #include "math/rect.h"
 #include "math/triangle.h"
+#include "config.h"
 
 typedef struct {
     bool debug_mode;
@@ -16,6 +17,7 @@ typedef struct {
     float scale;
     SDL_Renderer *renderer;
     Sprite_font *font;
+    Vec2f effective_scale;
 } Camera;
 
 Camera create_camera(SDL_Renderer *renderer,
@@ -100,5 +102,21 @@ int camera_fill_rect_screen(const Camera *camera,
                             Color color);
 
 const Sprite_font *camera_font(const Camera *camera);
+
+static Vec2f effective_ratio(const SDL_Rect *view_port)
+{
+    if ((float) view_port->w / CAMERA_RATIO_X > (float) view_port->h / CAMERA_RATIO_Y) {
+        return vec(CAMERA_RATIO_X, (float) view_port->h / ((float) view_port->w / CAMERA_RATIO_X));
+    } else {
+        return vec((float) view_port->w / ((float) view_port->h / CAMERA_RATIO_Y), CAMERA_RATIO_Y);
+    }
+}
+
+static Vec2f effective_scale(const SDL_Rect *view_port)
+{
+    return vec_entry_div(
+        vec((float) view_port->w, (float) view_port->h),
+        vec_scala_mult(effective_ratio(view_port), 50.0f));
+}
 
 #endif  // CAMERA_H_
