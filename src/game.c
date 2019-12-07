@@ -220,7 +220,7 @@ int game_update(Game *game, float delta_time)
 {
     trace_assert(game);
     trace_assert(delta_time > 0.0f);
-
+    //printf("game->console_enabled = %s\n", game->console_enabled);
     if (game->console_enabled) {
         if (console_update(game->console, delta_time) < 0) {
             return -1;
@@ -453,7 +453,7 @@ int game_event(Game *game, const SDL_Event *event)
             switch (event->key.keysym.sym) {
             case SDLK_BACKQUOTE:
             case SDLK_c: {
-                if (event->key.keysym.mod == 0) {
+                if (event->key.keysym.mod == KMOD_NONE || event->key.keysym.mod == KMOD_NUM) {
                     SDL_StartTextInput();
                     game->console_enabled = 1;
                     console_slide_down(game->console);
