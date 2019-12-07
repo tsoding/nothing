@@ -397,7 +397,7 @@ int level_editor_saveas_event(LevelEditor *level_editor,
                 edit_field_as_text(level_editor->edit_field_filename));
             level_editor->file_name = PUSH_LT(
                 level_editor->lt,
-                path,
+                string_duplicate(path, NULL),
                 free);
             level_editor_dump(level_editor);
             SDL_StopTextInput();
