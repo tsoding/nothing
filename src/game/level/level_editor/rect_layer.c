@@ -264,7 +264,7 @@ static int rect_layer_rect_at(RectLayer *layer, Vec2f position)
     trace_assert(layer);
 
     int n = (int) layer->rects.count;
-    Rect *rects = dynarray_data(&layer->rects);
+    Rect *rects = (Rect*)layer->rects.data;
 
     for (int i = n - 1; i >= 0; --i) {
         if (rect_contains_point(rects[i], position)) {
@@ -339,7 +339,7 @@ static int rect_layer_event_idle(RectLayer *layer,
         return 0;
     }
 
-    Rect *rects = dynarray_data(&layer->rects);
+    Rect *rects = (Rect*)layer->rects.data;
 
     switch (event->type) {
     case SDL_MOUSEBUTTONDOWN: {
@@ -353,7 +353,7 @@ static int rect_layer_event_idle(RectLayer *layer,
                 rect_layer_rect_at(layer, position);
 
 
-            Color *colors = dynarray_data(&layer->colors);
+            Color *colors = (Color*)layer->colors.data;
 
             if (layer->selection >= 0 &&
                 layer->selection == rect_at_position &&
@@ -445,8 +445,8 @@ static int rect_layer_event_idle(RectLayer *layer,
 
         case SDLK_F2: {
             if (layer->selection >= 0) {
-                const char *ids = dynarray_data(&layer->ids);
-                Color *colors = dynarray_data(&layer->colors);
+                const char *ids = (char*)layer->ids.data;
+                Color *colors = (Color*)layer->colors.data;
 
                 edit_field_restyle(
                     layer->id_edit_field,
@@ -542,8 +542,8 @@ void snap_rect_resize_if_enabled(RectLayer *layer, Rect *a, float snapping_thres
 
     if (!layer->snapping_enabled) return;
 
-    Rect *rects = dynarray_data(&layer->rects);
-    size_t rects_size = dynarray_count(&layer->rects);
+    Rect *rects = (Rect*)layer->rects.data;
+    size_t rects_size = layer->rects.count;
 
     for (size_t i = 0; i < rects_size; ++i) {
         if (i == (size_t) layer->selection) continue;
@@ -570,7 +570,7 @@ static int rect_layer_event_resize(RectLayer *layer,
     trace_assert(camera);
     trace_assert(layer->selection >= 0);
 
-    Rect *rects = dynarray_data(&layer->rects);
+    Rect *rects = (Rect*)layer->rects.data;
 
     float scaled_snap_threshold = SNAPPING_THRESHOLD / camera->scale;
 
@@ -716,8 +716,8 @@ void snap_rect_move_if_enabled(RectLayer *layer, Rect *a,
 
     if (!layer->snapping_enabled) return;
 
-    Rect *rects = dynarray_data(&layer->rects);
-    size_t rects_size = dynarray_count(&layer->rects);
+    Rect *rects = (Rect*)layer->rects.data;
+    size_t rects_size = layer->rects.count;
 
     for (size_t i = 0; i < rects_size; ++i) {
         if (i == (size_t) layer->selection) continue;
@@ -744,7 +744,7 @@ static int rect_layer_event_move(RectLayer *layer,
     trace_assert(camera);
     trace_assert(layer->selection >= 0);
 
-    Rect *rects = dynarray_data(&layer->rects);
+    Rect *rects = (Rect*)layer->rects.data;
 
     switch (event->type) {
     case SDL_MOUSEMOTION: {

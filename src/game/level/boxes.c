@@ -77,9 +77,9 @@ int boxes_render(Boxes *boxes, const Camera *camera)
     trace_assert(boxes);
     trace_assert(camera);
 
-    const size_t count = dynarray_count(&boxes->body_ids);
-    RigidBodyId *body_ids = dynarray_data(&boxes->body_ids);
-    Color *body_colors = dynarray_data(&boxes->body_colors);
+    const size_t count = boxes->body_ids.count;
+    RigidBodyId *body_ids = (RigidBodyId *)boxes->body_ids.data;
+    Color *body_colors = (Color *)boxes->body_colors.data;
 
     for (size_t i = 0; i < count; ++i) {
         if (rigid_bodies_render(
@@ -99,8 +99,8 @@ int boxes_update(Boxes *boxes,
 {
     trace_assert(boxes);
 
-    const size_t count = dynarray_count(&boxes->body_ids);
-    RigidBodyId *body_ids = dynarray_data(&boxes->body_ids);
+    const size_t count = boxes->body_ids.count;
+    RigidBodyId *body_ids = (RigidBodyId *)boxes->body_ids.data;
 
     for (size_t i = 0; i < count; ++i) {
         if (rigid_bodies_update(boxes->rigid_bodies, body_ids[i], delta_time) < 0) {
@@ -116,8 +116,8 @@ void boxes_float_in_lava(Boxes *boxes, Lava *lava)
     trace_assert(boxes);
     trace_assert(lava);
 
-    const size_t count = dynarray_count(&boxes->body_ids);
-    RigidBodyId *body_ids = dynarray_data(&boxes->body_ids);
+    const size_t count = boxes->body_ids.count;
+    RigidBodyId *body_ids = (RigidBodyId*)boxes->body_ids.data;
 
     for (size_t i = 0; i < count; ++i) {
         lava_float_rigid_body(lava, boxes->rigid_bodies, body_ids[i]);
@@ -139,8 +139,8 @@ int boxes_delete_at(Boxes *boxes, Vec2f position)
 {
     trace_assert(boxes);
 
-    const size_t count = dynarray_count(&boxes->body_ids);
-    RigidBodyId *body_ids = dynarray_data(&boxes->body_ids);
+    const size_t count = boxes->body_ids.count;
+    RigidBodyId *body_ids = (RigidBodyId*)boxes->body_ids.data;
 
     for (size_t i = 0; i < count; ++i) {
         const Rect hitbox = rigid_bodies_hitbox(

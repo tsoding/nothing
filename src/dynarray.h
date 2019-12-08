@@ -23,8 +23,6 @@ Dynarray create_dynarray(size_t element_size)
     return result;
 }
 
-size_t dynarray_count(const Dynarray *dynarray);
-void *dynarray_data(Dynarray *dynarray);
 void *dynarray_pointer_at(Dynarray *dynarray, size_t index);
 void dynarray_replace_at(Dynarray *dynarray, size_t index, void *element);
 void dynarray_copy_to(Dynarray *dynarray, void *dest, size_t index);

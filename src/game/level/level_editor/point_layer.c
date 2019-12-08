@@ -73,8 +73,8 @@ PointUndoContext create_point_undo_swap_context(PointLayer *point_layer,
                                      size_t index, size_t index2)
 {
     trace_assert(point_layer);
-    trace_assert(index < dynarray_count(&point_layer->positions));
-    trace_assert(index2 < dynarray_count(&point_layer->positions));
+    trace_assert(index < point_layer->positions.count);
+    trace_assert(index2 < point_layer->positions.count);
 
     PointUndoContext undo_context;
     undo_context.type = POINT_UNDO_SWAP;
@@ -96,7 +96,7 @@ PointUndoContext create_point_undo_context(PointLayer *point_layer,
 
     size_t index =
         type == POINT_UNDO_ADD
-        ? dynarray_count(&point_layer->positions) - 1
+        ? point_layer->positions.count - 1
         : (size_t) point_layer->selection;
 
     undo_context.type = type;
@@ -383,8 +383,8 @@ void point_layer_swap_elements(PointLayer *point_layer,
 {
     trace_assert(point_layer);
     trace_assert(undo_history);
-    trace_assert(a < dynarray_count(&point_layer->positions));
-    trace_assert(b < dynarray_count(&point_layer->positions));
+    trace_assert(a < point_layer->positions.count);
+    trace_assert(b < point_layer->positions.count);
 
     dynarray_swap(&point_layer->positions, a, b);
     dynarray_swap(&point_layer->colors, a, b);
@@ -456,8 +456,8 @@ int point_layer_idle_event(PointLayer *point_layer,
                     color_picker_rgba(&point_layer->color_picker),
                     undo_history);
             } else {
-                Color *colors = dynarray_data(&point_layer->colors);
-                Vec2f *positions = dynarray_data(&point_layer->positions);
+                Color *colors = (Color*)point_layer->colors.data;
+                Vec2f *positions = (Vec2f*)point_layer->positions.data;
 
                 point_layer->state = POINT_LAYER_MOVE;
                 point_layer->color_picker =
@@ -473,7 +473,7 @@ int point_layer_idle_event(PointLayer *point_layer,
         case SDLK_UP: {
             if ((event->key.keysym.mod & KMOD_SHIFT)
                 && (point_layer->selection >= 0)
-                && ((size_t)(point_layer->selection + 1) < dynarray_count(&point_layer->positions))) {
+                && ((size_t)(point_layer->selection + 1) < point_layer->positions.count)) {
                 point_layer_swap_elements(
                     point_layer,
                     (size_t) point_layer->selection,
@@ -486,7 +486,7 @@ int point_layer_idle_event(PointLayer *point_layer,
         case SDLK_DOWN: {
             if ((event->key.keysym.mod & KMOD_SHIFT)
                 && (point_layer->selection > 0)
-                && ((size_t) point_layer->selection < dynarray_count(&point_layer->positions))) {
+                && ((size_t) point_layer->selection < point_layer->positions.count)) {
                 point_layer_swap_elements(
                     point_layer,
                     (size_t) point_layer->selection,
@@ -497,7 +497,7 @@ int point_layer_idle_event(PointLayer *point_layer,
         } break;
 
         case SDLK_DELETE: {
-            if (0 <= point_layer->selection && point_layer->selection < (int) dynarray_count(&point_layer->positions)) {
+            if (0 <= point_layer->selection && point_layer->selection < (int) point_layer->positions.count) {
                 point_layer_delete_nth_element(
                     point_layer,
                     (size_t)point_layer->selection,
@@ -508,7 +508,7 @@ int point_layer_idle_event(PointLayer *point_layer,
 
         case SDLK_F2: {
             if (point_layer->selection >= 0) {
-                char *ids = dynarray_data(&point_layer->ids);
+                char *ids = (char*)point_layer->ids.data;
                 point_layer->state = POINT_LAYER_EDIT_ID;
                 edit_field_replace(
                     point_layer->edit_field,
@@ -598,7 +598,7 @@ int point_layer_move_event(PointLayer *point_layer,
     trace_assert(camera);
     trace_assert(point_layer->selection >= 0);
 
-    Vec2f *positions = dynarray_data(&point_layer->positions);
+    Vec2f *positions = (Vec2f*)point_layer->positions.data;
 
     switch (event->type) {
     case SDL_MOUSEBUTTONUP: {

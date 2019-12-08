@@ -409,9 +409,9 @@ int label_layer_element_at(LabelLayer *label_layer,
 {
     trace_assert(label_layer);
 
-    Vec2f *positions = dynarray_data(&label_layer->positions);
+    Vec2f *positions = (Vec2f*)label_layer->positions.data;
 
-    const int n = (int) dynarray_count(&label_layer->texts);
+    const int n = (int) label_layer->texts.count;
     for (int i = n - 1; i >= 0; --i) {
         if (rect_contains_point(
                 boundary_of_element(
@@ -458,7 +458,7 @@ int label_layer_add_label(LabelLayer *label_layer,
              label_layer->id_name_prefix,
              label_layer->id_name_counter++);
 
-    size_t n = dynarray_count(&label_layer->ids);
+    size_t n = label_layer->ids.count;
 
     dynarray_push(&label_layer->ids, id);
     dynarray_push(&label_layer->positions, &position);
@@ -481,8 +481,8 @@ void label_layer_swap_elements(LabelLayer *label_layer,
 {
     trace_assert(label_layer);
     trace_assert(undo_history);
-    trace_assert(a < dynarray_count(&label_layer->positions));
-    trace_assert(b < dynarray_count(&label_layer->positions));
+    trace_assert(a < label_layer->positions.count);
+    trace_assert(b < label_layer->positions.count);
 
     dynarray_swap(&label_layer->ids, a, b);
     dynarray_swap(&label_layer->positions, a, b);
@@ -520,10 +520,10 @@ int label_layer_idle_event(LabelLayer *label_layer,
         return 0;
     }
 
-    Color *colors = dynarray_data(&label_layer->colors);
-    Vec2f *positions = dynarray_data(&label_layer->positions);
-    char *ids = dynarray_data(&label_layer->ids);
-    char *texts = dynarray_data(&label_layer->texts);
+    Color *colors = (Color*)label_layer->colors.data;
+    Vec2f *positions = (Vec2f*)label_layer->positions.data;
+    char *ids = (char*)label_layer->ids.data;
+    char *texts = (char*)label_layer->texts.data;
 
     switch (event->type) {
     case SDL_MOUSEBUTTONDOWN: {
@@ -573,7 +573,7 @@ int label_layer_idle_event(LabelLayer *label_layer,
         case SDLK_UP: {
             if ((event->key.keysym.mod & KMOD_SHIFT)
                 && (label_layer->selection >= 0)
-                && ((size_t)(label_layer->selection + 1) < dynarray_count(&label_layer->positions))) {
+                && ((size_t)(label_layer->selection + 1) < label_layer->positions.count)) {
                 label_layer_swap_elements(
                     label_layer,
                     (size_t) label_layer->selection,
@@ -586,7 +586,7 @@ int label_layer_idle_event(LabelLayer *label_layer,
         case SDLK_DOWN: {
             if ((event->key.keysym.mod & KMOD_SHIFT)
                 && (label_layer->selection > 0)
-                && ((size_t) label_layer->selection < dynarray_count(&label_layer->positions))) {
+                && ((size_t) label_layer->selection < label_layer->positions.count)) {
                 label_layer_swap_elements(
                     label_layer,
                     (size_t) label_layer->selection,
@@ -669,8 +669,8 @@ void snap_inter_position(LabelLayer *label_layer, float snap_threshold)
     trace_assert(label_layer->selection >= 0);
     trace_assert(label_layer->state == LABEL_LAYER_MOVE);
 
-    const size_t n = dynarray_count(&label_layer->positions);
-    Vec2f *positions = dynarray_data(&label_layer->positions);
+    const size_t n = label_layer->positions.count;
+    Vec2f *positions = (Vec2f*)label_layer->positions.data;
 
     Rect a = boundary_of_element(
         label_layer,
@@ -705,7 +705,7 @@ int label_layer_move_event(LabelLayer *label_layer,
     trace_assert(camera);
     trace_assert(label_layer->selection >= 0);
 
-    Vec2f *positions = dynarray_data(&label_layer->positions);
+    Vec2f *positions = (Vec2f*)label_layer->positions.data;
 
     switch (event->type) {
     case SDL_MOUSEMOTION: {
@@ -778,7 +778,7 @@ int label_layer_edit_text_event(LabelLayer *label_layer,
             LABEL_UNDO_PUSH(undo_history, create_label_undo_context(label_layer, LABEL_UNDO_UPDATE));
 
             char *text =
-                (char*)dynarray_data(&label_layer->texts) + label_layer->selection * LABEL_LAYER_TEXT_MAX_SIZE;
+                (char*)label_layer->texts.data + label_layer->selection * LABEL_LAYER_TEXT_MAX_SIZE;
             memset(text, 0, LABEL_LAYER_TEXT_MAX_SIZE);
             memcpy(text, edit_field_as_text(label_layer->edit_field), LABEL_LAYER_TEXT_MAX_SIZE - 1);
             label_layer->state = LABEL_LAYER_IDLE;
@@ -817,7 +817,7 @@ int label_layer_edit_id_event(LabelLayer *label_layer,
             LABEL_UNDO_PUSH(undo_history, create_label_undo_context(label_layer, LABEL_UNDO_UPDATE));
 
             char *id =
-                (char*)dynarray_data(&label_layer->ids) + label_layer->selection * LABEL_LAYER_ID_MAX_SIZE;
+                (char*)label_layer->ids.data + label_layer->selection * LABEL_LAYER_ID_MAX_SIZE;
             memset(id, 0, LABEL_LAYER_ID_MAX_SIZE);
             memcpy(id, edit_field_as_text(label_layer->edit_field), LABEL_LAYER_ID_MAX_SIZE - 1);
             label_layer->state = LABEL_LAYER_IDLE;

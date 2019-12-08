@@ -15,18 +15,6 @@ void *dynarray_pointer_at(Dynarray *dynarray, size_t index)
     return dynarray->data + index * dynarray->element_size;
 }
 
-size_t dynarray_count(const Dynarray *dynarray)
-{
-    trace_assert(dynarray);
-    return dynarray->count;
-}
-
-void *dynarray_data(Dynarray *dynarray)
-{
-    trace_assert(dynarray);
-    return dynarray->data;
-}
-
 void dynarray_clear(Dynarray *dynarray)
 {
     trace_assert(dynarray);
