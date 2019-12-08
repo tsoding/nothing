@@ -368,6 +368,7 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
                 return -1;
             }
 
+            level_picker_clean_selection(game->level_picker);
             game_switch_state(game, GAME_STATE_LEVEL);
         } break;
 
@@ -402,6 +403,8 @@ static int game_event_level_editor(Game *game, const SDL_Event *event)
             if (game->level == NULL) {
                 return -1;
             }
+
+            level_picker_clean_selection(game->level_picker);
             game_switch_state(game, GAME_STATE_LEVEL);
         } break;
         }
@@ -466,8 +469,13 @@ int game_event(Game *game, const SDL_Event *event)
 
     // State event handling
     switch (game->state) {
-    case GAME_STATE_LEVEL:
+    case GAME_STATE_LEVEL: {
+        if (event->key.keysym.sym == SDLK_ESCAPE) {
+            game_switch_state(game, GAME_STATE_LEVEL_PICKER);
+            return 0;
+        }
         return game_event_running(game, event);
+    }
 
     case GAME_STATE_LEVEL_PICKER:
         return game_event_level_picker(game, event);
@@ -584,6 +592,7 @@ int game_load_level(Game *game, const char *level_filename)
         return -1;
     }
 
+    level_picker_clean_selection(game->level_picker);
     game_switch_state(game, GAME_STATE_LEVEL);
 
     return 0;
