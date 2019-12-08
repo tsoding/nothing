@@ -45,6 +45,7 @@ LevelFolder *create_level_folder(const char *dirpath)
     char path[LEVEL_FOLDER_MAX_LENGTH];
     DIR *level_dir = PUSH_LT(lt, opendir(dirpath), closedir_lt);
 
+    LevelMetadata level_metadata;
     for (struct dirent *d = readdir(level_dir);
          d != NULL;
          d = readdir(level_dir)) {
@@ -58,20 +59,18 @@ LevelFolder *create_level_folder(const char *dirpath)
             RETURN_LT(lt, NULL);
         }
 
-        LevelMetadata *level_metadata = create_level_metadata_from_file(filepath);
-        if (level_metadata == NULL) {
+        if (metadata_load_from_file(&level_metadata, filepath) < 0) {
             RETURN_LT(lt, NULL);
         }
 
         const char *version = PUSH_LT(
             lt,
-            string_duplicate(level_metadata_version(level_metadata), NULL),
+            string_duplicate(level_metadata.version, NULL),
             free);
         const char *title = PUSH_LT(
             lt,
-            string_duplicate(level_metadata_title(level_metadata), NULL),
+            string_duplicate(level_metadata.title, NULL),
             free);
-        destroy_level_metadata(level_metadata);
 
         if(strcmp(version, VERSION) == 0) {
             dynarray_push(&level_folder->titles, &title);

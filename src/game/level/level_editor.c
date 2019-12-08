@@ -22,6 +22,8 @@
 
 #include "level_editor.h"
 
+#define DEFAULT_LEVEL_TITLE "New Level"
+
 #define LEVEL_FOLDER_MAX_LENGTH 512
 #define LEVEL_LINE_MAX_LENGTH 512
 #define LEVEL_EDITOR_EDIT_FIELD_SIZE vec(5.0f, 5.0f)
@@ -57,13 +59,15 @@ LevelEditor *create_level_editor(Cursor *cursor)
         RETURN_LT(lt, NULL);
     }
 
-    level_editor->metadata = PUSH_LT(
-        lt,
-        create_level_metadata(VERSION, "New Level"),
-        destroy_level_metadata);
-    if (level_editor->metadata == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    memset(level_editor->metadata.version, 0, METADATA_VERSION_MAX_SIZE);
+    memcpy(level_editor->metadata.version,
+           VERSION,
+           min_size_t(sizeof(VERSION), METADATA_VERSION_MAX_SIZE - 1));
+
+    memset(level_editor->metadata.title, 0, METADATA_TITLE_MAX_SIZE);
+    memcpy(level_editor->metadata.title,
+           DEFAULT_LEVEL_TITLE,
+           min_size_t(sizeof(DEFAULT_LEVEL_TITLE), METADATA_TITLE_MAX_SIZE - 1));
 
     level_editor->background_layer = create_background_layer(hexstr("fffda5"));
 
@@ -191,11 +195,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor
         RETURN_LT(lt, NULL);
     }
 
-    level_editor->metadata = PUSH_LT(
-        lt,
-        create_level_metadata_from_line_stream(level_stream),
-        destroy_level_metadata);
-    if (level_editor->metadata == NULL) {
+    if (metadata_load_from_line_stream(&level_editor->metadata, level_stream) < 0) {
         RETURN_LT(lt, NULL);
     }
 
@@ -564,11 +564,11 @@ static int level_editor_dump(LevelEditor *level_editor)
         fopen(level_editor->file_name, "w"),
         fclose_lt);
 
-    if (fprintf(filedump, "%s\n", level_metadata_version(level_editor->metadata)) < 0) {
+    if (fprintf(filedump, "%s\n", level_editor->metadata.version) < 0) {
         return -1;
     }
 
-    if (fprintf(filedump, "%s\n", level_metadata_title(level_editor->metadata)) < 0) {
+    if (fprintf(filedump, "%s\n", level_editor->metadata.title) < 0) {
         return -1;
     }
 
