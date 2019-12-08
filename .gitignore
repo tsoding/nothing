@@ -6,3 +6,5 @@ GPATH
 GRTAGS
 GTAGS
 nothing
+gmon.out
+*.output
