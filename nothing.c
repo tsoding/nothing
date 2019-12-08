@@ -53,5 +53,4 @@
 #include "src/system/stacktrace.c"
 #include "src/system/str.c"
 #include "src/dynarray.c"
-#include "src/hashset.c"
 #include "src/system/file.c"

@@ -9,44 +9,8 @@
 
 #define DYNARRAY_INIT_CAPACITY 8
 
-struct Dynarray
+void *dynarray_pointer_at(Dynarray *dynarray, size_t index)
 {
-    Lt *lt;
-    size_t element_size;
-    size_t capacity;
-    size_t count;
-    char *data;
-};
-
-Dynarray *create_dynarray(size_t element_size)
-{
-    Lt *lt = create_lt();
-
-    Dynarray *dynarray = PUSH_LT(lt, nth_calloc(1, sizeof(Dynarray)), free);
-    if (dynarray == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    dynarray->lt = lt;
-
-    dynarray->element_size = element_size;
-    dynarray->capacity = DYNARRAY_INIT_CAPACITY;
-    dynarray->count = 0;
-
-    dynarray->data = PUSH_LT(lt, nth_calloc(DYNARRAY_INIT_CAPACITY, element_size), free);
-    if (dynarray->data == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    return dynarray;
-}
-
-void destroy_dynarray(Dynarray *dynarray)
-{
-    trace_assert(dynarray);
-    RETURN_LT0(dynarray->lt);
-}
-
-void *dynarray_pointer_at(Dynarray *dynarray, size_t index) {
     trace_assert(index < dynarray->count);
     return dynarray->data + index * dynarray->element_size;
 }
@@ -76,19 +40,15 @@ int dynarray_grow(Dynarray *dynarray)
         return 0;
     }
 
-    void *new_data = nth_realloc(
+    if (dynarray->capacity == 0) {
+        dynarray->capacity = DYNARRAY_INIT_CAPACITY;
+    } else {
+        dynarray->capacity *= 2;
+    }
+
+    dynarray->data = nth_realloc(
         dynarray->data,
         dynarray->capacity * dynarray->element_size * 2);
-    if (new_data == NULL) {
-        return -1;
-    }
-
-    dynarray->data = REPLACE_LT(dynarray->lt, dynarray->data, new_data);
-    if (dynarray->data == NULL) {
-        return -1;
-    }
-
-    dynarray->capacity *= 2;
 
     return 0;
 }
