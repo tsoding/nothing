@@ -8,11 +8,12 @@
 #define FONT_CHAR_WIDTH 7
 #define FONT_CHAR_HEIGHT 9
 
-typedef struct Sprite_font Sprite_font;
+typedef struct {
+    SDL_Texture *texture;
+} Sprite_font;
 
-Sprite_font *create_sprite_font_from_file(const char *bmp_file_path,
-                                            SDL_Renderer *renderer);
-void destroy_sprite_font(Sprite_font *sprite_font);
+SDL_Texture *load_bmp_font_texture(SDL_Renderer *renderer,
+                                   const char *bmp_file_path);
 
 int sprite_font_render_text(const Sprite_font *sprite_font,
                             SDL_Renderer *renderer,

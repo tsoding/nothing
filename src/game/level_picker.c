@@ -26,7 +26,7 @@ struct LevelPicker
     ListSelector *list_selector;
 };
 
-LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dirpath)
+LevelPicker *create_level_picker(const char *dirpath)
 {
     trace_assert(dirpath);
 
@@ -62,7 +62,6 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
     level_picker->list_selector = PUSH_LT(
         lt,
         create_list_selector(
-            sprite_font,
             level_folder_titles(level_picker->level_folder),
             level_folder_count(level_picker->level_folder),
             vec(5.0f, 5.0f),
@@ -101,7 +100,7 @@ int level_picker_render(const LevelPicker *level_picker,
         return -1;
     }
 
-    if (list_selector_render(level_picker->list_selector, camera->renderer) < 0) {
+    if (list_selector_render(camera, level_picker->list_selector) < 0) {
         return -1;
     }
 

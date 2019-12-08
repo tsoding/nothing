@@ -16,7 +16,6 @@
 struct ListSelector
 {
     Lt *lt;
-    const Sprite_font *sprite_font;
     const char **items;
     size_t count;
     size_t cursor;
@@ -26,8 +25,7 @@ struct ListSelector
     float padding_bottom;
 };
 
-ListSelector *create_list_selector(const Sprite_font *sprite_font,
-                                   const char *items[],
+ListSelector *create_list_selector(const char *items[],
                                    size_t count,
                                    Vec2f font_scale,
                                    float padding_bottom)
@@ -42,7 +40,6 @@ ListSelector *create_list_selector(const Sprite_font *sprite_font,
     }
     list_selector->lt = lt;
 
-    list_selector->sprite_font = sprite_font;
     list_selector->items = items;
     list_selector->count = count;
     list_selector->cursor = 0;
@@ -60,11 +57,11 @@ void destroy_list_selector(ListSelector *list_selector)
     RETURN_LT0(list_selector->lt);
 }
 
-int list_selector_render(const ListSelector *list_selector,
-                         SDL_Renderer *renderer)
+int list_selector_render(const Camera *camera,
+                         const ListSelector *list_selector)
 {
+    trace_assert(camera);
     trace_assert(list_selector);
-    trace_assert(renderer);
 
     for (size_t i = 0; i < list_selector->count; ++i) {
         const Vec2f current_position = vec_sum(
@@ -72,8 +69,8 @@ int list_selector_render(const ListSelector *list_selector,
             vec(0.0f, (float) i * ((float) FONT_CHAR_HEIGHT * list_selector->font_scale.y + list_selector->padding_bottom)));
 
         if (sprite_font_render_text(
-                list_selector->sprite_font,
-                renderer,
+                &camera->font,
+                camera->renderer,
                 current_position,
                 list_selector->font_scale,
                 rgba(1.0f, 1.0f, 1.0f, 1.0f),
@@ -87,11 +84,11 @@ int list_selector_render(const ListSelector *list_selector,
                     current_position,
                     list_selector->font_scale,
                     strlen(list_selector->items[i])));
-            if (SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255) < 0) {
+            if (SDL_SetRenderDrawColor(camera->renderer, 255, 255, 255, 255) < 0) {
                 return -1;
             }
 
-            if (SDL_RenderDrawRect(renderer, &boundary_box) < 0) {
+            if (SDL_RenderDrawRect(camera->renderer, &boundary_box) < 0) {
                 return -1;
             }
         }

@@ -2,9 +2,9 @@
 #define CONSOLE_H_
 
 #include <SDL.h>
+#include "game/sprite_font.h"
 
 typedef struct Console Console;
-typedef struct Sprite_font Sprite_font;
 typedef struct Game Game;
 
 Console *create_console(Game *game);

@@ -32,7 +32,7 @@ typedef struct Game {
     Lt *lt;
 
     Game_state state;
-    Sprite_font *font;
+    Sprite_font font;
     LevelPicker *level_picker;
     LevelEditor *level_editor;
     Credits *credits;
@@ -68,21 +68,13 @@ Game *create_game(const char *level_folder,
     }
     game->lt = lt;
 
-    game->font = PUSH_LT(
-        lt,
-        create_sprite_font_from_file(
-            "./assets/images/charmap-oldschool.bmp",
-            renderer),
-        destroy_sprite_font);
-    if (game->font == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    game->font.texture = load_bmp_font_texture(
+        renderer,
+        "./assets/images/charmap-oldschool.bmp");
 
     game->level_picker = PUSH_LT(
         lt,
-        create_level_picker(
-            game->font,
-            level_folder),
+        create_level_picker(level_folder),
         destroy_level_picker);
     if (game->level_picker == NULL) {
         RETURN_LT(lt, NULL);

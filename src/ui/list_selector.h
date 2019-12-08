@@ -1,18 +1,21 @@
 #ifndef LIST_SELECTOR_H_
 #define LIST_SELECTOR_H_
 
+#include "game/camera.h"
+
 typedef struct ListSelector ListSelector;
 
-ListSelector *create_list_selector(const Sprite_font *sprite_font,
-                                   const char *items[],
+ListSelector *create_list_selector(const char *items[],
                                    size_t count,
                                    Vec2f font_scale,
                                    float padding_bottom);
 void destroy_list_selector(ListSelector *list_selector);
 
-int list_selector_render(const ListSelector *list_selector,
-                         SDL_Renderer *renderer);
-Vec2f list_selector_size(const ListSelector *list_selector, Vec2f font_scale, float padding_bottom);
+int list_selector_render(const Camera *camera,
+                         const ListSelector *list_selector);
+Vec2f list_selector_size(const ListSelector *list_selector,
+                         Vec2f font_scale,
+                         float padding_bottom);
 
 int list_selector_update(ListSelector *list_selector, float delta_time);
 int list_selector_event(ListSelector *list_selector, const SDL_Event *event);

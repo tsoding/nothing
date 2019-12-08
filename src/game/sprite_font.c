@@ -14,57 +14,50 @@
 
 struct Sprite_font
 {
-    Lt *lt;
     SDL_Texture *texture;
 };
 
-Sprite_font *create_sprite_font_from_file(const char *bmp_file_path,
-                                            SDL_Renderer *renderer)
+static inline
+void *scp(void *ptr)
 {
-    trace_assert(bmp_file_path);
-    trace_assert(renderer);
-
-    Lt *lt = create_lt();
-
-    Sprite_font * const sprite_font = PUSH_LT(lt, nth_calloc(1, sizeof(Sprite_font)), free);
-    if (sprite_font == NULL) {
-        RETURN_LT(lt, NULL);
+    if (ptr == NULL) {
+        log_fail("SDL error: %s\n", SDL_GetError());
+        trace_assert(0 && "SDL error");
     }
 
-    SDL_Surface * const surface = PUSH_LT(lt, SDL_LoadBMP(bmp_file_path), SDL_FreeSurface);
-    if (surface == NULL) {
-        log_fail("Could not load %s: %s\n", bmp_file_path, SDL_GetError());
-        RETURN_LT(lt, NULL);
-    }
-
-    if (SDL_SetColorKey(surface,
-                        SDL_TRUE,
-                        SDL_MapRGB(surface->format,
-                                   0, 0, 0)) < 0) {
-        log_fail("SDL_SetColorKey: %s\n", SDL_GetError());
-        RETURN_LT(lt, NULL);
-    }
-
-    sprite_font->texture = PUSH_LT(
-        lt,
-        SDL_CreateTextureFromSurface(renderer, surface),
-        SDL_DestroyTexture);
-    if (sprite_font->texture == NULL) {
-        log_fail("SDL_CreateTextureFromSurface: %s\n", SDL_GetError());
-        RETURN_LT(lt, NULL);
-    }
-
-    SDL_FreeSurface(RELEASE_LT(lt, surface));
-
-    sprite_font->lt = lt;
-
-    return sprite_font;
+    return ptr;
 }
 
-void destroy_sprite_font(Sprite_font *sprite_font)
+static inline
+int scc(int code)
 {
-    trace_assert(sprite_font);
-    RETURN_LT0(sprite_font->lt);
+    if (code < 0) {
+        log_fail("SDL error: %s\n", SDL_GetError());
+        trace_assert(0 && "SDL error");
+    }
+
+    return code;
+}
+
+SDL_Texture *load_bmp_font_texture(SDL_Renderer *renderer,
+                                   const char *bmp_file_path)
+{
+    trace_assert(renderer);
+    trace_assert(bmp_file_path);
+
+    SDL_Surface *surface = scp(SDL_LoadBMP(bmp_file_path));
+    scc(SDL_SetColorKey(
+            surface,
+            SDL_TRUE,
+            SDL_MapRGB(surface->format,
+                       0, 0, 0)));
+
+    SDL_Texture *result =
+        scp(SDL_CreateTextureFromSurface(renderer, surface));
+
+    SDL_FreeSurface(surface);
+
+    return result;
 }
 
 static SDL_Rect sprite_font_char_rect(const Sprite_font *sprite_font, char x)
