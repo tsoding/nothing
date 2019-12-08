@@ -85,7 +85,9 @@ LevelMetadata *create_level_metadata_from_line_stream(LineStream *line_stream)
         RETURN_LT(lt, NULL);
     }
 
-    return create_level_metadata(version_line, title_line);
+    LevelMetadata *result = create_level_metadata(version_line, title_line);
+    destroy_lt(lt);
+    return result;
 }
 
 void destroy_level_metadata(LevelMetadata *level_metadata)
