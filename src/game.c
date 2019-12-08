@@ -19,14 +19,6 @@
 #include "game/settings.h"
 #include "game/credits.h"
 
-typedef enum Game_state {
-    GAME_STATE_LEVEL = 0,
-    GAME_STATE_LEVEL_PICKER,
-    GAME_STATE_LEVEL_EDITOR,
-    GAME_STATE_CREDITS,
-    GAME_STATE_SETTINGS,
-    GAME_STATE_QUIT
-} Game_state;
 
 typedef struct Game {
     Lt *lt;
@@ -46,7 +38,6 @@ typedef struct Game {
     int console_enabled;
 } Game;
 
-static
 void game_switch_state(Game *game, Game_state state)
 {
     game->camera = create_camera(game->renderer, game->font);
@@ -368,7 +359,6 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
                 return -1;
             }
 
-            level_picker_clean_selection(game->level_picker);
             game_switch_state(game, GAME_STATE_LEVEL);
         } break;
 
@@ -458,15 +448,6 @@ int game_event(Game *game, const SDL_Event *event)
                     SDL_StartTextInput();
                     game->console_enabled = 1;
                     console_slide_down(game->console);
-                }
-            } break;
-            }
-        } break;
-        case SDL_KEYDOWN: {
-            switch (event->key.keysym.sym) {
-            case SDLK_ESCAPE: {
-                if (game->state == GAME_STATE_LEVEL) {
-                    game_switch_state(game, GAME_STATE_LEVEL_PICKER);
                 }
             } break;
             }
@@ -594,7 +575,6 @@ int game_load_level(Game *game, const char *level_filename)
         return -1;
     }
 
-    level_picker_clean_selection(game->level_picker);
     game_switch_state(game, GAME_STATE_LEVEL);
 
     return 0;
