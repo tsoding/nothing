@@ -19,14 +19,6 @@
 #include "game/settings.h"
 #include "game/credits.h"
 
-typedef enum Game_state {
-    GAME_STATE_LEVEL = 0,
-    GAME_STATE_LEVEL_PICKER,
-    GAME_STATE_LEVEL_EDITOR,
-    GAME_STATE_CREDITS,
-    GAME_STATE_SETTINGS,
-    GAME_STATE_QUIT
-} Game_state;
 
 typedef struct Game {
     Lt *lt;
@@ -46,9 +38,11 @@ typedef struct Game {
     int console_enabled;
 } Game;
 
-static
 void game_switch_state(Game *game, Game_state state)
 {
+    if (state == GAME_STATE_LEVEL_PICKER) {
+        level_picker_clean_selection(game->level_picker);
+    }
     game->camera = create_camera(game->renderer, game->font);
     game->state = state;
 }

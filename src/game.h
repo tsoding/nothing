@@ -24,6 +24,16 @@ int game_input(Game *game,
 
 int game_over_check(const Game *game);
 
+typedef enum Game_state {
+    GAME_STATE_LEVEL = 0,
+    GAME_STATE_LEVEL_PICKER,
+    GAME_STATE_LEVEL_EDITOR,
+    GAME_STATE_CREDITS,
+    GAME_STATE_SETTINGS,
+    GAME_STATE_QUIT
+} Game_state;
+
+void game_switch_state(Game *game, Game_state state);
 int game_load_level(Game *game, const char *filepath);
 
 // defined in main.c. is there a better place for this to be declared?
