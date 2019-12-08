@@ -19,14 +19,6 @@
 #include "game/settings.h"
 #include "game/credits.h"
 
-typedef enum Game_state {
-    GAME_STATE_LEVEL = 0,
-    GAME_STATE_LEVEL_PICKER,
-    GAME_STATE_LEVEL_EDITOR,
-    GAME_STATE_CREDITS,
-    GAME_STATE_SETTINGS,
-    GAME_STATE_QUIT
-} Game_state;
 
 typedef struct Game {
     Lt *lt;
@@ -46,9 +38,11 @@ typedef struct Game {
     int console_enabled;
 } Game;
 
-static
 void game_switch_state(Game *game, Game_state state)
 {
+    if (state == GAME_STATE_LEVEL_PICKER) {
+        level_picker_clean_selection(game->level_picker);
+    }
     game->camera = create_camera(game->renderer, game->font);
     game->state = state;
 }
@@ -212,6 +206,11 @@ int game_update(Game *game, float delta_time)
 {
     trace_assert(game);
     trace_assert(delta_time > 0.0f);
+
+    // TODO: effective scale recalculation should be probably done only when the size of the window is changed
+    SDL_Rect view_port;
+    SDL_RenderGetViewport(game->camera.renderer, &view_port);
+    game->camera.effective_scale = effective_scale(&view_port);
 
     if (game->console_enabled) {
         if (console_update(game->console, delta_time) < 0) {
@@ -445,7 +444,7 @@ int game_event(Game *game, const SDL_Event *event)
             switch (event->key.keysym.sym) {
             case SDLK_BACKQUOTE:
             case SDLK_c: {
-                if (event->key.keysym.mod == 0) {
+                if (event->key.keysym.mod == KMOD_NONE || event->key.keysym.mod == KMOD_NUM) {
                     SDL_StartTextInput();
                     game->console_enabled = 1;
                     console_slide_down(game->console);

@@ -8,6 +8,7 @@
 #include "math/vec.h"
 #include "math/rect.h"
 #include "math/triangle.h"
+#include "config.h"
 
 typedef struct {
     bool debug_mode;
@@ -16,6 +17,7 @@ typedef struct {
     float scale;
     SDL_Renderer *renderer;
     Sprite_font font;
+    Vec2f effective_scale;
 } Camera;
 
 Camera create_camera(SDL_Renderer *renderer,
@@ -98,5 +100,8 @@ Rect camera_rect(const Camera *camera, const Rect rect);
 int camera_fill_rect_screen(const Camera *camera,
                             Rect rect,
                             Color color);
+
+
+Vec2f effective_scale(const SDL_Rect *view_port);
 
 #endif  // CAMERA_H_

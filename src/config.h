@@ -19,4 +19,7 @@
 
 #define SNAPPING_THRESHOLD 10.0f
 
+#define CAMERA_RATIO_X 16.0f
+#define CAMERA_RATIO_Y 9.0f
+
 #endif  // CONFIG_H_
