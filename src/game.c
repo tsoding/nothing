@@ -464,18 +464,22 @@ int game_event(Game *game, const SDL_Event *event)
             } break;
             }
         } break;
+        case SDL_KEYDOWN: {
+            switch (event->key.keysym.sym) {
+            case SDLK_ESCAPE: {
+                if (game->state == GAME_STATE_LEVEL) {
+                    game_switch_state(game, GAME_STATE_LEVEL_PICKER);
+                }
+            } break;
+            }
+        } break;
         }
     }
 
     // State event handling
     switch (game->state) {
-    case GAME_STATE_LEVEL: {
-        if (event->key.keysym.sym == SDLK_ESCAPE) {
-            game_switch_state(game, GAME_STATE_LEVEL_PICKER);
-            return 0;
-        }
+    case GAME_STATE_LEVEL:
         return game_event_running(game, event);
-    }
 
     case GAME_STATE_LEVEL_PICKER:
         return game_event_level_picker(game, event);
