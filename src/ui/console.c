@@ -172,7 +172,6 @@ static int console_eval_input(Console *console)
         }
     } else if (token_equals_str(command, "menu")) {
         console_log_push_line(console->console_log, "Loading menu", NULL, CONSOLE_FOREGROUND);
-        level_picker_clean_selection(console->game->level_picker);
         game_switch_state(console->game, GAME_STATE_LEVEL_PICKER);
     } else {
         console_log_push_line(console->console_log, "Unknown command", NULL, CONSOLE_ERROR);

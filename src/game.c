@@ -40,6 +40,9 @@ typedef struct Game {
 
 void game_switch_state(Game *game, Game_state state)
 {
+    if (state == GAME_STATE_LEVEL_PICKER) {
+        level_picker_clean_selection(game->level_picker);
+    }
     game->camera = create_camera(game->renderer, game->font);
     game->state = state;
 }
