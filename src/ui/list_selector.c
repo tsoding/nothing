@@ -68,15 +68,13 @@ int list_selector_render(const Camera *camera,
             list_selector->position,
             vec(0.0f, (float) i * ((float) FONT_CHAR_HEIGHT * list_selector->font_scale.y + list_selector->padding_bottom)));
 
-        if (sprite_font_render_text(
-                &camera->font,
-                camera->renderer,
-                current_position,
-                list_selector->font_scale,
-                rgba(1.0f, 1.0f, 1.0f, 1.0f),
-                list_selector->items[i]) < 0) {
-            return -1;
-        }
+        sprite_font_render_text(
+            &camera->font,
+            camera->renderer,
+            current_position,
+            list_selector->font_scale,
+            rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            list_selector->items[i]);
 
         if (i == list_selector->cursor) {
             SDL_Rect boundary_box = rect_for_sdl(

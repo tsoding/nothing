@@ -245,11 +245,9 @@ int console_render(const Console *console,
         return -1;
     }
 
-    if (console_log_render(console->console_log,
-                           camera,
-                           vec(0.0f, y)) < 0) {
-        return -1;
-    }
+    console_log_render(console->console_log,
+                       camera,
+                       vec(0.0f, y));
 
     if (edit_field_render_screen(console->edit_field,
                                  camera,

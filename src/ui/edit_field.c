@@ -341,14 +341,12 @@ int edit_field_render_screen(const Edit_field *edit_field,
     const float cursor_y_overflow = 10.0f;
     const float cursor_width = 2.0f;
 
-    if (camera_render_text_screen(
-            camera,
-            edit_field->buffer,
-            edit_field->font_size,
-            edit_field->font_color,
-            screen_position) < 0) {
-        return -1;
-    }
+    camera_render_text_screen(
+        camera,
+        edit_field->buffer,
+        edit_field->font_size,
+        edit_field->font_color,
+        screen_position);
 
     /* TODO(#363): the size of the cursor does not correspond to font size */
     if (camera_fill_rect_screen(

@@ -10,9 +10,9 @@ Console_Log *create_console_log(Vec2f font_size,
                                 size_t capacity);
 void destroy_console_log(Console_Log *console_log);
 
-int console_log_render(const Console_Log *console_log,
-                       const Camera *camera,
-                       Vec2f position);
+void console_log_render(const Console_Log *console_log,
+                        const Camera *camera,
+                        Vec2f position);
 
 int console_log_push_line(Console_Log *console_log,
                           const char *line,

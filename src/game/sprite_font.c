@@ -77,12 +77,12 @@ static SDL_Rect sprite_font_char_rect(const Sprite_font *sprite_font, char x)
     }
 }
 
-int sprite_font_render_text(const Sprite_font *sprite_font,
-                            SDL_Renderer *renderer,
-                            Vec2f position,
-                            Vec2f size,
-                            Color color,
-                            const char *text)
+void sprite_font_render_text(const Sprite_font *sprite_font,
+                             SDL_Renderer *renderer,
+                             Vec2f position,
+                             Vec2f size,
+                             Color color,
+                             const char *text)
 {
     trace_assert(sprite_font);
     trace_assert(renderer);
@@ -90,15 +90,12 @@ int sprite_font_render_text(const Sprite_font *sprite_font,
 
     const SDL_Color sdl_color = color_for_sdl(color);
 
-    if (SDL_SetTextureColorMod(sprite_font->texture, sdl_color.r, sdl_color.g, sdl_color.b) < 0) {
-        log_fail("SDL_SetTextureColorMod: %s\n", SDL_GetError());
-        return -1;
-    }
-
-    if (SDL_SetTextureAlphaMod(sprite_font->texture, sdl_color.a) < 0) {
-        log_fail("SDL_SetTextureAlphaMod: %s\n", SDL_GetError());
-        return -1;
-    }
+    scc(SDL_SetTextureColorMod(sprite_font->texture,
+                               sdl_color.r,
+                               sdl_color.g,
+                               sdl_color.b));
+    scc(SDL_SetTextureAlphaMod(sprite_font->texture,
+                               sdl_color.a));
 
     const size_t text_size = strlen(text);
     for (size_t i = 0; i < text_size; ++i) {
@@ -109,10 +106,6 @@ int sprite_font_render_text(const Sprite_font *sprite_font,
                 position.y,
                 (float) char_rect.w * size.x,
                 (float) char_rect.h * size.y));
-        if (SDL_RenderCopy(renderer, sprite_font->texture, &char_rect, &dest_rect) < 0) {
-            return -1;
-        }
+        scc(SDL_RenderCopy(renderer, sprite_font->texture, &char_rect, &dest_rect));
     }
-
-    return 0;
 }

@@ -174,15 +174,13 @@ int camera_render_text(const Camera *camera,
     const Vec2f scale = effective_scale(&view_port);
     const Vec2f screen_position = camera_point(camera, position);
 
-    if (sprite_font_render_text(
-            &camera->font,
-            camera->renderer,
-            screen_position,
-            vec(size.x * scale.x * camera->scale, size.y * scale.y * camera->scale),
-            camera->blackwhite_mode ? color_desaturate(c) : c,
-            text) < 0) {
-        return -1;
-    }
+    sprite_font_render_text(
+        &camera->font,
+        camera->renderer,
+        screen_position,
+        vec(size.x * scale.x * camera->scale, size.y * scale.y * camera->scale),
+        camera->blackwhite_mode ? color_desaturate(c) : c,
+        text);
 
     return 0;
 }
@@ -435,16 +433,16 @@ int camera_fill_rect_screen(const Camera *camera,
 
 }
 
-int camera_render_text_screen(const Camera *camera,
-                              const char *text,
-                              Vec2f size,
-                              Color color,
-                              Vec2f position)
+void camera_render_text_screen(const Camera *camera,
+                               const char *text,
+                               Vec2f size,
+                               Color color,
+                               Vec2f position)
 {
     trace_assert(camera);
     trace_assert(text);
 
-    return sprite_font_render_text(
+    sprite_font_render_text(
         &camera->font,
         camera->renderer,
         position,

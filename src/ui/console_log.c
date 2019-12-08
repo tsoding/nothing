@@ -61,9 +61,9 @@ void destroy_console_log(Console_Log *console_log)
     RETURN_LT0(console_log->lt);
 }
 
-int console_log_render(const Console_Log *console_log,
-                       const Camera *camera,
-                       Vec2f position)
+void console_log_render(const Console_Log *console_log,
+                        const Camera *camera,
+                        Vec2f position)
 {
     trace_assert(console_log);
     trace_assert(camera);
@@ -71,18 +71,15 @@ int console_log_render(const Console_Log *console_log,
     for (size_t i = 0; i < console_log->capacity; ++i) {
         const size_t j = (i + console_log->cursor) % console_log->capacity;
         if (console_log->buffer[j]) {
-            if (camera_render_text_screen(camera,
-                                          console_log->buffer[j],
-                                          console_log->font_size,
-                                          console_log->colors[j],
-                                          vec_sum(position,
-                                                  vec(0.0f, FONT_CHAR_HEIGHT * console_log->font_size.y * (float) i))) < 0) {
-                return -1;
-            }
+            camera_render_text_screen(
+                camera,
+                console_log->buffer[j],
+                console_log->font_size,
+                console_log->colors[j],
+                vec_sum(position,
+                        vec(0.0f, FONT_CHAR_HEIGHT * console_log->font_size.y * (float) i)));
         }
     }
-
-    return 0;
 }
 
 int console_log_push_line(Console_Log *console_log,

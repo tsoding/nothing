@@ -59,11 +59,11 @@ int camera_render_text(const Camera *camera,
                        Color color,
                        Vec2f position);
 
-int camera_render_text_screen(const Camera *camera,
-                              const char *text,
-                              Vec2f size,
-                              Color color,
-                              Vec2f position);
+void camera_render_text_screen(const Camera *camera,
+                               const char *text,
+                               Vec2f size,
+                               Color color,
+                               Vec2f position);
 
 int camera_render_debug_text(const Camera *camera,
                              const char *text,

@@ -348,14 +348,12 @@ int level_editor_render(const LevelEditor *level_editor,
             (float) strlen(save_as_text) * FONT_CHAR_WIDTH * size.x;
 
         /* HTML */
-        if (camera_render_text_screen(
-                camera,
-                save_as_text,
-                LEVEL_EDITOR_EDIT_FIELD_SIZE,
-                LEVEL_EDITOR_EDIT_FIELD_COLOR,
-                position) < 0) {
-            return -1;
-        }
+        camera_render_text_screen(
+            camera,
+            save_as_text,
+            LEVEL_EDITOR_EDIT_FIELD_SIZE,
+            LEVEL_EDITOR_EDIT_FIELD_COLOR,
+            position);
 
         if (edit_field_render_screen(
                 level_editor->edit_field_filename,
