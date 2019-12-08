@@ -91,10 +91,10 @@ LevelFolder *create_level_folder(const char *dirpath)
             dynarray_push(level_folder->filenames, &filepath);
         } else {
             log_info(
-                "Level `%s` with unsupported version %s rejected, expected %s\n",
-                title,
-                version,
-                VERSION);
+                "Unsupported version for level [%s]: Expected `%s`, got `%s`\n",
+                d->d_name,
+                VERSION,
+                version);
         }
     }
 
