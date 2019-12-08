@@ -447,7 +447,7 @@ int game_event(Game *game, const SDL_Event *event)
             switch (event->key.keysym.sym) {
             case SDLK_BACKQUOTE:
             case SDLK_c: {
-                if (event->key.keysym.mod == 0) {
+                if (event->key.keysym.mod == KMOD_NONE || event->key.keysym.mod == KMOD_NUM) {
                     SDL_StartTextInput();
                     game->console_enabled = 1;
                     console_slide_down(game->console);
