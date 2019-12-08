@@ -403,8 +403,6 @@ static int game_event_level_editor(Game *game, const SDL_Event *event)
             if (game->level == NULL) {
                 return -1;
             }
-
-            level_picker_clean_selection(game->level_picker);
             game_switch_state(game, GAME_STATE_LEVEL);
         } break;
         }
