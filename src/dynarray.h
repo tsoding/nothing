@@ -9,7 +9,7 @@ typedef struct {
     size_t element_size;
     size_t capacity;
     size_t count;
-    uint8_t *data;
+    void *data;
 } Dynarray;
 
 static inline
