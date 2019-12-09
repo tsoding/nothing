@@ -7,6 +7,7 @@
 #include "system/line_stream.h"
 #include "system/str.h"
 #include "level_metadata.h"
+#include "math/extrema.h"
 
 struct LevelMetadata
 {
