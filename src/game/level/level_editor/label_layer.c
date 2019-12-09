@@ -309,10 +309,10 @@ int label_layer_render(const LabelLayer *label_layer,
     }
 
     size_t n = label_layer->ids.count;
-    char *ids = (char *)label_layer->ids.count;
-    Vec2f *positions = (Vec2f *)label_layer->positions.count;
-    Color *colors = (Color *)label_layer->colors.count;
-    char *texts = (char *)label_layer->texts.count;
+    char *ids = (char *)label_layer->ids.data;
+    Vec2f *positions = (Vec2f *)label_layer->positions.data;
+    Color *colors = (Color *)label_layer->colors.data;
+    char *texts = (char *)label_layer->texts.data;
 
     /* TODO(#891): LabelLayer doesn't show the final position of Label after the animation */
     for (size_t i = 0; i < n; ++i) {
