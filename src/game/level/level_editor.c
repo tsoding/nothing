@@ -19,6 +19,7 @@
 #include "system/log.h"
 #include "system/str.h"
 #include "config.h"
+#include "math/extrema.h"
 
 #include "level_editor.h"
 
