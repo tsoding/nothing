@@ -96,16 +96,14 @@ int layer_picker_render(const LayerPicker *layer_picker,
             return -1;
         }
 
-        if (camera_render_text_screen(
-                camera,
-                LAYER_CELL_TITLES[i],
-                vec(size.x * LAYER_TITLE_SW_RATIO,
-                    size.x * LAYER_TITLE_SW_RATIO),
-                color_invert(color),
-                vec(position.x + size.x * LAYER_TITLE_PW_RATIO,
-                    size.y * (float) i + position.y + size.x * LAYER_TITLE_PW_RATIO)) < 0) {
-            return -1;
-        }
+        camera_render_text_screen(
+            camera,
+            LAYER_CELL_TITLES[i],
+            vec(size.x * LAYER_TITLE_SW_RATIO,
+                size.x * LAYER_TITLE_SW_RATIO),
+            color_invert(color),
+            vec(position.x + size.x * LAYER_TITLE_PW_RATIO,
+                size.y * (float) i + position.y + size.x * LAYER_TITLE_PW_RATIO));
     }
 
     return 0;

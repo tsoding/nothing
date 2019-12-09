@@ -16,12 +16,12 @@ typedef struct {
     Vec2f position;
     float scale;
     SDL_Renderer *renderer;
-    Sprite_font *font;
+    Sprite_font font;
     Vec2f effective_scale;
 } Camera;
 
 Camera create_camera(SDL_Renderer *renderer,
-                     Sprite_font *font);
+                     Sprite_font font);
 
 int camera_clear_background(const Camera *camera,
                             Color color);
@@ -61,11 +61,11 @@ int camera_render_text(const Camera *camera,
                        Color color,
                        Vec2f position);
 
-int camera_render_text_screen(const Camera *camera,
-                              const char *text,
-                              Vec2f size,
-                              Color color,
-                              Vec2f position);
+void camera_render_text_screen(const Camera *camera,
+                               const char *text,
+                               Vec2f size,
+                               Color color,
+                               Vec2f position);
 
 int camera_render_debug_text(const Camera *camera,
                              const char *text,
@@ -101,7 +101,6 @@ int camera_fill_rect_screen(const Camera *camera,
                             Rect rect,
                             Color color);
 
-const Sprite_font *camera_font(const Camera *camera);
 
 Vec2f effective_scale(const SDL_Rect *view_port);
 

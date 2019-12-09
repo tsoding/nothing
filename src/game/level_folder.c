@@ -20,8 +20,8 @@
 struct LevelFolder
 {
     Lt *lt;
-    Dynarray *filenames;
-    Dynarray *titles;
+    Dynarray filenames;
+    Dynarray titles;
 };
 
 LevelFolder *create_level_folder(const char *dirpath)
@@ -39,25 +39,13 @@ LevelFolder *create_level_folder(const char *dirpath)
     }
     level_folder->lt = lt;
 
-    level_folder->filenames = PUSH_LT(
-        lt,
-        create_dynarray(sizeof(const char*)),
-        destroy_dynarray);
-    if (level_folder->filenames == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level_folder->titles = PUSH_LT(
-        lt,
-        create_dynarray(sizeof(const char*)),
-        destroy_dynarray);
-    if (level_folder->titles == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    level_folder->filenames = create_dynarray(sizeof(const char*));
+    level_folder->titles = create_dynarray(sizeof(const char*));
 
     char path[LEVEL_FOLDER_MAX_LENGTH];
     DIR *level_dir = PUSH_LT(lt, opendir(dirpath), closedir_lt);
 
+    LevelMetadata level_metadata;
     for (struct dirent *d = readdir(level_dir);
          d != NULL;
          d = readdir(level_dir)) {
@@ -71,24 +59,22 @@ LevelFolder *create_level_folder(const char *dirpath)
             RETURN_LT(lt, NULL);
         }
 
-        LevelMetadata *level_metadata = create_level_metadata_from_file(filepath);
-        if (level_metadata == NULL) {
+        if (metadata_load_from_file(&level_metadata, filepath) < 0) {
             RETURN_LT(lt, NULL);
         }
 
         const char *version = PUSH_LT(
             lt,
-            string_duplicate(level_metadata_version(level_metadata), NULL),
+            string_duplicate(level_metadata.version, NULL),
             free);
         const char *title = PUSH_LT(
             lt,
-            string_duplicate(level_metadata_title(level_metadata), NULL),
+            string_duplicate(level_metadata.title, NULL),
             free);
-        destroy_level_metadata(level_metadata);
 
         if(strcmp(version, VERSION) == 0) {
-            dynarray_push(level_folder->titles, &title);
-            dynarray_push(level_folder->filenames, &filepath);
+            dynarray_push(&level_folder->titles, &title);
+            dynarray_push(&level_folder->filenames, &filepath);
         } else {
             log_info(
                 "Unsupported version for level [%s]: Expected `%s`, got `%s`\n",
@@ -106,23 +92,25 @@ LevelFolder *create_level_folder(const char *dirpath)
 void destroy_level_folder(LevelFolder *level_folder)
 {
     trace_assert(level_folder);
+    free(level_folder->filenames.data);
+    free(level_folder->titles.data);
     RETURN_LT0(level_folder->lt);
 }
 
 const char **level_folder_filenames(const LevelFolder *level_folder)
 {
     trace_assert(level_folder);
-    return dynarray_data(level_folder->filenames);
+    return (const char **)level_folder->filenames.data;
 }
 
 const char **level_folder_titles(const LevelFolder *level_folder)
 {
     trace_assert(level_folder);
-    return dynarray_data(level_folder->titles);
+    return (const char **)level_folder->titles.data;
 }
 
 size_t level_folder_count(const LevelFolder *level_folder)
 {
     trace_assert(level_folder);
-    return dynarray_count(level_folder->filenames);
+    return level_folder->filenames.count;
 }

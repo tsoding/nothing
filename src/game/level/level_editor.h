@@ -5,10 +5,10 @@
 #include "game/level/level_editor/layer_picker.h"
 #include "game/level/level_editor/undo_history.h"
 #include "game/level/level_editor/action_picker.h"
+#include "game/level_metadata.h"
 #include "ui/wiggly_text.h"
 #include "ui/cursor.h"
 
-typedef struct LevelMetadata LevelMetadata;
 typedef struct LevelEditor LevelEditor;
 typedef struct RectLayer RectLayer;
 typedef struct PointLayer PointLayer;
@@ -31,7 +31,7 @@ struct LevelEditor
     LayerPicker layer_picker;
     FadingWigglyText notice;
 
-    LevelMetadata *metadata;
+    LevelMetadata metadata;
     RectLayer *boxes_layer;
     RectLayer *platforms_layer;
     RectLayer *back_platforms_layer;

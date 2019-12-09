@@ -37,10 +37,10 @@ static Color label_clipboard_color;
 struct LabelLayer {
     Lt *lt;
     LabelLayerState state;
-    Dynarray *ids;
-    Dynarray *positions;
-    Dynarray *colors;
-    Dynarray *texts;
+    Dynarray ids;
+    Dynarray positions;
+    Dynarray colors;
+    Dynarray texts;
     int selection;
     ColorPicker color_picker;
     Vec2f move_anchor;
@@ -74,8 +74,8 @@ LabelUndoContext create_label_undo_swap_context(LabelLayer *label_layer,
                                      size_t index, size_t index2)
 {
     trace_assert(label_layer);
-    trace_assert(index < dynarray_count(label_layer->positions));
-    trace_assert(index2 < dynarray_count(label_layer->positions));
+    trace_assert(index < label_layer->positions.count);
+    trace_assert(index2 < label_layer->positions.count);
 
     LabelUndoContext undo_context;
     undo_context.type = LABEL_UNDO_SWAP;
@@ -94,15 +94,15 @@ LabelUndoContext create_label_undo_context(LabelLayer *label_layer, LabelUndoTyp
     LabelUndoContext undo_context;
 
     size_t index = type == LABEL_UNDO_ADD
-        ? dynarray_count(label_layer->positions) - 1
+        ? label_layer->positions.count - 1
         : (size_t)label_layer->selection;
 
     undo_context.type = type;
     undo_context.layer = label_layer;
-    dynarray_copy_to(label_layer->ids, &undo_context.id, index);
-    dynarray_copy_to(label_layer->positions, &undo_context.position, index);
-    dynarray_copy_to(label_layer->colors, &undo_context.color, index);
-    dynarray_copy_to(label_layer->texts, &undo_context.text, index);
+    dynarray_copy_to(&label_layer->ids, &undo_context.id, index);
+    dynarray_copy_to(&label_layer->positions, &undo_context.position, index);
+    dynarray_copy_to(&label_layer->colors, &undo_context.color, index);
+    dynarray_copy_to(&label_layer->texts, &undo_context.text, index);
     undo_context.index = index;
 
     return undo_context;
@@ -119,31 +119,31 @@ void label_layer_undo(void *context, size_t context_size)
 
     switch (undo_context->type) {
     case LABEL_UNDO_ADD: {
-        dynarray_delete_at(label_layer->ids, undo_context->index);
-        dynarray_delete_at(label_layer->positions, undo_context->index);
-        dynarray_delete_at(label_layer->colors, undo_context->index);
-        dynarray_delete_at(label_layer->texts, undo_context->index);
+        dynarray_delete_at(&label_layer->ids, undo_context->index);
+        dynarray_delete_at(&label_layer->positions, undo_context->index);
+        dynarray_delete_at(&label_layer->colors, undo_context->index);
+        dynarray_delete_at(&label_layer->texts, undo_context->index);
     } break;
 
     case LABEL_UNDO_DELETE: {
-        dynarray_insert_before(label_layer->ids, undo_context->index, &undo_context->id);
-        dynarray_insert_before(label_layer->positions, undo_context->index, &undo_context->position);
-        dynarray_insert_before(label_layer->colors, undo_context->index, &undo_context->color);
-        dynarray_insert_before(label_layer->texts, undo_context->index, &undo_context->text);
+        dynarray_insert_before(&label_layer->ids, undo_context->index, &undo_context->id);
+        dynarray_insert_before(&label_layer->positions, undo_context->index, &undo_context->position);
+        dynarray_insert_before(&label_layer->colors, undo_context->index, &undo_context->color);
+        dynarray_insert_before(&label_layer->texts, undo_context->index, &undo_context->text);
     } break;
 
     case LABEL_UNDO_UPDATE: {
-        dynarray_replace_at(label_layer->ids, undo_context->index, &undo_context->id);
-        dynarray_replace_at(label_layer->positions, undo_context->index, &undo_context->position);
-        dynarray_replace_at(label_layer->colors, undo_context->index, &undo_context->color);
-        dynarray_replace_at(label_layer->texts, undo_context->index, &undo_context->text);
+        dynarray_replace_at(&label_layer->ids, undo_context->index, &undo_context->id);
+        dynarray_replace_at(&label_layer->positions, undo_context->index, &undo_context->position);
+        dynarray_replace_at(&label_layer->colors, undo_context->index, &undo_context->color);
+        dynarray_replace_at(&label_layer->texts, undo_context->index, &undo_context->text);
     } break;
 
     case LABEL_UNDO_SWAP: {
-        dynarray_swap(label_layer->ids, undo_context->index, undo_context->index2);
-        dynarray_swap(label_layer->positions, undo_context->index, undo_context->index2);
-        dynarray_swap(label_layer->colors, undo_context->index, undo_context->index2);
-        dynarray_swap(label_layer->texts, undo_context->index, undo_context->index2);
+        dynarray_swap(&label_layer->ids, undo_context->index, undo_context->index2);
+        dynarray_swap(&label_layer->positions, undo_context->index, undo_context->index2);
+        dynarray_swap(&label_layer->colors, undo_context->index, undo_context->index2);
+        dynarray_swap(&label_layer->texts, undo_context->index, undo_context->index2);
     } break;
     }
 }
@@ -179,31 +179,10 @@ LabelLayer *create_label_layer(const char *id_name_prefix)
     }
     label_layer->lt = lt;
 
-    label_layer->ids = PUSH_LT(
-        lt,
-        create_dynarray(sizeof(char) * LABEL_LAYER_ID_MAX_SIZE),
-        destroy_dynarray);
-    if (label_layer->ids == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    label_layer->positions = PUSH_LT(lt, create_dynarray(sizeof(Vec2f)), destroy_dynarray);
-    if (label_layer->positions == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    label_layer->colors = PUSH_LT(lt, create_dynarray(sizeof(Color)), destroy_dynarray);
-    if (label_layer->colors == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    label_layer->texts = PUSH_LT(
-        lt,
-        create_dynarray(sizeof(char) * LABEL_LAYER_TEXT_MAX_SIZE),
-        destroy_dynarray);
-    if (label_layer->texts == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    label_layer->ids = create_dynarray(sizeof(char) * LABEL_LAYER_ID_MAX_SIZE);
+    label_layer->positions = create_dynarray(sizeof(Vec2f));
+    label_layer->colors = create_dynarray(sizeof(Color));
+    label_layer->texts = create_dynarray(sizeof(char) * LABEL_LAYER_TEXT_MAX_SIZE);
 
     label_layer->color_picker = create_color_picker_from_rgba(COLOR_RED);
     label_layer->selection = -1;
@@ -263,9 +242,9 @@ LabelLayer *create_label_layer_from_line_stream(LineStream *line_stream, const c
 
         Color color = hexstr(hex);
 
-        dynarray_push(label_layer->ids, id);
-        dynarray_push(label_layer->positions, &position);
-        dynarray_push(label_layer->colors, &color);
+        dynarray_push(&label_layer->ids, id);
+        dynarray_push(&label_layer->positions, &position);
+        dynarray_push(&label_layer->colors, &color);
 
         line = line_stream_next(line_stream);
         if (line == NULL) {
@@ -275,7 +254,7 @@ LabelLayer *create_label_layer_from_line_stream(LineStream *line_stream, const c
         char label_text[LABEL_LAYER_TEXT_MAX_SIZE] = {0};
         memcpy(label_text, line, LABEL_LAYER_TEXT_MAX_SIZE - 1);
         trim_endline(label_text);
-        dynarray_push(label_layer->texts, &label_text);
+        dynarray_push(&label_layer->texts, &label_text);
     }
 
     return label_layer;
@@ -284,6 +263,12 @@ LabelLayer *create_label_layer_from_line_stream(LineStream *line_stream, const c
 void destroy_label_layer(LabelLayer *label_layer)
 {
     trace_assert(label_layer);
+
+    free(label_layer->ids.data);
+    free(label_layer->positions.data);
+    free(label_layer->colors.data);
+    free(label_layer->texts.data);
+
     destroy_lt(label_layer->lt);
 }
 
@@ -292,10 +277,10 @@ Rect boundary_of_element(const LabelLayer *label_layer,
                          size_t i,
                          Vec2f position)
 {
-    trace_assert(i < dynarray_count(label_layer->texts));
+    trace_assert(i < label_layer->texts.count);
 
-    char *ids = dynarray_data(label_layer->ids);
-    char *texts = dynarray_data(label_layer->texts);
+    char *ids = (char *)label_layer->ids.data;
+    char *texts = (char *)label_layer->texts.data;
 
     return rect_boundary2(
         sprite_font_boundary_box(
@@ -323,11 +308,11 @@ int label_layer_render(const LabelLayer *label_layer,
         return -1;
     }
 
-    size_t n = dynarray_count(label_layer->ids);
-    char *ids = dynarray_data(label_layer->ids);
-    Vec2f *positions = dynarray_data(label_layer->positions);
-    Color *colors = dynarray_data(label_layer->colors);
-    char *texts = dynarray_data(label_layer->texts);
+    size_t n = label_layer->ids.count;
+    char *ids = (char *)label_layer->ids.data;
+    Vec2f *positions = (Vec2f *)label_layer->positions.data;
+    Color *colors = (Color *)label_layer->colors.data;
+    char *texts = (char *)label_layer->texts.data;
 
     /* TODO(#891): LabelLayer doesn't show the final position of Label after the animation */
     for (size_t i = 0; i < n; ++i) {
@@ -424,9 +409,9 @@ int label_layer_element_at(LabelLayer *label_layer,
 {
     trace_assert(label_layer);
 
-    Vec2f *positions = dynarray_data(label_layer->positions);
+    Vec2f *positions = (Vec2f*)label_layer->positions.data;
 
-    const int n = (int) dynarray_count(label_layer->texts);
+    const int n = (int) label_layer->texts.count;
     for (int i = n - 1; i >= 0; --i) {
         if (rect_contains_point(
                 boundary_of_element(
@@ -450,10 +435,10 @@ void label_layer_delete_selected_label(LabelLayer *label_layer,
 
     LABEL_UNDO_PUSH(undo_history, create_label_undo_context(label_layer, LABEL_UNDO_DELETE));
 
-    dynarray_delete_at(label_layer->ids, (size_t)label_layer->selection);
-    dynarray_delete_at(label_layer->positions, (size_t)label_layer->selection);
-    dynarray_delete_at(label_layer->colors, (size_t)label_layer->selection);
-    dynarray_delete_at(label_layer->texts, (size_t)label_layer->selection);
+    dynarray_delete_at(&label_layer->ids, (size_t)label_layer->selection);
+    dynarray_delete_at(&label_layer->positions, (size_t)label_layer->selection);
+    dynarray_delete_at(&label_layer->colors, (size_t)label_layer->selection);
+    dynarray_delete_at(&label_layer->texts, (size_t)label_layer->selection);
 
     label_layer->selection = -1;
 }
@@ -473,14 +458,14 @@ int label_layer_add_label(LabelLayer *label_layer,
              label_layer->id_name_prefix,
              label_layer->id_name_counter++);
 
-    size_t n = dynarray_count(label_layer->ids);
+    size_t n = label_layer->ids.count;
 
-    dynarray_push(label_layer->ids, id);
-    dynarray_push(label_layer->positions, &position);
-    dynarray_push(label_layer->colors, &color);
-    dynarray_push_empty(label_layer->texts);
+    dynarray_push(&label_layer->ids, id);
+    dynarray_push(&label_layer->positions, &position);
+    dynarray_push(&label_layer->colors, &color);
+    dynarray_push_empty(&label_layer->texts);
     memcpy(
-        dynarray_pointer_at(label_layer->texts, n),
+        dynarray_pointer_at(&label_layer->texts, n),
         text,
         min_size_t(LABEL_LAYER_ID_MAX_SIZE - 1, strlen(text)));
 
@@ -496,13 +481,13 @@ void label_layer_swap_elements(LabelLayer *label_layer,
 {
     trace_assert(label_layer);
     trace_assert(undo_history);
-    trace_assert(a < dynarray_count(label_layer->positions));
-    trace_assert(b < dynarray_count(label_layer->positions));
+    trace_assert(a < label_layer->positions.count);
+    trace_assert(b < label_layer->positions.count);
 
-    dynarray_swap(label_layer->ids, a, b);
-    dynarray_swap(label_layer->positions, a, b);
-    dynarray_swap(label_layer->colors, a, b);
-    dynarray_swap(label_layer->texts, a, b);
+    dynarray_swap(&label_layer->ids, a, b);
+    dynarray_swap(&label_layer->positions, a, b);
+    dynarray_swap(&label_layer->colors, a, b);
+    dynarray_swap(&label_layer->texts, a, b);
 
     LABEL_UNDO_PUSH(undo_history, create_label_undo_swap_context(label_layer, a, b));
 }
@@ -535,10 +520,10 @@ int label_layer_idle_event(LabelLayer *label_layer,
         return 0;
     }
 
-    Color *colors = dynarray_data(label_layer->colors);
-    Vec2f *positions = dynarray_data(label_layer->positions);
-    char *ids = dynarray_data(label_layer->ids);
-    char *texts = dynarray_data(label_layer->texts);
+    Color *colors = (Color*)label_layer->colors.data;
+    Vec2f *positions = (Vec2f*)label_layer->positions.data;
+    char *ids = (char*)label_layer->ids.data;
+    char *texts = (char*)label_layer->texts.data;
 
     switch (event->type) {
     case SDL_MOUSEBUTTONDOWN: {
@@ -588,7 +573,7 @@ int label_layer_idle_event(LabelLayer *label_layer,
         case SDLK_UP: {
             if ((event->key.keysym.mod & KMOD_SHIFT)
                 && (label_layer->selection >= 0)
-                && ((size_t)(label_layer->selection + 1) < dynarray_count(label_layer->positions))) {
+                && ((size_t)(label_layer->selection + 1) < label_layer->positions.count)) {
                 label_layer_swap_elements(
                     label_layer,
                     (size_t) label_layer->selection,
@@ -601,7 +586,7 @@ int label_layer_idle_event(LabelLayer *label_layer,
         case SDLK_DOWN: {
             if ((event->key.keysym.mod & KMOD_SHIFT)
                 && (label_layer->selection > 0)
-                && ((size_t) label_layer->selection < dynarray_count(label_layer->positions))) {
+                && ((size_t) label_layer->selection < label_layer->positions.count)) {
                 label_layer_swap_elements(
                     label_layer,
                     (size_t) label_layer->selection,
@@ -651,8 +636,8 @@ int label_layer_idle_event(LabelLayer *label_layer,
         case SDLK_c: {
             if ((event->key.keysym.mod & KMOD_LCTRL) && label_layer->selection >= 0) {
                 label_clipboard = 1;
-                dynarray_copy_to(label_layer->texts, label_clipboard_text, (size_t)label_layer->selection);
-                dynarray_copy_to(label_layer->colors, &label_clipboard_color, (size_t)label_layer->selection);
+                dynarray_copy_to(&label_layer->texts, label_clipboard_text, (size_t)label_layer->selection);
+                dynarray_copy_to(&label_layer->colors, &label_clipboard_color, (size_t)label_layer->selection);
             }
         } break;
 
@@ -684,8 +669,8 @@ void snap_inter_position(LabelLayer *label_layer, float snap_threshold)
     trace_assert(label_layer->selection >= 0);
     trace_assert(label_layer->state == LABEL_LAYER_MOVE);
 
-    const size_t n = dynarray_count(label_layer->positions);
-    Vec2f *positions = dynarray_data(label_layer->positions);
+    const size_t n = label_layer->positions.count;
+    Vec2f *positions = (Vec2f*)label_layer->positions.data;
 
     Rect a = boundary_of_element(
         label_layer,
@@ -720,7 +705,7 @@ int label_layer_move_event(LabelLayer *label_layer,
     trace_assert(camera);
     trace_assert(label_layer->selection >= 0);
 
-    Vec2f *positions = dynarray_data(label_layer->positions);
+    Vec2f *positions = (Vec2f*)label_layer->positions.data;
 
     switch (event->type) {
     case SDL_MOUSEMOTION: {
@@ -761,7 +746,7 @@ int label_layer_move_event(LabelLayer *label_layer,
                 LABEL_UNDO_PUSH(undo_history, create_label_undo_context(label_layer, LABEL_UNDO_UPDATE));
 
                 dynarray_replace_at(
-                    label_layer->positions,
+                    &label_layer->positions,
                     (size_t)label_layer->selection,
                     &label_layer->inter_position);
             }
@@ -793,7 +778,7 @@ int label_layer_edit_text_event(LabelLayer *label_layer,
             LABEL_UNDO_PUSH(undo_history, create_label_undo_context(label_layer, LABEL_UNDO_UPDATE));
 
             char *text =
-                (char*)dynarray_data(label_layer->texts) + label_layer->selection * LABEL_LAYER_TEXT_MAX_SIZE;
+                (char*)label_layer->texts.data + label_layer->selection * LABEL_LAYER_TEXT_MAX_SIZE;
             memset(text, 0, LABEL_LAYER_TEXT_MAX_SIZE);
             memcpy(text, edit_field_as_text(label_layer->edit_field), LABEL_LAYER_TEXT_MAX_SIZE - 1);
             label_layer->state = LABEL_LAYER_IDLE;
@@ -832,7 +817,7 @@ int label_layer_edit_id_event(LabelLayer *label_layer,
             LABEL_UNDO_PUSH(undo_history, create_label_undo_context(label_layer, LABEL_UNDO_UPDATE));
 
             char *id =
-                (char*)dynarray_data(label_layer->ids) + label_layer->selection * LABEL_LAYER_ID_MAX_SIZE;
+                (char*)label_layer->ids.data + label_layer->selection * LABEL_LAYER_ID_MAX_SIZE;
             memset(id, 0, LABEL_LAYER_ID_MAX_SIZE);
             memcpy(id, edit_field_as_text(label_layer->edit_field), LABEL_LAYER_ID_MAX_SIZE - 1);
             label_layer->state = LABEL_LAYER_IDLE;
@@ -882,7 +867,7 @@ int label_layer_recolor_event(LabelLayer *label_layer,
             LABEL_UNDO_PUSH(undo_history, create_label_undo_context(label_layer, LABEL_UNDO_UPDATE));
 
             dynarray_replace_at(
-                label_layer->colors,
+                &label_layer->colors,
                 (size_t) label_layer->selection,
                 &label_layer->inter_color);
             label_layer->state = LABEL_LAYER_IDLE;
@@ -924,27 +909,27 @@ int label_layer_event(LabelLayer *label_layer,
 
 size_t label_layer_count(const LabelLayer *label_layer)
 {
-    return dynarray_count(label_layer->ids);
+    return label_layer->ids.count;
 }
 
 char *label_layer_ids(const LabelLayer *label_layer)
 {
-    return dynarray_data(label_layer->ids);
+    return (char *)label_layer->ids.data;
 }
 
 Vec2f *label_layer_positions(const LabelLayer *label_layer)
 {
-    return dynarray_data(label_layer->positions);
+    return (Vec2f *)label_layer->positions.data;
 }
 
 Color *label_layer_colors(const LabelLayer *label_layer)
 {
-    return dynarray_data(label_layer->colors);
+    return (Color *)label_layer->colors.data;
 }
 
 char *labels_layer_texts(const LabelLayer *label_layer)
 {
-    return dynarray_data(label_layer->texts);
+    return (char *)label_layer->texts.data;
 }
 
 int label_layer_dump_stream(const LabelLayer *label_layer, FILE *filedump)
@@ -952,11 +937,11 @@ int label_layer_dump_stream(const LabelLayer *label_layer, FILE *filedump)
     trace_assert(label_layer);
     trace_assert(filedump);
 
-    size_t n = dynarray_count(label_layer->ids);
-    char *ids = dynarray_data(label_layer->ids);
-    Vec2f *positions = dynarray_data(label_layer->positions);
-    Color *colors = dynarray_data(label_layer->colors);
-    char *texts = dynarray_data(label_layer->texts);
+    size_t n = label_layer->ids.count;
+    char *ids = (char *)label_layer->ids.data;
+    Vec2f *positions = (Vec2f *)label_layer->positions.data;
+    Color *colors = (Color *)label_layer->colors.data;
+    char *texts = (char *)label_layer->texts.data;
 
     fprintf(filedump, "%zd\n", n);
     for (size_t i = 0; i < n; ++i) {

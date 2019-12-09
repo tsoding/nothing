@@ -26,7 +26,7 @@ struct LevelPicker
     ListSelector *list_selector;
 };
 
-LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dirpath)
+LevelPicker *create_level_picker(const char *dirpath)
 {
     trace_assert(dirpath);
 
@@ -62,7 +62,6 @@ LevelPicker *create_level_picker(const Sprite_font *sprite_font, const char *dir
     level_picker->list_selector = PUSH_LT(
         lt,
         create_list_selector(
-            sprite_font,
             level_folder_titles(level_picker->level_folder),
             level_folder_count(level_picker->level_folder),
             vec(5.0f, 5.0f),
@@ -94,14 +93,12 @@ int level_picker_render(const LevelPicker *level_picker,
 
     const Vec2f title_size = wiggly_text_size(&level_picker->wiggly_text);
 
-    if (wiggly_text_render(
-            &level_picker->wiggly_text,
-            camera,
-            vec(viewport.w * 0.5f - title_size.x * 0.5f, TITLE_MARGIN_TOP)) < 0) {
-        return -1;
-    }
+    wiggly_text_render(
+        &level_picker->wiggly_text,
+        camera,
+        vec(viewport.w * 0.5f - title_size.x * 0.5f, TITLE_MARGIN_TOP));
 
-    if (list_selector_render(level_picker->list_selector, camera->renderer) < 0) {
+    if (list_selector_render(camera, level_picker->list_selector) < 0) {
         return -1;
     }
 
@@ -112,15 +109,13 @@ int level_picker_render(const LevelPicker *level_picker,
         const Vec2f position = vec(0.0f, viewport.h - size.y * FONT_CHAR_HEIGHT);
 
         /* HTML */
-        if (camera_render_text_screen(
-                camera,
-                "Press 'N' to create new level",
-                size,
-                COLOR_WHITE,
-                vec(position.x + padding,
-                    position.y - padding)) < 0) {
-            return -1;
-        }
+        camera_render_text_screen(
+            camera,
+            "Press 'N' to create new level",
+            size,
+            COLOR_WHITE,
+            vec(position.x + padding,
+                position.y - padding));
     }
 
     return 0;

@@ -17,9 +17,9 @@ struct Boxes
 {
     Lt *lt;
     RigidBodies *rigid_bodies;
-    Dynarray *boxes_ids;
-    Dynarray *body_ids;
-    Dynarray *body_colors;
+    Dynarray boxes_ids;
+    Dynarray body_ids;
+    Dynarray body_colors;
 };
 
 Boxes *create_boxes_from_rect_layer(const RectLayer *layer, RigidBodies *rigid_bodies)
@@ -35,25 +35,11 @@ Boxes *create_boxes_from_rect_layer(const RectLayer *layer, RigidBodies *rigid_b
     }
     boxes->lt = lt;
 
+    boxes->boxes_ids = create_dynarray(ENTITY_MAX_ID_SIZE);
+    boxes->body_ids = create_dynarray(sizeof(RigidBodyId));
+    boxes->body_colors = create_dynarray(sizeof(Color));
+
     boxes->rigid_bodies = rigid_bodies;
-
-    boxes->boxes_ids = PUSH_LT(
-        lt,
-        create_dynarray(ENTITY_MAX_ID_SIZE),
-        destroy_dynarray);
-    if (boxes->boxes_ids == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    boxes->body_ids = PUSH_LT(lt, create_dynarray(sizeof(RigidBodyId)), destroy_dynarray);
-    if (boxes->body_ids == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    boxes->body_colors = PUSH_LT(lt, create_dynarray(sizeof(Color)), destroy_dynarray);
-    if (boxes->body_colors == NULL) {
-        RETURN_LT(lt, NULL);
-    }
 
     const size_t count = rect_layer_count(layer);
     Rect const *rects = rect_layer_rects(layer);
@@ -62,9 +48,9 @@ Boxes *create_boxes_from_rect_layer(const RectLayer *layer, RigidBodies *rigid_b
 
     for (size_t i = 0; i < count; ++i) {
         RigidBodyId body_id = rigid_bodies_add(rigid_bodies, rects[i]);
-        dynarray_push(boxes->body_ids, &body_id);
-        dynarray_push(boxes->body_colors, &colors[i]);
-        dynarray_push(boxes->boxes_ids, ids + i * ENTITY_MAX_ID_SIZE);
+        dynarray_push(&boxes->body_ids, &body_id);
+        dynarray_push(&boxes->body_colors, &colors[i]);
+        dynarray_push(&boxes->boxes_ids, ids + i * ENTITY_MAX_ID_SIZE);
     }
 
     return boxes;
@@ -74,12 +60,14 @@ void destroy_boxes(Boxes *boxes)
 {
     trace_assert(boxes);
 
-    const size_t count = dynarray_count(boxes->body_ids);
-    RigidBodyId *body_ids = dynarray_data(boxes->body_ids);
-
-    for (size_t i = 0; i < count; ++i) {
+    RigidBodyId *body_ids = (RigidBodyId *)boxes->body_ids.data;
+    for (size_t i = 0; i < boxes->body_ids.count; ++i) {
         rigid_bodies_remove(boxes->rigid_bodies, body_ids[i]);
     }
+
+    free(boxes->boxes_ids.data);
+    free(boxes->body_ids.data);
+    free(boxes->body_colors.data);
 
     RETURN_LT0(boxes->lt);
 }
@@ -89,9 +77,9 @@ int boxes_render(Boxes *boxes, const Camera *camera)
     trace_assert(boxes);
     trace_assert(camera);
 
-    const size_t count = dynarray_count(boxes->body_ids);
-    RigidBodyId *body_ids = dynarray_data(boxes->body_ids);
-    Color *body_colors = dynarray_data(boxes->body_colors);
+    const size_t count = boxes->body_ids.count;
+    RigidBodyId *body_ids = (RigidBodyId *)boxes->body_ids.data;
+    Color *body_colors = (Color *)boxes->body_colors.data;
 
     for (size_t i = 0; i < count; ++i) {
         if (rigid_bodies_render(
@@ -111,8 +99,8 @@ int boxes_update(Boxes *boxes,
 {
     trace_assert(boxes);
 
-    const size_t count = dynarray_count(boxes->body_ids);
-    RigidBodyId *body_ids = dynarray_data(boxes->body_ids);
+    const size_t count = boxes->body_ids.count;
+    RigidBodyId *body_ids = (RigidBodyId *)boxes->body_ids.data;
 
     for (size_t i = 0; i < count; ++i) {
         if (rigid_bodies_update(boxes->rigid_bodies, body_ids[i], delta_time) < 0) {
@@ -128,8 +116,8 @@ void boxes_float_in_lava(Boxes *boxes, Lava *lava)
     trace_assert(boxes);
     trace_assert(lava);
 
-    const size_t count = dynarray_count(boxes->body_ids);
-    RigidBodyId *body_ids = dynarray_data(boxes->body_ids);
+    const size_t count = boxes->body_ids.count;
+    RigidBodyId *body_ids = (RigidBodyId*)boxes->body_ids.data;
 
     for (size_t i = 0; i < count; ++i) {
         lava_float_rigid_body(lava, boxes->rigid_bodies, body_ids[i]);
@@ -141,8 +129,8 @@ int boxes_add_box(Boxes *boxes, Rect rect, Color color)
     trace_assert(boxes);
 
     RigidBodyId body_id = rigid_bodies_add(boxes->rigid_bodies, rect);
-    dynarray_push(boxes->body_ids, &body_id);
-    dynarray_push(boxes->body_colors, &color);
+    dynarray_push(&boxes->body_ids, &body_id);
+    dynarray_push(&boxes->body_colors, &color);
 
     return 0;
 }
@@ -151,8 +139,8 @@ int boxes_delete_at(Boxes *boxes, Vec2f position)
 {
     trace_assert(boxes);
 
-    const size_t count = dynarray_count(boxes->body_ids);
-    RigidBodyId *body_ids = dynarray_data(boxes->body_ids);
+    const size_t count = boxes->body_ids.count;
+    RigidBodyId *body_ids = (RigidBodyId*)boxes->body_ids.data;
 
     for (size_t i = 0; i < count; ++i) {
         const Rect hitbox = rigid_bodies_hitbox(
@@ -160,8 +148,8 @@ int boxes_delete_at(Boxes *boxes, Vec2f position)
             body_ids[i]);
         if (rect_contains_point(hitbox, position)) {
             rigid_bodies_remove(boxes->rigid_bodies, body_ids[i]);
-            dynarray_delete_at(boxes->body_ids, i);
-            dynarray_delete_at(boxes->body_colors, i);
+            dynarray_delete_at(&boxes->body_ids, i);
+            dynarray_delete_at(&boxes->body_colors, i);
             return 0;
         }
     }

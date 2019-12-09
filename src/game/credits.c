@@ -63,12 +63,10 @@ int credits_render(const Credits *credits, const Camera *camera)
 
     const Vec2f title_size = wiggly_text_size(&credits->wiggly_text);
 
-    if (wiggly_text_render(
-            &credits->wiggly_text,
-            camera,
-            vec(viewport.w * 0.5f - title_size.x * 0.5f, TITLE_MARGIN_TOP)) < 0) {
-        return -1;
-    }
+    wiggly_text_render(
+        &credits->wiggly_text,
+        camera,
+        vec(viewport.w * 0.5f - title_size.x * 0.5f, TITLE_MARGIN_TOP));
     // TODO(#1150): Credits page don't display list of subs and contributors
     return 0;
 }

@@ -166,8 +166,6 @@ add_executable(nothing
   src/system/str.c
   src/dynarray.h
   src/dynarray.c
-  src/hashset.h
-  src/hashset.c
   src/system/file.h
   src/system/file.c
 )

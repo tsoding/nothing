@@ -20,10 +20,9 @@ static SDL_Color camera_sdl_color(const Camera *camera, Color color)
 }
 
 Camera create_camera(SDL_Renderer *renderer,
-                     Sprite_font *font)
+                     Sprite_font font)
 {
     trace_assert(renderer);
-    trace_assert(font);
 
     Camera camera = {
         .scale = 1.0f,
@@ -170,15 +169,13 @@ int camera_render_text(const Camera *camera,
     const Vec2f scale = camera->effective_scale;
     const Vec2f screen_position = camera_point(camera, position);
 
-    if (sprite_font_render_text(
-            camera->font,
-            camera->renderer,
-            screen_position,
-            vec(size.x * scale.x * camera->scale, size.y * scale.y * camera->scale),
-            camera->blackwhite_mode ? color_desaturate(c) : c,
-            text) < 0) {
-        return -1;
-    }
+    sprite_font_render_text(
+        &camera->font,
+        camera->renderer,
+        screen_position,
+        vec(size.x * scale.x * camera->scale, size.y * scale.y * camera->scale),
+        camera->blackwhite_mode ? color_desaturate(c) : c,
+        text);
 
     return 0;
 }
@@ -415,17 +412,17 @@ int camera_fill_rect_screen(const Camera *camera,
 
 }
 
-int camera_render_text_screen(const Camera *camera,
-                              const char *text,
-                              Vec2f size,
-                              Color color,
-                              Vec2f position)
+void camera_render_text_screen(const Camera *camera,
+                               const char *text,
+                               Vec2f size,
+                               Color color,
+                               Vec2f position)
 {
     trace_assert(camera);
     trace_assert(text);
 
-    return sprite_font_render_text(
-        camera->font,
+    sprite_font_render_text(
+        &camera->font,
         camera->renderer,
         position,
         size,
@@ -489,11 +486,6 @@ int camera_draw_thicc_rect_screen(const Camera *camera,
     }
 
     return 0;
-}
-
-const Sprite_font *camera_font(const Camera *camera)
-{
-    return camera->font;
 }
 
 int camera_draw_line(const Camera *camera,

@@ -3,14 +3,27 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 
-typedef struct Dynarray Dynarray;
+typedef struct {
+    size_t element_size;
+    size_t capacity;
+    size_t count;
+    void *data;
+} Dynarray;
 
-Dynarray *create_dynarray(size_t element_size);
-void destroy_dynarray(Dynarray *dynarray);
+static inline
+Dynarray create_dynarray(size_t element_size)
+{
+    Dynarray result = {
+        .element_size = element_size,
+        .capacity = 0,
+        .count = 0,
+        .data = NULL
+    };
+    return result;
+}
 
-size_t dynarray_count(const Dynarray *dynarray);
-void *dynarray_data(Dynarray *dynarray);
 void *dynarray_pointer_at(Dynarray *dynarray, size_t index);
 void dynarray_replace_at(Dynarray *dynarray, size_t index, void *element);
 void dynarray_copy_to(Dynarray *dynarray, void *dest, size_t index);

@@ -9,9 +9,9 @@
 #include "system/str.h"
 #include "game/camera.h"
 
-int wiggly_text_render(const WigglyText *wiggly_text,
-                       const Camera *camera,
-                       Vec2f position)
+void wiggly_text_render(const WigglyText *wiggly_text,
+                        const Camera *camera,
+                        Vec2f position)
 {
     trace_assert(wiggly_text);
     trace_assert(camera);
@@ -22,21 +22,17 @@ int wiggly_text_render(const WigglyText *wiggly_text,
     for (size_t i = 0; i < n; ++i) {
         buf[0] = wiggly_text->text[i];
 
-        if (camera_render_text_screen(
-                camera,
-                buf,
-                wiggly_text->scale,
-                wiggly_text->color,
-                vec_sum(
-                    position,
-                    vec(
-                        (float) (i * FONT_CHAR_WIDTH) * wiggly_text->scale.x,
-                        sinf(wiggly_text->angle + (float) i / (float) n * 10.0f) * 20.0f))) < 0) {
-            return -1;
-        }
+        camera_render_text_screen(
+            camera,
+            buf,
+            wiggly_text->scale,
+            wiggly_text->color,
+            vec_sum(
+                position,
+                vec(
+                    (float) (i * FONT_CHAR_WIDTH) * wiggly_text->scale.x,
+                    sinf(wiggly_text->angle + (float) i / (float) n * 10.0f) * 20.0f)));
     }
-
-    return 0;
 }
 
 int wiggly_text_update(WigglyText *wiggly_text, float delta_time)

@@ -9,7 +9,6 @@
 #include "system/line_stream.h"
 #include "system/str.h"
 #include "system/log.h"
-#include "hashset.h"
 
 #include "./rigid_bodies.h"
 

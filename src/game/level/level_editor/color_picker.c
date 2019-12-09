@@ -92,15 +92,13 @@ int color_picker_render(const ColorPicker *color_picker,
             return -1;
         }
 
-        if (camera_render_text_screen(
-                camera,
-                slider_labels[index],
-                label_size,
-                COLOR_BLACK,
-                vec(slider_rect.x + boundary.w,
-                    slider_rect.y + color_slider_height * 0.5f - label_size.y * (float) FONT_CHAR_HEIGHT * 0.5f)) < 0) {
-            return -1;
-        }
+        camera_render_text_screen(
+            camera,
+            slider_labels[index],
+            label_size,
+            COLOR_BLACK,
+            vec(slider_rect.x + boundary.w,
+                slider_rect.y + color_slider_height * 0.5f - label_size.y * (float) FONT_CHAR_HEIGHT * 0.5f));
     }
 
     return 0;
