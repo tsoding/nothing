@@ -21,10 +21,17 @@ struct LevelPicker
     Lt *lt;
     Background background;
     Vec2f camera_position;
-    LevelFolder *level_folder;
+    LevelFolder level_folder;
     WigglyText wiggly_text;
-    ListSelector *list_selector;
+    ListSelector list_selector;
 };
+
+static inline
+const char *list_item_text(void *element)
+{
+    trace_assert(element);
+    return ((LevelMetadata *)element)->title;
+}
 
 LevelPicker *create_level_picker(const char *dirpath)
 {
@@ -45,13 +52,8 @@ LevelPicker *create_level_picker(const char *dirpath)
 
     level_picker->camera_position = vec(0.0f, 0.0f);
 
-    level_picker->level_folder = PUSH_LT(
-        lt,
-        create_level_folder(dirpath),
-        destroy_level_folder);
-    if (level_picker->level_folder == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    level_picker->level_folder = create_level_folder();
+    level_folder_read("./assets/levels", &level_picker->level_folder);
 
     level_picker->wiggly_text = (WigglyText) {
         .text = "Select Level",
@@ -59,17 +61,10 @@ LevelPicker *create_level_picker(const char *dirpath)
         .color = COLOR_WHITE,
     };
 
-    level_picker->list_selector = PUSH_LT(
-        lt,
-        create_list_selector(
-            level_folder_titles(level_picker->level_folder),
-            level_folder_count(level_picker->level_folder),
-            vec(5.0f, 5.0f),
-            50.0f),
-        destroy_list_selector);
-    if (level_picker->list_selector == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    level_picker->list_selector.items = level_picker->level_folder.metadatas;
+    level_picker->list_selector.font_scale = vec(5.0f, 5.0f);
+    level_picker->list_selector.padding_bottom = 50.0f;
+    level_picker->list_selector.list_item_text = list_item_text;
 
     return level_picker;
 }
@@ -77,6 +72,7 @@ LevelPicker *create_level_picker(const char *dirpath)
 void destroy_level_picker(LevelPicker *level_picker)
 {
     trace_assert(level_picker);
+    destroy_level_folder(level_picker->level_folder);
     RETURN_LT0(level_picker->lt);
 }
 
@@ -98,9 +94,7 @@ int level_picker_render(const LevelPicker *level_picker,
         camera,
         vec(viewport.w * 0.5f - title_size.x * 0.5f, TITLE_MARGIN_TOP));
 
-    if (list_selector_render(camera, level_picker->list_selector) < 0) {
-        return -1;
-    }
+    list_selector_render(camera, &level_picker->list_selector);
 
     {
         /* CSS */
@@ -156,20 +150,19 @@ int level_picker_event(LevelPicker *level_picker,
             const Vec2f title_size = wiggly_text_size(&level_picker->wiggly_text);
 
             const Vec2f selector_size = list_selector_size(
-                level_picker->list_selector,
+                &level_picker->list_selector,
                 font_scale,
                 padding_bottom);
 
-            list_selector_move(
-                level_picker->list_selector,
+            level_picker->list_selector.position =
                 vec((float)width * 0.5f - selector_size.x * 0.5f,
-                    TITLE_MARGIN_TOP + title_size.y + TITLE_MARGIN_BOTTOM));
+                    TITLE_MARGIN_TOP + title_size.y + TITLE_MARGIN_BOTTOM);
         } break;
         }
     } break;
     }
 
-    return list_selector_event(level_picker->list_selector, event);
+    return list_selector_event(&level_picker->list_selector, event);
 }
 
 int level_picker_input(LevelPicker *level_picker,
@@ -186,20 +179,21 @@ const char *level_picker_selected_level(const LevelPicker *level_picker)
 {
     trace_assert(level_picker);
 
-    const int selected_index = list_selector_selected(level_picker->list_selector);
-    if (selected_index < 0) {
+    if (level_picker->list_selector.selected_item < 0) {
         return NULL;
     }
 
-    const char **filenames = level_folder_filenames(level_picker->level_folder);
+    LevelMetadata *metadata = dynarray_pointer_at(
+        &level_picker->level_folder.metadatas,
+        (size_t)level_picker->list_selector.selected_item);
 
-    return filenames[selected_index];
+    return metadata->filepath;
 }
 
 void level_picker_clean_selection(LevelPicker *level_picker)
 {
     trace_assert(level_picker);
-    list_selector_clean_selection(level_picker->list_selector);
+    level_picker->list_selector.selected_item = -1;
 }
 
 int level_picker_enter_camera_event(LevelPicker *level_picker,

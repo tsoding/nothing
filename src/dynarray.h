@@ -24,7 +24,7 @@ Dynarray create_dynarray(size_t element_size)
     return result;
 }
 
-void *dynarray_pointer_at(Dynarray *dynarray, size_t index);
+void *dynarray_pointer_at(const Dynarray *dynarray, size_t index);
 void dynarray_replace_at(Dynarray *dynarray, size_t index, void *element);
 void dynarray_copy_to(Dynarray *dynarray, void *dest, size_t index);
 void dynarray_clear(Dynarray *dynarray);

@@ -196,7 +196,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor
         RETURN_LT(lt, NULL);
     }
 
-    if (metadata_load_from_line_stream(&level_editor->metadata, level_stream) < 0) {
+    if (metadata_load_from_line_stream(&level_editor->metadata, level_stream, level_editor->file_name) < 0) {
         RETURN_LT(lt, NULL);
     }
 
