@@ -3,25 +3,24 @@
 
 #include <stdint.h>
 
-// WARNING! Any attempts to "generalize" or "improve" this translation
-// unit will result in an instantly closed Pull Request without any
-// further discussion.
-static inline
-int64_t max_int64(int64_t a, int64_t b)
-{
-    return a > b ? a : b;
-}
+#define MAX_INSTANCE(type)                      \
+    static inline                               \
+    type max_##type(type a, type b) {           \
+        return a > b ? a : b;                   \
+    }                                           \
 
-static inline
-size_t max_size_t(size_t a, size_t b)
-{
-    return a > b ? a : b;
-}
+MAX_INSTANCE(int64_t)
+MAX_INSTANCE(size_t)
+#define MAX(type, a, b) max_##type(a, b)
 
-static inline
-size_t min_size_t(size_t a, size_t b)
-{
-    return a < b ? a : b;
-}
+#define MIN_INSTANCE(type)                      \
+    static inline                               \
+    type min_##type(type a, type b) {           \
+        return a < b ? a : b;                   \
+    }                                           \
+
+MIN_INSTANCE(int64_t)
+MIN_INSTANCE(size_t)
+#define MIN(type, a, b) min_##type(a, b)
 
 #endif  // EXTREMA_H_
