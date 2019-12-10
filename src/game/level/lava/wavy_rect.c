@@ -39,27 +39,6 @@ Wavy_rect *create_wavy_rect(Rect rect, Color color)
     return wavy_rect;
 }
 
-Wavy_rect *create_wavy_rect_from_line_stream(LineStream *line_stream)
-{
-    trace_assert(line_stream);
-    char color_name[7];
-    Rect rect;
-
-    if (sscanf(
-            line_stream_next(line_stream),
-            "%f%f%f%f%6s\n",
-            &rect.x, &rect.y,
-            &rect.w, &rect.h,
-            color_name) < 0) {
-        log_fail("Could not read a wavy rect\n");
-        return NULL;
-    }
-
-    Color color = hexstr(color_name);
-
-    return create_wavy_rect(rect, color);
-}
-
 void destroy_wavy_rect(Wavy_rect *wavy_rect)
 {
     trace_assert(wavy_rect);

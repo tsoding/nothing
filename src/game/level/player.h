@@ -12,7 +12,6 @@
 
 typedef struct Player Player;
 typedef struct Goals Goals;
-typedef struct LineStream LineStream;
 typedef struct RigidBodies RigidBodies;
 
 Player *create_player_from_player_layer(const PlayerLayer *player_layer,

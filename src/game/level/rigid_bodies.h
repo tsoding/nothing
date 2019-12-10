@@ -5,7 +5,6 @@
 
 typedef struct RigidBodies RigidBodies;
 typedef struct Platforms Platforms;
-typedef struct LineStream LineStream;
 
 typedef size_t RigidBodyId;
 

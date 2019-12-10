@@ -20,42 +20,6 @@ struct Lava {
     Wavy_rect **rects;
 };
 
-Lava *create_lava_from_line_stream(LineStream *line_stream)
-{
-    trace_assert(line_stream);
-
-    Lt *lt = create_lt();
-
-    Lava *lava = PUSH_LT(lt, nth_calloc(1, sizeof(Lava)), free);
-    if (lava == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    if (sscanf(
-            line_stream_next(line_stream),
-            "%zu",
-            &lava->rects_count) < 0) {
-        log_fail("Could not read amount of lava\n");
-        RETURN_LT(lt, NULL);
-    }
-
-    lava->rects = PUSH_LT(lt, nth_calloc(1, sizeof(Wavy_rect*) * lava->rects_count), free);
-    if (lava->rects == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    for (size_t i = 0; i < lava->rects_count; ++i) {
-        lava->rects[i] = PUSH_LT(lt, create_wavy_rect_from_line_stream(line_stream), destroy_wavy_rect);
-        if (lava->rects[i] == NULL) {
-            RETURN_LT(lt, NULL);
-        }
-    }
-
-    lava->lt = lt;
-
-    return lava;
-}
-
 Lava *create_lava_from_rect_layer(const RectLayer *rect_layer)
 {
     Lt *lt = create_lt();

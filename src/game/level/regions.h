@@ -6,7 +6,6 @@
 
 typedef struct Regions Regions;
 typedef struct Player Player;
-typedef struct LineStream LineStream;
 typedef struct Level Level;
 typedef struct RectLayer RectLayer;
 typedef struct Labels Labels;

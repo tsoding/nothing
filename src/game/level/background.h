@@ -6,8 +6,6 @@
 #include "color.h"
 #include "game/camera.h"
 
-typedef struct LineStream LineStream;
-
 typedef struct {
     Color base_color;
 } Background;
