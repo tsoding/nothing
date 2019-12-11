@@ -9,7 +9,7 @@
 
 #define DYNARRAY_INIT_CAPACITY 8
 
-void *dynarray_pointer_at(Dynarray *dynarray, size_t index)
+void *dynarray_pointer_at(const Dynarray *dynarray, size_t index)
 {
     trace_assert(index < dynarray->count);
     return (uint8_t *)dynarray->data + index * dynarray->element_size;

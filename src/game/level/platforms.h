@@ -7,7 +7,6 @@
 #include "math/rect.h"
 
 typedef struct Platforms Platforms;
-typedef struct LineStream LineStream;
 typedef struct RectLayer RectLayer;
 
 Platforms *create_platforms_from_rect_layer(const RectLayer *layer);

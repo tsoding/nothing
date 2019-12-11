@@ -63,12 +63,12 @@ LevelEditor *create_level_editor(Cursor *cursor)
     memset(level_editor->metadata.version, 0, METADATA_VERSION_MAX_SIZE);
     memcpy(level_editor->metadata.version,
            VERSION,
-           min_size_t(sizeof(VERSION), METADATA_VERSION_MAX_SIZE - 1));
+           MIN(size_t, sizeof(VERSION), METADATA_VERSION_MAX_SIZE - 1));
 
     memset(level_editor->metadata.title, 0, METADATA_TITLE_MAX_SIZE);
     memcpy(level_editor->metadata.title,
            DEFAULT_LEVEL_TITLE,
-           min_size_t(sizeof(DEFAULT_LEVEL_TITLE), METADATA_TITLE_MAX_SIZE - 1));
+           MIN(size_t, sizeof(DEFAULT_LEVEL_TITLE), METADATA_TITLE_MAX_SIZE - 1));
 
     level_editor->background_layer = create_background_layer(hexstr("fffda5"));
 
@@ -196,7 +196,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor
         RETURN_LT(lt, NULL);
     }
 
-    if (metadata_load_from_line_stream(&level_editor->metadata, level_stream) < 0) {
+    if (metadata_load_from_line_stream(&level_editor->metadata, level_stream, level_editor->file_name) < 0) {
         RETURN_LT(lt, NULL);
     }
 

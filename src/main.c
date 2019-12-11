@@ -233,7 +233,7 @@ int main(int argc, char *argv[])
         }
 
         const int64_t end_frame_time = (int64_t) SDL_GetTicks();
-        SDL_Delay((unsigned int) max_int64(10, delta_time - (end_frame_time - begin_frame_time)));
+        SDL_Delay((unsigned int) MAX(int64_t, 10, delta_time - (end_frame_time - begin_frame_time)));
     }
 
     RETURN_LT(lt, 0);

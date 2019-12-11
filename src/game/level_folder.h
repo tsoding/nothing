@@ -1,13 +1,27 @@
 #ifndef LEVEL_FOLDER_H_
 #define LEVEL_FOLDER_H_
 
-typedef struct LevelFolder LevelFolder;
+#include "level_metadata.h"
 
-LevelFolder *create_level_folder(const char *dirpath);
-void destroy_level_folder(LevelFolder *level_folder);
+typedef struct {
+    Dynarray metadatas;
+} LevelFolder;
 
-const char **level_folder_filenames(const LevelFolder *level_folder);
-const char **level_folder_titles(const LevelFolder *level_folder);
-size_t level_folder_count(const LevelFolder *level_folder);
+static inline
+LevelFolder create_level_folder(void)
+{
+    LevelFolder result = {
+        .metadatas = create_dynarray(sizeof(LevelMetadata)),
+    };
+    return result;
+}
+
+static inline
+void destroy_level_folder(LevelFolder level_folder)
+{
+    free(level_folder.metadatas.data);
+}
+
+void level_folder_read(const char *dirpath, LevelFolder *folder);
 
 #endif  // LEVEL_FOLDER_H_

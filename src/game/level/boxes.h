@@ -7,7 +7,6 @@
 
 typedef struct Boxes Boxes;
 typedef struct Player Player;
-typedef struct LineStream LineStream;
 typedef struct Player Player;
 typedef struct RectLayer RectLayer;
 

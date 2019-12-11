@@ -9,10 +9,8 @@
 #include "config.h"
 
 typedef struct Goals Goals;
-typedef struct LineStream LineStream;
 typedef struct PointLayer PointLayer;
 
-Goals *create_goals_from_line_stream(LineStream *line_stream);
 Goals *create_goals_from_point_layer(const PointLayer *point_layer);
 void destroy_goals(Goals *goals);
 
