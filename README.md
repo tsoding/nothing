@@ -166,8 +166,6 @@ To access the Level Editor open a level and press `TAB`.
 | `Mouse Wheel`   | Zoom and pan                               |
 | `CTRL+z`        | Undo                                       |
 | `q`             | Toggle snapping mode                       |
-| `SHIFT`         | Fix original aspect ratio while scaling    |
-| `CTRL`          | Fix aspect ratio 1:1 while scaling         |
 | `SHIFT+Up/Down` | Change overlaping order of selected object |
 | `CTRL+c/v`      | Copy/paste selected object                 |
 | `F2`            | Rename selected object                     |
