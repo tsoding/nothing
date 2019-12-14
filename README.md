@@ -128,18 +128,18 @@ $ ./nothing
 
 #### Keyboard
 
-| Key      | Action                                                      |
-|----------|-------------------------------------------------------------|
-| `d`      | Move to the right                                           |
-| `a`      | Move to the left                                            |
-| `SPACE`  | Jump                                                        |
-| `c`      | Open debug console                                          |
-| `r`      | Reload the current level including the Player's position    |
-| `q`      | Reload the current level preserving the Player's position   |
-| `p`      | Toggle game pause                                           |
-| `l`      | Toggle transparency on objects. Useful for debugging levels |
-| `TAB`    | Switch to Level Editor                                      |
-| `CTRL+q` | Quit the game                                               |
+| Key       | Action                                                      |
+|---------- |-------------------------------------------------------------|
+| `d`       | Move to the right                                           |
+| `a`       | Move to the left                                            |
+| `w/SPACE` | Jump                                                        |
+| `c`       | Open debug console                                          |
+| `r`       | Reload the current level including the Player's position    |
+| `q`       | Reload the current level preserving the Player's position   |
+| `p`       | Toggle game pause                                           |
+| `l`       | Toggle transparency on objects. Useful for debugging levels |
+| `TAB`     | Switch to Level Editor                                      |
+| `CTRL+q`  | Quit the game                                               |
 
 #### Gamepad
 
@@ -156,15 +156,22 @@ $ ./nothing
 | `Enter`   | Evaluate the expression  |
 | `Up/Down` | Traverse console history |
 
-<!-- TODO(#914): Level Editor is not documented -->
-
 ### Level Editor
 
 To access the Level Editor open a level and press `TAB`.
 
-| Key  | Action                 |
-|------|------------------------|
-| `F2` | Rename selected object |
+| Key             | Action                                     |
+|-----------------|--------------------------------------------|
+| `s`             | Save level                                 |
+| `Mouse Wheel`   | Zoom and pan                               |
+| `CTRL+z`        | Undo                                       |
+| `q`             | Toggle snapping mode                       |
+| `SHIFT`         | Fix original aspect ratio while scaling    |
+| `CTRL`          | Fix aspect ratio 1:1 while scaling         |
+| `SHIFT+Up/Down` | Change overlaping order of selected object |
+| `CTRL+c/v`      | Copy/paste selected object                 |
+| `F2`            | Rename selected object                     |
+| `DELETE`        | Delete selected object                     |
 
 ## Support
 
