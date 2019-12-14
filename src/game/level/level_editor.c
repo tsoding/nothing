@@ -22,8 +22,6 @@
 
 #include "level_editor.h"
 
-#define DEFAULT_LEVEL_TITLE "New Level"
-
 #define LEVEL_FOLDER_MAX_LENGTH 512
 #define LEVEL_LINE_MAX_LENGTH 512
 #define LEVEL_EDITOR_EDIT_FIELD_SIZE vec(5.0f, 5.0f)
