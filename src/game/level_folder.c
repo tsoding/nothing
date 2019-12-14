@@ -11,7 +11,6 @@
 #include "system/str.h"
 #include "system/file.h"
 #include "dynarray.h"
-#include "game/level_metadata.h"
 
 #include "./level_folder.h"
 

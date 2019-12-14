@@ -26,13 +26,6 @@ struct LevelPicker
     ListSelector list_selector;
 };
 
-static inline
-const char *list_item_text(void *element)
-{
-    trace_assert(element);
-    return ((LevelMetadata *)element)->title;
-}
-
 LevelPicker *create_level_picker(const char *dirpath)
 {
     trace_assert(dirpath);

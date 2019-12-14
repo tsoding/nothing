@@ -2,7 +2,6 @@
 
 #include "game/camera.h"
 #include "game/sound_samples.h"
-#include "game/level_metadata.h"
 #include "game/level/boxes.h"
 #include "game/level/level_editor/action_picker.h"
 #include "game/level/level_editor/color_picker.h"
@@ -59,16 +58,6 @@ LevelEditor *create_level_editor(Cursor *cursor)
     if (level_editor->edit_field_filename == NULL) {
         RETURN_LT(lt, NULL);
     }
-
-    memset(level_editor->metadata.version, 0, METADATA_VERSION_MAX_SIZE);
-    memcpy(level_editor->metadata.version,
-           VERSION,
-           MIN(size_t, sizeof(VERSION), METADATA_VERSION_MAX_SIZE - 1));
-
-    memset(level_editor->metadata.title, 0, METADATA_TITLE_MAX_SIZE);
-    memcpy(level_editor->metadata.title,
-           DEFAULT_LEVEL_TITLE,
-           MIN(size_t, sizeof(DEFAULT_LEVEL_TITLE), METADATA_TITLE_MAX_SIZE - 1));
 
     level_editor->background_layer = create_background_layer(hexstr("fffda5"));
 
@@ -196,7 +185,21 @@ LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor
         RETURN_LT(lt, NULL);
     }
 
-    if (metadata_load_from_line_stream(&level_editor->metadata, level_stream, level_editor->file_name) < 0) {
+    const char *line = line_stream_next(level_stream);
+    if (line == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+
+    char version[METADATA_VERSION_MAX_SIZE] = {0};
+    memcpy(version, line,
+           MIN(size_t,
+               strlen(line),
+               METADATA_VERSION_MAX_SIZE - 1));
+    trim_endline(version);
+
+    if (strcmp(version, VERSION) != 0) {
+        log_fail("Version `%s` is not supported. Expected version `%s`.\n",
+                 version, VERSION);
         RETURN_LT(lt, NULL);
     }
 
@@ -565,11 +568,7 @@ static int level_editor_dump(LevelEditor *level_editor)
         fopen(level_editor->file_name, "w"),
         fclose_lt);
 
-    if (fprintf(filedump, "%s\n", level_editor->metadata.version) < 0) {
-        return -1;
-    }
-
-    if (fprintf(filedump, "%s\n", level_editor->metadata.title) < 0) {
+    if (fprintf(filedump, "%s", VERSION) < 0) {
         return -1;
     }
 

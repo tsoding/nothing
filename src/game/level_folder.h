@@ -1,8 +1,6 @@
 #ifndef LEVEL_FOLDER_H_
 #define LEVEL_FOLDER_H_
 
-#include "level_metadata.h"
-
 typedef struct {
     Dynarray filepaths;
 } LevelFolder;
