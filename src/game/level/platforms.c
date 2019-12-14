@@ -64,11 +64,26 @@ int platforms_render(const Platforms *platforms,
                      const Camera *camera)
 {
     for (size_t i = 0; i < platforms->rects_size; ++i) {
+        Rect rect = platforms->rects[i];
         if (camera_fill_rect(
                 camera,
-                platforms->rects[i],
+                rect,
                 platforms->colors[i]) < 0) {
             return -1;
+        }
+
+        char debug_text[256];
+        const char *attrs[] = {"id", "x", "y", "w", "h"};
+        const float values[] = {(float)i, rect.x, rect.y, rect.w, rect.h};
+
+        for (int line = 0; line < (int)(sizeof(values)/sizeof(float)); line++){
+            snprintf(debug_text, 256, "%s:%.2f", attrs[line], values[line]);
+            if (camera_render_debug_text(
+                    camera,
+                    debug_text,
+                    (Vec2f){.x = rect.x, .y = rect.y + (float)(FONT_CHAR_HEIGHT*2*line)}) < 0) {
+                return -1;
+            }
         }
     }
 
