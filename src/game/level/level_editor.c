@@ -398,6 +398,8 @@ int level_editor_saveas_event(LevelEditor *level_editor,
                 level_editor->lt,
                 string_duplicate(path, NULL),
                 free);
+            strcpy(level_editor->metadata.title,
+                edit_field_as_text(level_editor->edit_field_filename));
             level_editor_dump(level_editor);
             SDL_StopTextInput();
             level_editor->state = LEVEL_EDITOR_IDLE;
