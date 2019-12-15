@@ -1,15 +1,13 @@
 #include <stdio.h>
 
 #include "./level_picker.h"
-#include "game/level/background.h"
+
 #include "game/sprite_font.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/stacktrace.h"
 #include "system/str.h"
 #include "system/log.h"
-#include "ui/wiggly_text.h"
-#include "ui/slider.h"
 #include "system/file.h"
 
 #define TITLE_MARGIN_TOP 100.0f
@@ -18,36 +16,17 @@
 #define LEVEL_PICKER_LIST_FONT_SCALE vec(5.0f, 5.0f)
 #define LEVEL_PICKER_LIST_PADDING_BOTTOM 50.0f
 
-struct LevelPicker
+void level_picker_populate(LevelPicker *level_picker,
+                           const char *dirpath)
 {
-    Lt *lt;
-    Background background;
-    Vec2f camera_position;
-    WigglyText wiggly_text;
-    Dynarray items;
-    size_t cursor;
-    int selected_item;
-    Vec2f position;
-};
-
-LevelPicker *create_level_picker(const char *dirpath)
-{
+    trace_assert(level_picker);
     trace_assert(dirpath);
 
-    Lt *lt = create_lt();
-
-    LevelPicker *level_picker = PUSH_LT(
-        lt,
-        nth_calloc(1, sizeof(LevelPicker)),
-        free);
-    if (level_picker == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    level_picker->lt = lt;
-    level_picker->background = create_background(hexstr("073642"));
+    level_picker->background.base_color = hexstr("073642");
     level_picker->camera_position = vec(0.0f, 0.0f);
 
     {
+        dynarray_clear(&level_picker->items);
         level_picker->items = create_dynarray(METADATA_FILEPATH_MAX_SIZE);
 
         DIR *level_dir = opendir(dirpath);
@@ -74,15 +53,6 @@ LevelPicker *create_level_picker(const char *dirpath)
         .scale = {10.0f, 10.0f},
         .color = COLOR_WHITE,
     };
-
-    return level_picker;
-}
-
-void destroy_level_picker(LevelPicker *level_picker)
-{
-    trace_assert(level_picker);
-    free(level_picker->items.data);
-    RETURN_LT0(level_picker->lt);
 }
 
 int level_picker_render(const LevelPicker *level_picker,

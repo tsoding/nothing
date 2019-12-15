@@ -4,12 +4,29 @@
 #include <SDL.h>
 
 #include "game/camera.h"
-#include "game/sprite_font.h"
+#include "game/level/background.h"
+#include "ui/wiggly_text.h"
+#include "dynarray.h"
 
-typedef struct LevelPicker LevelPicker;
+typedef struct {
+    Background background;
+    Vec2f camera_position;
+    WigglyText wiggly_text;
+    Dynarray items;
+    size_t cursor;
+    int selected_item;
+    Vec2f position;
+} LevelPicker;
 
-LevelPicker *create_level_picker(const char *dirpath);
-void destroy_level_picker(LevelPicker *level_picker);
+
+void level_picker_populate(LevelPicker *level_picker,
+                           const char *dirpath);
+
+static inline
+void destroy_level_picker(LevelPicker level_picker)
+{
+    free(level_picker.items.data);
+}
 
 int level_picker_render(const LevelPicker *level_picker,
                         const Camera *camera);
