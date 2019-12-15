@@ -62,4 +62,31 @@ int string_equal(String a, String b)
     return memcmp(a.data, b.data, a.count) == 0;
 }
 
+static inline
+String trim_begin(String input)
+{
+    while (input.count > 0 && isspace(*input.data)) {
+        input.data += 1;
+        input.count -= 1;
+    }
+
+    return input;
+}
+
+static inline
+String trim_end(String input)
+{
+    while (input.count > 0 && isspace(*(input.data + input.count - 1))) {
+        input.count -= 1;
+    }
+
+    return input;
+}
+
+static inline
+String trim(String input)
+{
+    return trim_end(trim_begin(input));
+}
+
 #endif  // S_H_

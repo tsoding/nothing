@@ -31,6 +31,12 @@ int background_layer_read_from_line_stream(BackgroundLayer *layer,
     return 0;
 }
 
+BackgroundLayer chop_background_layer(String *input)
+{
+    String line = trim(chop_by_delim(input, '\n'));
+    return create_background_layer(hexs(line));
+}
+
 int background_layer_render(BackgroundLayer *layer,
                             const Camera *camera,
                             int active)
