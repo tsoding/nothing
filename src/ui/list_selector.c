@@ -101,7 +101,9 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event)
             }
             break;
         case SDLK_RETURN:
-            list_selector->selected_item = (int) list_selector->cursor;
+            if (list_selector->cursor < list_selector->items.count) {
+                list_selector->selected_item = (int) list_selector->cursor;
+            }
             break;
         }
         break;
