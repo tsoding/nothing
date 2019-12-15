@@ -25,7 +25,7 @@ typedef struct Game {
 
     Game_state state;
     Sprite_font font;
-    LevelPicker *level_picker;
+    LevelPicker level_picker;
     LevelEditor *level_editor;
     Credits *credits;
     Level *level;
@@ -41,7 +41,7 @@ typedef struct Game {
 void game_switch_state(Game *game, Game_state state)
 {
     if (state == GAME_STATE_LEVEL_PICKER) {
-        level_picker_clean_selection(game->level_picker);
+        level_picker_clean_selection(&game->level_picker);
     }
     game->camera = create_camera(game->renderer, game->font);
     game->state = state;
@@ -66,13 +66,7 @@ Game *create_game(const char *level_folder,
         renderer,
         "./assets/images/charmap-oldschool.bmp");
 
-    game->level_picker = PUSH_LT(
-        lt,
-        create_level_picker(level_folder),
-        destroy_level_picker);
-    if (game->level_picker == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    level_picker_populate(&game->level_picker, level_folder);
 
     game->credits = PUSH_LT(
         lt,
@@ -132,6 +126,7 @@ Game *create_game(const char *level_folder,
 void destroy_game(Game *game)
 {
     trace_assert(game);
+    destroy_level_picker(game->level_picker);
     RETURN_LT0(game->lt);
 }
 
@@ -147,7 +142,7 @@ int game_render(const Game *game)
     } break;
 
     case GAME_STATE_LEVEL_PICKER: {
-        if (level_picker_render(game->level_picker, &game->camera) < 0) {
+        if (level_picker_render(&game->level_picker, &game->camera) < 0) {
             return -1;
         }
     } break;
@@ -231,15 +226,15 @@ int game_update(Game *game, float delta_time)
     } break;
 
     case GAME_STATE_LEVEL_PICKER: {
-        if (level_picker_update(game->level_picker, delta_time) < 0) {
+        if (level_picker_update(&game->level_picker, delta_time) < 0) {
             return -1;
         }
 
-        if (level_picker_enter_camera_event(game->level_picker, &game->camera) < 0) {
+        if (level_picker_enter_camera_event(&game->level_picker, &game->camera) < 0) {
             return -1;
         }
 
-        const char *level_filename = level_picker_selected_level(game->level_picker);
+        const char *level_filename = level_picker_selected_level(&game->level_picker);
 
         if (level_filename != NULL) {
             if (game_load_level(game, level_filename) < 0) {
@@ -373,7 +368,7 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
     } break;
     }
 
-    return level_picker_event(game->level_picker, event);
+    return level_picker_event(&game->level_picker, event);
 }
 
 static int game_event_level_editor(Game *game, const SDL_Event *event)
@@ -525,7 +520,7 @@ int game_input(Game *game,
         return level_input(game->level, keyboard_state, the_stick_of_joy);
 
     case GAME_STATE_LEVEL_PICKER:
-        return level_picker_input(game->level_picker, keyboard_state, the_stick_of_joy);
+        return level_picker_input(&game->level_picker, keyboard_state, the_stick_of_joy);
     }
 
     return 0;
