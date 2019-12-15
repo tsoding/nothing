@@ -34,7 +34,6 @@
 #include "src/ui/wiggly_text.c"
 #include "src/ui/slider.c"
 #include "src/ui/grid.c"
-#include "src/game/level_metadata.c"
 #include "src/game/level/level_editor.c"
 #include "src/game/level/level_editor/color_picker.c"
 #include "src/game/level/level_editor/rect_layer.c"

@@ -26,13 +26,6 @@ struct LevelPicker
     ListSelector list_selector;
 };
 
-static inline
-const char *list_item_text(void *element)
-{
-    trace_assert(element);
-    return ((LevelMetadata *)element)->title;
-}
-
 LevelPicker *create_level_picker(const char *dirpath)
 {
     trace_assert(dirpath);
@@ -61,10 +54,9 @@ LevelPicker *create_level_picker(const char *dirpath)
         .color = COLOR_WHITE,
     };
 
-    level_picker->list_selector.items = level_picker->level_folder.metadatas;
+    level_picker->list_selector.items = level_picker->level_folder.filepaths;
     level_picker->list_selector.font_scale = vec(5.0f, 5.0f);
     level_picker->list_selector.padding_bottom = 50.0f;
-    level_picker->list_selector.list_item_text = list_item_text;
 
     return level_picker;
 }
@@ -183,11 +175,9 @@ const char *level_picker_selected_level(const LevelPicker *level_picker)
         return NULL;
     }
 
-    LevelMetadata *metadata = dynarray_pointer_at(
-        &level_picker->level_folder.metadatas,
+    return dynarray_pointer_at(
+        &level_picker->level_folder.filepaths,
         (size_t)level_picker->list_selector.selected_item);
-
-    return metadata->filepath;
 }
 
 void level_picker_clean_selection(LevelPicker *level_picker)

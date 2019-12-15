@@ -26,6 +26,6 @@
 #define METADATA_VERSION_MAX_SIZE 256
 #define METADATA_FILEPATH_MAX_SIZE 512
 
-#define VERSION "1"
+#define VERSION "2"
 
 #endif  // CONFIG_H_

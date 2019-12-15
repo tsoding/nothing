@@ -4,8 +4,6 @@
 #include "game/camera.h"
 #include "dynarray.h"
 
-typedef const char *(*ListItemText)(void *element);
-
 typedef struct {
     Dynarray items;
     size_t cursor;
@@ -13,7 +11,6 @@ typedef struct {
     Vec2f position;
     Vec2f font_scale;
     float padding_bottom;
-    ListItemText list_item_text;
 } ListSelector;
 
 int list_selector_render(const Camera *camera,

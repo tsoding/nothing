@@ -127,8 +127,6 @@ add_executable(nothing
   src/ui/slider.c
   src/ui/grid.h
   src/ui/grid.c
-  src/game/level_metadata.h
-  src/game/level_metadata.c
   src/game/level/level_editor.h
   src/game/level/level_editor.c
   src/game/level/level_editor/color_picker.h

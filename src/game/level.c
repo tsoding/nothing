@@ -13,7 +13,6 @@
 #include "game/level/player.h"
 #include "game/level/regions.h"
 #include "game/level/rigid_bodies.h"
-#include "game/level_metadata.h"
 #include "game/level/level_editor/rect_layer.h"
 #include "game/level/level_editor/point_layer.h"
 #include "game/level/level_editor/player_layer.h"
@@ -40,7 +39,6 @@ struct Level
     Lt *lt;
 
     LevelState state;
-    LevelMetadata *metadata;
     Background background;
     RigidBodies *rigid_bodies;
     Player *player;

@@ -25,11 +25,7 @@ int list_selector_render(const Camera *camera,
             list_selector->position,
             vec(0.0f, (float) i * ((float) FONT_CHAR_HEIGHT * list_selector->font_scale.y + list_selector->padding_bottom)));
 
-        const char *item_text =
-            list_selector->list_item_text(
-                dynarray_pointer_at(
-                    &list_selector->items,
-                    i));
+        const char *item_text = dynarray_pointer_at(&list_selector->items, i);
 
         sprite_font_render_text(
             &camera->font,
@@ -67,11 +63,9 @@ Vec2f list_selector_size(const ListSelector *list_selector,
     Vec2f result = vec(0.0f, 0.0f);
 
     for (size_t i = 0; i < list_selector->items.count; ++i) {
-        const char *item_text =
-            list_selector->list_item_text(
-                    dynarray_pointer_at(
-                        &list_selector->items,
-                        i));
+        const char *item_text = dynarray_pointer_at(
+            &list_selector->items,
+            i);
 
         Rect boundary_box = sprite_font_boundary_box(
             vec(0.0f, 0.0f),
@@ -114,11 +108,9 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event)
         Vec2f position = list_selector->position;
 
         for (size_t i = 0; i < list_selector->items.count; ++i) {
-            const char *item_text =
-                list_selector->list_item_text(
-                        dynarray_pointer_at(
-                            &list_selector->items,
-                            i));
+            const char *item_text = dynarray_pointer_at(
+                &list_selector->items,
+                i);
 
             Rect boundary_box = sprite_font_boundary_box(
                 position,
@@ -151,10 +143,9 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event)
             vec_add(&position, vec(0.0f, (float) list_selector->cursor * single_item_height));
 
             const char *item_text =
-                list_selector->list_item_text(
-                    dynarray_pointer_at(
-                        &list_selector->items,
-                        list_selector->cursor));
+                dynarray_pointer_at(
+                    &list_selector->items,
+                    list_selector->cursor);
 
             Rect boundary_box = sprite_font_boundary_box(
                 position,
