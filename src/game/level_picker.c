@@ -15,6 +15,9 @@
 #define TITLE_MARGIN_TOP 100.0f
 #define TITLE_MARGIN_BOTTOM 100.0f
 
+#define LEVEL_PICKER_LIST_FONT_SCALE vec(5.0f, 5.0f)
+#define LEVEL_PICKER_LIST_PADDING_BOTTOM 50.0f
+
 struct LevelPicker
 {
     Lt *lt;
@@ -27,8 +30,6 @@ struct LevelPicker
     size_t cursor;
     int selected_item;
     Vec2f position;
-    Vec2f font_scale;
-    float padding_bottom;
 };
 
 LevelPicker *create_level_picker(const char *dirpath)
@@ -60,8 +61,6 @@ LevelPicker *create_level_picker(const char *dirpath)
     };
 
     level_picker->items = level_picker->level_folder.filepaths;
-    level_picker->font_scale = vec(5.0f, 5.0f);
-    level_picker->padding_bottom = 50.0f;
 
     return level_picker;
 }
@@ -94,7 +93,7 @@ int level_picker_render(const LevelPicker *level_picker,
     for (size_t i = 0; i < level_picker->items.count; ++i) {
         const Vec2f current_position = vec_sum(
             level_picker->position,
-            vec(0.0f, (float) i * ((float) FONT_CHAR_HEIGHT * level_picker->font_scale.y + level_picker->padding_bottom)));
+            vec(0.0f, (float) i * ((float) FONT_CHAR_HEIGHT * LEVEL_PICKER_LIST_FONT_SCALE.y + LEVEL_PICKER_LIST_PADDING_BOTTOM)));
 
         const char *item_text = dynarray_pointer_at(&level_picker->items, i);
 
@@ -102,7 +101,7 @@ int level_picker_render(const LevelPicker *level_picker,
             &camera->font,
             camera->renderer,
             current_position,
-            level_picker->font_scale,
+            LEVEL_PICKER_LIST_FONT_SCALE,
             rgba(1.0f, 1.0f, 1.0f, 1.0f),
             item_text);
 
@@ -110,7 +109,7 @@ int level_picker_render(const LevelPicker *level_picker,
             SDL_Rect boundary_box = rect_for_sdl(
                 sprite_font_boundary_box(
                     current_position,
-                    level_picker->font_scale,
+                    LEVEL_PICKER_LIST_FONT_SCALE,
                     strlen(item_text)));
             if (SDL_SetRenderDrawColor(camera->renderer, 255, 255, 255, 255) < 0) {
                 return -1;
@@ -248,14 +247,14 @@ int level_picker_event(LevelPicker *level_picker,
 
             Rect boundary_box = sprite_font_boundary_box(
                 position,
-                level_picker->font_scale,
+                LEVEL_PICKER_LIST_FONT_SCALE,
                 strlen(item_text));
 
             if (rect_contains_point(boundary_box, mouse_pos)) {
                 level_picker->cursor = i;
             }
 
-            position.y += boundary_box.h + level_picker->padding_bottom;
+            position.y += boundary_box.h + LEVEL_PICKER_LIST_PADDING_BOTTOM;
         }
     } break;
 
@@ -271,7 +270,7 @@ int level_picker_event(LevelPicker *level_picker,
             // note: this assumes that all list items are the same height!
             // this is probably a valid assumption as long as we use a sprite font.
             float single_item_height =
-                FONT_CHAR_HEIGHT * level_picker->font_scale.y + level_picker->padding_bottom;
+                FONT_CHAR_HEIGHT * LEVEL_PICKER_LIST_FONT_SCALE.y + LEVEL_PICKER_LIST_PADDING_BOTTOM;
 
             Vec2f position = level_picker->position;
             vec_add(&position, vec(0.0f, (float) level_picker->cursor * single_item_height));
@@ -283,7 +282,7 @@ int level_picker_event(LevelPicker *level_picker,
 
             Rect boundary_box = sprite_font_boundary_box(
                 position,
-                level_picker->font_scale,
+                LEVEL_PICKER_LIST_FONT_SCALE,
                 strlen(item_text));
 
             const Vec2f mouse_pos = vec((float) event->motion.x, (float) event->motion.y);
