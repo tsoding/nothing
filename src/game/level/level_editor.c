@@ -566,7 +566,7 @@ static int level_editor_dump(LevelEditor *level_editor)
         fopen(level_editor->file_name, "w"),
         fclose_lt);
 
-    if (fprintf(filedump, "%s", VERSION) < 0) {
+    if (fprintf(filedump, "%s\n", VERSION) < 0) {
         return -1;
     }
 
