@@ -393,7 +393,7 @@ int level_editor_saveas_event(LevelEditor *level_editor,
             snprintf(
                 path,
                 LEVEL_FOLDER_MAX_LENGTH,
-                "./assets/levels//%s.txt",
+                "./assets/levels/%s.txt",
                 edit_field_as_text(level_editor->edit_field_filename));
             level_editor->file_name = PUSH_LT(
                 level_editor->lt,
