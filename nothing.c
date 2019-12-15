@@ -16,7 +16,6 @@
 #include "src/game/level_picker.c"
 #include "src/game/credits.c"
 #include "src/game/settings.c"
-#include "src/game/level_folder.c"
 #include "src/game/sound_samples.c"
 #include "src/game/sprite_font.c"
 #include "src/main.c"

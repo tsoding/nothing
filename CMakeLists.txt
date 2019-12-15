@@ -88,8 +88,6 @@ add_executable(nothing
   src/game/credits.c
   src/game/settings.h
   src/game/settings.c
-  src/game/level_folder.c
-  src/game/level_folder.h
   src/game/sound_samples.h
   src/game/sound_samples.c
   src/game/sprite_font.h

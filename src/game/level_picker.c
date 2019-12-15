@@ -8,9 +8,9 @@
 #include "system/stacktrace.h"
 #include "system/str.h"
 #include "system/log.h"
-#include "game/level_folder.h"
 #include "ui/wiggly_text.h"
 #include "ui/slider.h"
+#include "system/file.h"
 
 #define TITLE_MARGIN_TOP 100.0f
 #define TITLE_MARGIN_BOTTOM 100.0f
@@ -23,9 +23,7 @@ struct LevelPicker
     Lt *lt;
     Background background;
     Vec2f camera_position;
-    LevelFolder level_folder;
     WigglyText wiggly_text;
-
     Dynarray items;
     size_t cursor;
     int selected_item;
@@ -46,13 +44,30 @@ LevelPicker *create_level_picker(const char *dirpath)
         RETURN_LT(lt, NULL);
     }
     level_picker->lt = lt;
-
     level_picker->background = create_background(hexstr("073642"));
-
     level_picker->camera_position = vec(0.0f, 0.0f);
 
-    level_picker->level_folder = create_level_folder();
-    level_folder_read("./assets/levels", &level_picker->level_folder);
+    {
+        level_picker->items = create_dynarray(METADATA_FILEPATH_MAX_SIZE);
+
+        DIR *level_dir = opendir(dirpath);
+        if (level_dir == NULL) {
+            log_fail("Can't open asset folder: %s\n", dirpath);
+            abort();
+        }
+
+        char filepath[METADATA_FILEPATH_MAX_SIZE];
+        for (struct dirent *d = readdir(level_dir);
+             d != NULL;
+             d = readdir(level_dir)) {
+            if (*d->d_name == '.') continue;
+
+            snprintf(filepath, METADATA_FILEPATH_MAX_SIZE,
+                     "%s/%s", dirpath, d->d_name);
+            dynarray_push(&level_picker->items, filepath);
+        }
+        closedir(level_dir);
+    }
 
     level_picker->wiggly_text = (WigglyText) {
         .text = "Select Level",
@@ -60,15 +75,13 @@ LevelPicker *create_level_picker(const char *dirpath)
         .color = COLOR_WHITE,
     };
 
-    level_picker->items = level_picker->level_folder.filepaths;
-
     return level_picker;
 }
 
 void destroy_level_picker(LevelPicker *level_picker)
 {
     trace_assert(level_picker);
-    destroy_level_folder(level_picker->level_folder);
+    free(level_picker->items.data);
     RETURN_LT0(level_picker->lt);
 }
 
