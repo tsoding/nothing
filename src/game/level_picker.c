@@ -156,9 +156,7 @@ int level_picker_update(LevelPicker *level_picker,
 }
 
 static
-Vec2f level_picker_list_size(const LevelPicker *level_picker,
-                             Vec2f font_scale,
-                             float padding_bottom)
+Vec2f level_picker_list_size(const LevelPicker *level_picker)
 {
     trace_assert(level_picker);
 
@@ -171,11 +169,11 @@ Vec2f level_picker_list_size(const LevelPicker *level_picker,
 
         Rect boundary_box = sprite_font_boundary_box(
             vec(0.0f, 0.0f),
-            font_scale,
+            LEVEL_PICKER_LIST_FONT_SCALE,
             strlen(item_text));
 
         result.x = fmaxf(result.x, boundary_box.w);
-        result.y += boundary_box.y + padding_bottom;
+        result.y += boundary_box.y + LEVEL_PICKER_LIST_PADDING_BOTTOM;
     }
 
     return result;
@@ -193,18 +191,10 @@ int level_picker_event(LevelPicker *level_picker,
         switch (event->window.event) {
         case SDL_WINDOWEVENT_SHOWN:
         case SDL_WINDOWEVENT_SIZE_CHANGED: {
-            const Vec2f font_scale = vec(5.0f, 5.0f);
-            const float padding_bottom = 50.0f;
-
             int width;
             SDL_GetRendererOutputSize(SDL_GetRenderer(SDL_GetWindowFromID(event->window.windowID)), &width, NULL);
-
             const Vec2f title_size = wiggly_text_size(&level_picker->wiggly_text);
-
-            const Vec2f selector_size = level_picker_list_size(
-                level_picker,
-                font_scale,
-                padding_bottom);
+            const Vec2f selector_size = level_picker_list_size(level_picker);
 
             level_picker->position =
                 vec((float)width * 0.5f - selector_size.x * 0.5f,
