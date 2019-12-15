@@ -2,8 +2,7 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  # TODO(#1176): no clang on linux build on GitHub actions
-  build-linux:
+  build-linux-gcc:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v1
@@ -16,6 +15,21 @@ jobs:
           ./build-posix.sh 
         env: 
           CC: gcc
+          NOTHING_CI: on
+
+  build-linux-clang:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -qq libsdl2-dev
+      - name: build nothing
+        run: |
+          ./build-posix.sh
+        env:
+          CC: clang
           NOTHING_CI: on
 
   build-macos:
