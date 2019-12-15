@@ -10,6 +10,8 @@
 #include <dirent.h>
 #endif
 
+#include "system/s.h"
+
 #ifdef _WIN32
 struct dirent
 {
@@ -22,5 +24,7 @@ DIR *opendir(const char *name);
 struct dirent *readdir(DIR *dirp);
 void closedir(DIR *dirp);
 #endif
+
+String read_whole_file(const char *filepath);
 
 #endif  // FILE_H_

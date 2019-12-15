@@ -195,7 +195,12 @@ LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor
                METADATA_VERSION_MAX_SIZE - 1));
     trim_endline(version);
 
-    if (strcmp(version, VERSION) != 0) {
+    if (strcmp(version, "1") == 0) {
+        if (line_stream_next(level_stream) == NULL)
+            RETURN_LT(lt, NULL);
+    } else if (strcmp(version, "2") == 0) {
+        // Nothing
+    } else {
         log_fail("Version `%s` is not supported. Expected version `%s`.\n",
                  version, VERSION);
         RETURN_LT(lt, NULL);

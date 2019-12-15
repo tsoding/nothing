@@ -74,3 +74,24 @@ void closedir(DIR *dirp)
 }
 
 #endif
+
+String read_whole_file(const char *filepath)
+{
+    trace_assert(filepath);
+
+    String result = string(0, NULL);
+    FILE *f = fopen(filepath, "rb");
+    if (!f) goto end;
+    if (fseek(f, 0, SEEK_END) < 0) goto end;
+    long m = ftell(f);
+    if (m < 0) goto end;
+    result.count = (size_t) m;
+    char *buffer = nth_calloc(1, result.count);
+    size_t n = fread(buffer, 1, result.count, f);
+    trace_assert(n == result.count);
+    result.data = buffer;
+
+end:
+    if (f) fclose(f);
+    return result;
+}
