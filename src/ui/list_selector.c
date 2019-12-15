@@ -88,13 +88,16 @@ int list_selector_event(ListSelector *list_selector, const SDL_Event *event)
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
         case SDLK_UP:
-            if (list_selector->cursor > 0) {
+            if (list_selector->cursor == 0) {
+                list_selector->cursor = list_selector->items.count - 1;
+            } else {
                 list_selector->cursor--;
             }
             break;
         case SDLK_DOWN:
-            if (list_selector->cursor < list_selector->items.count - 1) {
-                list_selector->cursor++;
+            list_selector->cursor++;
+            if (list_selector->cursor == list_selector->items.count) {
+                list_selector->cursor = 0;
             }
             break;
         case SDLK_RETURN:
