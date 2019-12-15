@@ -286,7 +286,7 @@ Rect boundary_of_element(const LabelLayer *label_layer,
         sprite_font_boundary_box(
             position,
             LABELS_SIZE,
-            strlen(texts + i * LABEL_LAYER_TEXT_MAX_SIZE)),
+            texts + i * LABEL_LAYER_TEXT_MAX_SIZE),
         sprite_font_boundary_box(
             vec_sum(
                 position,
@@ -294,7 +294,7 @@ Rect boundary_of_element(const LabelLayer *label_layer,
                     vec(0.0f, FONT_CHAR_HEIGHT),
                     LABELS_SIZE)),
             vec(1.0f, 1.0f),
-            strlen(ids + i * LABEL_LAYER_ID_MAX_SIZE)));
+            ids + i * LABEL_LAYER_ID_MAX_SIZE));
 }
 
 int label_layer_render(const LabelLayer *label_layer,

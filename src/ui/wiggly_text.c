@@ -49,7 +49,7 @@ Vec2f wiggly_text_size(const WigglyText *wiggly_text)
     const Rect boundary = sprite_font_boundary_box(
         vec(0.0f, 0.0f),
         wiggly_text->scale,
-        strlen(wiggly_text->text));
+        wiggly_text->text);
 
     return vec(boundary.w, boundary.h);
 }
