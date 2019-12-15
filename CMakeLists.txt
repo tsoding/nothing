@@ -119,8 +119,6 @@ add_executable(nothing
   src/ui/edit_field.c
   src/ui/history.h
   src/ui/history.c
-  src/ui/list_selector.h
-  src/ui/list_selector.c
   src/ui/wiggly_text.h
   src/ui/wiggly_text.c
   src/ui/slider.h

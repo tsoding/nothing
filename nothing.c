@@ -30,7 +30,6 @@
 #include "src/ui/console_log.c"
 #include "src/ui/edit_field.c"
 #include "src/ui/history.c"
-#include "src/ui/list_selector.c"
 #include "src/ui/wiggly_text.c"
 #include "src/ui/slider.c"
 #include "src/ui/grid.c"
