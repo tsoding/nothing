@@ -1,6 +1,9 @@
 #ifndef S_H_
 #define S_H_
 
+#include <string.h>
+#include "system/stacktrace.h"
+
 typedef struct {
     size_t count;
     const char *data;
