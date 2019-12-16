@@ -107,3 +107,14 @@ int console_log_push_line(Console_Log *console_log,
 
     return 0;
 }
+
+void console_log_clear(Console_Log *console_log)
+{
+    trace_assert(console_log);
+    console_log->cursor = 0;
+    for (size_t i = 0; i < console_log->capacity; ++i) {
+        if (console_log->buffer[i]) {
+            console_log->buffer[i] = 0;
+        }
+    }
+}

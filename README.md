@@ -155,6 +155,10 @@ $ ./nothing
 | `ESC`     | Exit console             |
 | `Enter`   | Evaluate the expression  |
 | `Up/Down` | Traverse console history |
+| `CTRL+L`  | Clear                    |
+| `CTRL+W`  | Cut                      |
+| `META+W`  | Copy                     |
+| `CTRL+Y`  | Paste                    |
 
 ### Level Editor
 

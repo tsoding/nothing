@@ -449,6 +449,13 @@ void edit_field_replace(Edit_field *edit_field, const char *text)
     }
 }
 
+void edit_field_append(Edit_field *edit_field, const char *text)
+{
+    size_t n = strlen(text);
+    edit_field->buffer = strcat(edit_field->buffer, text);
+    edit_field->cursor += n;
+}
+
 void edit_field_clean(Edit_field *edit_field)
 {
     trace_assert(edit_field);

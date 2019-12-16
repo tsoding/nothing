@@ -19,4 +19,6 @@ int console_log_push_line(Console_Log *console_log,
                           const char *line_end,
                           Color color);
 
+void console_log_clear(Console_Log *console_log);
+
 #endif  // CONSOLE_LOG_H_

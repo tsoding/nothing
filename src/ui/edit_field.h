@@ -26,6 +26,7 @@ int edit_field_event(Edit_field *edit_field, const SDL_Event *event);
 const char *edit_field_as_text(const Edit_field *edit_field);
 
 void edit_field_replace(Edit_field *edit_field, const char *text);
+void edit_field_append(Edit_field *edit_field, const char *text);
 void edit_field_clean(Edit_field *edit_field);
 void edit_field_restyle(Edit_field *edit_field,
                         Vec2f font_size,

@@ -93,7 +93,6 @@ struct Console
 };
 
 /* TODO(#356): Console does not support autocompletion */
-/* TODO(#358): Console does not support copy, cut, paste operations */
 
 Console *create_console(Game *game)
 {
@@ -203,6 +202,31 @@ int console_handle_event(Console *console,
                 edit_field_replace(
                     console->edit_field, history_current(console->history));
                 history_prev(console->history);
+                return 0;
+            }
+        } break;
+
+       case SDLK_l: {
+            if (event->key.keysym.mod & KMOD_CTRL) {
+                console_log_clear(console->console_log);
+                return 0;
+            }
+        } break;
+
+        case SDLK_w: {
+            if (event->key.keysym.mod & (KMOD_CTRL | KMOD_ALT)) {
+                SDL_SetClipboardText(edit_field_as_text(console->edit_field));
+                if (event->key.keysym.mod & KMOD_CTRL) {
+                    edit_field_clean(console->edit_field);
+                }
+                return 0;
+            }
+        } break;
+
+       case SDLK_y: {
+            if (event->key.keysym.mod & KMOD_CTRL) {
+                char *text = SDL_GetClipboardText();
+                edit_field_append(console->edit_field, text);
                 return 0;
             }
         } break;
