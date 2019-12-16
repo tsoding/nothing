@@ -3,6 +3,7 @@
 image:
   - ubuntu1804
   - Visual Studio 2015
+  - macos
 environment: # enable mingw build on windows image
   MSYSTEM: MINGW64
   CHERE_INVOKING: 1
@@ -12,6 +13,8 @@ environment: # enable mingw build on windows image
 matrix:
   exclude: # no mingw build on linux
     - image: ubuntu1804
+      BUILD_TYPE: mingw
+    - image: macos
       BUILD_TYPE: mingw
 install:
   - ps: |
@@ -25,9 +28,11 @@ install:
               7z x SDL2-devel-2.0.9-VC.zip
               mv SDL2-2.0.9 SDL2
           }
-       } else {
+       } elseif ($isLinux) {
            bash -c "sudo apt-get update -qq"
            bash -c "sudo apt-get install -qq libsdl2-dev"
+       } else {
+           bash -c "brew install sdl2"
        }
 build_script:
   - ps: |
@@ -41,6 +46,8 @@ build_script:
                cmake .. -DNOTHING_CI=ON
                cmake --build .
            }
-       } else {
+       } elseif ($isLinux) {
            bash -c "CC=gcc ./build-posix.sh"
+       } else {
+           bash -c "CC=clang ./build-posix.sh"
        }
