@@ -222,7 +222,15 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
         return -1;
     }
 
-    snprintf(text_buffer, 256, "id: %zd", id);
+    snprintf(text_buffer, 256, 
+        "id: %zd\n"
+        "p:(%.2f, %.2f)\n"
+        "v:(%.2f, %.2f)\n"
+        "m:(%.2f, %.2f)",
+        id,
+        rigid_bodies->bodies[id].x, rigid_bodies->bodies[id].y,
+        rigid_bodies->velocities[id].x, rigid_bodies->velocities[id].y,
+        rigid_bodies->movements[id].x, rigid_bodies->movements[id].y);
 
     if (camera_render_debug_text(
             camera,
@@ -231,40 +239,6 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
                 rigid_bodies->bodies[id].y)) < 0) {
         return -1;
     }
-
-    snprintf(text_buffer, 256, "p:(%.2f, %.2f)",
-             rigid_bodies->bodies[id].x,
-             rigid_bodies->bodies[id].y);
-    if (camera_render_debug_text(
-            camera,
-            text_buffer,
-            vec(rigid_bodies->bodies[id].x,
-                rigid_bodies->bodies[id].y + FONT_CHAR_HEIGHT * 2.0f))) {
-        return -1;
-    }
-
-    snprintf(text_buffer, 256, "v:(%.2f, %.2f)",
-             rigid_bodies->velocities[id].x,
-             rigid_bodies->velocities[id].y);
-    if (camera_render_debug_text(
-            camera,
-            text_buffer,
-            vec(rigid_bodies->bodies[id].x,
-                rigid_bodies->bodies[id].y + FONT_CHAR_HEIGHT * 4.0f))) {
-        return -1;
-    }
-
-    snprintf(text_buffer, 256, "m:(%.2f, %.2f)",
-             rigid_bodies->movements[id].x,
-             rigid_bodies->movements[id].y);
-    if (camera_render_debug_text(
-            camera,
-            text_buffer,
-            vec(rigid_bodies->bodies[id].x,
-                rigid_bodies->bodies[id].y + FONT_CHAR_HEIGHT * 6.0f))) {
-        return -1;
-    }
-
     return 0;
 }
 
