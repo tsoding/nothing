@@ -98,14 +98,20 @@ void sprite_font_render_text(const Sprite_font *sprite_font,
                                sdl_color.a));
 
     const size_t text_size = strlen(text);
-    for (size_t i = 0; i < text_size; ++i) {
+    for (size_t i = 0, col = 0, row = 0; i < text_size; ++i) {
+        if (text[i] == '\n'){
+            col = 0;
+            row++;
+            continue;
+        }
         const SDL_Rect char_rect = sprite_font_char_rect(sprite_font, text[i]);
         const SDL_Rect dest_rect = rect_for_sdl(
             rect(
-                position.x + (float) FONT_CHAR_WIDTH * (float) i * size.x,
-                position.y,
+                position.x + (float) FONT_CHAR_WIDTH * (float) col * size.x,
+                position.y + (float) FONT_CHAR_HEIGHT * (float) row * size.y,
                 (float) char_rect.w * size.x,
                 (float) char_rect.h * size.y));
         scc(SDL_RenderCopy(renderer, sprite_font->texture, &char_rect, &dest_rect));
+        col++;
     }
 }

@@ -298,7 +298,7 @@ int camera_is_text_visible(const Camera *camera,
     return rects_overlap(
         camera_rect(
             camera,
-            sprite_font_boundary_box(position, size, strlen(text))),
+            sprite_font_boundary_box(position, size, text)),
         rect_from_sdl(&view_port));
 }
 

@@ -93,7 +93,7 @@ int level_picker_render(const LevelPicker *level_picker,
                 sprite_font_boundary_box(
                     current_position,
                     LEVEL_PICKER_LIST_FONT_SCALE,
-                    strlen(item_text)));
+                    item_text));
             if (SDL_SetRenderDrawColor(camera->renderer, 255, 255, 255, 255) < 0) {
                 return -1;
             }
@@ -153,7 +153,7 @@ Vec2f level_picker_list_size(const LevelPicker *level_picker)
         Rect boundary_box = sprite_font_boundary_box(
             vec(0.0f, 0.0f),
             LEVEL_PICKER_LIST_FONT_SCALE,
-            strlen(item_text));
+            item_text);
 
         result.x = fmaxf(result.x, boundary_box.w);
         result.y += boundary_box.y + LEVEL_PICKER_LIST_PADDING_BOTTOM;
@@ -221,7 +221,7 @@ int level_picker_event(LevelPicker *level_picker,
             Rect boundary_box = sprite_font_boundary_box(
                 position,
                 LEVEL_PICKER_LIST_FONT_SCALE,
-                strlen(item_text));
+                item_text);
 
             if (rect_contains_point(boundary_box, mouse_pos)) {
                 level_picker->cursor = i;
@@ -256,7 +256,7 @@ int level_picker_event(LevelPicker *level_picker,
             Rect boundary_box = sprite_font_boundary_box(
                 position,
                 LEVEL_PICKER_LIST_FONT_SCALE,
-                strlen(item_text));
+                item_text);
 
             const Vec2f mouse_pos = vec((float) event->motion.x, (float) event->motion.y);
             if (rect_contains_point(boundary_box, mouse_pos)) {
