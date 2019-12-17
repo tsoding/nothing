@@ -147,7 +147,14 @@ static int console_eval_input(Console *console)
 {
     const char *source_code = edit_field_as_text(console->edit_field);
 
-    /* TODO(#387): console pushes empty strings to the history */
+    Token input = token_nt(source_code);
+    Token command = chop_word(&input);
+
+    if (token_equals_str(command, "")) {
+        edit_field_clean(console->edit_field);
+        return 0;
+    }
+
     if (history_push(console->history, source_code) < 0) {
         return -1;
     }
@@ -156,9 +163,6 @@ static int console_eval_input(Console *console)
         return -1;
     }
 
-    Token input = token_nt(source_code);
-
-    Token command = chop_word(&input);
     if (token_equals_str(command, "load")) {
         Token level = chop_word(&input);
         console_log_push_line(console->console_log, "Loading level:", NULL, CONSOLE_FOREGROUND);
