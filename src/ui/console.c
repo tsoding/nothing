@@ -213,24 +213,6 @@ int console_handle_event(Console *console,
             }
         } break;
 
-        case SDLK_w: {
-            if (event->key.keysym.mod & (KMOD_CTRL | KMOD_ALT)) {
-                SDL_SetClipboardText(edit_field_as_text(console->edit_field));
-                if (event->key.keysym.mod & KMOD_CTRL) {
-                    edit_field_clean(console->edit_field);
-                }
-                return 0;
-            }
-        } break;
-
-       case SDLK_y: {
-            if (event->key.keysym.mod & KMOD_CTRL) {
-                char *text = SDL_GetClipboardText();
-                edit_field_append(console->edit_field, text);
-                return 0;
-            }
-        } break;
-
         case SDLK_DOWN:
             edit_field_replace(
                 console->edit_field,
