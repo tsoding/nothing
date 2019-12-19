@@ -15,7 +15,9 @@ typedef struct {
     Dynarray items;
     size_t cursor;
     int selected_item;
+    Vec2f scroll;
     Vec2f position;
+    Vec2f size;
 } LevelPicker;
 
 
@@ -28,7 +30,7 @@ void destroy_level_picker(LevelPicker level_picker)
     free(level_picker.items.data);
 }
 
-int level_picker_render(const LevelPicker *level_picker,
+int level_picker_render(LevelPicker *level_picker,
                         const Camera *camera);
 int level_picker_update(LevelPicker *level,
                         float delta_time);

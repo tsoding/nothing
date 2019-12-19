@@ -16,6 +16,11 @@
 #define LEVEL_PICKER_LIST_FONT_SCALE vec(5.0f, 5.0f)
 #define LEVEL_PICKER_LIST_PADDING_BOTTOM 50.0f
 
+#define ITEM_HEIGHT (FONT_CHAR_HEIGHT * LEVEL_PICKER_LIST_FONT_SCALE.y + LEVEL_PICKER_LIST_PADDING_BOTTOM)
+
+#define SCROLLBAR_WIDTH 20
+#define SCROLLING_SPEED_FRACTION 0.25f
+
 void level_picker_populate(LevelPicker *level_picker,
                            const char *dirpath)
 {
@@ -55,7 +60,7 @@ void level_picker_populate(LevelPicker *level_picker,
     };
 }
 
-int level_picker_render(const LevelPicker *level_picker,
+int level_picker_render(LevelPicker *level_picker,
                         const Camera *camera)
 {
     trace_assert(level_picker);
@@ -67,16 +72,57 @@ int level_picker_render(const LevelPicker *level_picker,
     }
 
     const Vec2f title_size = wiggly_text_size(&level_picker->wiggly_text);
+    const float scrolling_area_height = viewport.h - ITEM_HEIGHT - level_picker->position.y;
 
     wiggly_text_render(
         &level_picker->wiggly_text,
         camera,
         vec(viewport.w * 0.5f - title_size.x * 0.5f, TITLE_MARGIN_TOP));
 
+    if (level_picker->cursor * ITEM_HEIGHT + level_picker->scroll.y > scrolling_area_height) {
+        level_picker->scroll.y -= ITEM_HEIGHT * SCROLLING_SPEED_FRACTION;
+    }
+    if (level_picker->cursor * ITEM_HEIGHT + level_picker->scroll.y < 0) {
+        level_picker->scroll.y += ITEM_HEIGHT * SCROLLING_SPEED_FRACTION;
+    }
+
+    const float proportional_scroll = level_picker->scroll.y * scrolling_area_height / level_picker->size.y;
+    const float number_of_items_in_scrolling_area = scrolling_area_height / ITEM_HEIGHT;
+    const float percent_of_visible_items = (float) number_of_items_in_scrolling_area / level_picker->items.count;
+
+    if(percent_of_visible_items < 1) {
+        SDL_Rect scrollbar = rect_for_sdl(
+            rect_from_vecs(
+                vec(level_picker->position.x + level_picker->size.x, level_picker->position.y),
+                vec(SCROLLBAR_WIDTH, scrolling_area_height)));
+
+        SDL_Rect scrollbar_thumb = rect_for_sdl(
+            rect_from_vecs(
+                vec(level_picker->position.x + level_picker->size.x, level_picker->position.y - proportional_scroll),
+                vec(SCROLLBAR_WIDTH, scrolling_area_height * percent_of_visible_items)));
+        
+        if (SDL_SetRenderDrawColor(camera->renderer, 255, 255, 255, 255) < 0) {
+            return -1;
+        }
+
+        if (SDL_RenderDrawRect(camera->renderer, &scrollbar) < 0) {
+            return -1;
+        }
+
+        if (SDL_RenderFillRect(camera->renderer, &scrollbar_thumb) < 0) {
+            return -1;
+        }
+    }
+
     for (size_t i = 0; i < level_picker->items.count; ++i) {
         const Vec2f current_position = vec_sum(
             level_picker->position,
-            vec(0.0f, (float) i * ((float) FONT_CHAR_HEIGHT * LEVEL_PICKER_LIST_FONT_SCALE.y + LEVEL_PICKER_LIST_PADDING_BOTTOM)));
+            vec(0.0f, (float) i * ITEM_HEIGHT + level_picker->scroll.y));
+
+        if(current_position.y > level_picker->position.y + scrolling_area_height ||
+            current_position.y < level_picker->position.y) {
+            continue;
+        }
 
         const char *item_text = dynarray_pointer_at(&level_picker->items, i);
 
@@ -156,7 +202,7 @@ Vec2f level_picker_list_size(const LevelPicker *level_picker)
             item_text);
 
         result.x = fmaxf(result.x, boundary_box.w);
-        result.y += boundary_box.y + LEVEL_PICKER_LIST_PADDING_BOTTOM;
+        result.y += boundary_box.h + LEVEL_PICKER_LIST_PADDING_BOTTOM;
     }
 
     return result;
@@ -177,10 +223,10 @@ int level_picker_event(LevelPicker *level_picker,
             int width;
             SDL_GetRendererOutputSize(SDL_GetRenderer(SDL_GetWindowFromID(event->window.windowID)), &width, NULL);
             const Vec2f title_size = wiggly_text_size(&level_picker->wiggly_text);
-            const Vec2f selector_size = level_picker_list_size(level_picker);
+            level_picker->size = level_picker_list_size(level_picker);
 
             level_picker->position =
-                vec((float)width * 0.5f - selector_size.x * 0.5f,
+                vec((float)width * 0.5f - level_picker->size.x * 0.5f,
                     TITLE_MARGIN_TOP + title_size.y + TITLE_MARGIN_BOTTOM);
         } break;
         }
@@ -211,7 +257,9 @@ int level_picker_event(LevelPicker *level_picker,
 
     case SDL_MOUSEMOTION: {
         const Vec2f mouse_pos = vec((float) event->motion.x, (float) event->motion.y);
-        Vec2f position = level_picker->position;
+        Vec2f position = vec_sum(
+            level_picker->position,
+            level_picker->scroll);
 
         for (size_t i = 0; i < level_picker->items.count; ++i) {
             const char *item_text = dynarray_pointer_at(
@@ -245,7 +293,9 @@ int level_picker_event(LevelPicker *level_picker,
             float single_item_height =
                 FONT_CHAR_HEIGHT * LEVEL_PICKER_LIST_FONT_SCALE.y + LEVEL_PICKER_LIST_PADDING_BOTTOM;
 
-            Vec2f position = level_picker->position;
+            Vec2f position = vec_sum(
+                level_picker->position,
+                level_picker->scroll);
             vec_add(&position, vec(0.0f, (float) level_picker->cursor * single_item_height));
 
             const char *item_text =
