@@ -145,20 +145,24 @@ void destroy_console(Console *console)
 
 static int console_eval_input(Console *console)
 {
-    const char *source_code = edit_field_as_text(console->edit_field);
+    const char *input_text = edit_field_as_text(console->edit_field);
 
-    /* TODO(#387): console pushes empty strings to the history */
-    if (history_push(console->history, source_code) < 0) {
-        return -1;
-    }
-
-    if (console_log_push_line(console->console_log, source_code, NULL, CONSOLE_FOREGROUND) < 0) {
-        return -1;
-    }
-
-    Token input = token_nt(source_code);
-
+    Token input = token_nt(input_text);
     Token command = chop_word(&input);
+
+    if (token_equals_str(command, "")) {
+        edit_field_clean(console->edit_field);
+        return 0;
+    }
+
+    if (history_push(console->history, input_text) < 0) {
+        return -1;
+    }
+
+    if (console_log_push_line(console->console_log, input_text, NULL, CONSOLE_FOREGROUND) < 0) {
+        return -1;
+    }
+
     if (token_equals_str(command, "load")) {
         Token level = chop_word(&input);
         console_log_push_line(console->console_log, "Loading level:", NULL, CONSOLE_FOREGROUND);
