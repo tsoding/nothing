@@ -81,7 +81,7 @@ int level_picker_render(const LevelPicker *level_picker,
 
     const float proportional_scroll = level_picker->scroll.y * scrolling_area_height / level_picker->size.y;
     const float number_of_items_in_scrolling_area = scrolling_area_height / ITEM_HEIGHT;
-    const float percent_of_visible_items = number_of_items_in_scrolling_area / (float) level_picker->items.count;
+    const float percent_of_visible_items = number_of_items_in_scrolling_area / ((float) level_picker->items.count - 1);
 
     if(percent_of_visible_items < 1) {
         SDL_Rect scrollbar = rect_for_sdl(
