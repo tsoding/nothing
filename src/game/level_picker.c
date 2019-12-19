@@ -60,7 +60,7 @@ void level_picker_populate(LevelPicker *level_picker,
     };
 }
 
-int level_picker_render(LevelPicker *level_picker,
+int level_picker_render(const LevelPicker *level_picker,
                         const Camera *camera)
 {
     trace_assert(level_picker);
@@ -79,16 +79,9 @@ int level_picker_render(LevelPicker *level_picker,
         camera,
         vec(viewport.w * 0.5f - title_size.x * 0.5f, TITLE_MARGIN_TOP));
 
-    if (level_picker->cursor * ITEM_HEIGHT + level_picker->scroll.y > scrolling_area_height) {
-        level_picker->scroll.y -= ITEM_HEIGHT * SCROLLING_SPEED_FRACTION;
-    }
-    if (level_picker->cursor * ITEM_HEIGHT + level_picker->scroll.y < 0) {
-        level_picker->scroll.y += ITEM_HEIGHT * SCROLLING_SPEED_FRACTION;
-    }
-
     const float proportional_scroll = level_picker->scroll.y * scrolling_area_height / level_picker->size.y;
     const float number_of_items_in_scrolling_area = scrolling_area_height / ITEM_HEIGHT;
-    const float percent_of_visible_items = (float) number_of_items_in_scrolling_area / level_picker->items.count;
+    const float percent_of_visible_items = number_of_items_in_scrolling_area / (float) level_picker->items.count;
 
     if(percent_of_visible_items < 1) {
         SDL_Rect scrollbar = rect_for_sdl(
@@ -100,7 +93,7 @@ int level_picker_render(LevelPicker *level_picker,
             rect_from_vecs(
                 vec(level_picker->position.x + level_picker->size.x, level_picker->position.y - proportional_scroll),
                 vec(SCROLLBAR_WIDTH, scrolling_area_height * percent_of_visible_items)));
-        
+
         if (SDL_SetRenderDrawColor(camera->renderer, 255, 255, 255, 255) < 0) {
             return -1;
         }
@@ -170,9 +163,20 @@ int level_picker_render(LevelPicker *level_picker,
 }
 
 int level_picker_update(LevelPicker *level_picker,
+                        Camera *camera,
                         float delta_time)
 {
     trace_assert(level_picker);
+
+    const Rect viewport = camera_view_port_screen(camera);
+    const float scrolling_area_height = viewport.h - ITEM_HEIGHT - level_picker->position.y;
+
+    if ((float) level_picker->cursor * ITEM_HEIGHT + level_picker->scroll.y > scrolling_area_height) {
+        level_picker->scroll.y -= ITEM_HEIGHT * SCROLLING_SPEED_FRACTION;
+    }
+    if ((float) level_picker->cursor * ITEM_HEIGHT + level_picker->scroll.y < 0) {
+        level_picker->scroll.y += ITEM_HEIGHT * SCROLLING_SPEED_FRACTION;
+    }
 
     vec_add(&level_picker->camera_position,
             vec(50.0f * delta_time, 0.0f));
