@@ -89,4 +89,21 @@ String trim(String input)
     return trim_end(trim_begin(input));
 }
 
+static inline
+String chop_word(String *input)
+{
+    trace_assert(input);
+
+    *input = trim_begin(*input);
+
+    size_t i = 0;
+    while (i < input->count && !isspace(input->data[i]))
+        i++;
+
+    String result = string(i, input->data);
+    input->data += i;
+    input->count -= i;
+    return result;
+}
+
 #endif  // S_H_
