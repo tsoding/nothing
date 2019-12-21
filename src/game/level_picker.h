@@ -15,7 +15,7 @@ typedef struct {
     Dynarray items;
     size_t items_cursor;
     int selected_item;
-    Vec2f scroll;
+    Vec2f items_scroll;
     Vec2f items_position;
     Vec2f size;
 } LevelPicker;
