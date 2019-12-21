@@ -21,7 +21,7 @@ typedef struct {
 } LevelPicker;
 
 // TODO(#1221): Level Picker scroll does not support mouse wheel
-// TODO: Level Picker scroll does not support dragging
+// TODO(#1222): Level Picker scroll does not support dragging
 
 void level_picker_populate(LevelPicker *level_picker,
                            const char *dirpath);
