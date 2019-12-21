@@ -72,7 +72,7 @@ int level_picker_render(const LevelPicker *level_picker,
     }
 
     const Vec2f title_size = wiggly_text_size(&level_picker->wiggly_text);
-    const float scrolling_area_height = viewport.h - ITEM_HEIGHT - level_picker->position.y;
+    const float scrolling_area_height = viewport.h - ITEM_HEIGHT - level_picker->items_position.y;
 
     wiggly_text_render(
         &level_picker->wiggly_text,
@@ -86,12 +86,12 @@ int level_picker_render(const LevelPicker *level_picker,
     if(percent_of_visible_items < 1) {
         SDL_Rect scrollbar = rect_for_sdl(
             rect_from_vecs(
-                vec(level_picker->position.x + level_picker->size.x, level_picker->position.y),
+                vec(level_picker->items_position.x + level_picker->size.x, level_picker->items_position.y),
                 vec(SCROLLBAR_WIDTH, scrolling_area_height)));
 
         SDL_Rect scrollbar_thumb = rect_for_sdl(
             rect_from_vecs(
-                vec(level_picker->position.x + level_picker->size.x, level_picker->position.y - proportional_scroll),
+                vec(level_picker->items_position.x + level_picker->size.x, level_picker->items_position.y - proportional_scroll),
                 vec(SCROLLBAR_WIDTH, scrolling_area_height * percent_of_visible_items)));
 
         if (SDL_SetRenderDrawColor(camera->renderer, 255, 255, 255, 255) < 0) {
@@ -109,11 +109,11 @@ int level_picker_render(const LevelPicker *level_picker,
 
     for (size_t i = 0; i < level_picker->items.count; ++i) {
         const Vec2f current_position = vec_sum(
-            level_picker->position,
+            level_picker->items_position,
             vec(0.0f, (float) i * ITEM_HEIGHT + level_picker->scroll.y));
 
-        if(current_position.y > level_picker->position.y + scrolling_area_height ||
-            current_position.y < level_picker->position.y) {
+        if(current_position.y > level_picker->items_position.y + scrolling_area_height ||
+            current_position.y < level_picker->items_position.y) {
             continue;
         }
 
@@ -169,7 +169,7 @@ int level_picker_update(LevelPicker *level_picker,
     trace_assert(level_picker);
 
     const Rect viewport = camera_view_port_screen(camera);
-    const float scrolling_area_height = viewport.h - ITEM_HEIGHT - level_picker->position.y;
+    const float scrolling_area_height = viewport.h - ITEM_HEIGHT - level_picker->items_position.y;
 
     if ((float) level_picker->cursor * ITEM_HEIGHT + level_picker->scroll.y > scrolling_area_height) {
         level_picker->scroll.y -= ITEM_HEIGHT * SCROLLING_SPEED_FRACTION;
@@ -229,7 +229,7 @@ int level_picker_event(LevelPicker *level_picker,
             const Vec2f title_size = wiggly_text_size(&level_picker->wiggly_text);
             level_picker->size = level_picker_list_size(level_picker);
 
-            level_picker->position =
+            level_picker->items_position =
                 vec((float)width * 0.5f - level_picker->size.x * 0.5f,
                     TITLE_MARGIN_TOP + title_size.y + TITLE_MARGIN_BOTTOM);
         } break;
@@ -262,7 +262,7 @@ int level_picker_event(LevelPicker *level_picker,
     case SDL_MOUSEMOTION: {
         const Vec2f mouse_pos = vec((float) event->motion.x, (float) event->motion.y);
         Vec2f position = vec_sum(
-            level_picker->position,
+            level_picker->items_position,
             level_picker->scroll);
 
         for (size_t i = 0; i < level_picker->items.count; ++i) {
@@ -298,7 +298,7 @@ int level_picker_event(LevelPicker *level_picker,
                 FONT_CHAR_HEIGHT * LEVEL_PICKER_LIST_FONT_SCALE.y + LEVEL_PICKER_LIST_PADDING_BOTTOM;
 
             Vec2f position = vec_sum(
-                level_picker->position,
+                level_picker->items_position,
                 level_picker->scroll);
             vec_add(&position, vec(0.0f, (float) level_picker->cursor * single_item_height));
 

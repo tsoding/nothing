@@ -16,7 +16,7 @@ typedef struct {
     size_t cursor;
     int selected_item;
     Vec2f scroll;
-    Vec2f position;
+    Vec2f items_position;
     Vec2f size;
 } LevelPicker;
 
