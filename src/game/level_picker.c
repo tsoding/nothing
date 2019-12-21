@@ -79,19 +79,19 @@ int level_picker_render(const LevelPicker *level_picker,
         camera,
         vec(viewport.w * 0.5f - title_size.x * 0.5f, TITLE_MARGIN_TOP));
 
-    const float proportional_scroll = level_picker->items_scroll.y * scrolling_area_height / level_picker->size.y;
+    const float proportional_scroll = level_picker->items_scroll.y * scrolling_area_height / level_picker->items_size.y;
     const float number_of_items_in_scrolling_area = scrolling_area_height / ITEM_HEIGHT;
     const float percent_of_visible_items = number_of_items_in_scrolling_area / ((float) level_picker->items.count - 1);
 
     if(percent_of_visible_items < 1) {
         SDL_Rect scrollbar = rect_for_sdl(
             rect_from_vecs(
-                vec(level_picker->items_position.x + level_picker->size.x, level_picker->items_position.y),
+                vec(level_picker->items_position.x + level_picker->items_size.x, level_picker->items_position.y),
                 vec(SCROLLBAR_WIDTH, scrolling_area_height)));
 
         SDL_Rect scrollbar_thumb = rect_for_sdl(
             rect_from_vecs(
-                vec(level_picker->items_position.x + level_picker->size.x, level_picker->items_position.y - proportional_scroll),
+                vec(level_picker->items_position.x + level_picker->items_size.x, level_picker->items_position.y - proportional_scroll),
                 vec(SCROLLBAR_WIDTH, scrolling_area_height * percent_of_visible_items)));
 
         if (SDL_SetRenderDrawColor(camera->renderer, 255, 255, 255, 255) < 0) {
@@ -227,10 +227,10 @@ int level_picker_event(LevelPicker *level_picker,
             int width;
             SDL_GetRendererOutputSize(SDL_GetRenderer(SDL_GetWindowFromID(event->window.windowID)), &width, NULL);
             const Vec2f title_size = wiggly_text_size(&level_picker->wiggly_text);
-            level_picker->size = level_picker_list_size(level_picker);
+            level_picker->items_size = level_picker_list_size(level_picker);
 
             level_picker->items_position =
-                vec((float)width * 0.5f - level_picker->size.x * 0.5f,
+                vec((float)width * 0.5f - level_picker->items_size.x * 0.5f,
                     TITLE_MARGIN_TOP + title_size.y + TITLE_MARGIN_BOTTOM);
         } break;
         }
