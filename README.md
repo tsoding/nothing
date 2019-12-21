@@ -157,7 +157,7 @@ $ ./nothing
 | `Up/Down` | Traverse console history |
 | `CTRL+L`  | Clear                    |
 | `CTRL+W`  | Cut                      |
-| `META+W`  | Copy                     |
+| `ALT+W`  | Copy                     |
 | `CTRL+Y`  | Paste                    |
 
 ### Level Editor
