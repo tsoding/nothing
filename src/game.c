@@ -202,7 +202,7 @@ int game_update(Game *game, float delta_time)
     trace_assert(game);
     trace_assert(delta_time > 0.0f);
 
-    // TODO: effective scale recalculation should be probably done only when the size of the window is changed
+    // TODO(#1218): effective scale recalculation should be probably done only when the size of the window is changed
     SDL_Rect view_port;
     SDL_RenderGetViewport(game->camera.renderer, &view_port);
     game->camera.effective_scale = effective_scale(&view_port);

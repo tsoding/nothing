@@ -38,6 +38,9 @@ static void delete_backward_char(Edit_field *edit_field);
 static void kill_word(Edit_field *edit_field);
 static void backward_kill_word(Edit_field *edit_field);
 static void kill_to_end_of_line(Edit_field *edit_field);
+static void field_buffer_cut(Edit_field *edit_field);
+static void field_buffer_copy(Edit_field *edit_field);
+static void field_buffer_paste(Edit_field *edit_field);
 
 static void handle_keydown(Edit_field *edit_field, const SDL_Event *event);
 static void handle_keydown_alt(Edit_field *edit_field, const SDL_Event *event);
@@ -54,6 +57,15 @@ static void edit_field_insert_char(Edit_field *edit_field, char c)
 
     edit_field->buffer[edit_field->cursor++] = c;
     edit_field->buffer[++edit_field->buffer_size] = 0;
+}
+
+static inline
+void edit_field_insert_string(Edit_field *edit_field, const char *text)
+{
+    size_t n = strlen(text);
+    for (size_t i = 0; i < n; ++i) {
+        edit_field_insert_char(edit_field, text[i]);
+    }
 }
 
 // See: https://www.gnu.org/software/emacs/manual/html_node/emacs/Moving-Point.html
@@ -201,6 +213,23 @@ static void kill_to_end_of_line(Edit_field *edit_field) {
                                 edit_field->buffer_size);
 }
 
+static void field_buffer_cut(Edit_field *edit_field) {
+    // "C-w"
+    SDL_SetClipboardText(edit_field_as_text(edit_field));
+    edit_field_clean(edit_field);
+}
+
+static void field_buffer_copy(Edit_field *edit_field) {
+    // "M-w"
+    SDL_SetClipboardText(edit_field_as_text(edit_field));
+}
+
+static void field_buffer_paste(Edit_field *edit_field) {
+    // "C-y"
+    char *text = SDL_GetClipboardText();
+    edit_field_insert_string(edit_field, text);
+}
+
 static void handle_keydown(Edit_field *edit_field, const SDL_Event *event)
 {
     switch (event->key.keysym.sym) {
@@ -251,6 +280,13 @@ static void handle_keydown_alt(Edit_field *edit_field, const SDL_Event *event)
     case SDLK_d: {
         kill_word(edit_field);
     } break;
+
+    // TODO(#1219): edit_field should also support more conventional copy/paste/cut keys like Ctrl+C,Ctrl+V,Ctrl+X
+    //   Emacs keybindings support is cool and all, but we also need to be more reflex inclusive.
+    // TODO(#1220): edit_field doesn't support selections for copy/cut operations
+    case SDLK_w: {
+        field_buffer_copy(edit_field);
+    } break;
     }
 }
 
@@ -295,6 +331,14 @@ static void handle_keydown_ctrl(Edit_field *edit_field, const SDL_Event *event)
 
     case SDLK_k: {
         kill_to_end_of_line(edit_field);
+    } break;
+
+    case SDLK_w: {
+        field_buffer_cut(edit_field);
+    } break;
+
+    case SDLK_y: {
+        field_buffer_paste(edit_field);
     } break;
     }
 }
