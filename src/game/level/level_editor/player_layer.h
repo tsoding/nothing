@@ -5,6 +5,8 @@
 #include "layer.h"
 #include "system/lt.h"
 #include "system/line_stream.h"
+#include "system/memory.h"
+#include "system/s.h"
 
 typedef struct {
     Vec2f position;
@@ -14,6 +16,7 @@ typedef struct {
 
 PlayerLayer create_player_layer(Vec2f position, Color color);
 PlayerLayer create_player_layer_from_line_stream(LineStream *line_stream);
+PlayerLayer chop_player_layer(Memory *memory, String *input);
 
 LayerPtr player_layer_as_layer(PlayerLayer *player_layer);
 int player_layer_render(const PlayerLayer *player_layer,

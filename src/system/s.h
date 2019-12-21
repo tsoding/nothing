@@ -1,8 +1,10 @@
 #ifndef S_H_
 #define S_H_
 
+#include <stdlib.h>
 #include <string.h>
 #include "system/stacktrace.h"
+#include "system/memory.h"
 
 typedef struct {
     size_t count;
@@ -103,6 +105,17 @@ String chop_word(String *input)
     String result = string(i, input->data);
     input->data += i;
     input->count -= i;
+    return result;
+}
+
+static inline
+char *string_to_cstr(Memory *memory, String s)
+{
+    trace_assert(memory);
+
+    char *result = memory_alloc(memory, s.count + 1);
+    memset(result, 0, s.count + 1);
+    memcpy(result, s.data, s.count);
     return result;
 }
 

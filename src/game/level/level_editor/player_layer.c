@@ -8,6 +8,7 @@
 #include "system/nth_alloc.h"
 #include "system/log.h"
 #include "undo_history.h"
+#include "system/memory.h"
 
 typedef struct {
     PlayerLayer *layer;
@@ -71,6 +72,19 @@ PlayerLayer create_player_layer_from_line_stream(LineStream *line_stream)
 #undef BOUND_EXPECTED
 
     return create_player_layer(position, hexstr(colorstr));
+}
+
+PlayerLayer chop_player_layer(Memory *memory, String *input)
+{
+    trace_assert(memory);
+    trace_assert(input);
+
+    String line = chop_by_delim(input, '\n');
+    float x = strtof(string_to_cstr(memory, chop_word(&line)), NULL);
+    float y = strtof(string_to_cstr(memory, chop_word(&line)), NULL);
+    Color color = hexs(chop_word(&line));
+
+    return create_player_layer(vec(x, y), color);
 }
 
 LayerPtr player_layer_as_layer(PlayerLayer *player_layer)
