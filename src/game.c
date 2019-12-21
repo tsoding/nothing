@@ -226,7 +226,7 @@ int game_update(Game *game, float delta_time)
     } break;
 
     case GAME_STATE_LEVEL_PICKER: {
-        if (level_picker_update(&game->level_picker, delta_time) < 0) {
+        if (level_picker_update(&game->level_picker, &game->camera, delta_time) < 0) {
             return -1;
         }
 

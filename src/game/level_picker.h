@@ -13,11 +13,15 @@ typedef struct {
     Vec2f camera_position;
     WigglyText wiggly_text;
     Dynarray items;
-    size_t cursor;
+    size_t items_cursor;
     int selected_item;
-    Vec2f position;
+    Vec2f items_scroll;
+    Vec2f items_position;
+    Vec2f items_size;
 } LevelPicker;
 
+// TODO(#1221): Level Picker scroll does not support mouse wheel
+// TODO(#1222): Level Picker scroll does not support dragging
 
 void level_picker_populate(LevelPicker *level_picker,
                            const char *dirpath);
@@ -31,6 +35,7 @@ void destroy_level_picker(LevelPicker level_picker)
 int level_picker_render(const LevelPicker *level_picker,
                         const Camera *camera);
 int level_picker_update(LevelPicker *level,
+                        Camera *camera,
                         float delta_time);
 int level_picker_event(LevelPicker *level_picker,
                        const SDL_Event *event);
