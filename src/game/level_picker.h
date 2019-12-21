@@ -13,7 +13,7 @@ typedef struct {
     Vec2f camera_position;
     WigglyText wiggly_text;
     Dynarray items;
-    size_t cursor;
+    size_t items_cursor;
     int selected_item;
     Vec2f scroll;
     Vec2f items_position;

@@ -127,7 +127,7 @@ int level_picker_render(const LevelPicker *level_picker,
             rgba(1.0f, 1.0f, 1.0f, 1.0f),
             item_text);
 
-        if (i == level_picker->cursor) {
+        if (i == level_picker->items_cursor) {
             SDL_Rect boundary_box = rect_for_sdl(
                 sprite_font_boundary_box(
                     current_position,
@@ -171,10 +171,10 @@ int level_picker_update(LevelPicker *level_picker,
     const Rect viewport = camera_view_port_screen(camera);
     const float scrolling_area_height = viewport.h - ITEM_HEIGHT - level_picker->items_position.y;
 
-    if ((float) level_picker->cursor * ITEM_HEIGHT + level_picker->scroll.y > scrolling_area_height) {
+    if ((float) level_picker->items_cursor * ITEM_HEIGHT + level_picker->scroll.y > scrolling_area_height) {
         level_picker->scroll.y -= ITEM_HEIGHT * SCROLLING_SPEED_FRACTION;
     }
-    if ((float) level_picker->cursor * ITEM_HEIGHT + level_picker->scroll.y < 0) {
+    if ((float) level_picker->items_cursor * ITEM_HEIGHT + level_picker->scroll.y < 0) {
         level_picker->scroll.y += ITEM_HEIGHT * SCROLLING_SPEED_FRACTION;
     }
 
@@ -239,21 +239,21 @@ int level_picker_event(LevelPicker *level_picker,
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
         case SDLK_UP:
-            if (level_picker->cursor == 0) {
-                level_picker->cursor = level_picker->items.count - 1;
+            if (level_picker->items_cursor == 0) {
+                level_picker->items_cursor = level_picker->items.count - 1;
             } else {
-                level_picker->cursor--;
+                level_picker->items_cursor--;
             }
             break;
         case SDLK_DOWN:
-            level_picker->cursor++;
-            if (level_picker->cursor == level_picker->items.count) {
-                level_picker->cursor = 0;
+            level_picker->items_cursor++;
+            if (level_picker->items_cursor == level_picker->items.count) {
+                level_picker->items_cursor = 0;
             }
             break;
         case SDLK_RETURN:
-            if (level_picker->cursor < level_picker->items.count) {
-                level_picker->selected_item = (int) level_picker->cursor;
+            if (level_picker->items_cursor < level_picker->items.count) {
+                level_picker->selected_item = (int) level_picker->items_cursor;
             }
             break;
         }
@@ -276,7 +276,7 @@ int level_picker_event(LevelPicker *level_picker,
                 item_text);
 
             if (rect_contains_point(boundary_box, mouse_pos)) {
-                level_picker->cursor = i;
+                level_picker->items_cursor = i;
             }
 
             position.y += boundary_box.h + LEVEL_PICKER_LIST_PADDING_BOTTOM;
@@ -300,12 +300,12 @@ int level_picker_event(LevelPicker *level_picker,
             Vec2f position = vec_sum(
                 level_picker->items_position,
                 level_picker->scroll);
-            vec_add(&position, vec(0.0f, (float) level_picker->cursor * single_item_height));
+            vec_add(&position, vec(0.0f, (float) level_picker->items_cursor * single_item_height));
 
             const char *item_text =
                 dynarray_pointer_at(
                     &level_picker->items,
-                    level_picker->cursor);
+                    level_picker->items_cursor);
 
             Rect boundary_box = sprite_font_boundary_box(
                 position,
@@ -314,7 +314,7 @@ int level_picker_event(LevelPicker *level_picker,
 
             const Vec2f mouse_pos = vec((float) event->motion.x, (float) event->motion.y);
             if (rect_contains_point(boundary_box, mouse_pos)) {
-                level_picker->selected_item = (int) level_picker->cursor;
+                level_picker->selected_item = (int) level_picker->items_cursor;
             }
         } break;
         }
