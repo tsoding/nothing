@@ -5,9 +5,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define DYNARRAY_CAPACITY 256
+
 typedef struct {
     size_t element_size;
-    size_t capacity;
     size_t count;
     void *data;
 } Dynarray;
@@ -17,9 +18,8 @@ Dynarray create_dynarray(size_t element_size)
 {
     Dynarray result = {
         .element_size = element_size,
-        .capacity = 0,
         .count = 0,
-        .data = NULL
+        .data = malloc(DYNARRAY_CAPACITY * element_size)
     };
     return result;
 }
