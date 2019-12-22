@@ -962,6 +962,71 @@ RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream,
     return layer;
 }
 
+RectLayer *chop_rect_layer(Memory *memory,
+                           String *input,
+                           const char *id_name_prefix,
+                           Cursor *cursor)
+{
+    trace_assert(memory);
+    trace_assert(input);
+
+    RectLayer *layer = create_rect_layer(id_name_prefix, cursor);
+    trace_assert(layer);
+
+    int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
+    char id[ENTITY_MAX_ID_SIZE];
+    for (int i = 0; i < n; ++i) {
+        Rect rect;
+        String line = trim(chop_by_delim(input, '\n'));
+        String string_id = trim(chop_word(&line));
+        rect.x = strtof(string_to_cstr(memory, trim(chop_word(&line))), NULL);
+        rect.y = strtof(string_to_cstr(memory, trim(chop_word(&line))), NULL);
+        rect.w = strtof(string_to_cstr(memory, trim(chop_word(&line))), NULL);
+        rect.h = strtof(string_to_cstr(memory, trim(chop_word(&line))), NULL);
+        Color color = hexs(trim(chop_word(&line)));
+
+        memset(id, 0, ENTITY_MAX_ID_SIZE);
+        memcpy(
+            id,
+            string_id.data,
+            min_size_t(ENTITY_MAX_ID_SIZE - 1, string_id.count));
+
+        dynarray_push(&layer->rects, &rect);
+        dynarray_push(&layer->colors, &color);
+        dynarray_push(&layer->ids, id);
+
+        Action action = {
+            .type = ACTION_NONE,
+            .entity_id = {0}
+        };
+
+        String action_string = trim(chop_word(&line));
+        if (action_string.count > 0) {
+            action.type = atoi(string_to_cstr(memory, action_string));
+            switch (action.type) {
+            case ACTION_NONE: break;
+            case ACTION_TOGGLE_GOAL:
+            case ACTION_HIDE_LABEL: {
+                String label_id = trim(chop_word(&line));
+                trace_assert(label_id.count > 0);
+                memset(action.entity_id, 0, ENTITY_MAX_ID_SIZE);
+                memcpy(action.entity_id,
+                       label_id.data,
+                       min_size_t(
+                           ENTITY_MAX_ID_SIZE - 1,
+                           label_id.count));
+            } break;
+
+            case ACTION_N: break;
+            }
+        }
+
+        dynarray_push(&layer->actions, &action);
+    }
+
+    return layer;
+}
+
 void destroy_rect_layer(RectLayer *layer)
 {
     trace_assert(layer);

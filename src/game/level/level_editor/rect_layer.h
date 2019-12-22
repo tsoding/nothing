@@ -17,6 +17,10 @@ RectLayer *create_rect_layer_from_line_stream(
     LineStream *line_stream,
     const char *id_name_prefix,
     Cursor *cursor);
+RectLayer *chop_rect_layer(Memory *memory,
+                           String *input,
+                           const char *id_name_prefix,
+                           Cursor *cursor);
 void destroy_rect_layer(RectLayer *layer);
 
 int rect_layer_render(const RectLayer *layer, const Camera *camera, int active);
