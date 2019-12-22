@@ -4,9 +4,9 @@
 #include <assert.h>
 #include <stdint.h>
 
-#define KILO 1024
-#define MEGA (1024 * KILO)
-#define GIGA (1024 * MEGA)
+#define KILO 1024L
+#define MEGA (1024L * KILO)
+#define GIGA (1024L * MEGA)
 
 typedef struct {
     size_t capacity;
