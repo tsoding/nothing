@@ -40,6 +40,7 @@ typedef struct Game {
 
 void game_switch_state(Game *game, Game_state state)
 {
+    game->cursor.style = CURSOR_STYLE_POINTER;
     if (state == GAME_STATE_LEVEL_PICKER) {
         level_picker_clean_selection(&game->level_picker);
     }
