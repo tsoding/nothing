@@ -11,6 +11,7 @@
 #include "system/nth_alloc.h"
 #include "system/log.h"
 #include "game/level/level_editor/rect_layer.h"
+#include "math/extrema.h"
 
 struct Platforms {
     Lt *lt;
@@ -59,15 +60,55 @@ void destroy_platforms(Platforms *platforms)
     RETURN_LT0(platforms->lt);
 }
 
-/* TODO(#450): platforms do not render their ids in debug mode */
 int platforms_render(const Platforms *platforms,
                      const Camera *camera)
 {
     for (size_t i = 0; i < platforms->rects_size; ++i) {
+        Rect platform_rect = platforms->rects[i];
         if (camera_fill_rect(
                 camera,
-                platforms->rects[i],
+                platform_rect,
                 platforms->colors[i]) < 0) {
+            return -1;
+        }
+
+        char debug_text[256];
+        snprintf(debug_text, 256,
+            "id:%zd\n"
+            "x:%.2f\n"
+            "y:%.2f\n"
+            "w:%.2f\n"
+            "h:%.2f\n",
+            i, platform_rect.x, platform_rect.y, platform_rect.w, platform_rect.h);
+
+        Vec2f text_pos = (Vec2f){.x = platform_rect.x, .y = platform_rect.y};
+        Rect text_rect = sprite_font_boundary_box(text_pos, vec(2.0f, 2.0f), debug_text);
+
+        Rect world_viewport = camera_view_port(camera);
+        Rect viewport = camera_view_port_screen(camera);
+
+        if (rects_overlap(
+                camera_rect(
+                    camera,
+                    platform_rect),
+                viewport) &&
+            camera_is_point_visible(
+                camera,
+                text_pos) == false) {
+            if (platform_rect.w > text_rect.w){
+                text_pos.x = fmaxf(fminf(world_viewport.x, platform_rect.x + platform_rect.w - text_rect.w),
+                                   platform_rect.x);
+            }
+            if (platform_rect.h > text_rect.h){
+                text_pos.y = fmaxf(fminf(world_viewport.y, platform_rect.y + platform_rect.h - text_rect.h),
+                                   platform_rect.y);
+            }
+        }
+
+        if (camera_render_debug_text(
+                camera,
+                debug_text,
+                text_pos) < 0) {
             return -1;
         }
     }
