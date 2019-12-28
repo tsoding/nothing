@@ -9,7 +9,6 @@
         return a > b ? a : b;                   \
     }                                           \
 
-MAX_INSTANCE(float)
 MAX_INSTANCE(int64_t)
 MAX_INSTANCE(size_t)
 #define MAX(type, a, b) max_##type(a, b)
@@ -20,7 +19,6 @@ MAX_INSTANCE(size_t)
         return a < b ? a : b;                   \
     }                                           \
 
-MIN_INSTANCE(float)
 MIN_INSTANCE(int64_t)
 MIN_INSTANCE(size_t)
 #define MIN(type, a, b) min_##type(a, b)

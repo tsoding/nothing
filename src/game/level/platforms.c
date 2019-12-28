@@ -86,7 +86,7 @@ int platforms_render(const Platforms *platforms,
 
         Rect world_viewport = camera_view_port(camera);
         Rect viewport = camera_view_port_screen(camera);
-        
+
         if (rects_overlap(
                 camera_rect(
                     camera,
@@ -96,12 +96,12 @@ int platforms_render(const Platforms *platforms,
                 camera,
                 text_pos) == false) {
             if (platform_rect.w > text_rect.w){
-                text_pos.x = MAX(float, MIN(float, world_viewport.x, platform_rect.x + platform_rect.w - text_rect.w),
-                                        platform_rect.x);
+                text_pos.x = fmaxf(fminf(world_viewport.x, platform_rect.x + platform_rect.w - text_rect.w),
+                                   platform_rect.x);
             }
             if (platform_rect.h > text_rect.h){
-                text_pos.y = MAX(float, MIN(float, world_viewport.y, platform_rect.y + platform_rect.h - text_rect.h),
-                                        platform_rect.y);
+                text_pos.y = fmaxf(fminf(world_viewport.y, platform_rect.y + platform_rect.h - text_rect.h),
+                                   platform_rect.y);
             }
         }
 
