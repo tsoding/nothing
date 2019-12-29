@@ -105,7 +105,9 @@ Game *create_game(const char *level_folder,
                     SDL_BLENDFACTOR_ONE,
                     SDL_BLENDFACTOR_ZERO,
                     SDL_BLENDOPERATION_ADD)) < 0) {
-            log_warn("SDL error: %s\n", SDL_GetError());
+            log_warn("SDL error while setting blending mode for `%s': %s\n",
+                     cursor_style_tex_files[style],
+                     SDL_GetError());
         }
     }
 
