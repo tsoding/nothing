@@ -138,6 +138,11 @@ int main(int argc, char *argv[])
         log_fail("Could not create SDL renderer: %s\n", SDL_GetError());
         RETURN_LT(lt, -1);
     }
+
+    SDL_RendererInfo info;
+    SDL_GetRendererInfo(renderer, &info);
+    log_info("Using SDL Renderer: %s\n", info.name);
+
     if (SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND) < 0) {
         log_fail("Could not set up blending mode for the renderer: %s\n", SDL_GetError());
         RETURN_LT(lt, -1);
