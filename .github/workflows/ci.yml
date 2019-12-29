@@ -25,11 +25,11 @@ jobs:
       - name: install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -qq libsdl2-dev 
+          sudo apt-get install -qq libsdl2-dev
       - name: build nothing
         run: |
-          ./build-posix.sh 
-        env: 
+          ./build-posix.sh
+        env:
           CC: gcc
           NOTHING_CI: on
 
@@ -57,7 +57,7 @@ jobs:
       - name: build nothing
         run: |
           ./build-posix.sh
-        env: 
+        env:
           CC: clang
           NOTHING_CI: on
 
@@ -79,7 +79,7 @@ jobs:
           cd build
           cmake .. -DNOTHING_CI=ON
           cmake --build .
-          
+
   # TODO(#1178): %z related warnings on build-windows-mingw GitHub Action
   build-windows-mingw:
     runs-on: windows-2019
@@ -92,5 +92,5 @@ jobs:
       - name: build nothing
         run: |
           msys2do ./build-posix.sh
-        env: 
+        env:
           CC: gcc
