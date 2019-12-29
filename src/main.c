@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 
     SDL_Renderer *const renderer = PUSH_LT(
         lt,
-        SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC),
+        SDL_CreateRenderer(window, -1, RENDERER_CONFIG),
         SDL_DestroyRenderer);
     if (renderer == NULL) {
         log_fail("Could not create SDL renderer: %s\n", SDL_GetError());
