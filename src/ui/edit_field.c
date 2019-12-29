@@ -281,8 +281,6 @@ static void handle_keydown_alt(Edit_field *edit_field, const SDL_Event *event)
         kill_word(edit_field);
     } break;
 
-    // TODO(#1219): edit_field should also support more conventional copy/paste/cut keys like Ctrl+C,Ctrl+V,Ctrl+X
-    //   Emacs keybindings support is cool and all, but we also need to be more reflex inclusive.
     // TODO(#1220): edit_field doesn't support selections for copy/cut operations
     case SDLK_w: {
         field_buffer_copy(edit_field);
@@ -333,12 +331,18 @@ static void handle_keydown_ctrl(Edit_field *edit_field, const SDL_Event *event)
         kill_to_end_of_line(edit_field);
     } break;
 
-    case SDLK_w: {
+    case SDLK_w:
+    case SDLK_x: {
         field_buffer_cut(edit_field);
     } break;
 
-    case SDLK_y: {
+    case SDLK_y:
+    case SDLK_v: {
         field_buffer_paste(edit_field);
+    } break;
+
+    case SDLK_c: {
+        field_buffer_copy(edit_field);
     } break;
     }
 }
