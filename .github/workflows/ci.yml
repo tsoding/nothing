@@ -2,6 +2,22 @@ name: CI
 on: [push, pull_request]
 
 jobs:
+  build-linux-tcc:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -qq libsdl2-dev tcc
+      - name: build nothing
+        run: |
+          ./build-posix.sh
+        env:
+          CC: tcc
+          CFLAGS: -DSDL_DISABLE_IMMINTRIN_H -L/usr/lib/x86_64-linux-gnu/pulseaudio
+          NOTHING_CI: on
+
   build-linux-gcc:
     runs-on: ubuntu-18.04
     steps:
