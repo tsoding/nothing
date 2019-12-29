@@ -333,12 +333,18 @@ static void handle_keydown_ctrl(Edit_field *edit_field, const SDL_Event *event)
         kill_to_end_of_line(edit_field);
     } break;
 
-    case SDLK_w: {
+    case SDLK_w:
+    case SDLK_x: {
         field_buffer_cut(edit_field);
     } break;
 
-    case SDLK_y: {
+    case SDLK_y:
+    case SDLK_v: {
         field_buffer_paste(edit_field);
+    } break;
+
+    case SDLK_c: {
+        field_buffer_copy(edit_field);
     } break;
     }
 }
