@@ -149,15 +149,15 @@ $ ./nothing
 
 ### Consolé
 
-| Key       | Action                   |
-|-----------|--------------------------|
-| `ESC`     | Exit console             |
-| `Enter`   | Evaluate the expression  |
-| `Up/Down` | Traverse console history |
-| `CTRL+L`  | Clear                    |
-| `CTRL+W`  | Cut                      |
-| `ALT+W`  | Copy                     |
-| `CTRL+Y`  | Paste                    |
+| Key                 | Action                   |
+|---------------------|--------------------------|
+| `ESC`               | Exit console             |
+| `Enter`             | Evaluate the expression  |
+| `Up/Down`           | Traverse console history |
+| `CTRL+L`            | Clear                    |
+| `Ctrl+X`, `CTRL+W`  | Cut                      |
+| `Ctrl+C`, `ALT+W`   | Copy                     |
+| `Ctrl+V`, `CTRL+Y`  | Paste                    |
 
 ### Level Editor
 
