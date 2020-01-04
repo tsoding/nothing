@@ -260,6 +260,52 @@ LabelLayer *create_label_layer_from_line_stream(LineStream *line_stream, const c
     return label_layer;
 }
 
+LabelLayer *chop_label_layer(Memory *memory,
+                             String *input,
+                             const char *id_name_prefix)
+{
+    trace_assert(memory);
+    trace_assert(input);
+    trace_assert(id_name_prefix);
+
+    LabelLayer *label_layer = create_label_layer(id_name_prefix);
+
+    int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
+    char id[LABEL_LAYER_ID_MAX_SIZE];
+    char label_text[LABEL_LAYER_TEXT_MAX_SIZE];
+    for (int i = 0; i < n; ++i) {
+        String meta = trim(chop_by_delim(input, '\n'));
+
+        String string_id = trim(chop_word(&meta));
+        Vec2f position;
+        position.x = strtof(string_to_cstr(memory, trim(chop_word(&meta))), NULL);
+        position.y = strtof(string_to_cstr(memory, trim(chop_word(&meta))), NULL);
+        Color color = hexs(trim(chop_word(&meta)));
+
+        memset(id, 0, LABEL_LAYER_ID_MAX_SIZE);
+        memcpy(
+            id,
+            string_id.data,
+            min_size_t(LABEL_LAYER_ID_MAX_SIZE - 1, string_id.count));
+
+        String label_text_string =
+            trim(chop_by_delim(input, '\n'));
+        memset(label_text, 0, LABEL_LAYER_TEXT_MAX_SIZE);
+        memcpy(
+            label_text,
+            label_text_string.data,
+            min_size_t(LABEL_LAYER_TEXT_MAX_SIZE - 1,
+                       label_text_string.count));
+
+        dynarray_push(&label_layer->ids, id);
+        dynarray_push(&label_layer->positions, &position);
+        dynarray_push(&label_layer->colors, &color);
+        dynarray_push(&label_layer->texts, label_text);
+    }
+
+    return label_layer;
+}
+
 void destroy_label_layer(LabelLayer *label_layer)
 {
     trace_assert(label_layer);

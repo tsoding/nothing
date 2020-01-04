@@ -19,6 +19,9 @@ LayerPtr label_layer_as_layer(LabelLayer *label_layer);
 LabelLayer *create_label_layer(const char *id_name_prefix);
 LabelLayer *create_label_layer_from_line_stream(LineStream *line_stream,
                                                 const char *id_name_prefix);
+LabelLayer *chop_label_layer(Memory *memory,
+                             String *input,
+                             const char *id_name_prefix);
 void destroy_label_layer(LabelLayer *label_layer);
 
 int label_layer_render(const LabelLayer *label_layer,
