@@ -239,6 +239,43 @@ PointLayer *create_point_layer_from_line_stream(LineStream *line_stream,
     return point_layer;
 }
 
+PointLayer *chop_point_layer(Memory *memory,
+                             String *input,
+                             const char *id_name_prefix)
+{
+    trace_assert(memory);
+    trace_assert(input);
+    trace_assert(id_name_prefix);
+
+    PointLayer *point_layer = create_point_layer(id_name_prefix);
+
+    int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
+    char id[ENTITY_MAX_ID_SIZE];
+    for (int i = 0; i < n; ++i) {
+        String line = trim(chop_by_delim(input, '\n'));
+        String string_id = trim(chop_word(&line));
+        Vec2f point;
+        point.x = strtof(string_to_cstr(memory, trim(chop_word(&line))), NULL);
+        point.y = strtof(string_to_cstr(memory, trim(chop_word(&line))), NULL);
+        Color color = hexs(trim(chop_word(&line)));
+
+        memset(id, 0, ENTITY_MAX_ID_SIZE);
+        memcpy(
+            id,
+            string_id.data,
+            min_size_t(ENTITY_MAX_ID_SIZE - 1, string_id.count));
+
+        dynarray_push(&point_layer->positions, &point);
+        dynarray_push(&point_layer->colors, &color);
+        dynarray_push(&point_layer->ids, id);
+    }
+
+    point_layer->selection = -1;
+    point_layer->color_picker = create_color_picker_from_rgba(COLOR_RED);
+
+    return point_layer;
+}
+
 void destroy_point_layer(PointLayer *point_layer)
 {
     trace_assert(point_layer);
