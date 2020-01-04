@@ -19,11 +19,11 @@
 #include "system/str.h"
 #include "config.h"
 #include "math/extrema.h"
+#include "system/file.h"
 
 #include "level_editor.h"
 
 #define LEVEL_FOLDER_MAX_LENGTH 512
-#define LEVEL_LINE_MAX_LENGTH 512
 #define LEVEL_EDITOR_EDIT_FIELD_SIZE vec(5.0f, 5.0f)
 #define LEVEL_EDITOR_EDIT_FIELD_COLOR COLOR_BLACK
 

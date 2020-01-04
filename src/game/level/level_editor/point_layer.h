@@ -8,14 +8,11 @@
 #define ID_MAX_SIZE 36
 
 typedef struct PointLayer PointLayer;
-typedef struct LineStream LineStream;
 
 LayerPtr point_layer_as_layer(PointLayer *point_layer);
 // NOTE: create_point_layer and create_point_layer_from_line_stream do
 // not own id_name_prefix
 PointLayer *create_point_layer(const char *id_name_prefix);
-PointLayer *create_point_layer_from_line_stream(LineStream *line_stream,
-                                                const char *id_name_prefix);
 PointLayer *chop_point_layer(Memory *memory,
                              String *input,
                              const char *id_name_prefix);

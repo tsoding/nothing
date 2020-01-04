@@ -3,7 +3,6 @@
 #include "game/level/background.h"
 #include "math/rand.h"
 #include "math/rect.h"
-#include "system/line_stream.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"

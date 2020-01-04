@@ -4,7 +4,6 @@
 
 #include "dynarray.h"
 #include "game/camera.h"
-#include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
@@ -193,48 +192,6 @@ PointLayer *create_point_layer(const char *id_name_prefix)
     }
 
     point_layer->id_name_prefix = id_name_prefix;
-
-    return point_layer;
-}
-
-PointLayer *create_point_layer_from_line_stream(LineStream *line_stream,
-                                                const char *id_name_prefix)
-{
-    trace_assert(line_stream);
-
-    PointLayer *point_layer = create_point_layer(id_name_prefix);
-
-    size_t count = 0;
-    if (sscanf(
-            line_stream_next(line_stream),
-            "%zu",
-            &count) == EOF) {
-        log_fail("Could not read amount of points");
-        RETURN_LT(point_layer->lt, NULL);
-    }
-
-    char color_name[7];
-    char id[ID_MAX_SIZE];
-    float x, y;
-    for (size_t i = 0; i < count; ++i) {
-        if (sscanf(
-                line_stream_next(line_stream),
-                "%"STRINGIFY(ID_MAX_SIZE)"s%f%f%6s",
-                id, &x, &y, color_name) < 0) {
-            log_fail("Could not read %dth goal\n", i);
-            RETURN_LT(point_layer->lt, NULL);
-        }
-        const Color color = hexstr(color_name);
-        const Vec2f point = vec(x, y);
-
-        dynarray_push(&point_layer->colors, &color);
-        dynarray_push(&point_layer->positions, &point);
-        dynarray_push(&point_layer->ids, id);
-    }
-
-    point_layer->selection = -1;
-
-    point_layer->color_picker = create_color_picker_from_rgba(COLOR_RED);
 
     return point_layer;
 }

@@ -6,17 +6,12 @@
 #include "ui/cursor.h"
 
 typedef struct RectLayer RectLayer;
-typedef struct LineStream LineStream;
 
 LayerPtr rect_layer_as_layer(RectLayer *layer);
 // NOTE: create_rect_layer and create_rect_layer_from_line_stream does
 // not own id_name_prefix
 RectLayer *create_rect_layer(const char *id_name_prefix,
                              Cursor *cursor);
-RectLayer *create_rect_layer_from_line_stream(
-    LineStream *line_stream,
-    const char *id_name_prefix,
-    Cursor *cursor);
 RectLayer *chop_rect_layer(Memory *memory,
                            String *input,
                            const char *id_name_prefix,

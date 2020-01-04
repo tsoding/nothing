@@ -51,29 +51,6 @@ PlayerLayer create_player_layer(Vec2f position, Color color)
     };
 }
 
-PlayerLayer create_player_layer_from_line_stream(LineStream *line_stream)
-{
-    trace_assert(line_stream);
-
-    const char *line = line_stream_next(line_stream);
-    trace_assert(line);
-
-    char colorstr[7] = "000000";
-    Vec2f position = vec(0.0f, 0.0f);
-
-    const int bound =
-        sscanf(line, "%f%f%6s", &position.x, &position.y, colorstr);
-
-#define BOUND_EXPECTED 3
-    if (bound != BOUND_EXPECTED) {
-        log_fail("Could not read Player Layer properly. Parsed tokens: %d. Expected: %d\n",
-                 bound, BOUND_EXPECTED);
-    }
-#undef BOUND_EXPECTED
-
-    return create_player_layer(position, hexstr(colorstr));
-}
-
 PlayerLayer chop_player_layer(Memory *memory, String *input)
 {
     trace_assert(memory);

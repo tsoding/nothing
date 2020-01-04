@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "system/stacktrace.h"
 #include "system/memory.h"
 

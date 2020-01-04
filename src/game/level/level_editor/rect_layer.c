@@ -10,7 +10,6 @@
 #include "color.h"
 #include "rect_layer.h"
 #include "dynarray.h"
-#include "system/line_stream.h"
 #include "color_picker.h"
 #include "system/str.h"
 #include "ui/edit_field.h"
@@ -18,6 +17,7 @@
 #include "game/level/action.h"
 #include "action_picker.h"
 #include "game.h"
+#include "math/extrema.h"
 
 #define RECT_LAYER_SELECTION_THICCNESS 15.0f
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
@@ -882,82 +882,6 @@ RectLayer *create_rect_layer(const char *id_name_prefix, Cursor *cursor)
     layer->selection = -1;
     layer->id_name_prefix = id_name_prefix;
     layer->cursor = cursor;
-
-    return layer;
-}
-
-RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream,
-                                              const char *id_name_prefix,
-                                              Cursor *cursor)
-{
-    trace_assert(line_stream);
-
-    RectLayer *layer = create_rect_layer(id_name_prefix, cursor);
-    if (layer == NULL) {
-        return NULL;
-    }
-
-    const char *line = line_stream_next(line_stream);
-    if (line == NULL) {
-        RETURN_LT(layer->lt, NULL);
-    }
-
-    size_t count = 0;
-    if (sscanf(line, "%zu", &count) < 0) {
-        RETURN_LT(layer->lt, NULL);
-    }
-
-    for (size_t i = 0; i < count; ++i) {
-        line = line_stream_next(line_stream);
-        if (line == NULL) {
-            RETURN_LT(layer->lt, NULL);
-        }
-
-        char hex[7];
-        Rect rect;
-        char id[ENTITY_MAX_ID_SIZE];
-
-        int n = 0;
-        if (sscanf(line,
-                   "%"STRINGIFY(ENTITY_MAX_ID_SIZE)"s%f%f%f%f%6s%n",
-                   id,
-                   &rect.x, &rect.y,
-                   &rect.w, &rect.h,
-                   hex, &n) <= 0) {
-            log_fail("%s\n", strerror(errno));
-            RETURN_LT(layer->lt, NULL);
-        }
-        line += n;
-
-        Color color = hexstr(hex);
-        dynarray_push(&layer->rects, &rect);
-        dynarray_push(&layer->ids, id);
-        dynarray_push(&layer->colors, &color);
-
-        Action action = {
-            .type = ACTION_NONE,
-            .entity_id = {0}
-        };
-
-        if (sscanf(line, "%d%n", (int*)&action.type, &n) > 0) {
-            line += n;
-            switch (action.type) {
-            case ACTION_NONE: break;
-
-            case ACTION_TOGGLE_GOAL:
-            case ACTION_HIDE_LABEL: {
-                if (sscanf(line, "%"STRINGIFY(ENTITY_MAX_ID_SIZE)"s", action.entity_id) <= 0) {
-                    log_fail("%s\n", strerror(errno));
-                    RETURN_LT(layer->lt, NULL);
-                }
-            } break;
-
-            case ACTION_N: break;
-            }
-        }
-
-        dynarray_push(&layer->actions, &action);
-    }
 
     return layer;
 }

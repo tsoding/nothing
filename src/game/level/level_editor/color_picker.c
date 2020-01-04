@@ -3,7 +3,6 @@
 
 #include "game/level/boxes.h"
 #include "system/stacktrace.h"
-#include "system/line_stream.h"
 #include "system/log.h"
 #include "game/camera.h"
 #include "color_picker.h"
@@ -34,24 +33,6 @@ ColorPicker create_color_picker_from_rgba(Color color)
         }
     };
     return color_picker;
-}
-
-int color_picker_read_from_line_stream(ColorPicker *color_picker,
-                                       LineStream *line_stream)
-{
-    char color[7];
-    const char *line = line_stream_next(line_stream);
-    if (line == NULL) {
-        return -1;
-    }
-
-    if (sscanf(line, "%6s", color) == EOF) {
-        log_fail("Could not read color\n");
-    }
-
-    *color_picker = create_color_picker_from_rgba(hexstr(color));
-
-    return 0;
 }
 
 int color_picker_render(const ColorPicker *color_picker,

@@ -10,15 +10,12 @@
 #define LABEL_LAYER_TEXT_MAX_SIZE 256
 
 typedef struct LabelLayer LabelLayer;
-typedef struct LineStream LineStream;
 
 LayerPtr label_layer_as_layer(LabelLayer *label_layer);
 
 // NOTE: create_label_layer and create_label_layer_from_line_stream do
 // not own id_name_prefix
 LabelLayer *create_label_layer(const char *id_name_prefix);
-LabelLayer *create_label_layer_from_line_stream(LineStream *line_stream,
-                                                const char *id_name_prefix);
 LabelLayer *chop_label_layer(Memory *memory,
                              String *input,
                              const char *id_name_prefix);

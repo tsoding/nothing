@@ -10,8 +10,6 @@ typedef struct {
 } BackgroundLayer;
 
 BackgroundLayer create_background_layer(Color color);
-int background_layer_read_from_line_stream(BackgroundLayer *layer,
-                                           LineStream *line_stream);
 BackgroundLayer chop_background_layer(String *input);
 
 static inline

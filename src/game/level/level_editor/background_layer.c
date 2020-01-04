@@ -17,20 +17,6 @@ BackgroundLayer create_background_layer(Color color)
     return layer;
 }
 
-int background_layer_read_from_line_stream(BackgroundLayer *layer,
-                                           LineStream *line_stream)
-{
-    if (color_picker_read_from_line_stream(
-            &layer->color_picker,
-            line_stream) < 0) {
-        return -1;
-    }
-
-    layer->prev_color = color_picker_rgba(&layer->color_picker);
-
-    return 0;
-}
-
 BackgroundLayer chop_background_layer(String *input)
 {
     String line = trim(chop_by_delim(input, '\n'));

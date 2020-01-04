@@ -4,7 +4,6 @@
 #include "player.h"
 #include "regions.h"
 #include "system/str.h"
-#include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"

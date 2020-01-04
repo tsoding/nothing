@@ -2,7 +2,6 @@
 
 #include <SDL.h>
 
-#include "system/line_stream.h"
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
 #include "system/lt.h"
@@ -196,66 +195,6 @@ LabelLayer *create_label_layer(const char *id_name_prefix)
     }
 
     label_layer->id_name_prefix = id_name_prefix;
-
-    return label_layer;
-}
-
-LabelLayer *create_label_layer_from_line_stream(LineStream *line_stream, const char *id_name_prefix)
-{
-    trace_assert(line_stream);
-    LabelLayer *label_layer = create_label_layer(id_name_prefix);
-
-    if (label_layer == NULL) {
-        RETURN_LT(label_layer->lt, NULL);
-    }
-
-    const char *line = line_stream_next(line_stream);
-    if (line == NULL) {
-        log_fail("Could not read amount of labels\n");
-        RETURN_LT(label_layer->lt, NULL);
-    }
-
-    size_t n = 0;
-    if (sscanf(line, "%zu", &n) == EOF) {
-        log_fail("Could not parse amount of labels\n");
-        RETURN_LT(label_layer->lt, NULL);
-    }
-
-    for (size_t i = 0; i < n; ++i) {
-        char hex[7];
-        char id[LABEL_LAYER_ID_MAX_SIZE];
-        Vec2f position;
-
-        line = line_stream_next(line_stream);
-        if (line == NULL) {
-            log_fail("Could not read label meta info\n");
-            RETURN_LT(label_layer->lt, NULL);
-        }
-
-        if (sscanf(
-                line,
-                "%"STRINGIFY(LABEL_LAYER_ID_MAX_SIZE)"s%f%f%6s\n",
-                id, &position.x, &position.y, hex) == EOF) {
-            log_fail("Could not parse label meta info\n");
-            RETURN_LT(label_layer->lt, NULL);
-        }
-
-        Color color = hexstr(hex);
-
-        dynarray_push(&label_layer->ids, id);
-        dynarray_push(&label_layer->positions, &position);
-        dynarray_push(&label_layer->colors, &color);
-
-        line = line_stream_next(line_stream);
-        if (line == NULL) {
-            log_fail("Could not read label text\n");
-        }
-
-        char label_text[LABEL_LAYER_TEXT_MAX_SIZE] = {0};
-        memcpy(label_text, line, LABEL_LAYER_TEXT_MAX_SIZE - 1);
-        trim_endline(label_text);
-        dynarray_push(&label_layer->texts, &label_text);
-    }
 
     return label_layer;
 }
