@@ -75,7 +75,7 @@ void closedir(DIR *dirp)
 
 #endif
 
-String read_whole_file(const char *filepath)
+String read_whole_file(Memory *memory, const char *filepath)
 {
     trace_assert(filepath);
 
@@ -85,8 +85,9 @@ String read_whole_file(const char *filepath)
     if (fseek(f, 0, SEEK_END) < 0) goto end;
     long m = ftell(f);
     if (m < 0) goto end;
+    if (fseek(f, 0, SEEK_SET) < 0) goto end;
     result.count = (size_t) m;
-    char *buffer = nth_calloc(1, result.count);
+    char *buffer = memory_alloc(memory, result.count);
     size_t n = fread(buffer, 1, result.count, f);
     trace_assert(n == result.count);
     result.data = buffer;

@@ -25,6 +25,6 @@ struct dirent *readdir(DIR *dirp);
 void closedir(DIR *dirp);
 #endif
 
-String read_whole_file(const char *filepath);
+String read_whole_file(Memory *memory, const char *filepath);
 
 #endif  // FILE_H_
