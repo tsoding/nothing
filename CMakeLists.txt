@@ -145,8 +145,6 @@ add_executable(nothing
   src/game/level/level_editor/undo_history.c
   src/game/level/level_editor/action_picker.h
   src/game/level/level_editor/action_picker.c
-  src/system/line_stream.h
-  src/system/line_stream.c
   src/system/log.h
   src/system/log.c
   src/system/lt.h

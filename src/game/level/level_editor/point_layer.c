@@ -4,7 +4,6 @@
 
 #include "dynarray.h"
 #include "game/camera.h"
-#include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
@@ -197,43 +196,38 @@ PointLayer *create_point_layer(const char *id_name_prefix)
     return point_layer;
 }
 
-PointLayer *create_point_layer_from_line_stream(LineStream *line_stream,
-                                                const char *id_name_prefix)
+PointLayer *chop_point_layer(Memory *memory,
+                             String *input,
+                             const char *id_name_prefix)
 {
-    trace_assert(line_stream);
+    trace_assert(memory);
+    trace_assert(input);
+    trace_assert(id_name_prefix);
 
     PointLayer *point_layer = create_point_layer(id_name_prefix);
 
-    size_t count = 0;
-    if (sscanf(
-            line_stream_next(line_stream),
-            "%zu",
-            &count) == EOF) {
-        log_fail("Could not read amount of points");
-        RETURN_LT(point_layer->lt, NULL);
-    }
+    int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
+    char id[ENTITY_MAX_ID_SIZE];
+    for (int i = 0; i < n; ++i) {
+        String line = trim(chop_by_delim(input, '\n'));
+        String string_id = trim(chop_word(&line));
+        Vec2f point;
+        point.x = strtof(string_to_cstr(memory, trim(chop_word(&line))), NULL);
+        point.y = strtof(string_to_cstr(memory, trim(chop_word(&line))), NULL);
+        Color color = hexs(trim(chop_word(&line)));
 
-    char color_name[7];
-    char id[ID_MAX_SIZE];
-    float x, y;
-    for (size_t i = 0; i < count; ++i) {
-        if (sscanf(
-                line_stream_next(line_stream),
-                "%"STRINGIFY(ID_MAX_SIZE)"s%f%f%6s",
-                id, &x, &y, color_name) < 0) {
-            log_fail("Could not read %dth goal\n", i);
-            RETURN_LT(point_layer->lt, NULL);
-        }
-        const Color color = hexstr(color_name);
-        const Vec2f point = vec(x, y);
+        memset(id, 0, ENTITY_MAX_ID_SIZE);
+        memcpy(
+            id,
+            string_id.data,
+            min_size_t(ENTITY_MAX_ID_SIZE - 1, string_id.count));
 
-        dynarray_push(&point_layer->colors, &color);
         dynarray_push(&point_layer->positions, &point);
+        dynarray_push(&point_layer->colors, &color);
         dynarray_push(&point_layer->ids, id);
     }
 
     point_layer->selection = -1;
-
     point_layer->color_picker = create_color_picker_from_rgba(COLOR_RED);
 
     return point_layer;

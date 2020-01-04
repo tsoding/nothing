@@ -43,7 +43,6 @@
 #include "src/game/level/level_editor/background_layer.c"
 #include "src/game/level/level_editor/undo_history.c"
 #include "src/game/level/level_editor/action_picker.c"
-#include "src/system/line_stream.c"
 #include "src/system/log.c"
 #include "src/system/lt_adapters.c"
 #include "src/system/nth_alloc.c"

@@ -10,7 +10,6 @@
 #include "color.h"
 #include "rect_layer.h"
 #include "dynarray.h"
-#include "system/line_stream.h"
 #include "color_picker.h"
 #include "system/str.h"
 #include "ui/edit_field.h"
@@ -18,6 +17,7 @@
 #include "game/level/action.h"
 #include "action_picker.h"
 #include "game.h"
+#include "math/extrema.h"
 
 #define RECT_LAYER_SELECTION_THICCNESS 15.0f
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
@@ -886,70 +886,59 @@ RectLayer *create_rect_layer(const char *id_name_prefix, Cursor *cursor)
     return layer;
 }
 
-RectLayer *create_rect_layer_from_line_stream(LineStream *line_stream,
-                                              const char *id_name_prefix,
-                                              Cursor *cursor)
+RectLayer *chop_rect_layer(Memory *memory,
+                           String *input,
+                           const char *id_name_prefix,
+                           Cursor *cursor)
 {
-    trace_assert(line_stream);
+    trace_assert(memory);
+    trace_assert(input);
 
     RectLayer *layer = create_rect_layer(id_name_prefix, cursor);
-    if (layer == NULL) {
-        return NULL;
-    }
+    trace_assert(layer);
 
-    const char *line = line_stream_next(line_stream);
-    if (line == NULL) {
-        RETURN_LT(layer->lt, NULL);
-    }
-
-    size_t count = 0;
-    if (sscanf(line, "%zu", &count) < 0) {
-        RETURN_LT(layer->lt, NULL);
-    }
-
-    for (size_t i = 0; i < count; ++i) {
-        line = line_stream_next(line_stream);
-        if (line == NULL) {
-            RETURN_LT(layer->lt, NULL);
-        }
-
-        char hex[7];
+    int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
+    char id[ENTITY_MAX_ID_SIZE];
+    for (int i = 0; i < n; ++i) {
         Rect rect;
-        char id[ENTITY_MAX_ID_SIZE];
+        String line = trim(chop_by_delim(input, '\n'));
+        String string_id = trim(chop_word(&line));
+        rect.x = strtof(string_to_cstr(memory, trim(chop_word(&line))), NULL);
+        rect.y = strtof(string_to_cstr(memory, trim(chop_word(&line))), NULL);
+        rect.w = strtof(string_to_cstr(memory, trim(chop_word(&line))), NULL);
+        rect.h = strtof(string_to_cstr(memory, trim(chop_word(&line))), NULL);
+        Color color = hexs(trim(chop_word(&line)));
 
-        int n = 0;
-        if (sscanf(line,
-                   "%"STRINGIFY(ENTITY_MAX_ID_SIZE)"s%f%f%f%f%6s%n",
-                   id,
-                   &rect.x, &rect.y,
-                   &rect.w, &rect.h,
-                   hex, &n) <= 0) {
-            log_fail("%s\n", strerror(errno));
-            RETURN_LT(layer->lt, NULL);
-        }
-        line += n;
+        memset(id, 0, ENTITY_MAX_ID_SIZE);
+        memcpy(
+            id,
+            string_id.data,
+            min_size_t(ENTITY_MAX_ID_SIZE - 1, string_id.count));
 
-        Color color = hexstr(hex);
         dynarray_push(&layer->rects, &rect);
-        dynarray_push(&layer->ids, id);
         dynarray_push(&layer->colors, &color);
+        dynarray_push(&layer->ids, id);
 
         Action action = {
             .type = ACTION_NONE,
             .entity_id = {0}
         };
 
-        if (sscanf(line, "%d%n", (int*)&action.type, &n) > 0) {
-            line += n;
+        String action_string = trim(chop_word(&line));
+        if (action_string.count > 0) {
+            action.type = (ActionType)atol(string_to_cstr(memory, action_string));
             switch (action.type) {
             case ACTION_NONE: break;
-
             case ACTION_TOGGLE_GOAL:
             case ACTION_HIDE_LABEL: {
-                if (sscanf(line, "%"STRINGIFY(ENTITY_MAX_ID_SIZE)"s", action.entity_id) <= 0) {
-                    log_fail("%s\n", strerror(errno));
-                    RETURN_LT(layer->lt, NULL);
-                }
+                String label_id = trim(chop_word(&line));
+                trace_assert(label_id.count > 0);
+                memset(action.entity_id, 0, ENTITY_MAX_ID_SIZE);
+                memcpy(action.entity_id,
+                       label_id.data,
+                       min_size_t(
+                           ENTITY_MAX_ID_SIZE - 1,
+                           label_id.count));
             } break;
 
             case ACTION_N: break;

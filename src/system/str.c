@@ -42,15 +42,3 @@ char *trim_endline(char *s)
 
     return s;
 }
-
-char *string_append(char *prefix, const char *suffix)
-{
-    trace_assert(suffix);
-
-    if (prefix == NULL) {
-        return string_duplicate(suffix, NULL);
-    }
-
-    prefix = nth_realloc(prefix, strlen(prefix) + strlen(suffix) + 1);
-    return strcat(prefix, suffix);
-}

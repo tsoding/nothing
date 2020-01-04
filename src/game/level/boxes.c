@@ -6,7 +6,6 @@
 #include "game/level/player.h"
 #include "game/level/rigid_bodies.h"
 #include "math/rand.h"
-#include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"

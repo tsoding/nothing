@@ -8,6 +8,7 @@
 #include "system/nth_alloc.h"
 #include "system/log.h"
 #include "undo_history.h"
+#include "system/memory.h"
 
 typedef struct {
     PlayerLayer *layer;
@@ -50,27 +51,17 @@ PlayerLayer create_player_layer(Vec2f position, Color color)
     };
 }
 
-PlayerLayer create_player_layer_from_line_stream(LineStream *line_stream)
+PlayerLayer chop_player_layer(Memory *memory, String *input)
 {
-    trace_assert(line_stream);
+    trace_assert(memory);
+    trace_assert(input);
 
-    const char *line = line_stream_next(line_stream);
-    trace_assert(line);
+    String line = chop_by_delim(input, '\n');
+    float x = strtof(string_to_cstr(memory, chop_word(&line)), NULL);
+    float y = strtof(string_to_cstr(memory, chop_word(&line)), NULL);
+    Color color = hexs(chop_word(&line));
 
-    char colorstr[7] = "000000";
-    Vec2f position = vec(0.0f, 0.0f);
-
-    const int bound =
-        sscanf(line, "%f%f%6s", &position.x, &position.y, colorstr);
-
-#define BOUND_EXPECTED 3
-    if (bound != BOUND_EXPECTED) {
-        log_fail("Could not read Player Layer properly. Parsed tokens: %d. Expected: %d\n",
-                 bound, BOUND_EXPECTED);
-    }
-#undef BOUND_EXPECTED
-
-    return create_player_layer(position, hexstr(colorstr));
+    return create_player_layer(vec(x, y), color);
 }
 
 LayerPtr player_layer_as_layer(PlayerLayer *player_layer)

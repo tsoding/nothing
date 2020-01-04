@@ -5,7 +5,6 @@
 #include <time.h>
 
 #include "math/pi.h"
-#include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"

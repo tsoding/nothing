@@ -2,7 +2,6 @@
 
 #include <SDL.h>
 
-#include "system/line_stream.h"
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
 #include "system/lt.h"
@@ -200,61 +199,47 @@ LabelLayer *create_label_layer(const char *id_name_prefix)
     return label_layer;
 }
 
-LabelLayer *create_label_layer_from_line_stream(LineStream *line_stream, const char *id_name_prefix)
+LabelLayer *chop_label_layer(Memory *memory,
+                             String *input,
+                             const char *id_name_prefix)
 {
-    trace_assert(line_stream);
+    trace_assert(memory);
+    trace_assert(input);
+    trace_assert(id_name_prefix);
+
     LabelLayer *label_layer = create_label_layer(id_name_prefix);
 
-    if (label_layer == NULL) {
-        RETURN_LT(label_layer->lt, NULL);
-    }
+    int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
+    char id[LABEL_LAYER_ID_MAX_SIZE];
+    char label_text[LABEL_LAYER_TEXT_MAX_SIZE];
+    for (int i = 0; i < n; ++i) {
+        String meta = trim(chop_by_delim(input, '\n'));
 
-    const char *line = line_stream_next(line_stream);
-    if (line == NULL) {
-        log_fail("Could not read amount of labels\n");
-        RETURN_LT(label_layer->lt, NULL);
-    }
-
-    size_t n = 0;
-    if (sscanf(line, "%zu", &n) == EOF) {
-        log_fail("Could not parse amount of labels\n");
-        RETURN_LT(label_layer->lt, NULL);
-    }
-
-    for (size_t i = 0; i < n; ++i) {
-        char hex[7];
-        char id[LABEL_LAYER_ID_MAX_SIZE];
+        String string_id = trim(chop_word(&meta));
         Vec2f position;
+        position.x = strtof(string_to_cstr(memory, trim(chop_word(&meta))), NULL);
+        position.y = strtof(string_to_cstr(memory, trim(chop_word(&meta))), NULL);
+        Color color = hexs(trim(chop_word(&meta)));
 
-        line = line_stream_next(line_stream);
-        if (line == NULL) {
-            log_fail("Could not read label meta info\n");
-            RETURN_LT(label_layer->lt, NULL);
-        }
+        memset(id, 0, LABEL_LAYER_ID_MAX_SIZE);
+        memcpy(
+            id,
+            string_id.data,
+            min_size_t(LABEL_LAYER_ID_MAX_SIZE - 1, string_id.count));
 
-        if (sscanf(
-                line,
-                "%"STRINGIFY(LABEL_LAYER_ID_MAX_SIZE)"s%f%f%6s\n",
-                id, &position.x, &position.y, hex) == EOF) {
-            log_fail("Could not parse label meta info\n");
-            RETURN_LT(label_layer->lt, NULL);
-        }
-
-        Color color = hexstr(hex);
+        String label_text_string =
+            trim(chop_by_delim(input, '\n'));
+        memset(label_text, 0, LABEL_LAYER_TEXT_MAX_SIZE);
+        memcpy(
+            label_text,
+            label_text_string.data,
+            min_size_t(LABEL_LAYER_TEXT_MAX_SIZE - 1,
+                       label_text_string.count));
 
         dynarray_push(&label_layer->ids, id);
         dynarray_push(&label_layer->positions, &position);
         dynarray_push(&label_layer->colors, &color);
-
-        line = line_stream_next(line_stream);
-        if (line == NULL) {
-            log_fail("Could not read label text\n");
-        }
-
-        char label_text[LABEL_LAYER_TEXT_MAX_SIZE] = {0};
-        memcpy(label_text, line, LABEL_LAYER_TEXT_MAX_SIZE - 1);
-        trim_endline(label_text);
-        dynarray_push(&label_layer->texts, &label_text);
+        dynarray_push(&label_layer->texts, label_text);
     }
 
     return label_layer;

@@ -7,8 +7,6 @@
 #include "system/nth_alloc.h"
 #include "dynarray.h"
 
-#define DYNARRAY_INIT_CAPACITY 8
-
 void *dynarray_pointer_at(const Dynarray *dynarray, size_t index)
 {
     trace_assert(index < dynarray->count);
@@ -21,34 +19,11 @@ void dynarray_clear(Dynarray *dynarray)
     dynarray->count = 0;
 }
 
-static
-int dynarray_grow(Dynarray *dynarray)
-{
-    if (dynarray->count < dynarray->capacity) {
-        return 0;
-    }
-
-    if (dynarray->capacity == 0) {
-        dynarray->capacity = DYNARRAY_INIT_CAPACITY;
-    } else {
-        dynarray->capacity *= 2;
-    }
-
-    dynarray->data = nth_realloc(
-        dynarray->data,
-        dynarray->capacity * dynarray->element_size * 2);
-
-    return 0;
-}
-
 int dynarray_push(Dynarray *dynarray, const void *element)
 {
     trace_assert(dynarray);
     trace_assert(element);
-
-    if (dynarray_grow(dynarray) < 0) {
-        return -1;
-    }
+    trace_assert(dynarray->count < DYNARRAY_CAPACITY);
 
     memcpy(
         (char*) dynarray->data + dynarray->count * dynarray->element_size,
@@ -92,9 +67,7 @@ void dynarray_insert_before(Dynarray *dynarray, size_t index, void *element)
 {
     trace_assert(dynarray);
     trace_assert(element);
-    trace_assert(index <= dynarray->count);
-
-    dynarray_grow(dynarray);
+    trace_assert(index < dynarray->count);
 
     memmove(
         (uint8_t*) dynarray->data + (index + 1) * dynarray->element_size,
@@ -112,10 +85,7 @@ void dynarray_insert_before(Dynarray *dynarray, size_t index, void *element)
 int dynarray_push_empty(Dynarray *dynarray)
 {
     trace_assert(dynarray);
-
-    if (dynarray_grow(dynarray) < 0) {
-        return -1;
-    }
+    trace_assert(dynarray->count < DYNARRAY_CAPACITY);
 
     memset(
         (char*) dynarray->data + dynarray->count * dynarray->element_size,

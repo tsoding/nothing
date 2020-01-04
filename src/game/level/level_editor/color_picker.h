@@ -16,12 +16,8 @@ typedef struct {
     Slider sliders[COLOR_SLIDER_N];
 } ColorPicker;
 
-typedef struct LineStream LineStream;
 
 ColorPicker create_color_picker_from_rgba(Color color);
-
-int color_picker_read_from_line_stream(ColorPicker *color_picker,
-                                       LineStream *line_stream);
 
 int color_picker_render(const ColorPicker *color_picker,
                         const Camera *camera);

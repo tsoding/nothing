@@ -9,7 +9,6 @@
 #include "math/vec.h"
 #include "platforms.h"
 #include "player.h"
-#include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"

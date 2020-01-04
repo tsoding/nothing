@@ -19,17 +19,18 @@
 #include "system/str.h"
 #include "config.h"
 #include "math/extrema.h"
+#include "system/file.h"
 
 #include "level_editor.h"
 
 #define LEVEL_FOLDER_MAX_LENGTH 512
-#define LEVEL_LINE_MAX_LENGTH 512
 #define LEVEL_EDITOR_EDIT_FIELD_SIZE vec(5.0f, 5.0f)
 #define LEVEL_EDITOR_EDIT_FIELD_COLOR COLOR_BLACK
 
 #define LEVEL_EDITOR_NOTICE_SCALE vec(10.0f, 10.0f)
 #define LEVEL_EDITOR_NOTICE_DURATION 1.0f
 #define LEVEL_EDITOR_NOTICE_PADDING_TOP 100.0f
+#define LEVEL_EDITOR_TMPMEM_CAPACITY (640 * KILO)
 
 static int level_editor_dump(LevelEditor *level_editor);
 
@@ -172,110 +173,37 @@ LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor
             string_duplicate(file_name, NULL),
             free);
 
-    LineStream *level_stream = PUSH_LT(
-        lt,
-        create_line_stream(
-            file_name,
-            "r",
-            LEVEL_LINE_MAX_LENGTH),
-        destroy_line_stream);
-    if (level_stream == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    Memory tmpmem = {
+        .capacity = LEVEL_EDITOR_TMPMEM_CAPACITY,
+        .buffer = malloc(LEVEL_EDITOR_TMPMEM_CAPACITY),
+    };
+    trace_assert(tmpmem.buffer);
 
-    const char *line = line_stream_next(level_stream);
-    if (line == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    String input = read_whole_file(&tmpmem, file_name);
+    trace_assert(input.data);
 
-    char version[METADATA_VERSION_MAX_SIZE] = {0};
-    memcpy(version, line,
-           MIN(size_t,
-               strlen(line),
-               METADATA_VERSION_MAX_SIZE - 1));
-    trim_endline(version);
+    String version = trim(chop_by_delim(&input, '\n'));
 
-    if (strcmp(version, "1") == 0) {
-        if (line_stream_next(level_stream) == NULL)
-            RETURN_LT(lt, NULL);
-    } else if (strcmp(version, "2") == 0) {
+    if (string_equal(version, STRING_LIT("1"))) {
+        chop_by_delim(&input, '\n');
+    } else if (string_equal(version, STRING_LIT("2"))) {
         // Nothing
     } else {
         log_fail("Version `%s` is not supported. Expected version `%s`.\n",
-                 version, VERSION);
+                 string_to_cstr(&tmpmem, version),
+                 VERSION);
         RETURN_LT(lt, NULL);
     }
 
-    if (background_layer_read_from_line_stream(
-            &level_editor->background_layer,
-            level_stream) < 0) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level_editor->player_layer =
-        create_player_layer_from_line_stream(level_stream);
-
-    level_editor->platforms_layer =
-        PUSH_LT(
-            lt,
-            create_rect_layer_from_line_stream(level_stream, "platform", cursor),
-            destroy_rect_layer);
-    if (level_editor->platforms_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level_editor->goals_layer = PUSH_LT(
-        lt,
-        create_point_layer_from_line_stream(level_stream, "goal"),
-        destroy_point_layer);
-    if (level_editor->goals_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level_editor->lava_layer =
-        PUSH_LT(
-            lt,
-            create_rect_layer_from_line_stream(level_stream, "lava", cursor),
-            destroy_rect_layer);
-    if (level_editor->lava_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level_editor->back_platforms_layer =
-        PUSH_LT(
-            lt,
-            create_rect_layer_from_line_stream(level_stream, "back_platform", cursor),
-            destroy_rect_layer);
-    if (level_editor->back_platforms_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level_editor->boxes_layer =
-        PUSH_LT(
-            lt,
-            create_rect_layer_from_line_stream(level_stream, "box", cursor),
-            destroy_rect_layer);
-    if (level_editor->boxes_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level_editor->label_layer =
-        PUSH_LT(
-            lt,
-            create_label_layer_from_line_stream(level_stream, "label"),
-            destroy_label_layer);
-    if (level_editor->label_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level_editor->regions_layer =
-        PUSH_LT(
-            lt,
-            create_rect_layer_from_line_stream(level_stream, "region", cursor),
-            destroy_rect_layer);
-    if (level_editor->regions_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    level_editor->background_layer = chop_background_layer(&input);
+    level_editor->player_layer = chop_player_layer(&tmpmem, &input);
+    level_editor->platforms_layer = chop_rect_layer(&tmpmem, &input, "platform", cursor);
+    level_editor->goals_layer = chop_point_layer(&tmpmem, &input, "goal");
+    level_editor->lava_layer = chop_rect_layer(&tmpmem, &input, "lava", cursor);
+    level_editor->back_platforms_layer = chop_rect_layer(&tmpmem, &input, "back_platform", cursor);
+    level_editor->boxes_layer = chop_rect_layer(&tmpmem, &input, "box", cursor);
+    level_editor->label_layer = chop_label_layer(&tmpmem, &input, "label");
+    level_editor->regions_layer = chop_rect_layer(&tmpmem, &input, "region", cursor),
 
     level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(level_editor->boxes_layer);
     level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
@@ -299,6 +227,10 @@ LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor
     };
 
     level_editor->camera_scale = 1.0f;
+
+    log_info("%ld bytes of tmp memory consumed during parsing the level\n", tmpmem.size);
+
+    free(tmpmem.buffer);
 
     return level_editor;
 }

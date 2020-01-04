@@ -7,7 +7,6 @@
 #include "lava.h"
 #include "math/rect.h"
 #include "system/lt.h"
-#include "system/line_stream.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
 #include "game/level/level_editor/rect_layer.h"

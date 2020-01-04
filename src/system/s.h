@@ -1,8 +1,11 @@
 #ifndef S_H_
 #define S_H_
 
+#include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "system/stacktrace.h"
+#include "system/memory.h"
 
 typedef struct {
     size_t count;
@@ -60,6 +63,61 @@ int string_equal(String a, String b)
 {
     if (a.count != b.count) return 0;
     return memcmp(a.data, b.data, a.count) == 0;
+}
+
+static inline
+String trim_begin(String input)
+{
+    while (input.count > 0 && isspace(*input.data)) {
+        input.data += 1;
+        input.count -= 1;
+    }
+
+    return input;
+}
+
+static inline
+String trim_end(String input)
+{
+    while (input.count > 0 && isspace(*(input.data + input.count - 1))) {
+        input.count -= 1;
+    }
+
+    return input;
+}
+
+static inline
+String trim(String input)
+{
+    return trim_end(trim_begin(input));
+}
+
+static inline
+String chop_word(String *input)
+{
+    trace_assert(input);
+
+    *input = trim_begin(*input);
+
+    size_t i = 0;
+    while (i < input->count && !isspace(input->data[i]))
+        i++;
+
+    String result = string(i, input->data);
+    input->data += i;
+    input->count -= i;
+    return result;
+}
+
+static inline
+char *string_to_cstr(Memory *memory, String s)
+{
+    trace_assert(memory);
+
+    char *result = memory_alloc(memory, s.count + 1);
+    memset(result, 0, s.count + 1);
+    memcpy(result, s.data, s.count);
+    return result;
 }
 
 #endif  // S_H_

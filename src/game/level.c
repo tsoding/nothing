@@ -18,7 +18,6 @@
 #include "game/level/level_editor/player_layer.h"
 #include "game/level/level_editor/label_layer.h"
 #include "game/level/level_editor/background_layer.h"
-#include "system/line_stream.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"

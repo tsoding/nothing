@@ -83,6 +83,17 @@ Color hexstr(const char *hexstr)
         1.0f);
 }
 
+Color hexs(String input)
+{
+    if (input.count < 6) return COLOR_BLACK;
+
+    return rgba(
+        parse_color_component(input.data) / 255.0f,
+        parse_color_component(input.data + 2) / 255.0f,
+        parse_color_component(input.data + 4) / 255.0f,
+        1.0f);
+}
+
 SDL_Color color_for_sdl(Color color)
 {
     const SDL_Color result = {

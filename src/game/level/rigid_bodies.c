@@ -6,7 +6,6 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/stacktrace.h"
-#include "system/line_stream.h"
 #include "system/str.h"
 #include "system/log.h"
 
@@ -222,7 +221,7 @@ int rigid_bodies_render(RigidBodies *rigid_bodies,
         return -1;
     }
 
-    snprintf(text_buffer, 256, 
+    snprintf(text_buffer, 256,
         "id: %zd\n"
         "p:(%.2f, %.2f)\n"
         "v:(%.2f, %.2f)\n"
