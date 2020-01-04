@@ -926,7 +926,7 @@ RectLayer *chop_rect_layer(Memory *memory,
 
         String action_string = trim(chop_word(&line));
         if (action_string.count > 0) {
-            action.type = atoi(string_to_cstr(memory, action_string));
+            action.type = (ActionType)atol(string_to_cstr(memory, action_string));
             switch (action.type) {
             case ACTION_NONE: break;
             case ACTION_TOGGLE_GOAL:
