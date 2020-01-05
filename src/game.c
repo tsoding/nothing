@@ -413,7 +413,8 @@ int game_event(Game *game, const SDL_Event *event)
     } break;
 
     case SDL_KEYDOWN: {
-        if (event->key.keysym.sym == SDLK_q && event->key.keysym.mod & KMOD_CTRL) {
+        if ((event->key.keysym.sym == SDLK_q && event->key.keysym.mod & KMOD_CTRL) ||
+            (event->key.keysym.sym == SDLK_F4 && event->key.keysym.mod & KMOD_ALT)) {
             game_switch_state(game, GAME_STATE_QUIT);
             return 0;
         }
