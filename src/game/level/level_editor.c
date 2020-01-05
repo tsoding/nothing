@@ -140,6 +140,8 @@ LevelEditor *create_level_editor(Cursor *cursor)
 
     level_editor->camera_scale = 1.0f;
 
+    level_editor->undo_history = create_undo_history();
+
     return level_editor;
 }
 
@@ -228,7 +230,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor
 
     level_editor->camera_scale = 1.0f;
 
-    log_info("%ld bytes of tmp memory consumed during parsing the level\n", tmpmem.size);
+    level_editor->undo_history = create_undo_history();
 
     free(tmpmem.buffer);
 

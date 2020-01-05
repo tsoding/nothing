@@ -1,18 +1,20 @@
 #ifndef UNDO_HISTORY_H_
 #define UNDO_HISTORY_H_
 
-#include "stack.h"
+#include "ring_buffer.h"
 
 typedef void (*RevertAction)(void *context, size_t context_size);
 
 typedef struct {
-    Stack actions;
+    RingBuffer actions;
 } UndoHistory;
+
+UndoHistory create_undo_history(void);
 
 static inline
 void destroy_undo_history(UndoHistory undo_history)
 {
-    destroy_stack(undo_history.actions);
+    destroy_ring_buffer(undo_history.actions);
 }
 
 void undo_history_push(UndoHistory *undo_history,
@@ -24,7 +26,7 @@ void undo_history_pop(UndoHistory *undo_history);
 static inline
 int undo_history_empty(UndoHistory *undo_history)
 {
-    return undo_history->actions.size == 0;
+    return undo_history->actions.count == 0;
 }
 
 #endif  // UNDO_HISTORY_H_
