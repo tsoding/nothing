@@ -9,17 +9,46 @@
 #define LABEL_LAYER_ID_MAX_SIZE 36
 #define LABEL_LAYER_TEXT_MAX_SIZE 256
 
-typedef struct LabelLayer LabelLayer;
+typedef enum {
+    LABEL_LAYER_IDLE = 0,
+    LABEL_LAYER_MOVE,
+    LABEL_LAYER_EDIT_TEXT,
+    LABEL_LAYER_EDIT_ID,
+    LABEL_LAYER_RECOLOR
+} LabelLayerState;
+
+typedef struct {
+    LabelLayerState state;
+    Dynarray ids;
+    Dynarray positions;
+    Dynarray colors;
+    Dynarray texts;
+    int selection;
+    ColorPicker color_picker;
+    Vec2f move_anchor;
+    Edit_field edit_field;
+    Vec2f inter_position;
+    Color inter_color;
+    int id_name_counter;
+    const char *id_name_prefix;
+} LabelLayer;
 
 LayerPtr label_layer_as_layer(LabelLayer *label_layer);
 
 // NOTE: create_label_layer and create_label_layer_from_line_stream do
 // not own id_name_prefix
-LabelLayer *create_label_layer(const char *id_name_prefix);
-LabelLayer *chop_label_layer(Memory *memory,
-                             String *input,
-                             const char *id_name_prefix);
-void destroy_label_layer(LabelLayer *label_layer);
+LabelLayer create_label_layer(const char *id_name_prefix);
+LabelLayer chop_label_layer(Memory *memory,
+                            String *input,
+                            const char *id_name_prefix);
+static inline
+void destroy_label_layer(LabelLayer label_layer)
+{
+    free(label_layer.ids.data);
+    free(label_layer.positions.data);
+    free(label_layer.colors.data);
+    free(label_layer.texts.data);
+}
 
 int label_layer_render(const LabelLayer *label_layer,
                        const Camera *camera,

@@ -6,11 +6,11 @@
 #include "game/level/level_editor/undo_history.h"
 #include "game/level/level_editor/rect_layer.h"
 #include "game/level/level_editor/point_layer.h"
+#include "game/level/level_editor/label_layer.h"
 #include "ui/wiggly_text.h"
 #include "ui/cursor.h"
 
 typedef struct LevelEditor LevelEditor;
-typedef struct LabelLayer LabelLayer;
 typedef struct Sound_samples Sound_samples;
 
 typedef enum {
@@ -36,7 +36,7 @@ struct LevelEditor
     RectLayer lava_layer;
     RectLayer regions_layer;
     BackgroundLayer background_layer;
-    LabelLayer *label_layer;
+    LabelLayer label_layer;
 
     LayerPtr layers[LAYER_PICKER_N];
 

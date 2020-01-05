@@ -21,34 +21,9 @@
 
 // TODO(#1139): Label Layer does not support snapping
 
-typedef enum {
-    LABEL_LAYER_IDLE = 0,
-    LABEL_LAYER_MOVE,
-    LABEL_LAYER_EDIT_TEXT,
-    LABEL_LAYER_EDIT_ID,
-    LABEL_LAYER_RECOLOR
-} LabelLayerState;
-
 static int label_clipboard = 0;
 static char label_clipboard_text[LABEL_LAYER_TEXT_MAX_SIZE];
 static Color label_clipboard_color;
-
-struct LabelLayer {
-    Lt *lt;
-    LabelLayerState state;
-    Dynarray ids;
-    Dynarray positions;
-    Dynarray colors;
-    Dynarray texts;
-    int selection;
-    ColorPicker color_picker;
-    Vec2f move_anchor;
-    Edit_field edit_field;
-    Vec2f inter_position;
-    Color inter_color;
-    int id_name_counter;
-    const char *id_name_prefix;
-};
 
 typedef enum {
     LABEL_UNDO_ADD,
@@ -167,42 +142,30 @@ LayerPtr label_layer_as_layer(LabelLayer *label_layer)
     return layer;
 }
 
-LabelLayer *create_label_layer(const char *id_name_prefix)
+LabelLayer create_label_layer(const char *id_name_prefix)
 {
-    Lt *lt = create_lt();
-
-    LabelLayer *label_layer = PUSH_LT(
-        lt, nth_calloc(1, sizeof(LabelLayer)), free);
-    if (label_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    label_layer->lt = lt;
-
-    label_layer->ids = create_dynarray(sizeof(char) * LABEL_LAYER_ID_MAX_SIZE);
-    label_layer->positions = create_dynarray(sizeof(Vec2f));
-    label_layer->colors = create_dynarray(sizeof(Color));
-    label_layer->texts = create_dynarray(sizeof(char) * LABEL_LAYER_TEXT_MAX_SIZE);
-
-    label_layer->color_picker = create_color_picker_from_rgba(COLOR_RED);
-    label_layer->selection = -1;
-
-    label_layer->edit_field.font_size = LABELS_SIZE;
-    label_layer->edit_field.font_color = COLOR_RED;
-
-    label_layer->id_name_prefix = id_name_prefix;
-
-    return label_layer;
+    LabelLayer result = {0};
+    result.ids = create_dynarray(sizeof(char) * LABEL_LAYER_ID_MAX_SIZE);
+    result.positions = create_dynarray(sizeof(Vec2f));
+    result.colors = create_dynarray(sizeof(Color));
+    result.texts = create_dynarray(sizeof(char) * LABEL_LAYER_TEXT_MAX_SIZE);
+    result.color_picker = create_color_picker_from_rgba(COLOR_RED);
+    result.selection = -1;
+    result.edit_field.font_size = LABELS_SIZE;
+    result.edit_field.font_color = COLOR_RED;
+    result.id_name_prefix = id_name_prefix;
+    return result;
 }
 
-LabelLayer *chop_label_layer(Memory *memory,
-                             String *input,
-                             const char *id_name_prefix)
+LabelLayer chop_label_layer(Memory *memory,
+                            String *input,
+                            const char *id_name_prefix)
 {
     trace_assert(memory);
     trace_assert(input);
     trace_assert(id_name_prefix);
 
-    LabelLayer *label_layer = create_label_layer(id_name_prefix);
+    LabelLayer result = create_label_layer(id_name_prefix);
 
     int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
     char id[LABEL_LAYER_ID_MAX_SIZE];
@@ -231,25 +194,13 @@ LabelLayer *chop_label_layer(Memory *memory,
             min_size_t(LABEL_LAYER_TEXT_MAX_SIZE - 1,
                        label_text_string.count));
 
-        dynarray_push(&label_layer->ids, id);
-        dynarray_push(&label_layer->positions, &position);
-        dynarray_push(&label_layer->colors, &color);
-        dynarray_push(&label_layer->texts, label_text);
+        dynarray_push(&result.ids, id);
+        dynarray_push(&result.positions, &position);
+        dynarray_push(&result.colors, &color);
+        dynarray_push(&result.texts, label_text);
     }
 
-    return label_layer;
-}
-
-void destroy_label_layer(LabelLayer *label_layer)
-{
-    trace_assert(label_layer);
-
-    free(label_layer->ids.data);
-    free(label_layer->positions.data);
-    free(label_layer->colors.data);
-    free(label_layer->texts.data);
-
-    destroy_lt(label_layer->lt);
+    return result;
 }
 
 static inline

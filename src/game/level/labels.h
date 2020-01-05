@@ -6,7 +6,6 @@
 #include "config.h"
 
 typedef struct Labels Labels;
-typedef struct LabelLayer LabelLayer;
 
 Labels *create_labels_from_label_layer(const LabelLayer *label_layer);
 void destroy_labels(Labels *label);

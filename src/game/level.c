@@ -126,7 +126,7 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor)
 
     level->labels = PUSH_LT(
         lt,
-        create_labels_from_label_layer(level_editor->label_layer),
+        create_labels_from_label_layer(&level_editor->label_layer),
         destroy_labels);
     if (level->labels == NULL) {
         RETURN_LT(lt, NULL);

@@ -57,15 +57,7 @@ LevelEditor *create_level_editor(Cursor *cursor)
     level_editor->lava_layer = create_rect_layer("lava", cursor);
     level_editor->back_platforms_layer = create_rect_layer("back_platform", cursor);
     level_editor->boxes_layer = create_rect_layer("box", cursor);
-
-    level_editor->label_layer = PUSH_LT(
-        lt,
-        create_label_layer("label"),
-        destroy_label_layer);
-    if (level_editor->label_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
+    level_editor->label_layer = create_label_layer("label");
     level_editor->regions_layer = create_rect_layer("region", cursor),
 
     level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(&level_editor->boxes_layer);
@@ -76,7 +68,7 @@ LevelEditor *create_level_editor(Cursor *cursor)
     level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(&level_editor->lava_layer);
     level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(&level_editor->regions_layer);
     level_editor->layers[LAYER_PICKER_BACKGROUND] = background_layer_as_layer(&level_editor->background_layer);
-    level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
+    level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(&level_editor->label_layer);
 
     level_editor->notice = (FadingWigglyText) {
         .wiggly_text = {
@@ -157,7 +149,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor
     level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(&level_editor->lava_layer);
     level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(&level_editor->regions_layer);
     level_editor->layers[LAYER_PICKER_BACKGROUND] = background_layer_as_layer(&level_editor->background_layer);
-    level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
+    level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(&level_editor->label_layer);
 
     level_editor->drag = false;
 
