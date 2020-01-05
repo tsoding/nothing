@@ -4,6 +4,9 @@
 #include "layer.h"
 #include "game/level/action.h"
 #include "ui/cursor.h"
+#include "dynarray.h"
+#include "color_picker.h"
+#include "ui/edit_field.h"
 
 typedef struct RectLayer RectLayer;
 

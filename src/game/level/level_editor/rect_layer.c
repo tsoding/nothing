@@ -10,9 +10,7 @@
 #include "color.h"
 #include "rect_layer.h"
 #include "dynarray.h"
-#include "color_picker.h"
 #include "system/str.h"
-#include "ui/edit_field.h"
 #include "undo_history.h"
 #include "game/level/action.h"
 #include "game.h"
@@ -21,8 +19,6 @@
 #define RECT_LAYER_SELECTION_THICCNESS 15.0f
 #define RECT_LAYER_ID_LABEL_SIZE vec(3.0f, 3.0f)
 #define CREATE_AREA_THRESHOLD 10.0
-#define RECT_LAYER_GRID_ROWS 3
-#define RECT_LAYER_GRID_COLUMNS 4
 
 static int rect_clipboard = 0;
 static Rect rect_clipboard_rect;
