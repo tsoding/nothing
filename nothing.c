@@ -50,3 +50,4 @@
 #include "src/system/str.c"
 #include "src/dynarray.c"
 #include "src/system/file.c"
+#include "src/ring_buffer.c"

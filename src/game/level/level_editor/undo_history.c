@@ -7,10 +7,29 @@
 #include "system/lt.h"
 #include "system/stacktrace.h"
 #include "undo_history.h"
+#include "config.h"
 
 typedef struct {
     RevertAction revert;
-} HistoryAction;
+    void *context_data;
+    size_t context_data_size;
+} HistoryItem;
+
+static
+void undo_history_destroy_item(void *item)
+{
+    free(((HistoryItem*)item)->context_data);
+}
+
+UndoHistory create_undo_history(void)
+{
+    UndoHistory result;
+    result.actions = create_ring_buffer(
+        sizeof(HistoryItem),
+        UNDO_HISTORY_CAPACITY,
+        undo_history_destroy_item);
+    return result;
+}
 
 void undo_history_push(UndoHistory *undo_history,
                        RevertAction revert,
@@ -19,26 +38,24 @@ void undo_history_push(UndoHistory *undo_history,
 {
     trace_assert(undo_history);
 
-    HistoryAction action = {
+    HistoryItem item = {
         .revert = revert,
+        .context_data = malloc(context_data_size),
+        .context_data_size = context_data_size
     };
+    trace_assert(item.context_data);
+    memcpy(item.context_data, context_data, context_data_size);
 
-    stack_push(&undo_history->actions, context_data, context_data_size);
-    stack_push(&undo_history->actions, &action, sizeof(action));
+    ring_buffer_push(&undo_history->actions, &item);
 }
 
 void undo_history_pop(UndoHistory *undo_history)
 {
     trace_assert(undo_history);
 
-    if (stack_empty(&undo_history->actions) > 0) {
-        HistoryAction action = *(HistoryAction *)stack_top_element(&undo_history->actions);
-        stack_pop(&undo_history->actions);
-
-        size_t context_size = stack_top_size(&undo_history->actions);
-        void *context = stack_top_element(&undo_history->actions);
-
-        action.revert(context, context_size);
-        stack_pop(&undo_history->actions);
+    if (undo_history->actions.count > 0) {
+        HistoryItem *item = ring_buffer_top(&undo_history->actions);
+        item->revert(item->context_data, item->context_data_size);
+        ring_buffer_pop(&undo_history->actions);
     }
 }
