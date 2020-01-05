@@ -4,15 +4,13 @@
 #include "game/level/level_editor/layer.h"
 #include "game/level/level_editor/layer_picker.h"
 #include "game/level/level_editor/undo_history.h"
-#include "game/level/level_editor/action_picker.h"
+#include "game/level/level_editor/rect_layer.h"
 #include "ui/wiggly_text.h"
 #include "ui/cursor.h"
 
 typedef struct LevelEditor LevelEditor;
-typedef struct RectLayer RectLayer;
 typedef struct PointLayer PointLayer;
 typedef struct LabelLayer LabelLayer;
-typedef struct Edit_field Edit_field;
 typedef struct Sound_samples Sound_samples;
 
 typedef enum {
@@ -26,17 +24,17 @@ struct LevelEditor
     LevelEditorState state;
     Vec2f camera_position;
     float camera_scale;
-    Edit_field *edit_field_filename;
+    Edit_field edit_field_filename;
     LayerPicker layer_picker;
     FadingWigglyText notice;
 
-    RectLayer *boxes_layer;
-    RectLayer *platforms_layer;
-    RectLayer *back_platforms_layer;
+    RectLayer boxes_layer;
+    RectLayer platforms_layer;
+    RectLayer back_platforms_layer;
     PointLayer *goals_layer;
     PlayerLayer player_layer;
-    RectLayer *lava_layer;
-    RectLayer *regions_layer;
+    RectLayer lava_layer;
+    RectLayer regions_layer;
     BackgroundLayer background_layer;
     LabelLayer *label_layer;
 

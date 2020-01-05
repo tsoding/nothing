@@ -35,7 +35,7 @@
 struct Console
 {
     Lt *lt;
-    Edit_field *edit_field;
+    Edit_field edit_field;
     Console_Log *console_log;
     History *history;
     Game *game;
@@ -54,15 +54,8 @@ Console *create_console(Game *game)
     }
     console->lt = lt;
 
-    console->edit_field = PUSH_LT(
-        lt,
-        create_edit_field(
-            vec(FONT_WIDTH_SCALE, FONT_HEIGHT_SCALE),
-            CONSOLE_FOREGROUND),
-        destroy_edit_field);
-    if (console->edit_field == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    console->edit_field.font_size = vec(FONT_WIDTH_SCALE, FONT_HEIGHT_SCALE);
+    console->edit_field.font_color = CONSOLE_FOREGROUND;
 
     console->console_log = PUSH_LT(
         lt,
@@ -94,13 +87,13 @@ void destroy_console(Console *console)
 
 static int console_eval_input(Console *console)
 {
-    const char *input_text = edit_field_as_text(console->edit_field);
+    const char *input_text = edit_field_as_text(&console->edit_field);
 
     String input = string_nt(input_text);
     String command = chop_word(&input);
 
     if (string_equal(command, STRING_LIT(""))) {
-        edit_field_clean(console->edit_field);
+        edit_field_clean(&console->edit_field);
         return 0;
     }
 
@@ -130,7 +123,7 @@ static int console_eval_input(Console *console)
         console_log_push_line(console->console_log, "Unknown command", NULL, CONSOLE_ERROR);
     }
 
-    edit_field_clean(console->edit_field);
+    edit_field_clean(&console->edit_field);
 
     return 0;
 }
@@ -146,7 +139,7 @@ int console_handle_event(Console *console,
 
         case SDLK_UP:
             edit_field_replace(
-                console->edit_field,
+                &console->edit_field,
                 history_current(console->history));
             history_prev(console->history);
             return 0;
@@ -154,7 +147,8 @@ int console_handle_event(Console *console,
         case SDLK_p: {
             if (event->key.keysym.mod & KMOD_CTRL) {
                 edit_field_replace(
-                    console->edit_field, history_current(console->history));
+                    &console->edit_field,
+                    history_current(console->history));
                 history_prev(console->history);
                 return 0;
             }
@@ -169,7 +163,7 @@ int console_handle_event(Console *console,
 
         case SDLK_DOWN:
             edit_field_replace(
-                console->edit_field,
+                &console->edit_field,
                 history_current(console->history));
             history_next(console->history);
             return 0;
@@ -177,7 +171,7 @@ int console_handle_event(Console *console,
         case SDLK_n: {
             if (event->key.keysym.mod & KMOD_CTRL) {
                 edit_field_replace(
-                    console->edit_field, history_current(console->history));
+                    &console->edit_field, history_current(console->history));
                 history_next(console->history);
                 return 0;
             }
@@ -186,7 +180,7 @@ int console_handle_event(Console *console,
     } break;
     }
 
-    return edit_field_event(console->edit_field, event);
+    return edit_field_event(&console->edit_field, event);
 }
 
 int console_render(const Console *console,
@@ -212,7 +206,7 @@ int console_render(const Console *console,
                        camera,
                        vec(0.0f, y));
 
-    if (edit_field_render_screen(console->edit_field,
+    if (edit_field_render_screen(&console->edit_field,
                                  camera,
                                  vec(0.0f, y + CONSOLE_LOG_HEIGHT)) < 0) {
         return -1;

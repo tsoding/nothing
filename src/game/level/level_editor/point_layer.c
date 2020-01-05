@@ -44,7 +44,7 @@ struct PointLayer
 
     Vec2f inter_position;
     Color inter_color;
-    Edit_field *edit_field;
+    Edit_field edit_field;
 
     int id_name_counter;
     const char *id_name_prefix;
@@ -181,15 +181,8 @@ PointLayer *create_point_layer(const char *id_name_prefix)
     point_layer->colors = create_dynarray(sizeof(Color));
     point_layer->ids = create_dynarray(sizeof(char) * ID_MAX_SIZE);
 
-    point_layer->edit_field = PUSH_LT(
-        lt,
-        create_edit_field(
-            POINT_LAYER_ID_TEXT_SIZE,
-            POINT_LAYER_ID_TEXT_COLOR),
-        destroy_edit_field);
-    if (point_layer->edit_field == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    point_layer->edit_field.font_size = POINT_LAYER_ID_TEXT_SIZE;
+    point_layer->edit_field.font_color = POINT_LAYER_ID_TEXT_COLOR;
 
     point_layer->id_name_prefix = id_name_prefix;
 
@@ -312,7 +305,7 @@ int point_layer_render(const PointLayer *point_layer,
 
     if (point_layer->state == POINT_LAYER_EDIT_ID) {
         if (edit_field_render_world(
-                point_layer->edit_field,
+                &point_layer->edit_field,
                 camera,
                 positions[point_layer->selection]) < 0) {
             return -1;
@@ -505,7 +498,7 @@ int point_layer_idle_event(PointLayer *point_layer,
                 char *ids = (char*)point_layer->ids.data;
                 point_layer->state = POINT_LAYER_EDIT_ID;
                 edit_field_replace(
-                    point_layer->edit_field,
+                    &point_layer->edit_field,
                     ids + ID_MAX_SIZE * point_layer->selection);
                 SDL_StartTextInput();
             }
@@ -559,7 +552,7 @@ int point_layer_edit_id_event(PointLayer *point_layer,
                     POINT_UNDO_UPDATE));
 
             char *id = dynarray_pointer_at(&point_layer->ids, (size_t) point_layer->selection);
-            const char *text = edit_field_as_text(point_layer->edit_field);
+            const char *text = edit_field_as_text(&point_layer->edit_field);
             size_t n = min_size_t(strlen(text), ID_MAX_SIZE - 1);
             memcpy(id, text, n);
             memset(id + n, 0, ID_MAX_SIZE - n);
@@ -578,7 +571,7 @@ int point_layer_edit_id_event(PointLayer *point_layer,
     } break;
     }
 
-    return edit_field_event(point_layer->edit_field, event);
+    return edit_field_event(&point_layer->edit_field, event);
 }
 
 static

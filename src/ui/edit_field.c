@@ -9,17 +9,6 @@
 #include "system/nth_alloc.h"
 #include "system/stacktrace.h"
 
-#define BUFFER_CAPACITY 256
-
-struct Edit_field
-{
-    Lt *lt;
-    char *buffer;
-    size_t buffer_size;
-    size_t cursor;
-    Vec2f font_size;
-    Color font_color;
-};
 
 static void edit_field_insert_char(Edit_field *edit_field, char c);
 
@@ -48,7 +37,7 @@ static void handle_keydown_ctrl(Edit_field *edit_field, const SDL_Event *event);
 
 static void edit_field_insert_char(Edit_field *edit_field, char c)
 {
-    if (edit_field->buffer_size >= BUFFER_CAPACITY) {
+    if (edit_field->buffer_size >= EDIT_FIELD_CAPACITY) {
         return;
     }
 
@@ -345,38 +334,6 @@ static void handle_keydown_ctrl(Edit_field *edit_field, const SDL_Event *event)
         field_buffer_copy(edit_field);
     } break;
     }
-}
-
-Edit_field *create_edit_field(Vec2f font_size,
-                              Color font_color)
-{
-    Lt *lt = create_lt();
-
-    Edit_field *const edit_field = PUSH_LT(lt, nth_calloc(1, sizeof(Edit_field)), free);
-    if (edit_field == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    edit_field->lt = lt;
-
-    edit_field->buffer = PUSH_LT(lt, nth_calloc(1, sizeof(char) * (BUFFER_CAPACITY + 10)), free);
-    if (edit_field->buffer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    edit_field->buffer_size = 0;
-    edit_field->cursor = 0;
-    edit_field->font_size = font_size;
-    edit_field->font_color = font_color;
-
-    edit_field->buffer[edit_field->buffer_size] = 0;
-
-    return edit_field;
-}
-
-void destroy_edit_field(Edit_field *edit_field)
-{
-    trace_assert(edit_field);
-    RETURN_LT0(edit_field->lt);
 }
 
 int edit_field_render_screen(const Edit_field *edit_field,

@@ -7,11 +7,13 @@
 #include "math/vec.h"
 #include "game/camera.h"
 
-typedef struct Edit_field Edit_field;
-
-Edit_field *create_edit_field(Vec2f font_size,
-                              Color font_color);
-void destroy_edit_field(Edit_field *edit_field);
+typedef struct {
+    char buffer[EDIT_FIELD_CAPACITY];
+    size_t buffer_size;
+    size_t cursor;
+    Vec2f font_size;
+    Color font_color;
+} Edit_field;
 
 int edit_field_render_screen(const Edit_field *edit_field,
                              const Camera *camera,

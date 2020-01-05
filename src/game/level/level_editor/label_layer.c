@@ -43,7 +43,7 @@ struct LabelLayer {
     int selection;
     ColorPicker color_picker;
     Vec2f move_anchor;
-    Edit_field *edit_field;
+    Edit_field edit_field;
     Vec2f inter_position;
     Color inter_color;
     int id_name_counter;
@@ -186,13 +186,8 @@ LabelLayer *create_label_layer(const char *id_name_prefix)
     label_layer->color_picker = create_color_picker_from_rgba(COLOR_RED);
     label_layer->selection = -1;
 
-    label_layer->edit_field = PUSH_LT(
-        lt,
-        create_edit_field(LABELS_SIZE, COLOR_RED),
-        destroy_edit_field);
-    if (label_layer->edit_field == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    label_layer->edit_field.font_size = LABELS_SIZE;
+    label_layer->edit_field.font_color = COLOR_RED;
 
     label_layer->id_name_prefix = id_name_prefix;
 
@@ -313,7 +308,7 @@ int label_layer_render(const LabelLayer *label_layer,
         // Label Text
         if (label_layer->state == LABEL_LAYER_EDIT_TEXT && label_layer->selection == (int) i) {
             if (edit_field_render_world(
-                    label_layer->edit_field,
+                    &label_layer->edit_field,
                     camera,
                     position) < 0) {
                 return -1;
@@ -334,7 +329,7 @@ int label_layer_render(const LabelLayer *label_layer,
         // Label ID
         if (label_layer->state == LABEL_LAYER_EDIT_ID && label_layer->selection == (int)i) {
             if (edit_field_render_world(
-                    label_layer->edit_field,
+                    &label_layer->edit_field,
                     camera,
                     vec_sum(
                         position,
@@ -541,10 +536,10 @@ int label_layer_idle_event(LabelLayer *label_layer,
                     undo_history);
                 label_layer->state = LABEL_LAYER_EDIT_TEXT;
                 edit_field_replace(
-                    label_layer->edit_field,
+                    &label_layer->edit_field,
                     texts + label_layer->selection * LABEL_LAYER_TEXT_MAX_SIZE);
                 edit_field_restyle(
-                    label_layer->edit_field,
+                    &label_layer->edit_field,
                     LABELS_SIZE,
                     colors[label_layer->selection]);
                 SDL_StartTextInput();
@@ -585,10 +580,10 @@ int label_layer_idle_event(LabelLayer *label_layer,
             if (label_layer->selection >= 0) {
                 label_layer->state = LABEL_LAYER_EDIT_TEXT;
                 edit_field_replace(
-                    label_layer->edit_field,
+                    &label_layer->edit_field,
                     texts + label_layer->selection * LABEL_LAYER_TEXT_MAX_SIZE);
                 edit_field_restyle(
-                    label_layer->edit_field,
+                    &label_layer->edit_field,
                     LABELS_SIZE,
                     colors[label_layer->selection]);
                 SDL_StartTextInput();
@@ -599,10 +594,10 @@ int label_layer_idle_event(LabelLayer *label_layer,
             if (label_layer->selection >= 0) {
                 label_layer->state = LABEL_LAYER_EDIT_ID;
                 edit_field_replace(
-                    label_layer->edit_field,
+                    &label_layer->edit_field,
                     ids + label_layer->selection * LABEL_LAYER_ID_MAX_SIZE);
                 edit_field_restyle(
-                    label_layer->edit_field,
+                    &label_layer->edit_field,
                     vec(1.0f, 1.0f),
                     color_invert(colors[label_layer->selection]));
                 SDL_StartTextInput();
@@ -765,7 +760,7 @@ int label_layer_edit_text_event(LabelLayer *label_layer,
             char *text =
                 (char*)label_layer->texts.data + label_layer->selection * LABEL_LAYER_TEXT_MAX_SIZE;
             memset(text, 0, LABEL_LAYER_TEXT_MAX_SIZE);
-            memcpy(text, edit_field_as_text(label_layer->edit_field), LABEL_LAYER_TEXT_MAX_SIZE - 1);
+            memcpy(text, edit_field_as_text(&label_layer->edit_field), LABEL_LAYER_TEXT_MAX_SIZE - 1);
             label_layer->state = LABEL_LAYER_IDLE;
             SDL_StopTextInput();
             return 0;
@@ -780,7 +775,7 @@ int label_layer_edit_text_event(LabelLayer *label_layer,
     } break;
     }
 
-    return edit_field_event(label_layer->edit_field, event);
+    return edit_field_event(&label_layer->edit_field, event);
 }
 
 static
@@ -804,7 +799,7 @@ int label_layer_edit_id_event(LabelLayer *label_layer,
             char *id =
                 (char*)label_layer->ids.data + label_layer->selection * LABEL_LAYER_ID_MAX_SIZE;
             memset(id, 0, LABEL_LAYER_ID_MAX_SIZE);
-            memcpy(id, edit_field_as_text(label_layer->edit_field), LABEL_LAYER_ID_MAX_SIZE - 1);
+            memcpy(id, edit_field_as_text(&label_layer->edit_field), LABEL_LAYER_ID_MAX_SIZE - 1);
             label_layer->state = LABEL_LAYER_IDLE;
             SDL_StopTextInput();
             return 0;
@@ -819,7 +814,7 @@ int label_layer_edit_id_event(LabelLayer *label_layer,
     } break;
     }
 
-    return edit_field_event(label_layer->edit_field, event);
+    return edit_field_event(&label_layer->edit_field, event);
 }
 
 static
