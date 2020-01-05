@@ -4,7 +4,6 @@
 #include "game/level/level_editor/layer.h"
 #include "game/level/level_editor/layer_picker.h"
 #include "game/level/level_editor/undo_history.h"
-#include "game/level/level_editor/action_picker.h"
 #include "ui/wiggly_text.h"
 #include "ui/cursor.h"
 

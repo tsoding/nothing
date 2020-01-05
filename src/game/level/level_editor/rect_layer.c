@@ -15,7 +15,6 @@
 #include "ui/edit_field.h"
 #include "undo_history.h"
 #include "game/level/action.h"
-#include "action_picker.h"
 #include "game.h"
 #include "math/extrema.h"
 
@@ -63,7 +62,6 @@ struct RectLayer {
     Dynarray colors;
     Dynarray actions;
     ColorPicker color_picker;
-    ActionPicker action_picker;
     Vec2f create_begin;
     Vec2f create_end;
     int selection;
@@ -74,7 +72,6 @@ struct RectLayer {
     Rect inter_rect;
     int id_name_counter;
     const char *id_name_prefix;
-    Grid *grid;
     Cursor *cursor;
 
     int snapping_enabled;
@@ -857,20 +854,6 @@ RectLayer *create_rect_layer(const char *id_name_prefix, Cursor *cursor)
     layer->id_edit_field.font_size = RECT_LAYER_ID_LABEL_SIZE;
     layer->id_edit_field.font_color = COLOR_BLACK;
 
-    layer->grid =
-        PUSH_LT(
-            lt,
-            nth_calloc(
-                1,
-                sizeof(Grid) + sizeof(Widget*) * RECT_LAYER_GRID_ROWS * RECT_LAYER_GRID_COLUMNS),
-            free);
-    if (layer->grid == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    layer->grid->rows = RECT_LAYER_GRID_ROWS;
-    layer->grid->columns = RECT_LAYER_GRID_COLUMNS;
-    grid_put_widget(layer->grid, &layer->action_picker.widget, 0, RECT_LAYER_GRID_COLUMNS - 1);
-
     layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
     layer->selection = -1;
     layer->id_name_prefix = id_name_prefix;
@@ -1101,18 +1084,6 @@ int rect_layer_event(RectLayer *layer,
     trace_assert(layer);
     trace_assert(event);
     trace_assert(undo_history);
-
-    switch (event->type) {
-    case SDL_WINDOWEVENT: {
-        switch (event->window.event) {
-        case SDL_WINDOWEVENT_SIZE_CHANGED: {
-            grid_relayout(layer->grid, rect(0.0f, 0.0f,
-                                            (float) event->window.data1,
-                                            (float) event->window.data2));
-        } break;
-        }
-    } break;
-    }
 
     switch (layer->state) {
     case RECT_LAYER_IDLE:

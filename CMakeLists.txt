@@ -121,8 +121,6 @@ add_executable(nothing
   src/ui/wiggly_text.c
   src/ui/slider.h
   src/ui/slider.c
-  src/ui/grid.h
-  src/ui/grid.c
   src/game/level/level_editor.h
   src/game/level/level_editor.c
   src/game/level/level_editor/color_picker.h
@@ -143,8 +141,6 @@ add_executable(nothing
   src/game/level/level_editor/background_layer.c
   src/game/level/level_editor/undo_history.h
   src/game/level/level_editor/undo_history.c
-  src/game/level/level_editor/action_picker.h
-  src/game/level/level_editor/action_picker.c
   src/system/log.h
   src/system/log.c
   src/system/lt.h

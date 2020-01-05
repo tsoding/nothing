@@ -3,7 +3,6 @@
 #include "game/camera.h"
 #include "game/sound_samples.h"
 #include "game/level/boxes.h"
-#include "game/level/level_editor/action_picker.h"
 #include "game/level/level_editor/color_picker.h"
 #include "game/level/level_editor/rect_layer.h"
 #include "game/level/level_editor/point_layer.h"
