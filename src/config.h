@@ -33,4 +33,6 @@
 
 #define UNDO_HISTORY_CAPACITY 256
 
+#define EDIT_FIELD_CAPACITY 256
+
 #endif  // CONFIG_H_

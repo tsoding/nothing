@@ -48,15 +48,8 @@ LevelEditor *create_level_editor(Cursor *cursor)
     }
     level_editor->lt = lt;
 
-    level_editor->edit_field_filename = PUSH_LT(
-        lt,
-        create_edit_field(
-            LEVEL_EDITOR_EDIT_FIELD_SIZE,
-            LEVEL_EDITOR_EDIT_FIELD_COLOR),
-        destroy_edit_field);
-    if (level_editor->edit_field_filename == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    level_editor->edit_field_filename.font_size = LEVEL_EDITOR_EDIT_FIELD_SIZE;
+    level_editor->edit_field_filename.font_color = LEVEL_EDITOR_EDIT_FIELD_COLOR;
 
     level_editor->background_layer = create_background_layer(hexstr("fffda5"));
 
@@ -159,15 +152,8 @@ LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor
     }
     level_editor->lt = lt;
 
-    level_editor->edit_field_filename = PUSH_LT(
-        lt,
-        create_edit_field(
-            LEVEL_EDITOR_EDIT_FIELD_SIZE,
-            LEVEL_EDITOR_EDIT_FIELD_COLOR),
-        destroy_edit_field);
-    if (level_editor->edit_field_filename == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    level_editor->edit_field_filename.font_size = LEVEL_EDITOR_EDIT_FIELD_SIZE;
+    level_editor->edit_field_filename.font_color = LEVEL_EDITOR_EDIT_FIELD_COLOR;
 
     level_editor->file_name =
         PUSH_LT(
@@ -297,7 +283,7 @@ int level_editor_render(const LevelEditor *level_editor,
             position);
 
         if (edit_field_render_screen(
-                level_editor->edit_field_filename,
+                &level_editor->edit_field_filename,
                 camera,
                 vec(position.x + save_as_width, position.y)) < 0) {
             return -1;
@@ -333,7 +319,7 @@ int level_editor_saveas_event(LevelEditor *level_editor,
                 path,
                 LEVEL_FOLDER_MAX_LENGTH,
                 "./assets/levels/%s.txt",
-                edit_field_as_text(level_editor->edit_field_filename));
+                edit_field_as_text(&level_editor->edit_field_filename));
             level_editor->file_name = PUSH_LT(
                 level_editor->lt,
                 string_duplicate(path, NULL),
@@ -346,7 +332,7 @@ int level_editor_saveas_event(LevelEditor *level_editor,
     } break;
     }
 
-    return edit_field_event(level_editor->edit_field_filename, event);
+    return edit_field_event(&level_editor->edit_field_filename, event);
 }
 
 static

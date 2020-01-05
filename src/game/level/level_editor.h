@@ -12,7 +12,6 @@ typedef struct LevelEditor LevelEditor;
 typedef struct RectLayer RectLayer;
 typedef struct PointLayer PointLayer;
 typedef struct LabelLayer LabelLayer;
-typedef struct Edit_field Edit_field;
 typedef struct Sound_samples Sound_samples;
 
 typedef enum {
@@ -26,7 +25,7 @@ struct LevelEditor
     LevelEditorState state;
     Vec2f camera_position;
     float camera_scale;
-    Edit_field *edit_field_filename;
+    Edit_field edit_field_filename;
     LayerPicker layer_picker;
     FadingWigglyText notice;
 

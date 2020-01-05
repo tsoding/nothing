@@ -69,7 +69,7 @@ struct RectLayer {
     int selection;
     Vec2f move_anchor;          // The mouse offset from the left-top
                                 // corner of the rect during moving it
-    Edit_field *id_edit_field;
+    Edit_field id_edit_field;
     Color inter_color;
     Rect inter_rect;
     int id_name_counter;
@@ -449,13 +449,13 @@ static int rect_layer_event_idle(RectLayer *layer,
                 Color *colors = (Color*)layer->colors.data;
 
                 edit_field_restyle(
-                    layer->id_edit_field,
+                    &layer->id_edit_field,
                     RECT_LAYER_ID_LABEL_SIZE,
                     color_invert(colors[layer->selection]));
 
                 layer->state = RECT_LAYER_ID_RENAME;
                 edit_field_replace(
-                    layer->id_edit_field,
+                    &layer->id_edit_field,
                     ids + layer->selection * ENTITY_MAX_ID_SIZE);
                 SDL_StartTextInput();
             }
@@ -812,7 +812,7 @@ static int rect_layer_event_id_rename(RectLayer *layer,
 
             char *id = dynarray_pointer_at(&layer->ids, (size_t)layer->selection);
             memset(id, 0, ENTITY_MAX_ID_SIZE);
-            memcpy(id, edit_field_as_text(layer->id_edit_field), ENTITY_MAX_ID_SIZE - 1);
+            memcpy(id, edit_field_as_text(&layer->id_edit_field), ENTITY_MAX_ID_SIZE - 1);
             layer->state = RECT_LAYER_IDLE;
             SDL_StopTextInput();
         } break;
@@ -825,7 +825,7 @@ static int rect_layer_event_id_rename(RectLayer *layer,
     } break;
     }
 
-    return edit_field_event(layer->id_edit_field, event);
+    return edit_field_event(&layer->id_edit_field, event);
 }
 
 LayerPtr rect_layer_as_layer(RectLayer *rect_layer)
@@ -854,15 +854,8 @@ RectLayer *create_rect_layer(const char *id_name_prefix, Cursor *cursor)
     layer->colors = create_dynarray(sizeof(Color));
     layer->actions = create_dynarray(sizeof(Action));
 
-    layer->id_edit_field = PUSH_LT(
-        lt,
-        create_edit_field(
-            RECT_LAYER_ID_LABEL_SIZE,
-            COLOR_BLACK),
-        destroy_edit_field);
-    if (layer->id_edit_field == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    layer->id_edit_field.font_size = RECT_LAYER_ID_LABEL_SIZE;
+    layer->id_edit_field.font_color = COLOR_BLACK;
 
     layer->grid =
         PUSH_LT(
@@ -1037,7 +1030,7 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
         if (layer->state == RECT_LAYER_ID_RENAME) {
             // ID renaming Edit Field
             if (edit_field_render_world(
-                    layer->id_edit_field,
+                    &layer->id_edit_field,
                     camera,
                     rect_id_pos) < 0) {
                 return -1;
