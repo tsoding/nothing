@@ -160,6 +160,8 @@ add_executable(nothing
   src/dynarray.c
   src/system/file.h
   src/system/file.c
+  src/ring_buffer.h
+  src/ring_buffer.c
 )
 target_link_libraries(nothing ${SDL2_LIBRARIES})
 
