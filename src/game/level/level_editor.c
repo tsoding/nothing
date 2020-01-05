@@ -175,7 +175,13 @@ void destroy_level_editor(LevelEditor *level_editor)
 {
     trace_assert(level_editor);
     destroy_undo_history(level_editor->undo_history);
-    RETURN_LT0(level_editor->lt);
+    destroy_rect_layer(level_editor->boxes_layer);
+    destroy_rect_layer(level_editor->platforms_layer);
+    destroy_rect_layer(level_editor->back_platforms_layer);
+    destroy_point_layer(level_editor->goals_layer);
+    destroy_rect_layer(level_editor->lava_layer);
+    destroy_rect_layer(level_editor->regions_layer);
+    destroy_label_layer(level_editor->label_layer);
 }
 
 int level_editor_render(const LevelEditor *level_editor,
