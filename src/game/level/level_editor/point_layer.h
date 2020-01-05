@@ -7,16 +7,46 @@
 
 #define ID_MAX_SIZE 36
 
-typedef struct PointLayer PointLayer;
+typedef enum {
+    POINT_LAYER_IDLE = 0,
+    POINT_LAYER_EDIT_ID,
+    POINT_LAYER_MOVE,
+    POINT_LAYER_RECOLOR
+} PointLayerState;
+
+typedef struct {
+    PointLayerState state;
+    Dynarray/*<Vec2f>*/ positions;
+    Dynarray/*<Color>*/ colors;
+    Dynarray/*<char[ID_MAX_SIZE]>*/ ids;
+    int selection;
+    ColorPicker color_picker;
+
+    Vec2f inter_position;
+    Color inter_color;
+    Edit_field edit_field;
+
+    int id_name_counter;
+    const char *id_name_prefix;
+} PointLayer;
+
 
 LayerPtr point_layer_as_layer(PointLayer *point_layer);
 // NOTE: create_point_layer and create_point_layer_from_line_stream do
 // not own id_name_prefix
-PointLayer *create_point_layer(const char *id_name_prefix);
-PointLayer *chop_point_layer(Memory *memory,
+PointLayer create_point_layer(const char *id_name_prefix);
+PointLayer chop_point_layer(Memory *memory,
                              String *input,
                              const char *id_name_prefix);
-void destroy_point_layer(PointLayer *point_layer);
+
+static inline
+void destroy_point_layer(PointLayer point_layer)
+{
+    free(point_layer.positions.data);
+    free(point_layer.colors.data);
+    free(point_layer.ids.data);
+}
+
 
 int point_layer_render(const PointLayer *point_layer,
                        const Camera *camera,

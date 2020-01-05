@@ -94,7 +94,7 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor)
 
     level->goals = PUSH_LT(
         lt,
-        create_goals_from_point_layer(level_editor->goals_layer),
+        create_goals_from_point_layer(&level_editor->goals_layer),
         destroy_goals);
     if (level->goals == NULL) {
         RETURN_LT(lt, NULL);
