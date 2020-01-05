@@ -55,13 +55,7 @@ LevelEditor *create_level_editor(Cursor *cursor)
     level_editor->player_layer =
         create_player_layer(vec(0.0f, 0.0f), hexstr("ff8080"));
 
-    level_editor->platforms_layer = PUSH_LT(
-        lt,
-        create_rect_layer("platform", cursor),
-        destroy_rect_layer);
-    if (level_editor->platforms_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    level_editor->platforms_layer = create_rect_layer("platform", cursor);
 
     level_editor->goals_layer = PUSH_LT(
         lt,
@@ -71,29 +65,9 @@ LevelEditor *create_level_editor(Cursor *cursor)
         RETURN_LT(lt, NULL);
     }
 
-    level_editor->lava_layer = PUSH_LT(
-        lt,
-        create_rect_layer("lava", cursor),
-        destroy_rect_layer);
-    if (level_editor->lava_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level_editor->back_platforms_layer = PUSH_LT(
-        lt,
-        create_rect_layer("back_platform", cursor),
-        destroy_rect_layer);
-    if (level_editor->back_platforms_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-
-    level_editor->boxes_layer = PUSH_LT(
-        lt,
-        create_rect_layer("box", cursor),
-        destroy_rect_layer);
-    if (level_editor->boxes_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    level_editor->lava_layer = create_rect_layer("lava", cursor);
+    level_editor->back_platforms_layer = create_rect_layer("back_platform", cursor);
+    level_editor->boxes_layer = create_rect_layer("box", cursor);
 
     level_editor->label_layer = PUSH_LT(
         lt,
@@ -103,21 +77,15 @@ LevelEditor *create_level_editor(Cursor *cursor)
         RETURN_LT(lt, NULL);
     }
 
-    level_editor->regions_layer = PUSH_LT(
-        lt,
-        create_rect_layer("region", cursor),
-        destroy_rect_layer);
-    if (level_editor->regions_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    level_editor->regions_layer = create_rect_layer("region", cursor),
 
-    level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(level_editor->boxes_layer);
-    level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
-    level_editor->layers[LAYER_PICKER_BACK_PLATFORMS] = rect_layer_as_layer(level_editor->back_platforms_layer);
+    level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(&level_editor->boxes_layer);
+    level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(&level_editor->platforms_layer);
+    level_editor->layers[LAYER_PICKER_BACK_PLATFORMS] = rect_layer_as_layer(&level_editor->back_platforms_layer);
     level_editor->layers[LAYER_PICKER_GOALS] = point_layer_as_layer(level_editor->goals_layer);
     level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(&level_editor->player_layer);
-    level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(level_editor->lava_layer);
-    level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(level_editor->regions_layer);
+    level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(&level_editor->lava_layer);
+    level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(&level_editor->regions_layer);
     level_editor->layers[LAYER_PICKER_BACKGROUND] = background_layer_as_layer(&level_editor->background_layer);
     level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
 
@@ -192,13 +160,13 @@ LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor
     level_editor->label_layer = chop_label_layer(&tmpmem, &input, "label");
     level_editor->regions_layer = chop_rect_layer(&tmpmem, &input, "region", cursor),
 
-    level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(level_editor->boxes_layer);
-    level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
-    level_editor->layers[LAYER_PICKER_BACK_PLATFORMS] = rect_layer_as_layer(level_editor->back_platforms_layer);
+    level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(&level_editor->boxes_layer);
+    level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(&level_editor->platforms_layer);
+    level_editor->layers[LAYER_PICKER_BACK_PLATFORMS] = rect_layer_as_layer(&level_editor->back_platforms_layer);
     level_editor->layers[LAYER_PICKER_GOALS] = point_layer_as_layer(level_editor->goals_layer);
     level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(&level_editor->player_layer);
-    level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(level_editor->lava_layer);
-    level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(level_editor->regions_layer);
+    level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(&level_editor->lava_layer);
+    level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(&level_editor->regions_layer);
     level_editor->layers[LAYER_PICKER_BACKGROUND] = background_layer_as_layer(&level_editor->background_layer);
     level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
 

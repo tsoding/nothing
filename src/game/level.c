@@ -86,7 +86,7 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor)
 
     level->platforms = PUSH_LT(
         lt,
-        create_platforms_from_rect_layer(level_editor->platforms_layer),
+        create_platforms_from_rect_layer(&level_editor->platforms_layer),
         destroy_platforms);
     if (level->platforms == NULL) {
         RETURN_LT(lt, NULL);
@@ -102,7 +102,7 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor)
 
     level->lava = PUSH_LT(
         lt,
-        create_lava_from_rect_layer(level_editor->lava_layer),
+        create_lava_from_rect_layer(&level_editor->lava_layer),
         destroy_lava);
     if (level->lava == NULL) {
         RETURN_LT(lt, NULL);
@@ -110,7 +110,7 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor)
 
     level->back_platforms = PUSH_LT(
         lt,
-        create_platforms_from_rect_layer(level_editor->back_platforms_layer),
+        create_platforms_from_rect_layer(&level_editor->back_platforms_layer),
         destroy_platforms);
     if (level->back_platforms == NULL) {
         RETURN_LT(lt, NULL);
@@ -118,7 +118,7 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor)
 
     level->boxes = PUSH_LT(
         lt,
-        create_boxes_from_rect_layer(level_editor->boxes_layer, level->rigid_bodies),
+        create_boxes_from_rect_layer(&level_editor->boxes_layer, level->rigid_bodies),
         destroy_boxes);
     if (level->boxes == NULL) {
         RETURN_LT(lt, NULL);
@@ -135,7 +135,7 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor)
     level->regions = PUSH_LT(
         lt,
         create_regions_from_rect_layer(
-            level_editor->regions_layer,
+            &level_editor->regions_layer,
             level->labels,
             level->goals),
         destroy_regions);

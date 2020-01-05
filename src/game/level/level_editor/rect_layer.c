@@ -45,39 +45,6 @@ static Cursor_Style resize_styles[1 << RECT_SIDE_N] = {
 };
 
 typedef enum {
-    RECT_LAYER_IDLE = 0,
-    RECT_LAYER_CREATE,
-    RECT_LAYER_RESIZE,
-    RECT_LAYER_MOVE,
-    RECT_LAYER_ID_RENAME,
-    RECT_LAYER_RECOLOR
-} RectLayerState;
-
-struct RectLayer {
-    Lt *lt;
-    RectLayerState state;
-    int resize_mask;
-    Dynarray ids;
-    Dynarray rects;
-    Dynarray colors;
-    Dynarray actions;
-    ColorPicker color_picker;
-    Vec2f create_begin;
-    Vec2f create_end;
-    int selection;
-    Vec2f move_anchor;          // The mouse offset from the left-top
-                                // corner of the rect during moving it
-    Edit_field id_edit_field;
-    Color inter_color;
-    Rect inter_rect;
-    int id_name_counter;
-    const char *id_name_prefix;
-    Cursor *cursor;
-
-    int snapping_enabled;
-};
-
-typedef enum {
     RECT_UNDO_ADD,
     RECT_UNDO_DELETE,
     RECT_UNDO_UPDATE,
@@ -834,44 +801,35 @@ LayerPtr rect_layer_as_layer(RectLayer *rect_layer)
     return layer;
 }
 
-RectLayer *create_rect_layer(const char *id_name_prefix, Cursor *cursor)
+RectLayer create_rect_layer(const char *id_name_prefix, Cursor *cursor)
 {
     trace_assert(cursor);
 
-    Lt *lt = create_lt();
+    RectLayer result = {0};
 
-    RectLayer *layer = PUSH_LT(lt, nth_calloc(1, sizeof(RectLayer)), free);
-    if (layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    layer->lt = lt;
+    result.ids = create_dynarray(sizeof(char) * ENTITY_MAX_ID_SIZE);
+    result.rects = create_dynarray(sizeof(Rect));
+    result.colors = create_dynarray(sizeof(Color));
+    result.actions = create_dynarray(sizeof(Action));
+    result.id_edit_field.font_size = RECT_LAYER_ID_LABEL_SIZE;
+    result.id_edit_field.font_color = COLOR_BLACK;
+    result.color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
+    result.selection = -1;
+    result.id_name_prefix = id_name_prefix;
+    result.cursor = cursor;
 
-    layer->ids = create_dynarray(sizeof(char) * ENTITY_MAX_ID_SIZE);
-    layer->rects = create_dynarray(sizeof(Rect));
-    layer->colors = create_dynarray(sizeof(Color));
-    layer->actions = create_dynarray(sizeof(Action));
-
-    layer->id_edit_field.font_size = RECT_LAYER_ID_LABEL_SIZE;
-    layer->id_edit_field.font_color = COLOR_BLACK;
-
-    layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
-    layer->selection = -1;
-    layer->id_name_prefix = id_name_prefix;
-    layer->cursor = cursor;
-
-    return layer;
+    return result;
 }
 
-RectLayer *chop_rect_layer(Memory *memory,
-                           String *input,
-                           const char *id_name_prefix,
-                           Cursor *cursor)
+RectLayer chop_rect_layer(Memory *memory,
+                          String *input,
+                          const char *id_name_prefix,
+                          Cursor *cursor)
 {
     trace_assert(memory);
     trace_assert(input);
 
-    RectLayer *layer = create_rect_layer(id_name_prefix, cursor);
-    trace_assert(layer);
+    RectLayer layer = create_rect_layer(id_name_prefix, cursor);
 
     int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
     char id[ENTITY_MAX_ID_SIZE];
@@ -891,9 +849,9 @@ RectLayer *chop_rect_layer(Memory *memory,
             string_id.data,
             min_size_t(ENTITY_MAX_ID_SIZE - 1, string_id.count));
 
-        dynarray_push(&layer->rects, &rect);
-        dynarray_push(&layer->colors, &color);
-        dynarray_push(&layer->ids, id);
+        dynarray_push(&layer.rects, &rect);
+        dynarray_push(&layer.colors, &color);
+        dynarray_push(&layer.ids, id);
 
         Action action = {
             .type = ACTION_NONE,
@@ -921,22 +879,10 @@ RectLayer *chop_rect_layer(Memory *memory,
             }
         }
 
-        dynarray_push(&layer->actions, &action);
+        dynarray_push(&layer.actions, &action);
     }
 
     return layer;
-}
-
-void destroy_rect_layer(RectLayer *layer)
-{
-    trace_assert(layer);
-
-    free(layer->ids.data);
-    free(layer->rects.data);
-    free(layer->colors.data);
-    free(layer->actions.data);
-
-    RETURN_LT0(layer->lt);
 }
 
 int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
