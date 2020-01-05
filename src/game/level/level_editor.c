@@ -73,7 +73,7 @@ LevelEditor *create_level_editor(Cursor *cursor)
     level_editor->notice = (FadingWigglyText) {
         .wiggly_text = {
             .text = "Level saved",
-            .color = rgba(0.0f, 0.0f, 0.0f, 0.0f),
+            .color = COLOR_BLACK,
             .scale = LEVEL_EDITOR_NOTICE_SCALE
         },
         .duration = LEVEL_EDITOR_NOTICE_DURATION,
@@ -156,7 +156,7 @@ LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor
     level_editor->notice = (FadingWigglyText) {
         .wiggly_text = {
             .text = "Level saved",
-            .color = rgba(0.0f, 0.0f, 0.0f, 0.0f),
+            .color = COLOR_BLACK,
             .scale = LEVEL_EDITOR_NOTICE_SCALE
         },
         .duration = LEVEL_EDITOR_NOTICE_DURATION,
