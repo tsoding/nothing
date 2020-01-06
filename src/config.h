@@ -35,4 +35,6 @@
 
 #define EDIT_FIELD_CAPACITY 256
 
+#define TMPMEM_CAPACITY (640 * KILO)
+
 #endif  // CONFIG_H_

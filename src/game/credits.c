@@ -11,43 +11,17 @@
 
 #define TITLE_MARGIN_TOP 100.0f
 
-struct Credits
+Credits create_credits(void)
 {
-    Lt *lt;
-    Background background;
-    Vec2f camera_position;
-    WigglyText wiggly_text;
-};
-
-Credits *create_credits(void)
-{
-	Lt *lt = create_lt();
-	Credits *credits = PUSH_LT(
-        lt,
-        nth_calloc(1, sizeof(Credits)),
-        free);
-    if (credits == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    credits->lt = lt;
-
-    credits->background = create_background(hexstr("250741"));
-
-    credits->camera_position = vec(0.0f, 0.0f);
-
-    credits->wiggly_text = (WigglyText) {
+    Credits result;
+    result.background = create_background(hexstr("250741"));
+    result.camera_position = vec(0.0f, 0.0f);
+    result.wiggly_text = (WigglyText) {
         .text = "Twitch Subs/Contributors",
         .scale = {8.0f, 8.0f},
         .color = COLOR_WHITE,
     };
-
-    return credits;
-}
-
-void destroy_credits(Credits *credits)
-{
-    trace_assert(credits);
-    RETURN_LT0(credits->lt);
+    return result;
 }
 
 int credits_render(const Credits *credits, const Camera *camera)

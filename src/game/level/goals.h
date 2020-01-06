@@ -6,10 +6,10 @@
 #include "game/camera.h"
 #include "game/level/player.h"
 #include "game/sound_samples.h"
+#include "game/level/level_editor/point_layer.h"
 #include "config.h"
 
 typedef struct Goals Goals;
-typedef struct PointLayer PointLayer;
 
 Goals *create_goals_from_point_layer(const PointLayer *point_layer);
 void destroy_goals(Goals *goals);

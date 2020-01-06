@@ -5,12 +5,12 @@
 #include "game/level/level_editor/layer_picker.h"
 #include "game/level/level_editor/undo_history.h"
 #include "game/level/level_editor/rect_layer.h"
+#include "game/level/level_editor/point_layer.h"
+#include "game/level/level_editor/label_layer.h"
 #include "ui/wiggly_text.h"
 #include "ui/cursor.h"
 
 typedef struct LevelEditor LevelEditor;
-typedef struct PointLayer PointLayer;
-typedef struct LabelLayer LabelLayer;
 typedef struct Sound_samples Sound_samples;
 
 typedef enum {
@@ -20,7 +20,6 @@ typedef enum {
 
 struct LevelEditor
 {
-    Lt *lt;
     LevelEditorState state;
     Vec2f camera_position;
     float camera_scale;
@@ -31,12 +30,12 @@ struct LevelEditor
     RectLayer boxes_layer;
     RectLayer platforms_layer;
     RectLayer back_platforms_layer;
-    PointLayer *goals_layer;
+    PointLayer goals_layer;
     PlayerLayer player_layer;
     RectLayer lava_layer;
     RectLayer regions_layer;
     BackgroundLayer background_layer;
-    LabelLayer *label_layer;
+    LabelLayer label_layer;
 
     LayerPtr layers[LAYER_PICKER_N];
 
@@ -47,11 +46,12 @@ struct LevelEditor
     int click;
     int save;
 
-    const char *file_name;
+    char *file_name;
 };
 
-LevelEditor *create_level_editor(Cursor *cursor);
-LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor);
+void create_level_editor(LevelEditor *level_editor, Cursor *cursor);
+void level_editor_load_from_file(LevelEditor *level_editor, Memory *tmpmem, const char *file_name);
+void level_editor_clean(LevelEditor *level_editor);
 void destroy_level_editor(LevelEditor *level_editor);
 
 int level_editor_render(const LevelEditor *level_editor,

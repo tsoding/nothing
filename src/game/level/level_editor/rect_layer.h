@@ -47,10 +47,8 @@ LayerPtr rect_layer_as_layer(RectLayer *layer);
 // not own id_name_prefix
 RectLayer create_rect_layer(const char *id_name_prefix,
                             Cursor *cursor);
-RectLayer chop_rect_layer(Memory *memory,
-                          String *input,
-                          const char *id_name_prefix,
-                          Cursor *cursor);
+void rect_layer_reload(RectLayer *rect_layer, Memory *memory, String *input);
+void rect_layer_clean(RectLayer *rect_layer);
 
 static inline
 void destroy_rect_layer(RectLayer layer)

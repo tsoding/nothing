@@ -2,7 +2,6 @@
 #include <errno.h>
 
 #include "game/camera.h"
-#include "system/lt.h"
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
 #include "system/log.h"
@@ -817,15 +816,13 @@ RectLayer create_rect_layer(const char *id_name_prefix, Cursor *cursor)
     return result;
 }
 
-RectLayer chop_rect_layer(Memory *memory,
-                          String *input,
-                          const char *id_name_prefix,
-                          Cursor *cursor)
+void rect_layer_reload(RectLayer *layer, Memory *memory, String *input)
 {
+    trace_assert(layer);
     trace_assert(memory);
     trace_assert(input);
 
-    RectLayer layer = create_rect_layer(id_name_prefix, cursor);
+    rect_layer_clean(layer);
 
     int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
     char id[ENTITY_MAX_ID_SIZE];
@@ -845,9 +842,9 @@ RectLayer chop_rect_layer(Memory *memory,
             string_id.data,
             min_size_t(ENTITY_MAX_ID_SIZE - 1, string_id.count));
 
-        dynarray_push(&layer.rects, &rect);
-        dynarray_push(&layer.colors, &color);
-        dynarray_push(&layer.ids, id);
+        dynarray_push(&layer->rects, &rect);
+        dynarray_push(&layer->colors, &color);
+        dynarray_push(&layer->ids, id);
 
         Action action = {
             .type = ACTION_NONE,
@@ -875,10 +872,17 @@ RectLayer chop_rect_layer(Memory *memory,
             }
         }
 
-        dynarray_push(&layer.actions, &action);
+        dynarray_push(&layer->actions, &action);
     }
+}
 
-    return layer;
+void rect_layer_clean(RectLayer *rect_layer)
+{
+    trace_assert(rect_layer);
+    dynarray_clear(&rect_layer->ids);
+    dynarray_clear(&rect_layer->rects);
+    dynarray_clear(&rect_layer->colors);
+    dynarray_clear(&rect_layer->actions);
 }
 
 int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)

@@ -4,9 +4,9 @@
 #include "math/vec.h"
 #include "color.h"
 #include "config.h"
+#include "game/level/level_editor/label_layer.h"
 
 typedef struct Labels Labels;
-typedef struct LabelLayer LabelLayer;
 
 Labels *create_labels_from_label_layer(const LabelLayer *label_layer);
 void destroy_labels(Labels *label);

@@ -5,7 +5,6 @@
 #include "dynarray.h"
 #include "game/camera.h"
 #include "system/log.h"
-#include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/stacktrace.h"
 #include "system/str.h"
@@ -24,31 +23,6 @@ static int point_clipboard = 0;
 static Color point_clipboard_color;
 
 // TODO(#1140): PointLayer does not support snapping
-
-typedef enum {
-    POINT_LAYER_IDLE = 0,
-    POINT_LAYER_EDIT_ID,
-    POINT_LAYER_MOVE,
-    POINT_LAYER_RECOLOR
-} PointLayerState;
-
-struct PointLayer
-{
-    Lt *lt;
-    PointLayerState state;
-    Dynarray/*<Vec2f>*/ positions;
-    Dynarray/*<Color>*/ colors;
-    Dynarray/*<char[ID_MAX_SIZE]>*/ ids;
-    int selection;
-    ColorPicker color_picker;
-
-    Vec2f inter_position;
-    Color inter_color;
-    Edit_field edit_field;
-
-    int id_name_counter;
-    const char *id_name_prefix;
-};
 
 typedef enum {
     POINT_UNDO_ADD,
@@ -165,39 +139,28 @@ LayerPtr point_layer_as_layer(PointLayer *point_layer)
     return layer;
 }
 
-PointLayer *create_point_layer(const char *id_name_prefix)
+PointLayer create_point_layer(const char *id_name_prefix)
 {
-    Lt *lt = create_lt();
-
-    PointLayer *point_layer = PUSH_LT(lt, nth_calloc(1, sizeof(PointLayer)), free);
-    if (point_layer == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    point_layer->lt = lt;
-
-    point_layer->state = POINT_LAYER_IDLE;
-
-    point_layer->positions = create_dynarray(sizeof(Vec2f));
-    point_layer->colors = create_dynarray(sizeof(Color));
-    point_layer->ids = create_dynarray(sizeof(char) * ID_MAX_SIZE);
-
-    point_layer->edit_field.font_size = POINT_LAYER_ID_TEXT_SIZE;
-    point_layer->edit_field.font_color = POINT_LAYER_ID_TEXT_COLOR;
-
-    point_layer->id_name_prefix = id_name_prefix;
-
-    return point_layer;
+    PointLayer result = {0};
+    result.state = POINT_LAYER_IDLE;
+    result.positions = create_dynarray(sizeof(Vec2f));
+    result.colors = create_dynarray(sizeof(Color));
+    result.ids = create_dynarray(sizeof(char) * ID_MAX_SIZE);
+    result.edit_field.font_size = POINT_LAYER_ID_TEXT_SIZE;
+    result.edit_field.font_color = POINT_LAYER_ID_TEXT_COLOR;
+    result.id_name_prefix = id_name_prefix;
+    return result;
 }
 
-PointLayer *chop_point_layer(Memory *memory,
-                             String *input,
-                             const char *id_name_prefix)
+void point_layer_reload(PointLayer *point_layer,
+                        Memory *memory,
+                        String *input)
 {
+    trace_assert(point_layer);
     trace_assert(memory);
     trace_assert(input);
-    trace_assert(id_name_prefix);
 
-    PointLayer *point_layer = create_point_layer(id_name_prefix);
+    point_layer_clean(point_layer);
 
     int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
     char id[ENTITY_MAX_ID_SIZE];
@@ -210,31 +173,20 @@ PointLayer *chop_point_layer(Memory *memory,
         Color color = hexs(trim(chop_word(&line)));
 
         memset(id, 0, ENTITY_MAX_ID_SIZE);
-        memcpy(
-            id,
-            string_id.data,
-            min_size_t(ENTITY_MAX_ID_SIZE - 1, string_id.count));
+        memcpy(id, string_id.data, min_size_t(ENTITY_MAX_ID_SIZE - 1, string_id.count));
 
         dynarray_push(&point_layer->positions, &point);
         dynarray_push(&point_layer->colors, &color);
         dynarray_push(&point_layer->ids, id);
     }
-
-    point_layer->selection = -1;
-    point_layer->color_picker = create_color_picker_from_rgba(COLOR_RED);
-
-    return point_layer;
 }
 
-void destroy_point_layer(PointLayer *point_layer)
+void point_layer_clean(PointLayer *point_layer)
 {
     trace_assert(point_layer);
-
-    free(point_layer->positions.data);
-    free(point_layer->colors.data);
-    free(point_layer->ids.data);
-
-    RETURN_LT0(point_layer->lt);
+    dynarray_clear(&point_layer->positions);
+    dynarray_clear(&point_layer->colors);
+    dynarray_clear(&point_layer->ids);
 }
 
 static inline

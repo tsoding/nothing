@@ -3,7 +3,6 @@
 
 #include "color_picker.h"
 #include "layer.h"
-#include "system/lt.h"
 #include "system/memory.h"
 #include "system/s.h"
 
