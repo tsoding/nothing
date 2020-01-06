@@ -4,6 +4,7 @@
 #include "math/vec.h"
 #include "color.h"
 #include "config.h"
+#include "game/level/level_editor/label_layer.h"
 
 typedef struct Labels Labels;
 

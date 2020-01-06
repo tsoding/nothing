@@ -4,6 +4,9 @@
 #include "math/vec.h"
 #include "color.h"
 #include "layer.h"
+#include "dynarray.h"
+#include "game/level/level_editor/color_picker.h"
+#include "ui/edit_field.h"
 
 #define ID_MAX_SIZE 36
 

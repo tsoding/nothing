@@ -4,6 +4,9 @@
 #include "layer.h"
 #include "color.h"
 #include "math/vec.h"
+#include "dynarray.h"
+#include "game/level/level_editor/color_picker.h"
+#include "ui/edit_field.h"
 
 #define LABELS_SIZE vec(2.0f, 2.0f)
 #define LABEL_LAYER_ID_MAX_SIZE 36

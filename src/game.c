@@ -27,7 +27,7 @@ typedef struct Game {
     Memory tmpmem;
     LevelPicker level_picker;
     LevelEditor level_editor;
-    Credits *credits;
+    Credits credits;
     Level *level;
     Settings settings;
     Sound_samples *sound_samples;
@@ -73,13 +73,7 @@ Game *create_game(const char *level_folder,
 
     level_picker_populate(&game->level_picker, level_folder);
 
-    game->credits = PUSH_LT(
-        lt,
-        create_credits(),
-        destroy_credits);
-    if (game->credits == NULL) {
-        RETURN_LT(lt, NULL);
-    }
+    game->credits = create_credits();
 
     game->sound_samples = PUSH_LT(
         lt,
@@ -163,7 +157,7 @@ int game_render(const Game *game)
     } break;
 
     case GAME_STATE_CREDITS: {
-        if (credits_render(game->credits, &game->camera) < 0) {
+        if (credits_render(&game->credits, &game->camera) < 0) {
             return -1;
         }
     } break;
@@ -263,7 +257,7 @@ int game_update(Game *game, float delta_time)
     } break;
 
     case GAME_STATE_CREDITS: {
-        if (credits_update(game->credits, &game->camera, delta_time) < 0) {
+        if (credits_update(&game->credits, &game->camera, delta_time) < 0) {
             return -1;
         }
     } break;

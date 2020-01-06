@@ -27,7 +27,6 @@
 #define LEVEL_EDITOR_NOTICE_SCALE vec(10.0f, 10.0f)
 #define LEVEL_EDITOR_NOTICE_DURATION 1.0f
 #define LEVEL_EDITOR_NOTICE_PADDING_TOP 100.0f
-#define LEVEL_EDITOR_TMPMEM_CAPACITY (640 * KILO)
 
 static int level_editor_dump(LevelEditor *level_editor);
 

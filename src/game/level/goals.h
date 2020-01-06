@@ -6,6 +6,7 @@
 #include "game/camera.h"
 #include "game/level/player.h"
 #include "game/sound_samples.h"
+#include "game/level/level_editor/point_layer.h"
 #include "config.h"
 
 typedef struct Goals Goals;
