@@ -5,7 +5,6 @@
 #include "dynarray.h"
 #include "game/camera.h"
 #include "system/log.h"
-#include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/stacktrace.h"
 #include "system/str.h"
@@ -153,15 +152,15 @@ PointLayer create_point_layer(const char *id_name_prefix)
     return result;
 }
 
-PointLayer chop_point_layer(Memory *memory,
-                            String *input,
-                            const char *id_name_prefix)
+void point_layer_reload(PointLayer *point_layer,
+                        Memory *memory,
+                        String *input)
 {
+    trace_assert(point_layer);
     trace_assert(memory);
     trace_assert(input);
-    trace_assert(id_name_prefix);
 
-    PointLayer result = create_point_layer(id_name_prefix);
+    point_layer_clean(point_layer);
 
     int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
     char id[ENTITY_MAX_ID_SIZE];
@@ -176,15 +175,18 @@ PointLayer chop_point_layer(Memory *memory,
         memset(id, 0, ENTITY_MAX_ID_SIZE);
         memcpy(id, string_id.data, min_size_t(ENTITY_MAX_ID_SIZE - 1, string_id.count));
 
-        dynarray_push(&result.positions, &point);
-        dynarray_push(&result.colors, &color);
-        dynarray_push(&result.ids, id);
+        dynarray_push(&point_layer->positions, &point);
+        dynarray_push(&point_layer->colors, &color);
+        dynarray_push(&point_layer->ids, id);
     }
+}
 
-    result.selection = -1;
-    result.color_picker = create_color_picker_from_rgba(COLOR_RED);
-
-    return result;
+void point_layer_clean(PointLayer *point_layer)
+{
+    trace_assert(point_layer);
+    dynarray_clear(&point_layer->positions);
+    dynarray_clear(&point_layer->colors);
+    dynarray_clear(&point_layer->ids);
 }
 
 static inline

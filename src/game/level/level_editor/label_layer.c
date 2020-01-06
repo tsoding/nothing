@@ -4,7 +4,6 @@
 
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
-#include "system/lt.h"
 #include "system/str.h"
 #include "system/log.h"
 #include "math/vec.h"
@@ -157,15 +156,15 @@ LabelLayer create_label_layer(const char *id_name_prefix)
     return result;
 }
 
-LabelLayer chop_label_layer(Memory *memory,
-                            String *input,
-                            const char *id_name_prefix)
+void label_layer_reload(LabelLayer *label_layer,
+                        Memory *memory,
+                        String *input)
 {
+    trace_assert(label_layer);
     trace_assert(memory);
     trace_assert(input);
-    trace_assert(id_name_prefix);
 
-    LabelLayer result = create_label_layer(id_name_prefix);
+    label_layer_clean(label_layer);
 
     int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
     char id[LABEL_LAYER_ID_MAX_SIZE];
@@ -194,13 +193,20 @@ LabelLayer chop_label_layer(Memory *memory,
             min_size_t(LABEL_LAYER_TEXT_MAX_SIZE - 1,
                        label_text_string.count));
 
-        dynarray_push(&result.ids, id);
-        dynarray_push(&result.positions, &position);
-        dynarray_push(&result.colors, &color);
-        dynarray_push(&result.texts, label_text);
+        dynarray_push(&label_layer->ids, id);
+        dynarray_push(&label_layer->positions, &position);
+        dynarray_push(&label_layer->colors, &color);
+        dynarray_push(&label_layer->texts, label_text);
     }
+}
 
-    return result;
+void label_layer_clean(LabelLayer *label_layer)
+{
+    trace_assert(label_layer);
+    dynarray_clear(&label_layer->ids);
+    dynarray_clear(&label_layer->positions);
+    dynarray_clear(&label_layer->colors);
+    dynarray_clear(&label_layer->texts);
 }
 
 static inline

@@ -4,7 +4,6 @@
 #include <SDL.h>
 
 #include "system/nth_alloc.h"
-#include "system/lt.h"
 #include "system/stacktrace.h"
 #include "undo_history.h"
 #include "config.h"
@@ -56,6 +55,15 @@ void undo_history_pop(UndoHistory *undo_history)
     if (undo_history->actions.count > 0) {
         HistoryItem *item = ring_buffer_top(&undo_history->actions);
         item->revert(item->context_data, item->context_data_size);
+        ring_buffer_pop(&undo_history->actions);
+    }
+}
+
+void undo_history_clean(UndoHistory *undo_history)
+{
+    trace_assert(undo_history);
+
+    while (undo_history->actions.count) {
         ring_buffer_pop(&undo_history->actions);
     }
 }

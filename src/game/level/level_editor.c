@@ -12,8 +12,6 @@
 #include "ui/edit_field.h"
 #include "system/stacktrace.h"
 #include "system/nth_alloc.h"
-#include "system/lt.h"
-#include "system/lt_adapters.h"
 #include "system/log.h"
 #include "system/str.h"
 #include "config.h"
@@ -35,17 +33,9 @@ static int level_editor_dump(LevelEditor *level_editor);
 
 // TODO(#994): too much duplicate code between create_level_editor and create_level_editor_from_file
 
-LevelEditor *create_level_editor(Cursor *cursor)
+void create_level_editor(LevelEditor *level_editor, Cursor *cursor)
 {
-    Lt *lt = create_lt();
-    LevelEditor *level_editor = PUSH_LT(
-        lt,
-        nth_calloc(1, sizeof(LevelEditor)),
-        free);
-    if (level_editor == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    level_editor->lt = lt;
+    memset(level_editor, 0, sizeof(*level_editor));
 
     level_editor->edit_field_filename.font_size = LEVEL_EDITOR_EDIT_FIELD_SIZE;
     level_editor->edit_field_filename.font_color = LEVEL_EDITOR_EDIT_FIELD_COLOR;
@@ -73,49 +63,24 @@ LevelEditor *create_level_editor(Cursor *cursor)
     level_editor->notice = (FadingWigglyText) {
         .wiggly_text = {
             .text = "Level saved",
-            .color = COLOR_BLACK,
+            .color = rgba(0.0f, 0.0f, 0.0f, 0.0f),
             .scale = LEVEL_EDITOR_NOTICE_SCALE
         },
         .duration = LEVEL_EDITOR_NOTICE_DURATION,
     };
 
     level_editor->camera_scale = 1.0f;
-
     level_editor->undo_history = create_undo_history();
-
-    return level_editor;
 }
 
-LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor)
+void level_editor_load_from_file(LevelEditor *level_editor, Memory *tmpmem, const char *file_name)
 {
     trace_assert(file_name);
 
-    Lt *lt = create_lt();
-    LevelEditor *level_editor = PUSH_LT(
-        lt,
-        nth_calloc(1, sizeof(LevelEditor)),
-        free);
-    if (level_editor == NULL) {
-        RETURN_LT(lt, NULL);
-    }
-    level_editor->lt = lt;
+    if (level_editor->file_name) free(level_editor->file_name);
+    level_editor->file_name = string_duplicate(file_name, NULL);
 
-    level_editor->edit_field_filename.font_size = LEVEL_EDITOR_EDIT_FIELD_SIZE;
-    level_editor->edit_field_filename.font_color = LEVEL_EDITOR_EDIT_FIELD_COLOR;
-
-    level_editor->file_name =
-        PUSH_LT(
-            lt,
-            string_duplicate(file_name, NULL),
-            free);
-
-    Memory tmpmem = {
-        .capacity = LEVEL_EDITOR_TMPMEM_CAPACITY,
-        .buffer = malloc(LEVEL_EDITOR_TMPMEM_CAPACITY),
-    };
-    trace_assert(tmpmem.buffer);
-
-    String input = read_whole_file(&tmpmem, file_name);
+    String input = read_whole_file(tmpmem, file_name);
     trace_assert(input.data);
 
     String version = trim(chop_by_delim(&input, '\n'));
@@ -126,49 +91,41 @@ LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor
         // Nothing
     } else {
         log_fail("Version `%s` is not supported. Expected version `%s`.\n",
-                 string_to_cstr(&tmpmem, version),
+                 string_to_cstr(tmpmem, version),
                  VERSION);
-        RETURN_LT(lt, NULL);
+        return;
     }
 
     level_editor->background_layer = chop_background_layer(&input);
-    level_editor->player_layer = chop_player_layer(&tmpmem, &input);
-    level_editor->platforms_layer = chop_rect_layer(&tmpmem, &input, "platform", cursor);
-    level_editor->goals_layer = chop_point_layer(&tmpmem, &input, "goal");
-    level_editor->lava_layer = chop_rect_layer(&tmpmem, &input, "lava", cursor);
-    level_editor->back_platforms_layer = chop_rect_layer(&tmpmem, &input, "back_platform", cursor);
-    level_editor->boxes_layer = chop_rect_layer(&tmpmem, &input, "box", cursor);
-    level_editor->label_layer = chop_label_layer(&tmpmem, &input, "label");
-    level_editor->regions_layer = chop_rect_layer(&tmpmem, &input, "region", cursor),
+    level_editor->player_layer = chop_player_layer(tmpmem, &input);
+    rect_layer_reload(&level_editor->platforms_layer, tmpmem, &input);
+    point_layer_reload(&level_editor->goals_layer, tmpmem, &input);
+    rect_layer_reload(&level_editor->lava_layer, tmpmem, &input);
+    rect_layer_reload(&level_editor->back_platforms_layer, tmpmem, &input);
+    rect_layer_reload(&level_editor->boxes_layer, tmpmem, &input);
+    label_layer_reload(&level_editor->label_layer, tmpmem, &input);
+    rect_layer_reload(&level_editor->regions_layer, tmpmem, &input);
+    undo_history_clean(&level_editor->undo_history);
+}
 
-    level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(&level_editor->boxes_layer);
-    level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(&level_editor->platforms_layer);
-    level_editor->layers[LAYER_PICKER_BACK_PLATFORMS] = rect_layer_as_layer(&level_editor->back_platforms_layer);
-    level_editor->layers[LAYER_PICKER_GOALS] = point_layer_as_layer(&level_editor->goals_layer);
-    level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(&level_editor->player_layer);
-    level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(&level_editor->lava_layer);
-    level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(&level_editor->regions_layer);
-    level_editor->layers[LAYER_PICKER_BACKGROUND] = background_layer_as_layer(&level_editor->background_layer);
-    level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(&level_editor->label_layer);
-
-    level_editor->drag = false;
-
-    level_editor->notice = (FadingWigglyText) {
-        .wiggly_text = {
-            .text = "Level saved",
-            .color = COLOR_BLACK,
-            .scale = LEVEL_EDITOR_NOTICE_SCALE
-        },
-        .duration = LEVEL_EDITOR_NOTICE_DURATION,
-    };
-
+void level_editor_clean(LevelEditor *level_editor)
+{
     level_editor->camera_scale = 1.0f;
-
-    level_editor->undo_history = create_undo_history();
-
-    free(tmpmem.buffer);
-
-    return level_editor;
+    level_editor->camera_position = vec(0.0f, 0.0f);
+    if (level_editor->file_name) {
+        free(level_editor->file_name);
+        level_editor->file_name = NULL;
+    }
+    level_editor->background_layer = create_background_layer(hexstr("fffda5"));
+    level_editor->player_layer = create_player_layer(vec(0.0f, 0.0f), hexstr("ff8080"));
+    rect_layer_clean(&level_editor->platforms_layer);
+    point_layer_clean(&level_editor->goals_layer);
+    rect_layer_clean(&level_editor->lava_layer);
+    rect_layer_clean(&level_editor->back_platforms_layer);
+    rect_layer_clean(&level_editor->boxes_layer);
+    label_layer_clean(&level_editor->label_layer);
+    rect_layer_clean(&level_editor->regions_layer);
+    undo_history_clean(&level_editor->undo_history);
 }
 
 void destroy_level_editor(LevelEditor *level_editor)
@@ -182,6 +139,10 @@ void destroy_level_editor(LevelEditor *level_editor)
     destroy_rect_layer(level_editor->lava_layer);
     destroy_rect_layer(level_editor->regions_layer);
     destroy_label_layer(level_editor->label_layer);
+
+    if (level_editor->file_name) {
+        free(level_editor->file_name);
+    }
 }
 
 int level_editor_render(const LevelEditor *level_editor,
@@ -274,10 +235,7 @@ int level_editor_saveas_event(LevelEditor *level_editor,
                 LEVEL_FOLDER_MAX_LENGTH,
                 "./assets/levels/%s.txt",
                 edit_field_as_text(&level_editor->edit_field_filename));
-            level_editor->file_name = PUSH_LT(
-                level_editor->lt,
-                string_duplicate(path, NULL),
-                free);
+            level_editor->file_name = string_duplicate(path, NULL);
             level_editor_dump(level_editor);
             SDL_StopTextInput();
             level_editor->state = LEVEL_EDITOR_IDLE;
@@ -440,10 +398,8 @@ static int level_editor_dump(LevelEditor *level_editor)
 {
     trace_assert(level_editor);
 
-    FILE *filedump = PUSH_LT(
-        level_editor->lt,
-        fopen(level_editor->file_name, "w"),
-        fclose_lt);
+    FILE *filedump = fopen(level_editor->file_name, "w");
+    trace_assert(filedump);
 
     if (fprintf(filedump, "%s\n", VERSION) < 0) {
         return -1;
@@ -457,7 +413,7 @@ static int level_editor_dump(LevelEditor *level_editor)
         }
     }
 
-    fclose(RELEASE_LT(level_editor->lt, filedump));
+    fclose(filedump);
 
     fading_wiggly_text_reset(&level_editor->notice);
     level_editor->save = 1;

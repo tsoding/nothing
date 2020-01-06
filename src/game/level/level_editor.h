@@ -20,7 +20,6 @@ typedef enum {
 
 struct LevelEditor
 {
-    Lt *lt;
     LevelEditorState state;
     Vec2f camera_position;
     float camera_scale;
@@ -47,11 +46,12 @@ struct LevelEditor
     int click;
     int save;
 
-    const char *file_name;
+    char *file_name;
 };
 
-LevelEditor *create_level_editor(Cursor *cursor);
-LevelEditor *create_level_editor_from_file(const char *file_name, Cursor *cursor);
+void create_level_editor(LevelEditor *level_editor, Cursor *cursor);
+void level_editor_load_from_file(LevelEditor *level_editor, Memory *tmpmem, const char *file_name);
+void level_editor_clean(LevelEditor *level_editor);
 void destroy_level_editor(LevelEditor *level_editor);
 
 int level_editor_render(const LevelEditor *level_editor,
