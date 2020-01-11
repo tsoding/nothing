@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include "system/memory.h"
+#include "system/stacktrace.h"
 
 #define DYNARRAY_CAPACITY 256
 

@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "system/memory.h"
+
 typedef void (*RingBufferDtor)(void *element);
 
 typedef struct {
