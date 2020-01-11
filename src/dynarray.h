@@ -14,18 +14,19 @@ typedef struct {
 } Dynarray;
 
 static inline
-Dynarray create_dynarray(size_t element_size)
+Dynarray create_dynarray_malloc(size_t element_size)
 {
     Dynarray result = {
         .element_size = element_size,
         .count = 0,
         .data = malloc(DYNARRAY_CAPACITY * element_size)
     };
+    trace_assert(result.data);
     return result;
 }
 
 static inline
-Dynarray create_dynarray_from_memory(Memory *memory, size_t element_size)
+Dynarray create_dynarray(Memory *memory, size_t element_size)
 {
     trace_assert(memory);
     Dynarray result = {

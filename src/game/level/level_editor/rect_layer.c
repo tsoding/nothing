@@ -806,10 +806,10 @@ RectLayer *create_rect_layer_from_memory(Memory *memory,
 
     RectLayer *rect_layer = memory_alloc(memory, sizeof(RectLayer));
 
-    rect_layer->ids = create_dynarray_from_memory(memory, sizeof(char) * ENTITY_MAX_ID_SIZE);
-    rect_layer->rects = create_dynarray_from_memory(memory, sizeof(Rect));
-    rect_layer->colors = create_dynarray_from_memory(memory, sizeof(Color));
-    rect_layer->actions = create_dynarray_from_memory(memory, sizeof(Action));
+    rect_layer->ids = create_dynarray(memory, sizeof(char) * ENTITY_MAX_ID_SIZE);
+    rect_layer->rects = create_dynarray(memory, sizeof(Rect));
+    rect_layer->colors = create_dynarray(memory, sizeof(Color));
+    rect_layer->actions = create_dynarray(memory, sizeof(Action));
     rect_layer->id_edit_field.font_size = RECT_LAYER_ID_LABEL_SIZE;
     rect_layer->id_edit_field.font_color = COLOR_BLACK;
     rect_layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));

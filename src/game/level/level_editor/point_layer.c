@@ -139,19 +139,6 @@ LayerPtr point_layer_as_layer(PointLayer *point_layer)
     return layer;
 }
 
-PointLayer create_point_layer(const char *id_name_prefix)
-{
-    PointLayer result = {0};
-    result.state = POINT_LAYER_IDLE;
-    result.positions = create_dynarray(sizeof(Vec2f));
-    result.colors = create_dynarray(sizeof(Color));
-    result.ids = create_dynarray(sizeof(char) * ID_MAX_SIZE);
-    result.edit_field.font_size = POINT_LAYER_ID_TEXT_SIZE;
-    result.edit_field.font_color = POINT_LAYER_ID_TEXT_COLOR;
-    result.id_name_prefix = id_name_prefix;
-    return result;
-}
-
 PointLayer *create_point_layer_from_memory(Memory *memory,
                                            const char *id_name_prefix)
 {
@@ -161,9 +148,9 @@ PointLayer *create_point_layer_from_memory(Memory *memory,
     PointLayer *result = memory_alloc(memory, sizeof(PointLayer));
     memset(result, 0, sizeof(PointLayer));
     result->state = POINT_LAYER_IDLE;
-    result->positions = create_dynarray_from_memory(memory, sizeof(Vec2f));
-    result->colors = create_dynarray_from_memory(memory, sizeof(Color));
-    result->ids = create_dynarray_from_memory(memory, sizeof(char) * ID_MAX_SIZE);
+    result->positions = create_dynarray(memory, sizeof(Vec2f));
+    result->colors = create_dynarray(memory, sizeof(Color));
+    result->ids = create_dynarray(memory, sizeof(char) * ID_MAX_SIZE);
     result->edit_field.font_size = POINT_LAYER_ID_TEXT_SIZE;
     result->edit_field.font_color = POINT_LAYER_ID_TEXT_COLOR;
     result->id_name_prefix = id_name_prefix;

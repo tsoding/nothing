@@ -141,21 +141,6 @@ LayerPtr label_layer_as_layer(LabelLayer *label_layer)
     return layer;
 }
 
-LabelLayer create_label_layer(const char *id_name_prefix)
-{
-    LabelLayer result = {0};
-    result.ids = create_dynarray(sizeof(char) * LABEL_LAYER_ID_MAX_SIZE);
-    result.positions = create_dynarray(sizeof(Vec2f));
-    result.colors = create_dynarray(sizeof(Color));
-    result.texts = create_dynarray(sizeof(char) * LABEL_LAYER_TEXT_MAX_SIZE);
-    result.color_picker = create_color_picker_from_rgba(COLOR_RED);
-    result.selection = -1;
-    result.edit_field.font_size = LABELS_SIZE;
-    result.edit_field.font_color = COLOR_RED;
-    result.id_name_prefix = id_name_prefix;
-    return result;
-}
-
 LabelLayer *create_label_layer_from_memory(Memory *memory,
                                            const char *id_name_prefix)
 {
@@ -164,10 +149,10 @@ LabelLayer *create_label_layer_from_memory(Memory *memory,
 
     LabelLayer *result = memory_alloc(memory, sizeof(LabelLayer));
     memset(result, 0, sizeof(LabelLayer));
-    result->ids = create_dynarray_from_memory(memory, sizeof(char) * LABEL_LAYER_ID_MAX_SIZE);
-    result->positions = create_dynarray_from_memory(memory, sizeof(Vec2f));
-    result->colors = create_dynarray_from_memory(memory, sizeof(Color));
-    result->texts = create_dynarray_from_memory(memory, sizeof(char) * LABEL_LAYER_TEXT_MAX_SIZE);
+    result->ids = create_dynarray(memory, sizeof(char) * LABEL_LAYER_ID_MAX_SIZE);
+    result->positions = create_dynarray(memory, sizeof(Vec2f));
+    result->colors = create_dynarray(memory, sizeof(Color));
+    result->texts = create_dynarray(memory, sizeof(char) * LABEL_LAYER_TEXT_MAX_SIZE);
     result->color_picker = create_color_picker_from_rgba(COLOR_RED);
     result->selection = -1;
     result->edit_field.font_size = LABELS_SIZE;

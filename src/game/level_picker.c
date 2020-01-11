@@ -32,7 +32,7 @@ void level_picker_populate(LevelPicker *level_picker,
 
     {
         dynarray_clear(&level_picker->items);
-        level_picker->items = create_dynarray(METADATA_FILEPATH_MAX_SIZE);
+        level_picker->items = create_dynarray_malloc(METADATA_FILEPATH_MAX_SIZE);
 
         DIR *level_dir = opendir(dirpath);
         if (level_dir == NULL) {
