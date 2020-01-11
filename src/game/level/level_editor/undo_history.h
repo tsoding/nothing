@@ -10,7 +10,7 @@ typedef struct {
     Memory *memory;
 } UndoHistory;
 
-UndoHistory *create_undo_history_from_memory(Memory *memory);
+UndoHistory *create_undo_history(Memory *memory);
 
 void undo_history_push(UndoHistory *undo_history,
                        RevertAction revert,

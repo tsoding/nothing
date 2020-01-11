@@ -109,7 +109,7 @@ Game *create_game(const char *level_folder,
         }
     }
 
-    game->level_editor = create_level_editor_from_memory(
+    game->level_editor = create_level_editor(
         &game->level_editor_memory,
         &game->cursor);
 
@@ -326,7 +326,7 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
         switch(event->key.keysym.sym) {
         case SDLK_n: {
             memory_clean(&game->level_editor_memory);
-            game->level_editor = create_level_editor_from_memory(
+            game->level_editor = create_level_editor(
                 &game->level_editor_memory,
                 &game->cursor);
 
@@ -533,7 +533,7 @@ int game_load_level(Game *game, const char *level_filename)
 
     memory_clean(&game->level_editor_memory);
     game->level_editor =
-        create_level_editor_from_file_with_memory(
+        create_level_editor_from_file(
             &game->level_editor_memory,
             &game->cursor,
             level_filename);

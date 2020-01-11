@@ -49,8 +49,8 @@ struct LevelEditor
     char *file_name;
 };
 
-LevelEditor *create_level_editor_from_memory(Memory *memory, Cursor *cursor);
-LevelEditor *create_level_editor_from_file_with_memory(Memory *memory, Cursor *cursor, const char *file_name);
+LevelEditor *create_level_editor(Memory *memory, Cursor *cursor);
+LevelEditor *create_level_editor_from_file(Memory *memory, Cursor *cursor, const char *file_name);
 
 int level_editor_render(const LevelEditor *level_editor,
                         const Camera *camera);

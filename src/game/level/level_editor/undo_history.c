@@ -14,7 +14,7 @@ typedef struct {
     size_t context_data_size;
 } HistoryItem;
 
-UndoHistory *create_undo_history_from_memory(Memory *memory)
+UndoHistory *create_undo_history(Memory *memory)
 {
     UndoHistory *result = memory_alloc(memory, sizeof(UndoHistory));
     result->actions = create_ring_buffer_from_buffer(

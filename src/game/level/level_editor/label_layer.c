@@ -141,8 +141,8 @@ LayerPtr label_layer_as_layer(LabelLayer *label_layer)
     return layer;
 }
 
-LabelLayer *create_label_layer_from_memory(Memory *memory,
-                                           const char *id_name_prefix)
+LabelLayer *create_label_layer(Memory *memory,
+                               const char *id_name_prefix)
 {
     trace_assert(memory);
     trace_assert(id_name_prefix);

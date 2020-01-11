@@ -32,7 +32,7 @@ static int level_editor_dump(LevelEditor *level_editor);
 
 // TODO(#994): too much duplicate code between create_level_editor and create_level_editor_from_file
 
-LevelEditor *create_level_editor_from_memory(Memory *memory, Cursor *cursor)
+LevelEditor *create_level_editor(Memory *memory, Cursor *cursor)
 {
     LevelEditor *level_editor = memory_alloc(memory, sizeof(LevelEditor));
     memset(level_editor, 0, sizeof(*level_editor));
@@ -48,8 +48,8 @@ LevelEditor *create_level_editor_from_memory(Memory *memory, Cursor *cursor)
     level_editor->back_platforms_layer = create_rect_layer(memory, "back_platform", cursor);
     level_editor->boxes_layer = create_rect_layer(memory, "box", cursor);
     level_editor->regions_layer = create_rect_layer(memory, "region", cursor);
-    level_editor->goals_layer = create_point_layer_from_memory(memory, "goal");
-    level_editor->label_layer = create_label_layer_from_memory(memory, "label");
+    level_editor->goals_layer = create_point_layer(memory, "goal");
+    level_editor->label_layer = create_label_layer(memory, "label");
 
     level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(level_editor->boxes_layer);
     level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
@@ -72,18 +72,18 @@ LevelEditor *create_level_editor_from_memory(Memory *memory, Cursor *cursor)
     };
 
     level_editor->camera_scale = 1.0f;
-    level_editor->undo_history = create_undo_history_from_memory(memory);
+    level_editor->undo_history = create_undo_history(memory);
 
     return level_editor;
 }
 
-LevelEditor *create_level_editor_from_file_with_memory(Memory *memory, Cursor *cursor, const char *file_name)
+LevelEditor *create_level_editor_from_file(Memory *memory, Cursor *cursor, const char *file_name)
 {
     trace_assert(memory);
     trace_assert(cursor);
     trace_assert(file_name);
 
-    LevelEditor *level_editor = create_level_editor_from_memory(memory, cursor);
+    LevelEditor *level_editor = create_level_editor(memory, cursor);
     level_editor->file_name = strdup_to_memory(memory, file_name);
 
     String input = read_whole_file(memory, file_name);

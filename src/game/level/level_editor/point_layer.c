@@ -139,8 +139,8 @@ LayerPtr point_layer_as_layer(PointLayer *point_layer)
     return layer;
 }
 
-PointLayer *create_point_layer_from_memory(Memory *memory,
-                                           const char *id_name_prefix)
+PointLayer *create_point_layer(Memory *memory,
+                               const char *id_name_prefix)
 {
     trace_assert(memory);
     trace_assert(id_name_prefix);
