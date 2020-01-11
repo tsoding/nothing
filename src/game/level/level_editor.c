@@ -32,8 +32,9 @@ static int level_editor_dump(LevelEditor *level_editor);
 
 // TODO(#994): too much duplicate code between create_level_editor and create_level_editor_from_file
 
-void create_level_editor(LevelEditor *level_editor, Cursor *cursor)
+LevelEditor *create_level_editor(Memory *memory, Cursor *cursor)
 {
+    LevelEditor *level_editor = memory_alloc(memory, sizeof(LevelEditor));
     memset(level_editor, 0, sizeof(*level_editor));
 
     level_editor->edit_field_filename.font_size = LEVEL_EDITOR_EDIT_FIELD_SIZE;
@@ -41,23 +42,25 @@ void create_level_editor(LevelEditor *level_editor, Cursor *cursor)
 
     level_editor->background_layer = create_background_layer(hexstr("fffda5"));
     level_editor->player_layer = create_player_layer(vec(0.0f, 0.0f), hexstr("ff8080"));
-    level_editor->platforms_layer = create_rect_layer("platform", cursor);
-    level_editor->goals_layer = create_point_layer("goal"),
-    level_editor->lava_layer = create_rect_layer("lava", cursor);
-    level_editor->back_platforms_layer = create_rect_layer("back_platform", cursor);
-    level_editor->boxes_layer = create_rect_layer("box", cursor);
-    level_editor->label_layer = create_label_layer("label");
-    level_editor->regions_layer = create_rect_layer("region", cursor),
 
-    level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(&level_editor->boxes_layer);
-    level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(&level_editor->platforms_layer);
-    level_editor->layers[LAYER_PICKER_BACK_PLATFORMS] = rect_layer_as_layer(&level_editor->back_platforms_layer);
-    level_editor->layers[LAYER_PICKER_GOALS] = point_layer_as_layer(&level_editor->goals_layer);
+    level_editor->platforms_layer = create_rect_layer(memory, "platform", cursor);
+    level_editor->lava_layer = create_rect_layer(memory, "lava", cursor);
+    level_editor->back_platforms_layer = create_rect_layer(memory, "back_platform", cursor);
+    level_editor->boxes_layer = create_rect_layer(memory, "box", cursor);
+    level_editor->regions_layer = create_rect_layer(memory, "region", cursor);
+    level_editor->goals_layer = create_point_layer(memory, "goal");
+    level_editor->label_layer = create_label_layer(memory, "label");
+
+    level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(level_editor->boxes_layer);
+    level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
+    level_editor->layers[LAYER_PICKER_BACK_PLATFORMS] = rect_layer_as_layer(level_editor->back_platforms_layer);
+    level_editor->layers[LAYER_PICKER_GOALS] = point_layer_as_layer(level_editor->goals_layer);
     level_editor->layers[LAYER_PICKER_PLAYER] = player_layer_as_layer(&level_editor->player_layer);
-    level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(&level_editor->lava_layer);
-    level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(&level_editor->regions_layer);
+    level_editor->layers[LAYER_PICKER_LAVA] = rect_layer_as_layer(level_editor->lava_layer);
+    level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(level_editor->regions_layer);
     level_editor->layers[LAYER_PICKER_BACKGROUND] = background_layer_as_layer(&level_editor->background_layer);
-    level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(&level_editor->label_layer);
+    level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
+
 
     level_editor->notice = (FadingWigglyText) {
         .wiggly_text = {
@@ -69,17 +72,21 @@ void create_level_editor(LevelEditor *level_editor, Cursor *cursor)
     };
 
     level_editor->camera_scale = 1.0f;
-    level_editor->undo_history = create_undo_history();
+    level_editor->undo_history = create_undo_history(memory);
+
+    return level_editor;
 }
 
-void level_editor_load_from_file(LevelEditor *level_editor, Memory *tmpmem, const char *file_name)
+LevelEditor *create_level_editor_from_file(Memory *memory, Cursor *cursor, const char *file_name)
 {
+    trace_assert(memory);
+    trace_assert(cursor);
     trace_assert(file_name);
 
-    if (level_editor->file_name) free(level_editor->file_name);
-    level_editor->file_name = string_duplicate(file_name, NULL);
+    LevelEditor *level_editor = create_level_editor(memory, cursor);
+    level_editor->file_name = strdup_to_memory(memory, file_name);
 
-    String input = read_whole_file(tmpmem, file_name);
+    String input = read_whole_file(memory, file_name);
     trace_assert(input.data);
 
     String version = trim(chop_by_delim(&input, '\n'));
@@ -90,58 +97,23 @@ void level_editor_load_from_file(LevelEditor *level_editor, Memory *tmpmem, cons
         // Nothing
     } else {
         log_fail("Version `%s` is not supported. Expected version `%s`.\n",
-                 string_to_cstr(tmpmem, version),
+                 string_to_cstr(memory, version),
                  VERSION);
-        return;
+        return NULL;
     }
 
     level_editor->background_layer = chop_background_layer(&input);
-    level_editor->player_layer = chop_player_layer(tmpmem, &input);
-    rect_layer_reload(&level_editor->platforms_layer, tmpmem, &input);
-    point_layer_reload(&level_editor->goals_layer, tmpmem, &input);
-    rect_layer_reload(&level_editor->lava_layer, tmpmem, &input);
-    rect_layer_reload(&level_editor->back_platforms_layer, tmpmem, &input);
-    rect_layer_reload(&level_editor->boxes_layer, tmpmem, &input);
-    label_layer_reload(&level_editor->label_layer, tmpmem, &input);
-    rect_layer_reload(&level_editor->regions_layer, tmpmem, &input);
-    undo_history_clean(&level_editor->undo_history);
-}
+    level_editor->player_layer = chop_player_layer(memory, &input);
+    rect_layer_load(level_editor->platforms_layer, memory, &input);
+    point_layer_load(level_editor->goals_layer, memory, &input);
+    rect_layer_load(level_editor->lava_layer, memory, &input);
+    rect_layer_load(level_editor->back_platforms_layer, memory, &input);
+    rect_layer_load(level_editor->boxes_layer, memory, &input);
+    label_layer_load(level_editor->label_layer, memory, &input);
+    rect_layer_load(level_editor->regions_layer, memory, &input);
+    undo_history_clean(level_editor->undo_history);
 
-void level_editor_clean(LevelEditor *level_editor)
-{
-    level_editor->camera_scale = 1.0f;
-    level_editor->camera_position = vec(0.0f, 0.0f);
-    if (level_editor->file_name) {
-        free(level_editor->file_name);
-        level_editor->file_name = NULL;
-    }
-    level_editor->background_layer = create_background_layer(hexstr("fffda5"));
-    level_editor->player_layer = create_player_layer(vec(0.0f, 0.0f), hexstr("ff8080"));
-    rect_layer_clean(&level_editor->platforms_layer);
-    point_layer_clean(&level_editor->goals_layer);
-    rect_layer_clean(&level_editor->lava_layer);
-    rect_layer_clean(&level_editor->back_platforms_layer);
-    rect_layer_clean(&level_editor->boxes_layer);
-    label_layer_clean(&level_editor->label_layer);
-    rect_layer_clean(&level_editor->regions_layer);
-    undo_history_clean(&level_editor->undo_history);
-}
-
-void destroy_level_editor(LevelEditor *level_editor)
-{
-    trace_assert(level_editor);
-    destroy_undo_history(level_editor->undo_history);
-    destroy_rect_layer(level_editor->boxes_layer);
-    destroy_rect_layer(level_editor->platforms_layer);
-    destroy_rect_layer(level_editor->back_platforms_layer);
-    destroy_point_layer(level_editor->goals_layer);
-    destroy_rect_layer(level_editor->lava_layer);
-    destroy_rect_layer(level_editor->regions_layer);
-    destroy_label_layer(level_editor->label_layer);
-
-    if (level_editor->file_name) {
-        free(level_editor->file_name);
-    }
+    return level_editor;
 }
 
 int level_editor_render(const LevelEditor *level_editor,
@@ -218,7 +190,8 @@ int level_editor_render(const LevelEditor *level_editor,
 static
 int level_editor_saveas_event(LevelEditor *level_editor,
                               const SDL_Event *event,
-                              const Camera *camera)
+                              const Camera *camera,
+                              Memory *memory)
 {
     trace_assert(level_editor);
     trace_assert(event);
@@ -234,7 +207,7 @@ int level_editor_saveas_event(LevelEditor *level_editor,
                 LEVEL_FOLDER_MAX_LENGTH,
                 "./assets/levels/%s.txt",
                 edit_field_as_text(&level_editor->edit_field_filename));
-            level_editor->file_name = string_duplicate(path, NULL);
+            level_editor->file_name = strdup_to_memory(memory, path);
             level_editor_dump(level_editor);
             SDL_StopTextInput();
             level_editor->state = LEVEL_EDITOR_IDLE;
@@ -272,10 +245,10 @@ int level_editor_idle_event(LevelEditor *level_editor,
 
         case SDLK_z: {
             if (event->key.keysym.mod & KMOD_CTRL) {
-                if (undo_history_empty(&level_editor->undo_history)) {
+                if (undo_history_empty(level_editor->undo_history)) {
                     level_editor->bell = 1;
                 }
-                undo_history_pop(&level_editor->undo_history);
+                undo_history_pop(level_editor->undo_history);
             }
         } break;
         }
@@ -342,7 +315,7 @@ int level_editor_idle_event(LevelEditor *level_editor,
                 level_editor->layers[level_editor->layer_picker],
                 event,
                 camera,
-                &level_editor->undo_history) < 0) {
+                level_editor->undo_history) < 0) {
             return -1;
         }
     } else {
@@ -355,7 +328,8 @@ int level_editor_idle_event(LevelEditor *level_editor,
 
 int level_editor_event(LevelEditor *level_editor,
                        const SDL_Event *event,
-                       Camera *camera)
+                       Camera *camera,
+                       Memory *memory)
 {
     trace_assert(level_editor);
     trace_assert(event);
@@ -366,7 +340,7 @@ int level_editor_event(LevelEditor *level_editor,
         return level_editor_idle_event(level_editor, event, camera);
 
     case LEVEL_EDITOR_SAVEAS:
-        return level_editor_saveas_event(level_editor, event, camera);
+        return level_editor_saveas_event(level_editor, event, camera, memory);
     }
 
     return 0;

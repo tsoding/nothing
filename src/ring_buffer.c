@@ -16,7 +16,6 @@ void ring_buffer_push(RingBuffer *buffer,
             buffer->element_size);
         buffer->count += 1;
     } else {
-        if (buffer->dtor) buffer->dtor(buffer->data + i * buffer->element_size);
         memcpy(
             buffer->data + i * buffer->element_size,
             element,
@@ -30,12 +29,6 @@ int ring_buffer_pop(RingBuffer *buffer)
     trace_assert(buffer);
 
     if (buffer->count == 0) return 0;
-
-    if (buffer->dtor) {
-        size_t i = (buffer->begin + buffer->count - 1) % buffer->capacity;
-        buffer->dtor(buffer->data + i * buffer->element_size);
-    }
-
     buffer->count--;
 
     return 1;

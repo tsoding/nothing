@@ -34,9 +34,9 @@ Boxes *create_boxes_from_rect_layer(const RectLayer *layer, RigidBodies *rigid_b
     }
     boxes->lt = lt;
 
-    boxes->boxes_ids = create_dynarray(ENTITY_MAX_ID_SIZE);
-    boxes->body_ids = create_dynarray(sizeof(RigidBodyId));
-    boxes->body_colors = create_dynarray(sizeof(Color));
+    boxes->boxes_ids = create_dynarray_malloc(ENTITY_MAX_ID_SIZE);
+    boxes->body_ids = create_dynarray_malloc(sizeof(RigidBodyId));
+    boxes->body_colors = create_dynarray_malloc(sizeof(Color));
 
     boxes->rigid_bodies = rigid_bodies;
 

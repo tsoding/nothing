@@ -7,15 +7,10 @@ typedef void (*RevertAction)(void *context, size_t context_size);
 
 typedef struct {
     RingBuffer actions;
+    Memory *memory;
 } UndoHistory;
 
-UndoHistory create_undo_history(void);
-
-static inline
-void destroy_undo_history(UndoHistory undo_history)
-{
-    destroy_ring_buffer(undo_history.actions);
-}
+UndoHistory *create_undo_history(Memory *memory);
 
 void undo_history_push(UndoHistory *undo_history,
                        RevertAction revert,

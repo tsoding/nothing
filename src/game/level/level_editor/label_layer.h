@@ -40,11 +40,10 @@ LayerPtr label_layer_as_layer(LabelLayer *label_layer);
 
 // NOTE: create_label_layer and create_label_layer_from_line_stream do
 // not own id_name_prefix
-LabelLayer create_label_layer(const char *id_name_prefix);
-void label_layer_reload(LabelLayer *label_layer,
+LabelLayer *create_label_layer(Memory *memory, const char *id_name_prefix);
+void label_layer_load(LabelLayer *label_layer,
                         Memory *memory,
                         String *input);
-void label_layer_clean(LabelLayer *label_layer);
 
 static inline
 void destroy_label_layer(LabelLayer label_layer)

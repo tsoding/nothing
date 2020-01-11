@@ -14,19 +14,14 @@ typedef struct {
     size_t context_data_size;
 } HistoryItem;
 
-static
-void undo_history_destroy_item(void *item)
+UndoHistory *create_undo_history(Memory *memory)
 {
-    free(((HistoryItem*)item)->context_data);
-}
-
-UndoHistory create_undo_history(void)
-{
-    UndoHistory result;
-    result.actions = create_ring_buffer(
+    UndoHistory *result = memory_alloc(memory, sizeof(UndoHistory));
+    result->actions = create_ring_buffer_from_buffer(
+        memory,
         sizeof(HistoryItem),
-        UNDO_HISTORY_CAPACITY,
-        undo_history_destroy_item);
+        UNDO_HISTORY_CAPACITY);
+    result->memory = memory;
     return result;
 }
 
@@ -37,14 +32,13 @@ void undo_history_push(UndoHistory *undo_history,
 {
     trace_assert(undo_history);
 
+    // TODO: undo_history_push kinda leaks the memory
     HistoryItem item = {
         .revert = revert,
-        .context_data = malloc(context_data_size),
+        .context_data = memory_alloc(undo_history->memory, context_data_size),
         .context_data_size = context_data_size
     };
-    trace_assert(item.context_data);
     memcpy(item.context_data, context_data, context_data_size);
-
     ring_buffer_push(&undo_history->actions, &item);
 }
 

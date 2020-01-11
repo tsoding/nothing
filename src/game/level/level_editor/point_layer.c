@@ -139,28 +139,31 @@ LayerPtr point_layer_as_layer(PointLayer *point_layer)
     return layer;
 }
 
-PointLayer create_point_layer(const char *id_name_prefix)
+PointLayer *create_point_layer(Memory *memory,
+                               const char *id_name_prefix)
 {
-    PointLayer result = {0};
-    result.state = POINT_LAYER_IDLE;
-    result.positions = create_dynarray(sizeof(Vec2f));
-    result.colors = create_dynarray(sizeof(Color));
-    result.ids = create_dynarray(sizeof(char) * ID_MAX_SIZE);
-    result.edit_field.font_size = POINT_LAYER_ID_TEXT_SIZE;
-    result.edit_field.font_color = POINT_LAYER_ID_TEXT_COLOR;
-    result.id_name_prefix = id_name_prefix;
+    trace_assert(memory);
+    trace_assert(id_name_prefix);
+
+    PointLayer *result = memory_alloc(memory, sizeof(PointLayer));
+    memset(result, 0, sizeof(PointLayer));
+    result->state = POINT_LAYER_IDLE;
+    result->positions = create_dynarray(memory, sizeof(Vec2f));
+    result->colors = create_dynarray(memory, sizeof(Color));
+    result->ids = create_dynarray(memory, sizeof(char) * ID_MAX_SIZE);
+    result->edit_field.font_size = POINT_LAYER_ID_TEXT_SIZE;
+    result->edit_field.font_color = POINT_LAYER_ID_TEXT_COLOR;
+    result->id_name_prefix = id_name_prefix;
     return result;
 }
 
-void point_layer_reload(PointLayer *point_layer,
-                        Memory *memory,
-                        String *input)
+void point_layer_load(PointLayer *point_layer,
+                      Memory *memory,
+                      String *input)
 {
     trace_assert(point_layer);
     trace_assert(memory);
     trace_assert(input);
-
-    point_layer_clean(point_layer);
 
     int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
     char id[ENTITY_MAX_ID_SIZE];
@@ -179,14 +182,6 @@ void point_layer_reload(PointLayer *point_layer,
         dynarray_push(&point_layer->colors, &color);
         dynarray_push(&point_layer->ids, id);
     }
-}
-
-void point_layer_clean(PointLayer *point_layer)
-{
-    trace_assert(point_layer);
-    dynarray_clear(&point_layer->positions);
-    dynarray_clear(&point_layer->colors);
-    dynarray_clear(&point_layer->ids);
 }
 
 static inline

@@ -20,7 +20,6 @@ void *memory_alloc(Memory *memory, size_t size)
     assert(memory);
     assert(memory->size + size <= memory->capacity);
 
-
     void *result = memory->buffer + memory->size;
     memory->size += size;
 

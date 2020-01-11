@@ -796,33 +796,35 @@ LayerPtr rect_layer_as_layer(RectLayer *rect_layer)
     return layer;
 }
 
-RectLayer create_rect_layer(const char *id_name_prefix, Cursor *cursor)
+RectLayer *create_rect_layer(Memory *memory,
+                             const char *id_name_prefix,
+                             Cursor *cursor)
 {
+    trace_assert(memory);
+    trace_assert(id_name_prefix);
     trace_assert(cursor);
 
-    RectLayer result = {0};
+    RectLayer *rect_layer = memory_alloc(memory, sizeof(RectLayer));
 
-    result.ids = create_dynarray(sizeof(char) * ENTITY_MAX_ID_SIZE);
-    result.rects = create_dynarray(sizeof(Rect));
-    result.colors = create_dynarray(sizeof(Color));
-    result.actions = create_dynarray(sizeof(Action));
-    result.id_edit_field.font_size = RECT_LAYER_ID_LABEL_SIZE;
-    result.id_edit_field.font_color = COLOR_BLACK;
-    result.color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
-    result.selection = -1;
-    result.id_name_prefix = id_name_prefix;
-    result.cursor = cursor;
+    rect_layer->ids = create_dynarray(memory, sizeof(char) * ENTITY_MAX_ID_SIZE);
+    rect_layer->rects = create_dynarray(memory, sizeof(Rect));
+    rect_layer->colors = create_dynarray(memory, sizeof(Color));
+    rect_layer->actions = create_dynarray(memory, sizeof(Action));
+    rect_layer->id_edit_field.font_size = RECT_LAYER_ID_LABEL_SIZE;
+    rect_layer->id_edit_field.font_color = COLOR_BLACK;
+    rect_layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
+    rect_layer->selection = -1;
+    rect_layer->id_name_prefix = id_name_prefix;
+    rect_layer->cursor = cursor;
 
-    return result;
+    return rect_layer;
 }
 
-void rect_layer_reload(RectLayer *layer, Memory *memory, String *input)
+void rect_layer_load(RectLayer *layer, Memory *memory, String *input)
 {
     trace_assert(layer);
     trace_assert(memory);
     trace_assert(input);
-
-    rect_layer_clean(layer);
 
     int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
     char id[ENTITY_MAX_ID_SIZE];
@@ -874,15 +876,6 @@ void rect_layer_reload(RectLayer *layer, Memory *memory, String *input)
 
         dynarray_push(&layer->actions, &action);
     }
-}
-
-void rect_layer_clean(RectLayer *rect_layer)
-{
-    trace_assert(rect_layer);
-    dynarray_clear(&rect_layer->ids);
-    dynarray_clear(&rect_layer->rects);
-    dynarray_clear(&rect_layer->colors);
-    dynarray_clear(&rect_layer->actions);
 }
 
 int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
