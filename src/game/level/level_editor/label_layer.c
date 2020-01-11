@@ -18,7 +18,6 @@
 
 #define LABEL_LAYER_SELECTION_THICCNESS 5.0f
 
-// TODO(#1139): Label Layer does not support snapping
 
 static int label_clipboard = 0;
 static char label_clipboard_text[LABEL_LAYER_TEXT_MAX_SIZE];
