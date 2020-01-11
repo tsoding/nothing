@@ -15,26 +15,18 @@ typedef struct {
     size_t count;
     size_t begin;
     uint8_t *data;
-    RingBufferDtor dtor;
 } RingBuffer;
 
 static inline
-RingBuffer create_ring_buffer(size_t element_size,
-                              size_t capacity,
-                              RingBufferDtor dtor)
+RingBuffer create_ring_buffer_from_buffer(Memory *memory,
+                                          size_t element_size,
+                                          size_t capacity)
 {
     RingBuffer result = {0};
     result.element_size = element_size;
     result.capacity = capacity;
-    result.dtor = dtor;
-    result.data = malloc(result.element_size * result.capacity);
+    result.data = memory_alloc(memory, result.element_size * result.capacity);
     return result;
-}
-
-static inline
-void destroy_ring_buffer(RingBuffer buffer)
-{
-    free(buffer.data);
 }
 
 void ring_buffer_push(RingBuffer *buffer, void *element);

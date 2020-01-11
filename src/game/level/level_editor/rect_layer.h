@@ -45,10 +45,11 @@ struct RectLayer {
 LayerPtr rect_layer_as_layer(RectLayer *layer);
 // NOTE: create_rect_layer and create_rect_layer_from_line_stream does
 // not own id_name_prefix
-RectLayer create_rect_layer(const char *id_name_prefix,
-                            Cursor *cursor);
-void rect_layer_reload(RectLayer *rect_layer, Memory *memory, String *input);
-void rect_layer_clean(RectLayer *rect_layer);
+
+RectLayer *create_rect_layer_from_memory(Memory *memory,
+                                         const char *id_name_prefix,
+                                         Cursor *cursor);
+void rect_layer_load(RectLayer *rect_layer, Memory *memory, String *input);
 
 static inline
 void destroy_rect_layer(RectLayer layer)

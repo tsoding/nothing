@@ -156,15 +156,33 @@ LabelLayer create_label_layer(const char *id_name_prefix)
     return result;
 }
 
-void label_layer_reload(LabelLayer *label_layer,
+LabelLayer *create_label_layer_from_memory(Memory *memory,
+                                           const char *id_name_prefix)
+{
+    trace_assert(memory);
+    trace_assert(id_name_prefix);
+
+    LabelLayer *result = memory_alloc(memory, sizeof(LabelLayer));
+    memset(result, 0, sizeof(LabelLayer));
+    result->ids = create_dynarray_from_memory(memory, sizeof(char) * LABEL_LAYER_ID_MAX_SIZE);
+    result->positions = create_dynarray_from_memory(memory, sizeof(Vec2f));
+    result->colors = create_dynarray_from_memory(memory, sizeof(Color));
+    result->texts = create_dynarray_from_memory(memory, sizeof(char) * LABEL_LAYER_TEXT_MAX_SIZE);
+    result->color_picker = create_color_picker_from_rgba(COLOR_RED);
+    result->selection = -1;
+    result->edit_field.font_size = LABELS_SIZE;
+    result->edit_field.font_color = COLOR_RED;
+    result->id_name_prefix = id_name_prefix;
+    return result;
+}
+
+void label_layer_load(LabelLayer *label_layer,
                         Memory *memory,
                         String *input)
 {
     trace_assert(label_layer);
     trace_assert(memory);
     trace_assert(input);
-
-    label_layer_clean(label_layer);
 
     int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
     char id[LABEL_LAYER_ID_MAX_SIZE];
@@ -198,15 +216,6 @@ void label_layer_reload(LabelLayer *label_layer,
         dynarray_push(&label_layer->colors, &color);
         dynarray_push(&label_layer->texts, label_text);
     }
-}
-
-void label_layer_clean(LabelLayer *label_layer)
-{
-    trace_assert(label_layer);
-    dynarray_clear(&label_layer->ids);
-    dynarray_clear(&label_layer->positions);
-    dynarray_clear(&label_layer->colors);
-    dynarray_clear(&label_layer->texts);
 }
 
 static inline

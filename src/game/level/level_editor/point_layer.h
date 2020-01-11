@@ -38,11 +38,10 @@ LayerPtr point_layer_as_layer(PointLayer *point_layer);
 // NOTE: create_point_layer and create_point_layer_from_line_stream do
 // not own id_name_prefix
 PointLayer create_point_layer(const char *id_name_prefix);
-void point_layer_reload(PointLayer *point_layer,
+PointLayer *create_point_layer_from_memory(Memory *memory, const char *id_name_prefix);
+void point_layer_load(PointLayer *point_layer,
                         Memory *memory,
                         String *input);
-void point_layer_clean(PointLayer *point_layer);
-
 
 static inline
 void destroy_point_layer(PointLayer point_layer)

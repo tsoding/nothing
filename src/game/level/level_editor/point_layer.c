@@ -152,15 +152,31 @@ PointLayer create_point_layer(const char *id_name_prefix)
     return result;
 }
 
-void point_layer_reload(PointLayer *point_layer,
-                        Memory *memory,
-                        String *input)
+PointLayer *create_point_layer_from_memory(Memory *memory,
+                                           const char *id_name_prefix)
+{
+    trace_assert(memory);
+    trace_assert(id_name_prefix);
+
+    PointLayer *result = memory_alloc(memory, sizeof(PointLayer));
+    memset(result, 0, sizeof(PointLayer));
+    result->state = POINT_LAYER_IDLE;
+    result->positions = create_dynarray_from_memory(memory, sizeof(Vec2f));
+    result->colors = create_dynarray_from_memory(memory, sizeof(Color));
+    result->ids = create_dynarray_from_memory(memory, sizeof(char) * ID_MAX_SIZE);
+    result->edit_field.font_size = POINT_LAYER_ID_TEXT_SIZE;
+    result->edit_field.font_color = POINT_LAYER_ID_TEXT_COLOR;
+    result->id_name_prefix = id_name_prefix;
+    return result;
+}
+
+void point_layer_load(PointLayer *point_layer,
+                      Memory *memory,
+                      String *input)
 {
     trace_assert(point_layer);
     trace_assert(memory);
     trace_assert(input);
-
-    point_layer_clean(point_layer);
 
     int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
     char id[ENTITY_MAX_ID_SIZE];
@@ -179,14 +195,6 @@ void point_layer_reload(PointLayer *point_layer,
         dynarray_push(&point_layer->colors, &color);
         dynarray_push(&point_layer->ids, id);
     }
-}
-
-void point_layer_clean(PointLayer *point_layer)
-{
-    trace_assert(point_layer);
-    dynarray_clear(&point_layer->positions);
-    dynarray_clear(&point_layer->colors);
-    dynarray_clear(&point_layer->ids);
 }
 
 static inline

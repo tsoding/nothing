@@ -120,4 +120,16 @@ char *string_to_cstr(Memory *memory, String s)
     return result;
 }
 
+static inline
+char *strdup_to_memory(Memory *memory, const char *s)
+{
+    trace_assert(memory);
+    trace_assert(s);
+
+    const size_t n = strlen(s) + 1;
+    char *d = memory_alloc(memory, n);
+    memcpy(d, s, n);
+    return d;
+}
+
 #endif  // S_H_
