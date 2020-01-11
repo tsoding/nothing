@@ -796,9 +796,9 @@ LayerPtr rect_layer_as_layer(RectLayer *rect_layer)
     return layer;
 }
 
-RectLayer *create_rect_layer_from_memory(Memory *memory,
-                                         const char *id_name_prefix,
-                                         Cursor *cursor)
+RectLayer *create_rect_layer(Memory *memory,
+                             const char *id_name_prefix,
+                             Cursor *cursor)
 {
     trace_assert(memory);
     trace_assert(id_name_prefix);

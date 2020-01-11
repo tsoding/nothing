@@ -46,9 +46,9 @@ LayerPtr rect_layer_as_layer(RectLayer *layer);
 // NOTE: create_rect_layer and create_rect_layer_from_line_stream does
 // not own id_name_prefix
 
-RectLayer *create_rect_layer_from_memory(Memory *memory,
-                                         const char *id_name_prefix,
-                                         Cursor *cursor);
+RectLayer *create_rect_layer(Memory *memory,
+                             const char *id_name_prefix,
+                             Cursor *cursor);
 void rect_layer_load(RectLayer *rect_layer, Memory *memory, String *input);
 
 static inline

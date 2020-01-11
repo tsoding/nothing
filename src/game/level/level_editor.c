@@ -43,11 +43,11 @@ LevelEditor *create_level_editor_from_memory(Memory *memory, Cursor *cursor)
     level_editor->background_layer = create_background_layer(hexstr("fffda5"));
     level_editor->player_layer = create_player_layer(vec(0.0f, 0.0f), hexstr("ff8080"));
 
-    level_editor->platforms_layer = create_rect_layer_from_memory(memory, "platform", cursor);
-    level_editor->lava_layer = create_rect_layer_from_memory(memory, "lava", cursor);
-    level_editor->back_platforms_layer = create_rect_layer_from_memory(memory, "back_platform", cursor);
-    level_editor->boxes_layer = create_rect_layer_from_memory(memory, "box", cursor);
-    level_editor->regions_layer = create_rect_layer_from_memory(memory, "region", cursor);
+    level_editor->platforms_layer = create_rect_layer(memory, "platform", cursor);
+    level_editor->lava_layer = create_rect_layer(memory, "lava", cursor);
+    level_editor->back_platforms_layer = create_rect_layer(memory, "back_platform", cursor);
+    level_editor->boxes_layer = create_rect_layer(memory, "box", cursor);
+    level_editor->regions_layer = create_rect_layer(memory, "region", cursor);
     level_editor->goals_layer = create_point_layer_from_memory(memory, "goal");
     level_editor->label_layer = create_label_layer_from_memory(memory, "label");
 
