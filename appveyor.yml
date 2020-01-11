@@ -1,5 +1,4 @@
 # TODO(#1183): appveyor linux build does not support clang
-# TODO(#1184): appveyor does not support macos build
 image:
   - ubuntu1804
   - Visual Studio 2015
