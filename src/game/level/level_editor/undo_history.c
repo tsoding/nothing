@@ -32,7 +32,7 @@ void undo_history_push(UndoHistory *undo_history,
 {
     trace_assert(undo_history);
 
-    // TODO: undo_history_push kinda leaks the memory
+    // TODO(#1244): undo_history_push kinda leaks the memory
     HistoryItem item = {
         .revert = revert,
         .context_data = memory_alloc(undo_history->memory, context_data_size),

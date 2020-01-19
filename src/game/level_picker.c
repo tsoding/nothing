@@ -236,54 +236,53 @@ int level_picker_event(LevelPicker *level_picker,
         }
     } break;
 
-    case SDL_KEYDOWN:
+    case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
-        case SDLK_UP:
-            if (level_picker->items_cursor == 0) {
-                level_picker->items_cursor = level_picker->items.count - 1;
-            } else {
-                level_picker->items_cursor--;
-            }
-            break;
-        case SDLK_DOWN:
-            level_picker->items_cursor++;
-            if (level_picker->items_cursor == level_picker->items.count) {
-                level_picker->items_cursor = 0;
-            }
-            break;
-        case SDLK_RETURN:
+        case SDLK_RETURN: {
             if (level_picker->items_cursor < level_picker->items.count) {
                 level_picker->selected_item = (int) level_picker->items_cursor;
             }
-            break;
+        } break;
         }
-        break;
+    } break;
 
-    case SDL_MOUSEMOTION: {
-        const Vec2f mouse_pos = vec((float) event->motion.x, (float) event->motion.y);
-        Vec2f position = vec_sum(
-            level_picker->items_position,
-            level_picker->items_scroll);
-
-        for (size_t i = 0; i < level_picker->items.count; ++i) {
-            const char *item_text = dynarray_pointer_at(
-                &level_picker->items,
-                i);
-
-            Rect boundary_box = sprite_font_boundary_box(
-                position,
-                LEVEL_PICKER_LIST_FONT_SCALE,
-                item_text);
-
-            if (rect_contains_point(boundary_box, mouse_pos)) {
-                level_picker->items_cursor = i;
-            }
-
-            position.y += boundary_box.h + LEVEL_PICKER_LIST_PADDING_BOTTOM;
+    case SDL_MOUSEWHEEL: {
+        if (event->wheel.y < 0) {
+            level_picker_cursor_down(level_picker);
+        } else if (event->wheel.y > 0) {
+            level_picker_cursor_up(level_picker);
         }
     } break;
 
     case SDL_MOUSEBUTTONDOWN: {
+        switch (event->button.button) {
+        case SDL_BUTTON_LEFT: {
+            const Vec2f mouse_pos = vec((float) event->button.x, (float) event->button.y);
+            Vec2f position = vec_sum(
+                level_picker->items_position,
+                level_picker->items_scroll);
+
+            for (size_t i = 0; i < level_picker->items.count; ++i) {
+                const char *item_text = dynarray_pointer_at(
+                    &level_picker->items,
+                    i);
+
+                Rect boundary_box = sprite_font_boundary_box(
+                    position,
+                    LEVEL_PICKER_LIST_FONT_SCALE,
+                    item_text);
+
+                if (rect_contains_point(boundary_box, mouse_pos)) {
+                    level_picker->items_cursor = i;
+                }
+
+                position.y += boundary_box.h + LEVEL_PICKER_LIST_PADDING_BOTTOM;
+            }
+        } break;
+        }
+    } break;
+
+    case SDL_MOUSEBUTTONUP: {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
             // check if the click position was actually inside...
@@ -358,4 +357,20 @@ int level_picker_enter_camera_event(LevelPicker *level_picker,
 {
     camera_center_at(camera, level_picker->camera_position);
     return 0;
+}
+
+void level_picker_cursor_up(LevelPicker *level_picker)
+{
+    trace_assert(level_picker);
+    if (level_picker->items_cursor > 0) {
+        level_picker->items_cursor--;
+    }
+}
+
+void level_picker_cursor_down(LevelPicker *level_picker)
+{
+    trace_assert(level_picker);
+    if (level_picker->items_cursor + 1 < level_picker->items.count) {
+        level_picker->items_cursor++;
+    }
 }

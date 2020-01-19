@@ -324,31 +324,49 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
     switch (event->type) {
     case SDL_KEYDOWN: {
         switch(event->key.keysym.sym) {
-        case SDLK_n: {
-            memory_clean(&game->level_editor_memory);
-            game->level_editor = create_level_editor(
-                &game->level_editor_memory,
-                &game->cursor);
+        case SDLK_UP: {
+            level_picker_cursor_up(&game->level_picker);
+        } break;
 
-            if (game->level == NULL) {
-                game->level = PUSH_LT(
-                    game->lt,
-                    create_level_from_level_editor(
-                        game->level_editor),
-                    destroy_level);
+        case SDLK_DOWN: {
+            level_picker_cursor_down(&game->level_picker);
+        } break;
+
+        case SDLK_p: {
+            if (event->key.keysym.mod & KMOD_CTRL) {
+                level_picker_cursor_up(&game->level_picker);
+            }
+        } break;
+
+        case SDLK_n:  {
+            if (event->key.keysym.mod & KMOD_CTRL) {
+                level_picker_cursor_down(&game->level_picker);
             } else {
-                game->level = RESET_LT(
-                    game->lt,
-                    game->level,
-                    create_level_from_level_editor(
-                        game->level_editor));
-            }
+                memory_clean(&game->level_editor_memory);
+                game->level_editor = create_level_editor(
+                    &game->level_editor_memory,
+                    &game->cursor);
 
-            if (game->level == NULL) {
-                return -1;
-            }
+                if (game->level == NULL) {
+                    game->level = PUSH_LT(
+                        game->lt,
+                        create_level_from_level_editor(
+                            game->level_editor),
+                        destroy_level);
+                } else {
+                    game->level = RESET_LT(
+                        game->lt,
+                        game->level,
+                        create_level_from_level_editor(
+                            game->level_editor));
+                }
 
-            game_switch_state(game, GAME_STATE_LEVEL);
+                if (game->level == NULL) {
+                    return -1;
+                }
+
+                game_switch_state(game, GAME_STATE_LEVEL);
+            }
         } break;
 
         case SDLK_i: {
