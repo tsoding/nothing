@@ -1,0 +1,43 @@
+# -*- mode: yaml;-*-
+---
+Language: Cpp  # C/C++
+
+BasedOnStyle: Webkit
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 80
+
+AlignAfterOpenBracket: DontAlign
+# AlignAfterOpenBracket: Align
+# AlignAfterOpenBracket: AlwaysBreak
+
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+# When function declarations/invocations are too long to fit on one
+# line, all parameters/arguments will be aligned onto separate lines
+BinPackParameters: false
+BinPackArguments: false
+
+BreakBeforeBinaryOperators: NonAssignment
+
+MaxEmptyLinesToKeep: 1  # Allow no more than 1 consecutive empty line
+
+PointerAlignment: Right  # void *my_ptr;
+
+SortIncludes: true
+IncludeBlocks: Preserve
+
+ReflowComments: true
+
+SpaceAfterCStyleCast: false
+IndentCaseLabels: false
+
+AlwaysBreakAfterReturnType: None  # int my_func()
+
+ReflowComments: false
