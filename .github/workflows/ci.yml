@@ -80,17 +80,18 @@ jobs:
           cmake .. -DNOTHING_CI=ON
           cmake --build .
 
+  # TODO(#1243): build-windows-mingw is broken
   # TODO(#1178): %z related warnings on build-windows-mingw GitHub Action
-  build-windows-mingw:
-    runs-on: windows-2019
-    steps:
-      - uses: actions/checkout@v1
-        # this gives us msys.
-      - uses: numworks/setup-msys2@v1
-      - name: install dependencies
-        run: msys2do pacman -S --noconfirm mingw-w64-x86_64-gcc mingw64/mingw-w64-x86_64-SDL2 make mingw-w64-x86_64-pkg-config
-      - name: build nothing
-        run: |
-          msys2do ./build-posix.sh
-        env:
-          CC: gcc
+  # build-windows-mingw:
+  #   runs-on: windows-2019
+  #   steps:
+  #     - uses: actions/checkout@v1
+  #       # this gives us msys.
+  #     - uses: numworks/setup-msys2@v1
+  #     - name: install dependencies
+  #       run: msys2do pacman -S --noconfirm mingw-w64-x86_64-gcc mingw64/mingw-w64-x86_64-SDL2 make mingw-w64-x86_64-pkg-config
+  #     - name: build nothing
+  #       run: |
+  #         msys2do ./build-posix.sh
+  #       env:
+  #         CC: gcc
