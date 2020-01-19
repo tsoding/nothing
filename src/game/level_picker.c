@@ -370,7 +370,7 @@ void level_picker_cursor_up(LevelPicker *level_picker)
 void level_picker_cursor_down(LevelPicker *level_picker)
 {
     trace_assert(level_picker);
-     if (level_picker->items_cursor + 1 < level_picker->items.count) {
+    if (level_picker->items_cursor + 1 < level_picker->items.count) {
         level_picker->items_cursor++;
     }
 }
