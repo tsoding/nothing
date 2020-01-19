@@ -16,7 +16,7 @@ typedef enum {
     CURSOR_STYLE_N
 } Cursor_Style;
 
-static const char * const cursor_style_tex_files[CURSOR_STYLE_N] = {
+static const char *const cursor_style_tex_files[CURSOR_STYLE_N] = {
     "./assets/images/cursor.bmp",
     "./assets/images/cursor-resize-vert.bmp",
     "./assets/images/cursor-resize-horis.bmp",
@@ -24,13 +24,11 @@ static const char * const cursor_style_tex_files[CURSOR_STYLE_N] = {
     "./assets/images/cursor-resize-diag2.bmp"
 };
 
-static const int cursor_style_tex_pivots[CURSOR_STYLE_N][2] = {
-    {0, 0},
-    {CURSOR_ICON_WIDTH / 2, CURSOR_ICON_HEIGHT / 2},
-    {CURSOR_ICON_WIDTH / 2, CURSOR_ICON_HEIGHT / 2},
-    {CURSOR_ICON_WIDTH / 2, CURSOR_ICON_HEIGHT / 2},
-    {CURSOR_ICON_WIDTH / 2, CURSOR_ICON_HEIGHT / 2}
-};
+static const int cursor_style_tex_pivots[CURSOR_STYLE_N][2] = { { 0, 0 },
+    { CURSOR_ICON_WIDTH / 2, CURSOR_ICON_HEIGHT / 2 },
+    { CURSOR_ICON_WIDTH / 2, CURSOR_ICON_HEIGHT / 2 },
+    { CURSOR_ICON_WIDTH / 2, CURSOR_ICON_HEIGHT / 2 },
+    { CURSOR_ICON_WIDTH / 2, CURSOR_ICON_HEIGHT / 2 } };
 
 typedef struct {
     SDL_Texture *texs[CURSOR_STYLE_N];
@@ -39,4 +37,4 @@ typedef struct {
 
 int cursor_render(const Cursor *cursor, SDL_Renderer *renderer);
 
-#endif  // CURSOR_H_
+#endif // CURSOR_H_

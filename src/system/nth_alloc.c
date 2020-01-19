@@ -1,6 +1,6 @@
-#include <stdlib.h>
 #include "nth_alloc.h"
 #include "log.h"
+#include <stdlib.h>
 
 void *nth_calloc(size_t num, size_t size)
 {

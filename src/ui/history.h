@@ -11,4 +11,4 @@ const char *history_current(History *history);
 void history_prev(History *history);
 void history_next(History *history);
 
-#endif  // HISTORY_H_
+#endif // HISTORY_H_

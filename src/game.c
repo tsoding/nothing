@@ -1,23 +1,23 @@
-#include <SDL.h>
 #include "system/stacktrace.h"
+#include <SDL.h>
 #include <stdio.h>
 
 #include "game.h"
+#include "game/credits.h"
 #include "game/level.h"
-#include "game/sound_samples.h"
+#include "game/level/level_editor.h"
+#include "game/level/level_editor/background_layer.h"
 #include "game/level_picker.h"
+#include "game/settings.h"
+#include "game/sound_samples.h"
+#include "sdl/texture.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
-#include "ui/console.h"
-#include "ui/edit_field.h"
-#include "ui/cursor.h"
 #include "system/str.h"
-#include "sdl/texture.h"
-#include "game/level/level_editor/background_layer.h"
-#include "game/level/level_editor.h"
-#include "game/settings.h"
-#include "game/credits.h"
+#include "ui/console.h"
+#include "ui/cursor.h"
+#include "ui/edit_field.h"
 
 typedef struct Game {
     Lt *lt;
@@ -49,9 +49,9 @@ void game_switch_state(Game *game, Game_state state)
 }
 
 Game *create_game(const char *level_folder,
-                  const char *sound_sample_files[],
-                  size_t sound_sample_files_count,
-                  SDL_Renderer *renderer)
+    const char *sound_sample_files[],
+    size_t sound_sample_files_count,
+    SDL_Renderer *renderer)
 {
     trace_assert(level_folder);
 
@@ -64,8 +64,7 @@ Game *create_game(const char *level_folder,
     game->lt = lt;
 
     game->font.texture = load_bmp_font_texture(
-        renderer,
-        "./assets/images/charmap-oldschool.bmp");
+        renderer, "./assets/images/charmap-oldschool.bmp");
 
     game->level_editor_memory.capacity = LEVEL_EDITOR_MEMORY_CAPACITY;
     game->level_editor_memory.buffer = malloc(LEVEL_EDITOR_MEMORY_CAPACITY);
@@ -75,11 +74,8 @@ Game *create_game(const char *level_folder,
 
     game->credits = create_credits();
 
-    game->sound_samples = PUSH_LT(
-        lt,
-        create_sound_samples(
-            sound_sample_files,
-            sound_sample_files_count),
+    game->sound_samples = PUSH_LT(lt,
+        create_sound_samples(sound_sample_files, sound_sample_files_count),
         destroy_sound_samples);
     if (game->sound_samples == NULL) {
         RETURN_LT(lt, NULL);
@@ -90,33 +86,27 @@ Game *create_game(const char *level_folder,
     game->renderer = renderer;
 
     for (Cursor_Style style = 0; style < CURSOR_STYLE_N; ++style) {
-        game->cursor.texs[style] = PUSH_LT(
-            lt,
+        game->cursor.texs[style] = PUSH_LT(lt,
             texture_from_bmp(cursor_style_tex_files[style], renderer),
             SDL_DestroyTexture);
-        if (SDL_SetTextureBlendMode(
-                game->cursor.texs[style],
-                SDL_ComposeCustomBlendMode(
-                    SDL_BLENDFACTOR_ONE_MINUS_DST_COLOR,
+        if (SDL_SetTextureBlendMode(game->cursor.texs[style],
+                SDL_ComposeCustomBlendMode(SDL_BLENDFACTOR_ONE_MINUS_DST_COLOR,
                     SDL_BLENDFACTOR_ONE_MINUS_SRC_COLOR,
                     SDL_BLENDOPERATION_ADD,
                     SDL_BLENDFACTOR_ONE,
                     SDL_BLENDFACTOR_ZERO,
-                    SDL_BLENDOPERATION_ADD)) < 0) {
+                    SDL_BLENDOPERATION_ADD))
+            < 0) {
             log_warn("SDL error while setting blending mode for `%s': %s\n",
-                     cursor_style_tex_files[style],
-                     SDL_GetError());
+                cursor_style_tex_files[style],
+                SDL_GetError());
         }
     }
 
-    game->level_editor = create_level_editor(
-        &game->level_editor_memory,
-        &game->cursor);
+    game->level_editor =
+        create_level_editor(&game->level_editor_memory, &game->cursor);
 
-    game->console = PUSH_LT(
-        lt,
-        create_console(game),
-        destroy_console);
+    game->console = PUSH_LT(lt, create_console(game), destroy_console);
     if (game->console == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -139,7 +129,7 @@ int game_render(const Game *game)
 {
     trace_assert(game);
 
-    switch(game->state) {
+    switch (game->state) {
     case GAME_STATE_LEVEL: {
         if (level_render(game->level, &game->camera) < 0) {
             return -1;
@@ -168,7 +158,8 @@ int game_render(const Game *game)
         settings_render(&game->settings, &game->camera);
     } break;
 
-    case GAME_STATE_QUIT: break;
+    case GAME_STATE_QUIT:
+        break;
     }
 
     if (game->console_enabled) {
@@ -231,15 +222,18 @@ int game_update(Game *game, float delta_time)
     } break;
 
     case GAME_STATE_LEVEL_PICKER: {
-        if (level_picker_update(&game->level_picker, &game->camera, delta_time) < 0) {
+        if (level_picker_update(&game->level_picker, &game->camera, delta_time)
+            < 0) {
             return -1;
         }
 
-        if (level_picker_enter_camera_event(&game->level_picker, &game->camera) < 0) {
+        if (level_picker_enter_camera_event(&game->level_picker, &game->camera)
+            < 0) {
             return -1;
         }
 
-        const char *level_filename = level_picker_selected_level(&game->level_picker);
+        const char *level_filename =
+            level_picker_selected_level(&game->level_picker);
 
         if (level_filename != NULL) {
             if (game_load_level(game, level_filename) < 0) {
@@ -249,9 +243,7 @@ int game_update(Game *game, float delta_time)
     } break;
 
     case GAME_STATE_LEVEL_EDITOR: {
-        if (level_editor_focus_camera(
-                game->level_editor,
-                &game->camera) < 0) {
+        if (level_editor_focus_camera(game->level_editor, &game->camera) < 0) {
             return -1;
         }
 
@@ -267,8 +259,7 @@ int game_update(Game *game, float delta_time)
     case GAME_STATE_SETTINGS: {
         settings_update(&game->settings, &game->camera, delta_time);
         sound_samples_update_volume(
-            game->sound_samples,
-            game->settings.volume_slider.value);
+            game->sound_samples, game->settings.volume_slider.value);
     } break;
 
     case GAME_STATE_QUIT:
@@ -288,20 +279,16 @@ static int game_event_running(Game *game, const SDL_Event *event)
         case SDL_KEYDOWN: {
             switch (event->key.keysym.sym) {
             case SDLK_r: {
-                game->level = RESET_LT(
-                    game->lt,
+                game->level = RESET_LT(game->lt,
                     game->level,
-                    create_level_from_level_editor(
-                        game->level_editor));
+                    create_level_from_level_editor(game->level_editor));
                 if (game->level == NULL) {
                     game_switch_state(game, GAME_STATE_QUIT);
                     return -1;
                 }
 
                 level_disable_pause_mode(
-                    game->level,
-                    &game->camera,
-                    game->sound_samples);
+                    game->level, &game->camera, game->sound_samples);
                 camera_disable_debug_mode(&game->camera);
             } break;
 
@@ -323,7 +310,7 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
 
     switch (event->type) {
     case SDL_KEYDOWN: {
-        switch(event->key.keysym.sym) {
+        switch (event->key.keysym.sym) {
         case SDLK_UP: {
             level_picker_cursor_up(&game->level_picker);
         } break;
@@ -338,27 +325,22 @@ static int game_event_level_picker(Game *game, const SDL_Event *event)
             }
         } break;
 
-        case SDLK_n:  {
+        case SDLK_n: {
             if (event->key.keysym.mod & KMOD_CTRL) {
                 level_picker_cursor_down(&game->level_picker);
             } else {
                 memory_clean(&game->level_editor_memory);
                 game->level_editor = create_level_editor(
-                    &game->level_editor_memory,
-                    &game->cursor);
+                    &game->level_editor_memory, &game->cursor);
 
                 if (game->level == NULL) {
-                    game->level = PUSH_LT(
-                        game->lt,
-                        create_level_from_level_editor(
-                            game->level_editor),
+                    game->level = PUSH_LT(game->lt,
+                        create_level_from_level_editor(game->level_editor),
                         destroy_level);
                 } else {
-                    game->level = RESET_LT(
-                        game->lt,
+                    game->level = RESET_LT(game->lt,
                         game->level,
-                        create_level_from_level_editor(
-                            game->level_editor));
+                        create_level_from_level_editor(game->level_editor));
                 }
 
                 if (game->level == NULL) {
@@ -392,11 +374,9 @@ static int game_event_level_editor(Game *game, const SDL_Event *event)
     case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
         case SDLK_TAB: {
-            game->level = RESET_LT(
-                game->lt,
+            game->level = RESET_LT(game->lt,
                 game->level,
-                create_level_from_level_editor(
-                    game->level_editor));
+                create_level_from_level_editor(game->level_editor));
             if (game->level == NULL) {
                 return -1;
             }
@@ -406,7 +386,8 @@ static int game_event_level_editor(Game *game, const SDL_Event *event)
     } break;
     }
 
-    return level_editor_event(game->level_editor, event, &game->camera, &game->level_editor_memory);
+    return level_editor_event(
+        game->level_editor, event, &game->camera, &game->level_editor_memory);
 }
 
 int game_event(Game *game, const SDL_Event *event)
@@ -422,8 +403,10 @@ int game_event(Game *game, const SDL_Event *event)
     } break;
 
     case SDL_KEYDOWN: {
-        if ((event->key.keysym.sym == SDLK_q && event->key.keysym.mod & KMOD_CTRL) ||
-            (event->key.keysym.sym == SDLK_F4 && event->key.keysym.mod & KMOD_ALT)) {
+        if ((event->key.keysym.sym == SDLK_q
+                && event->key.keysym.mod & KMOD_CTRL)
+            || (event->key.keysym.sym == SDLK_F4
+                   && event->key.keysym.mod & KMOD_ALT)) {
             game_switch_state(game, GAME_STATE_QUIT);
             return 0;
         }
@@ -439,10 +422,12 @@ int game_event(Game *game, const SDL_Event *event)
                 SDL_StopTextInput();
                 game->console_enabled = 0;
                 return 0;
-            default: {}
+            default: {
+            }
             }
 
-        default: {}
+        default: {
+        }
         }
 
         return console_handle_event(game->console, event);
@@ -452,7 +437,8 @@ int game_event(Game *game, const SDL_Event *event)
             switch (event->key.keysym.sym) {
             case SDLK_BACKQUOTE:
             case SDLK_c: {
-                if (event->key.keysym.mod == KMOD_NONE || event->key.keysym.mod == KMOD_NUM) {
+                if (event->key.keysym.mod == KMOD_NONE
+                    || event->key.keysym.mod == KMOD_NUM) {
                     SDL_StartTextInput();
                     game->console_enabled = 1;
                     console_slide_down(game->console);
@@ -512,8 +498,8 @@ int game_event(Game *game, const SDL_Event *event)
 //
 // keyboard_state is a global var and can be check anywhere anyway
 int game_input(Game *game,
-               const Uint8 *const keyboard_state,
-               SDL_Joystick *the_stick_of_joy)
+    const Uint8 *const keyboard_state,
+    SDL_Joystick *the_stick_of_joy)
 {
     trace_assert(game);
     trace_assert(keyboard_state);
@@ -533,7 +519,8 @@ int game_input(Game *game,
         return level_input(game->level, keyboard_state, the_stick_of_joy);
 
     case GAME_STATE_LEVEL_PICKER:
-        return level_picker_input(&game->level_picker, keyboard_state, the_stick_of_joy);
+        return level_picker_input(
+            &game->level_picker, keyboard_state, the_stick_of_joy);
     }
 
     return 0;
@@ -550,11 +537,8 @@ int game_load_level(Game *game, const char *level_filename)
     trace_assert(level_filename);
 
     memory_clean(&game->level_editor_memory);
-    game->level_editor =
-        create_level_editor_from_file(
-            &game->level_editor_memory,
-            &game->cursor,
-            level_filename);
+    game->level_editor = create_level_editor_from_file(
+        &game->level_editor_memory, &game->cursor, level_filename);
 
     if (!game->level_editor) {
         game_switch_state(game, GAME_STATE_LEVEL_PICKER);
@@ -562,17 +546,13 @@ int game_load_level(Game *game, const char *level_filename)
     }
 
     if (game->level == NULL) {
-        game->level = PUSH_LT(
-            game->lt,
-            create_level_from_level_editor(
-                game->level_editor),
+        game->level = PUSH_LT(game->lt,
+            create_level_from_level_editor(game->level_editor),
             destroy_level);
     } else {
-        game->level = RESET_LT(
-            game->lt,
+        game->level = RESET_LT(game->lt,
             game->level,
-            create_level_from_level_editor(
-                game->level_editor));
+            create_level_from_level_editor(game->level_editor));
     }
 
     if (game->level == NULL) {

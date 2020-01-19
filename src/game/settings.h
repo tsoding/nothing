@@ -19,4 +19,4 @@ void settings_render(const Settings *settings, const Camera *camera);
 void settings_event(Settings *settings, Camera *camera, const SDL_Event *event);
 void settings_update(Settings *settings, Camera *camera, float dt);
 
-#endif  // SETTINGS_H_
+#endif // SETTINGS_H_

@@ -14,8 +14,7 @@ typedef struct {
     uint8_t *buffer;
 } Memory;
 
-static inline
-void *memory_alloc(Memory *memory, size_t size)
+static inline void *memory_alloc(Memory *memory, size_t size)
 {
     assert(memory);
     assert(memory->size + size <= memory->capacity);
@@ -26,11 +25,10 @@ void *memory_alloc(Memory *memory, size_t size)
     return result;
 }
 
-static inline
-void memory_clean(Memory *memory)
+static inline void memory_clean(Memory *memory)
 {
     assert(memory);
     memory->size = 0;
 }
 
-#endif  // MEMORY_H_
+#endif // MEMORY_H_

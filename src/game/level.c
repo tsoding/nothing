@@ -1,5 +1,5 @@
-#include <SDL.h>
 #include "system/stacktrace.h"
+#include <SDL.h>
 
 #include "color.h"
 #include "game/camera.h"
@@ -9,32 +9,28 @@
 #include "game/level/goals.h"
 #include "game/level/labels.h"
 #include "game/level/lava.h"
+#include "game/level/level_editor.h"
+#include "game/level/level_editor/background_layer.h"
+#include "game/level/level_editor/label_layer.h"
+#include "game/level/level_editor/player_layer.h"
+#include "game/level/level_editor/point_layer.h"
+#include "game/level/level_editor/rect_layer.h"
 #include "game/level/platforms.h"
 #include "game/level/player.h"
 #include "game/level/regions.h"
 #include "game/level/rigid_bodies.h"
-#include "game/level/level_editor/rect_layer.h"
-#include "game/level/level_editor/point_layer.h"
-#include "game/level/level_editor/player_layer.h"
-#include "game/level/level_editor/label_layer.h"
-#include "game/level/level_editor/background_layer.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/str.h"
-#include "game/level/level_editor.h"
 #include "ui/console.h"
 
 #define LEVEL_GRAVITY 1500.0f
 #define JOYSTICK_THRESHOLD 1000
 
-typedef enum {
-    LEVEL_STATE_IDLE = 0,
-    LEVEL_STATE_PAUSE
-} LevelState;
+typedef enum { LEVEL_STATE_IDLE = 0, LEVEL_STATE_PAUSE } LevelState;
 
-struct Level
-{
+struct Level {
     Lt *lt;
 
     LevelState state;
@@ -56,88 +52,75 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor)
 
     Lt *lt = create_lt();
 
-    Level *level = PUSH_LT(
-        lt,
-        nth_calloc(1, sizeof(Level)),
-        free);
+    Level *level = PUSH_LT(lt, nth_calloc(1, sizeof(Level)), free);
     if (level == NULL) {
         RETURN_LT(lt, NULL);
     }
     level->lt = lt;
 
     level->background = create_background(
-        color_picker_rgba(
-            &level_editor->background_layer.color_picker));
+        color_picker_rgba(&level_editor->background_layer.color_picker));
 
-    level->rigid_bodies = PUSH_LT(lt, create_rigid_bodies(1024), destroy_rigid_bodies);
+    level->rigid_bodies =
+        PUSH_LT(lt, create_rigid_bodies(1024), destroy_rigid_bodies);
     if (level->rigid_bodies == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    level->player = PUSH_LT(
-        lt,
+    level->player = PUSH_LT(lt,
         create_player_from_player_layer(
-            &level_editor->player_layer,
-            level->rigid_bodies),
+            &level_editor->player_layer, level->rigid_bodies),
         destroy_player);
     if (level->player == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    level->platforms = PUSH_LT(
-        lt,
+    level->platforms = PUSH_LT(lt,
         create_platforms_from_rect_layer(level_editor->platforms_layer),
         destroy_platforms);
     if (level->platforms == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    level->goals = PUSH_LT(
-        lt,
+    level->goals = PUSH_LT(lt,
         create_goals_from_point_layer(level_editor->goals_layer),
         destroy_goals);
     if (level->goals == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    level->lava = PUSH_LT(
-        lt,
+    level->lava = PUSH_LT(lt,
         create_lava_from_rect_layer(level_editor->lava_layer),
         destroy_lava);
     if (level->lava == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    level->back_platforms = PUSH_LT(
-        lt,
+    level->back_platforms = PUSH_LT(lt,
         create_platforms_from_rect_layer(level_editor->back_platforms_layer),
         destroy_platforms);
     if (level->back_platforms == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    level->boxes = PUSH_LT(
-        lt,
-        create_boxes_from_rect_layer(level_editor->boxes_layer, level->rigid_bodies),
+    level->boxes = PUSH_LT(lt,
+        create_boxes_from_rect_layer(
+            level_editor->boxes_layer, level->rigid_bodies),
         destroy_boxes);
     if (level->boxes == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    level->labels = PUSH_LT(
-        lt,
+    level->labels = PUSH_LT(lt,
         create_labels_from_label_layer(level_editor->label_layer),
         destroy_labels);
     if (level->labels == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    level->regions = PUSH_LT(
-        lt,
+    level->regions = PUSH_LT(lt,
         create_regions_from_rect_layer(
-            level_editor->regions_layer,
-            level->labels,
-            level->goals),
+            level_editor->regions_layer, level->labels, level->goals),
         destroy_regions);
     if (level->regions == NULL) {
         RETURN_LT(lt, NULL);
@@ -223,9 +206,10 @@ int level_update(Level *level, float delta_time)
     return 0;
 }
 
-static
-int level_event_idle(Level *level, const SDL_Event *event,
-                     Camera *camera, Sound_samples *sound_samples)
+static int level_event_idle(Level *level,
+    const SDL_Event *event,
+    Camera *camera,
+    Sound_samples *sound_samples)
 {
     trace_assert(level);
 
@@ -260,9 +244,10 @@ int level_event_idle(Level *level, const SDL_Event *event,
     return 0;
 }
 
-static
-int level_event_pause(Level *level, const SDL_Event *event,
-                      Camera *camera, Sound_samples *sound_samples)
+static int level_event_pause(Level *level,
+    const SDL_Event *event,
+    Camera *camera,
+    Sound_samples *sound_samples)
 {
     trace_assert(level);
 
@@ -281,8 +266,10 @@ int level_event_pause(Level *level, const SDL_Event *event,
     return 0;
 }
 
-int level_event(Level *level, const SDL_Event *event,
-                Camera *camera, Sound_samples *sound_samples)
+int level_event(Level *level,
+    const SDL_Event *event,
+    Camera *camera,
+    Sound_samples *sound_samples)
 {
     trace_assert(level);
     trace_assert(event);
@@ -301,8 +288,8 @@ int level_event(Level *level, const SDL_Event *event,
 }
 
 int level_input(Level *level,
-                const Uint8 *const keyboard_state,
-                SDL_Joystick *the_stick_of_joy)
+    const Uint8 *const keyboard_state,
+    SDL_Joystick *the_stick_of_joy)
 {
     trace_assert(level);
     trace_assert(keyboard_state);
@@ -313,11 +300,14 @@ int level_input(Level *level,
 
     if (keyboard_state[SDL_SCANCODE_A] || keyboard_state[SDL_SCANCODE_LEFT]) {
         player_move_left(level->player);
-    } else if (keyboard_state[SDL_SCANCODE_D] || keyboard_state[SDL_SCANCODE_RIGHT]) {
+    } else if (keyboard_state[SDL_SCANCODE_D]
+        || keyboard_state[SDL_SCANCODE_RIGHT]) {
         player_move_right(level->player);
-    } else if (the_stick_of_joy && SDL_JoystickGetAxis(the_stick_of_joy, 0) < -JOYSTICK_THRESHOLD) {
+    } else if (the_stick_of_joy
+        && SDL_JoystickGetAxis(the_stick_of_joy, 0) < -JOYSTICK_THRESHOLD) {
         player_move_left(level->player);
-    } else if (the_stick_of_joy && SDL_JoystickGetAxis(the_stick_of_joy, 0) > JOYSTICK_THRESHOLD) {
+    } else if (the_stick_of_joy
+        && SDL_JoystickGetAxis(the_stick_of_joy, 0) > JOYSTICK_THRESHOLD) {
         player_move_right(level->player);
     } else {
         player_stop(level->player);
@@ -358,8 +348,8 @@ int level_enter_camera_event(Level *level, Camera *camera)
     return 0;
 }
 
-void level_disable_pause_mode(Level *level, Camera *camera,
-                              Sound_samples *sound_samples)
+void level_disable_pause_mode(
+    Level *level, Camera *camera, Sound_samples *sound_samples)
 {
     trace_assert(level);
     trace_assert(camera);

@@ -13,9 +13,8 @@
 #include "system/s.h"
 
 #ifdef _WIN32
-struct dirent
-{
-    char d_name[MAX_PATH+1];
+struct dirent {
+    char d_name[MAX_PATH + 1];
 };
 
 typedef struct DIR DIR;
@@ -27,4 +26,4 @@ void closedir(DIR *dirp);
 
 String read_whole_file(Memory *memory, const char *filepath);
 
-#endif  // FILE_H_
+#endif // FILE_H_

@@ -1,85 +1,74 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "game/level/boxes.h"
-#include "system/stacktrace.h"
-#include "system/log.h"
-#include "game/camera.h"
-#include "color_picker.h"
 #include "color.h"
+#include "color_picker.h"
+#include "game/camera.h"
+#include "game/level/boxes.h"
+#include "system/log.h"
+#include "system/stacktrace.h"
 #include "undo_history.h"
 
 #define COLOR_SLIDER_HEIGHT 60.0f
 #define COLOR_PICKER_WIDTH 300.0f
 #define COLOR_PICKER_HEIGHT (COLOR_SLIDER_HEIGHT * COLOR_SLIDER_N)
 #define COLOR_PICKER_REFERENCE 1920.0f
-#define COLOR_PICKER_HW_RATIO (COLOR_PICKER_HEIGHT/ COLOR_PICKER_WIDTH)
+#define COLOR_PICKER_HW_RATIO (COLOR_PICKER_HEIGHT / COLOR_PICKER_WIDTH)
 #define COLOR_PICKER_WR_RATIO (COLOR_PICKER_WIDTH / COLOR_PICKER_REFERENCE)
 
 const char *slider_labels[COLOR_SLIDER_N] = {
-    "Hue",
-    "Saturation",
-    "Lightness"
+    "Hue", "Saturation", "Lightness"
 };
 
 ColorPicker create_color_picker_from_rgba(Color color)
 {
     Color color_hsla = rgba_to_hsla(color);
-    ColorPicker color_picker = {
-        .sliders = {
-            {0, color_hsla.r, 360.0f},
-            {0, color_hsla.g, 1.0f},
-            {0, color_hsla.b, 1.0f}
-        }
-    };
+    ColorPicker color_picker = { .sliders = { { 0, color_hsla.r, 360.0f },
+                                     { 0, color_hsla.g, 1.0f },
+                                     { 0, color_hsla.b, 1.0f } } };
     return color_picker;
 }
 
-int color_picker_render(const ColorPicker *color_picker,
-                        const Camera *camera)
+int color_picker_render(const ColorPicker *color_picker, const Camera *camera)
 {
     trace_assert(color_picker);
     trace_assert(camera);
 
     const Rect viewport = camera_view_port_screen(camera);
-    const Rect boundary = rect(
-        0.0f, 0.0f,
+    const Rect boundary = rect(0.0f,
+        0.0f,
         viewport.w * COLOR_PICKER_WR_RATIO,
         viewport.w * COLOR_PICKER_WR_RATIO * COLOR_PICKER_HW_RATIO);
 
-    const float color_slider_height =
-        boundary.h / (COLOR_SLIDER_N + 1.0f);
+    const float color_slider_height = boundary.h / (COLOR_SLIDER_N + 1.0f);
 
-    if (camera_fill_rect_screen(
-            camera,
-            rect(boundary.x, boundary.y,
-                 boundary.w, color_slider_height),
-            color_picker_rgba(color_picker)) < 0) {
+    if (camera_fill_rect_screen(camera,
+            rect(boundary.x, boundary.y, boundary.w, color_slider_height),
+            color_picker_rgba(color_picker))
+        < 0) {
         return -1;
     }
 
     for (ColorPickerSlider index = 0; index < COLOR_SLIDER_N; ++index) {
-        const Rect slider_rect =
-            rect(boundary.x,
-                 boundary.y + color_slider_height * (float) (index + 1),
-                 boundary.w, color_slider_height);
+        const Rect slider_rect = rect(boundary.x,
+            boundary.y + color_slider_height * (float)(index + 1),
+            boundary.w,
+            color_slider_height);
         const float font_scale = boundary.w / COLOR_PICKER_WIDTH;
         const Vec2f label_size = vec(2.5f * font_scale, 2.5f * font_scale);
 
-        if (slider_render(
-                &color_picker->sliders[index],
-                camera,
-                slider_rect) < 0) {
+        if (slider_render(&color_picker->sliders[index], camera, slider_rect)
+            < 0) {
             return -1;
         }
 
-        camera_render_text_screen(
-            camera,
+        camera_render_text_screen(camera,
             slider_labels[index],
             label_size,
             COLOR_BLACK,
             vec(slider_rect.x + boundary.w,
-                slider_rect.y + color_slider_height * 0.5f - label_size.y * (float) FONT_CHAR_HEIGHT * 0.5f));
+                slider_rect.y + color_slider_height * 0.5f
+                    - label_size.y * (float)FONT_CHAR_HEIGHT * 0.5f));
     }
 
     return 0;
@@ -87,9 +76,9 @@ int color_picker_render(const ColorPicker *color_picker,
 
 // TODO(#932): the `selected` event propagation control is cumbersome
 int color_picker_event(ColorPicker *color_picker,
-                       const SDL_Event *event,
-                       const Camera *camera,
-                       int *selected_out)
+    const SDL_Event *event,
+    const Camera *camera,
+    int *selected_out)
 {
     trace_assert(color_picker);
     trace_assert(event);
@@ -98,24 +87,23 @@ int color_picker_event(ColorPicker *color_picker,
     int selected = 0;
 
     const Rect viewport = camera_view_port_screen(camera);
-    const Rect boundary = rect(
-        0.0f, 0.0f,
+    const Rect boundary = rect(0.0f,
+        0.0f,
         viewport.w * COLOR_PICKER_WR_RATIO,
         viewport.w * COLOR_PICKER_WR_RATIO * COLOR_PICKER_HW_RATIO);
 
-    const float color_slider_height =
-        boundary.h / (COLOR_SLIDER_N + 1.0f);
+    const float color_slider_height = boundary.h / (COLOR_SLIDER_N + 1.0f);
 
-    for (ColorPickerSlider index = 0;
-         !selected && index < COLOR_SLIDER_N;
+    for (ColorPickerSlider index = 0; !selected && index < COLOR_SLIDER_N;
          ++index) {
-        if (slider_event(
-                &color_picker->sliders[index],
+        if (slider_event(&color_picker->sliders[index],
                 event,
                 rect(boundary.x,
-                     boundary.y + color_slider_height * (float) (index + 1),
-                     boundary.w, color_slider_height),
-                &selected) < 0) {
+                    boundary.y + color_slider_height * (float)(index + 1),
+                    boundary.w,
+                    color_slider_height),
+                &selected)
+            < 0) {
             return -1;
         }
     }
@@ -129,8 +117,7 @@ int color_picker_event(ColorPicker *color_picker,
 
 Color color_picker_rgba(const ColorPicker *color_picker)
 {
-    return hsla(
-        color_picker->sliders[COLOR_SLIDER_HUE].value,
+    return hsla(color_picker->sliders[COLOR_SLIDER_HUE].value,
         color_picker->sliders[COLOR_SLIDER_SAT].value,
         color_picker->sliders[COLOR_SLIDER_LIT].value,
         1.0f);

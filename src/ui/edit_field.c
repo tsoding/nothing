@@ -9,7 +9,6 @@
 #include "system/nth_alloc.h"
 #include "system/stacktrace.h"
 
-
 static void edit_field_insert_char(Edit_field *edit_field, char c);
 
 // See: https://www.gnu.org/software/emacs/manual/html_node/emacs/Moving-Point.html
@@ -21,7 +20,8 @@ static void move_beginning_of_line(Edit_field *edit_field);
 static void move_end_of_line(Edit_field *edit_field);
 static void forward_word(Edit_field *edit_field);
 static void backward_word(Edit_field *edit_field);
-static void kill_region_and_move_cursor(Edit_field *edit_field, size_t start, size_t end);
+static void kill_region_and_move_cursor(
+    Edit_field *edit_field, size_t start, size_t end);
 static void delete_char(Edit_field *edit_field);
 static void delete_backward_char(Edit_field *edit_field);
 static void kill_word(Edit_field *edit_field);
@@ -48,8 +48,8 @@ static void edit_field_insert_char(Edit_field *edit_field, char c)
     edit_field->buffer[++edit_field->buffer_size] = 0;
 }
 
-static inline
-void edit_field_insert_string(Edit_field *edit_field, const char *text)
+static inline void edit_field_insert_string(
+    Edit_field *edit_field, const char *text)
 {
     size_t n = strlen(text);
     for (size_t i = 0; i < n; ++i) {
@@ -64,10 +64,8 @@ static bool is_emacs_word(char c)
 {
     // Word syntax table retrieved from Fundamental Mode, "C-h s"
     // (This is not the complete syntax table)
-    return (c >= '$' && c <= '%')
-        || (c >= '0' && c <= '9')
-        || (c >= 'A' && c <= 'Z')
-        || (c >= 'a' && c <= 'z');
+    return (c >= '$' && c <= '%') || (c >= '0' && c <= '9')
+        || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
 }
 
 static void forward_char(Edit_field *edit_field)
@@ -134,7 +132,9 @@ static void backward_word(Edit_field *edit_field)
     }
 }
 
-static void kill_region_and_move_cursor(Edit_field *edit_field, size_t start, size_t end) {
+static void kill_region_and_move_cursor(
+    Edit_field *edit_field, size_t start, size_t end)
+{
     trace_assert(end <= edit_field->buffer_size);
 
     if (end <= start) {
@@ -163,7 +163,8 @@ static void delete_char(Edit_field *edit_field)
         return;
     }
 
-    kill_region_and_move_cursor(edit_field, edit_field->cursor, edit_field->cursor + 1);
+    kill_region_and_move_cursor(
+        edit_field, edit_field->cursor, edit_field->cursor + 1);
 }
 
 static void delete_backward_char(Edit_field *edit_field)
@@ -173,7 +174,8 @@ static void delete_backward_char(Edit_field *edit_field)
         return;
     }
 
-    kill_region_and_move_cursor(edit_field, edit_field->cursor - 1, edit_field->cursor);
+    kill_region_and_move_cursor(
+        edit_field, edit_field->cursor - 1, edit_field->cursor);
 }
 
 static void kill_word(Edit_field *edit_field)
@@ -196,24 +198,28 @@ static void backward_kill_word(Edit_field *edit_field)
     kill_region_and_move_cursor(edit_field, start, end);
 }
 
-static void kill_to_end_of_line(Edit_field *edit_field) {
+static void kill_to_end_of_line(Edit_field *edit_field)
+{
     // "C-k"
-    kill_region_and_move_cursor(edit_field, edit_field->cursor,
-                                edit_field->buffer_size);
+    kill_region_and_move_cursor(
+        edit_field, edit_field->cursor, edit_field->buffer_size);
 }
 
-static void field_buffer_cut(Edit_field *edit_field) {
+static void field_buffer_cut(Edit_field *edit_field)
+{
     // "C-w"
     SDL_SetClipboardText(edit_field_as_text(edit_field));
     edit_field_clean(edit_field);
 }
 
-static void field_buffer_copy(Edit_field *edit_field) {
+static void field_buffer_copy(Edit_field *edit_field)
+{
     // "M-w"
     SDL_SetClipboardText(edit_field_as_text(edit_field));
 }
 
-static void field_buffer_paste(Edit_field *edit_field) {
+static void field_buffer_paste(Edit_field *edit_field)
+{
     // "C-y"
     char *text = SDL_GetClipboardText();
     edit_field_insert_string(edit_field, text);
@@ -336,9 +342,8 @@ static void handle_keydown_ctrl(Edit_field *edit_field, const SDL_Event *event)
     }
 }
 
-int edit_field_render_screen(const Edit_field *edit_field,
-                             const Camera *camera,
-                             Vec2f screen_position)
+int edit_field_render_screen(
+    const Edit_field *edit_field, const Camera *camera, Vec2f screen_position)
 {
     trace_assert(edit_field);
     trace_assert(camera);
@@ -346,30 +351,31 @@ int edit_field_render_screen(const Edit_field *edit_field,
     const float cursor_y_overflow = 10.0f;
     const float cursor_width = 2.0f;
 
-    camera_render_text_screen(
-        camera,
+    camera_render_text_screen(camera,
         edit_field->buffer,
         edit_field->font_size,
         edit_field->font_color,
         screen_position);
 
     /* TODO(#363): the size of the cursor does not correspond to font size */
-    if (camera_fill_rect_screen(
-            camera,
-            rect(screen_position.x + (float) edit_field->cursor * (float) FONT_CHAR_WIDTH * edit_field->font_size.x,
-                 screen_position.y - cursor_y_overflow,
-                 cursor_width,
-                 FONT_CHAR_HEIGHT * edit_field->font_size.y + cursor_y_overflow * 2.0f),
-            edit_field->font_color) < 0) {
+    if (camera_fill_rect_screen(camera,
+            rect(screen_position.x
+                    + (float)edit_field->cursor * (float)FONT_CHAR_WIDTH
+                        * edit_field->font_size.x,
+                screen_position.y - cursor_y_overflow,
+                cursor_width,
+                FONT_CHAR_HEIGHT * edit_field->font_size.y
+                    + cursor_y_overflow * 2.0f),
+            edit_field->font_color)
+        < 0) {
         return -1;
     }
 
     return 0;
 }
 
-int edit_field_render_world(const Edit_field *edit_field,
-                            const Camera *camera,
-                            Vec2f world_position)
+int edit_field_render_world(
+    const Edit_field *edit_field, const Camera *camera, Vec2f world_position)
 {
     trace_assert(edit_field);
     trace_assert(camera);
@@ -377,22 +383,25 @@ int edit_field_render_world(const Edit_field *edit_field,
     const float cursor_y_overflow = 10.0f;
     const float cursor_width = 2.0f;
 
-    if (camera_render_text(
-            camera,
+    if (camera_render_text(camera,
             edit_field->buffer,
             edit_field->font_size,
             edit_field->font_color,
-            world_position) < 0) {
+            world_position)
+        < 0) {
         return -1;
     }
 
-    if (camera_fill_rect(
-            camera,
-            rect(world_position.x + (float) edit_field->cursor * (float) FONT_CHAR_WIDTH * edit_field->font_size.x,
-                 world_position.y - cursor_y_overflow,
-                 cursor_width,
-                 FONT_CHAR_HEIGHT * edit_field->font_size.y + cursor_y_overflow * 2.0f),
-            edit_field->font_color) < 0) {
+    if (camera_fill_rect(camera,
+            rect(world_position.x
+                    + (float)edit_field->cursor * (float)FONT_CHAR_WIDTH
+                        * edit_field->font_size.x,
+                world_position.y - cursor_y_overflow,
+                cursor_width,
+                FONT_CHAR_HEIGHT * edit_field->font_size.y
+                    + cursor_y_overflow * 2.0f),
+            edit_field->font_color)
+        < 0) {
         return -1;
     }
 
@@ -463,9 +472,8 @@ void edit_field_clean(Edit_field *edit_field)
     edit_field->buffer[0] = 0;
 }
 
-void edit_field_restyle(Edit_field *edit_field,
-                        Vec2f font_size,
-                        Color font_color)
+void edit_field_restyle(
+    Edit_field *edit_field, Vec2f font_size, Color font_color)
 {
     trace_assert(edit_field);
     edit_field->font_size = font_size;

@@ -1,14 +1,12 @@
 #include "system/stacktrace.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "system/stacktrace.h"
 
 #include "str.h"
 #include "system/nth_alloc.h"
 
-char *string_duplicate(const char *str,
-                       const char *str_end)
+char *string_duplicate(const char *str, const char *str_end)
 {
     trace_assert(str);
 
@@ -16,7 +14,7 @@ char *string_duplicate(const char *str,
         return NULL;
     }
 
-    const size_t n = str_end == NULL ? strlen(str) : (size_t) (str_end - str);
+    const size_t n = str_end == NULL ? strlen(str) : (size_t)(str_end - str);
     char *dup_str = nth_calloc(1, sizeof(char) * (n + 1));
     if (dup_str == NULL) {
         return NULL;

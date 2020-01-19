@@ -7,12 +7,7 @@
 
 Rect rect(float x, float y, float w, float h)
 {
-    const Rect result = {
-        .x = x,
-        .y = y,
-        .w = w,
-        .h = h
-    };
+    const Rect result = { .x = x, .y = y, .w = w, .h = h };
 
     return result;
 }
@@ -24,21 +19,16 @@ Rect rect_from_vecs(Vec2f position, Vec2f size)
 
 Rect rect_from_points(Vec2f p1, Vec2f p2)
 {
-    return rect_from_vecs(
-        vec(fminf(p1.x, p2.x),
-            fminf(p1.y, p2.y)),
-        vec(fabsf(p1.x - p2.x),
-            fabsf(p1.y - p2.y)));
+    return rect_from_vecs(vec(fminf(p1.x, p2.x), fminf(p1.y, p2.y)),
+        vec(fabsf(p1.x - p2.x), fabsf(p1.y - p2.y)));
 }
 
 Rect rect_from_sdl(const SDL_Rect *rect)
 {
-    const Rect result = {
-        .x = (float) rect->x,
-        .y = (float) rect->y,
-        .w = (float) rect->w,
-        .h = (float) rect->h
-    };
+    const Rect result = { .x = (float)rect->x,
+        .y = (float)rect->y,
+        .w = (float)rect->w,
+        .h = (float)rect->h };
 
     return result;
 }
@@ -51,20 +41,15 @@ Rect rects_overlap_area(Rect rect1, Rect rect2)
     float y2 = fminf(rect1.y + rect1.h, rect2.y + rect2.h);
 
     Rect result = {
-        .x = x1,
-        .y = y1,
-        .w = fmaxf(0.0f, x2 - x1),
-        .h = fmaxf(0.0f, y2 - y1)
+        .x = x1, .y = y1, .w = fmaxf(0.0f, x2 - x1), .h = fmaxf(0.0f, y2 - y1)
     };
     return result;
 }
 
 int rects_overlap(Rect rect1, Rect rect2)
 {
-    return rect1.x + rect1.w > rect2.x
-        && rect2.x + rect2.w > rect1.x
-        && rect2.y + rect2.h > rect1.y
-        && rect1.y + rect1.h > rect2.y;
+    return rect1.x + rect1.w > rect2.x && rect2.x + rect2.w > rect1.x
+        && rect2.y + rect2.h > rect1.y && rect1.y + rect1.h > rect2.y;
 }
 
 float line_length(Line line)
@@ -86,13 +71,13 @@ void rect_object_impact(Rect object, Rect obstacle, int *sides)
             Line int_side = rect_side(int_area, side);
 
             if (line_length(int_side) > 10.0f) {
-                sides[side] = sides[side] ||
-                    (fabs(object_side.p1.x - object_side.p2.x) < 1e-6
-                     && fabs(object_side.p1.x - int_side.p1.x) < 1e-6
-                     && fabs(object_side.p1.x - int_side.p2.x) < 1e-6)
+                sides[side] = sides[side]
+                    || (fabs(object_side.p1.x - object_side.p2.x) < 1e-6
+                           && fabs(object_side.p1.x - int_side.p1.x) < 1e-6
+                           && fabs(object_side.p1.x - int_side.p2.x) < 1e-6)
                     || (fabs(object_side.p1.y - object_side.p2.y) < 1e-6
-                        && fabs(object_side.p1.y - int_side.p1.y) < 1e-6
-                        && fabs(object_side.p1.y - int_side.p2.y) < 1e-6);
+                           && fabs(object_side.p1.y - int_side.p1.y) < 1e-6
+                           && fabs(object_side.p1.y - int_side.p2.y) < 1e-6);
             }
         }
     }
@@ -105,10 +90,7 @@ Line rect_side(Rect rect, Rect_side side)
     const float x2 = rect.x + rect.w;
     const float y2 = rect.y + rect.h;
 
-    Line result = {
-        .p1 = {0, 0},
-        .p2 = {0, 0}
-    };
+    Line result = { .p1 = { 0, 0 }, .p2 = { 0, 0 } };
 
     switch (side) {
     case RECT_SIDE_LEFT:
@@ -135,7 +117,8 @@ Line rect_side(Rect rect, Rect_side side)
         result.p2.x = x2;
         result.p2.y = y2;
         break;
-    default: {}
+    default: {
+    }
     }
 
     return result;
@@ -143,38 +126,30 @@ Line rect_side(Rect rect, Rect_side side)
 
 Rect rect_from_point(Vec2f p, float w, float h)
 {
-    Rect result = {
-        .x = p.x,
-        .y = p.y,
-        .w = w,
-        .h = h
-    };
+    Rect result = { .x = p.x, .y = p.y, .w = w, .h = h };
 
     return result;
 }
 
 int rect_contains_point(Rect rect, Vec2f p)
 {
-    return rect.x <= p.x && p.x <= rect.x + rect.w
-        && rect.y <= p.y && p.y <= rect.y + rect.h;
+    return rect.x <= p.x && p.x <= rect.x + rect.w && rect.y <= p.y
+        && p.y <= rect.y + rect.h;
 }
 
 SDL_Rect rect_for_sdl(Rect rect)
 {
-    const SDL_Rect result = {
-        .x = (int) roundf(rect.x),
-        .y = (int) roundf(rect.y),
-        .w = (int) roundf(rect.w),
-        .h = (int) roundf(rect.h)
-    };
+    const SDL_Rect result = { .x = (int)roundf(rect.x),
+        .y = (int)roundf(rect.y),
+        .w = (int)roundf(rect.w),
+        .h = (int)roundf(rect.h) };
 
     return result;
 }
 
 Vec2f rect_center(Rect rect)
 {
-    return vec(rect.x + rect.w * 0.5f,
-               rect.y + rect.h * 0.5f);
+    return vec(rect.x + rect.w * 0.5f, rect.y + rect.h * 0.5f);
 }
 
 Vec2f rect_snap(Rect pivot, Rect *r)
@@ -214,8 +189,8 @@ Vec2f rect_impulse(Rect *r1, Rect *r2)
     const float cx2 = dx + sx * r2->w * 0.5f;
     const float cy2 = dy + sy * r2->h * 0.5f;
 
-    if (vec_sqr_norm(vec_sum(vec(cx1, c1.y), vec_neg(vec(cx2, c2.y)))) <
-        vec_sqr_norm(vec_sum(vec(c1.x, cy1), vec_neg(vec(c2.x, cy2))))) {
+    if (vec_sqr_norm(vec_sum(vec(cx1, c1.y), vec_neg(vec(cx2, c2.y))))
+        < vec_sqr_norm(vec_sum(vec(c1.x, cy1), vec_neg(vec(c2.x, cy2))))) {
         r1->x = cx1 - r1->w * 0.5f;
         r2->x = cx2 - r2->w * 0.5f;
         return vec(0.0f, 1.0f);
@@ -234,8 +209,7 @@ Rect horizontal_thicc_line(float x1, float x2, float y, float thiccness)
         x2 = t;
     }
 
-    return rect(
-        x1 - thiccness * 0.5f,
+    return rect(x1 - thiccness * 0.5f,
         y - thiccness * 0.5f,
         x2 - x1 + thiccness,
         thiccness);
@@ -249,8 +223,7 @@ Rect vertical_thicc_line(float y1, float y2, float x, float thiccness)
         y2 = t;
     }
 
-    return rect(
-        x - thiccness * 0.5f,
+    return rect(x - thiccness * 0.5f,
         y1 - thiccness * 0.5f,
         thiccness,
         y2 - y1 + thiccness);

@@ -5,4 +5,4 @@ int log_fail(const char *format, ...);
 int log_warn(const char *format, ...);
 int log_info(const char *format, ...);
 
-#endif  // LOG_H_
+#endif // LOG_H_

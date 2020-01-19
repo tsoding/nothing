@@ -1,11 +1,11 @@
 #ifndef DYNARRAY_H_
 #define DYNARRAY_H_
 
-#include <stdlib.h>
-#include <stdbool.h>
-#include <stdint.h>
 #include "system/memory.h"
 #include "system/stacktrace.h"
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 #define DYNARRAY_CAPACITY 256
 
@@ -15,27 +15,21 @@ typedef struct {
     void *data;
 } Dynarray;
 
-static inline
-Dynarray create_dynarray_malloc(size_t element_size)
+static inline Dynarray create_dynarray_malloc(size_t element_size)
 {
-    Dynarray result = {
-        .element_size = element_size,
+    Dynarray result = { .element_size = element_size,
         .count = 0,
-        .data = malloc(DYNARRAY_CAPACITY * element_size)
-    };
+        .data = malloc(DYNARRAY_CAPACITY * element_size) };
     trace_assert(result.data);
     return result;
 }
 
-static inline
-Dynarray create_dynarray(Memory *memory, size_t element_size)
+static inline Dynarray create_dynarray(Memory *memory, size_t element_size)
 {
     trace_assert(memory);
-    Dynarray result = {
-        .element_size = element_size,
+    Dynarray result = { .element_size = element_size,
         .count = 0,
-        .data = memory_alloc(memory, DYNARRAY_CAPACITY * element_size)
-    };
+        .data = memory_alloc(memory, DYNARRAY_CAPACITY * element_size) };
     return result;
 }
 
@@ -48,8 +42,7 @@ void dynarray_clear(Dynarray *dynarray);
 int dynarray_push(Dynarray *dynarray, const void *element);
 int dynarray_push_empty(Dynarray *dynarray);
 void dynarray_pop(Dynarray *dynarray, void *element);
-bool dynarray_contains(const Dynarray *dynarray,
-                       const void *element);
+bool dynarray_contains(const Dynarray *dynarray, const void *element);
 
 void dynarray_swap(Dynarray *dynarray, size_t i, size_t j);
 
@@ -57,4 +50,4 @@ void dynarray_swap(Dynarray *dynarray, size_t i, size_t j);
 void dynarray_delete_at(Dynarray *dynarray, size_t index);
 void dynarray_insert_before(Dynarray *dynarray, size_t index, void *element);
 
-#endif  // DYNARRAY_H_
+#endif // DYNARRAY_H_
