@@ -1,6 +1,8 @@
 #ifndef SLIDER_H_
 #define SLIDER_H_
 
+#include "game/camera.h"
+
 typedef struct {
     int drag;
     float value;

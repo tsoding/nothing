@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #define KILO 1024L
 #define MEGA (1024L * KILO)
