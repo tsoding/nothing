@@ -1,7 +1,7 @@
-#include "./slider.h"
-#include "game/camera.h"
-#include "math/rect.h"
 #include "system/stacktrace.h"
+#include "math/rect.h"
+#include "game/camera.h"
+#include "./slider.h"
 
 int slider_render(const Slider *slider, const Camera *camera, Rect boundary)
 {
@@ -10,7 +10,8 @@ int slider_render(const Slider *slider, const Camera *camera, Rect boundary)
 
     const Color core_color = rgba(0.0f, 0.0f, 0.0f, 1.0f);
     const float core_height = boundary.h * 0.33f;
-    const Rect core = rect(boundary.x,
+    const Rect core = rect(
+        boundary.x,
         boundary.y + boundary.h * 0.5f - core_height * 0.5f,
         boundary.w,
         core_height);
@@ -20,7 +21,8 @@ int slider_render(const Slider *slider, const Camera *camera, Rect boundary)
 
     const float ratio = slider->value / slider->max_value;
     const float cursor_width = boundary.w * 0.1f;
-    const Rect cursor = rect(boundary.x + ratio * (boundary.w - cursor_width),
+    const Rect cursor = rect(
+        boundary.x + ratio * (boundary.w - cursor_width),
         boundary.y,
         cursor_width,
         boundary.h);
@@ -32,8 +34,7 @@ int slider_render(const Slider *slider, const Camera *camera, Rect boundary)
     return 0;
 }
 
-int slider_event(
-    Slider *slider, const SDL_Event *event, Rect boundary, int *selected)
+int slider_event(Slider *slider, const SDL_Event *event, Rect boundary, int *selected)
 {
     trace_assert(slider);
     trace_assert(event);
@@ -41,8 +42,7 @@ int slider_event(
     if (!slider->drag) {
         switch (event->type) {
         case SDL_MOUSEBUTTONDOWN: {
-            Vec2f position =
-                vec((float)event->button.x, (float)event->button.y);
+            Vec2f position = vec((float) event->button.x, (float) event->button.y);
             if (rect_contains_point(boundary, position)) {
                 slider->drag = 1;
                 if (selected) {
@@ -61,10 +61,8 @@ int slider_event(
         } break;
 
         case SDL_MOUSEMOTION: {
-            const float x =
-                fminf(fmaxf((float)event->button.x - boundary.x, 0.0f),
-                    (float)boundary.w);
-            const float ratio = x / (float)boundary.w;
+            const float x = fminf(fmaxf((float) event->button.x - boundary.x, 0.0f), (float) boundary.w);
+            const float ratio = x / (float) boundary.w;
             slider->value = ratio * slider->max_value;
             if (selected) {
                 *selected = 1;

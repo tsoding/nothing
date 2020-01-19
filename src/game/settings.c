@@ -1,6 +1,6 @@
+#include "system/stacktrace.h"
 #include "settings.h"
 #include "config.h"
-#include "system/stacktrace.h"
 
 Settings create_settings(void)
 {
@@ -61,7 +61,10 @@ void settings_event(Settings *settings, Camera *camera, const SDL_Event *event)
         .y = 5.0f,
     };
 
-    if (slider_event(&settings->volume_slider, event, position, NULL) < 0) {
+    if (slider_event(
+            &settings->volume_slider,
+            event,
+            position, NULL) < 0) {
         return;
     }
 }
@@ -71,6 +74,7 @@ void settings_update(Settings *settings, Camera *camera, float dt)
     trace_assert(settings);
     trace_assert(camera);
 
-    vec_add(&settings->camera_position, vec(50.0f * dt, 0.0f));
+    vec_add(&settings->camera_position,
+            vec(50.0f * dt, 0.0f));
     camera_center_at(camera, settings->camera_position);
 }

@@ -16,4 +16,4 @@ typedef struct {
     char entity_id[ENTITY_MAX_ID_SIZE];
 } Action;
 
-#endif // ACTION_H_
+#endif  // ACTION_H_

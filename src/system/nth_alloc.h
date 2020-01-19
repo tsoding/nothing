@@ -5,4 +5,4 @@
 
 void *nth_calloc(size_t num, size_t size);
 
-#endif // NTH_ALLOC_H_
+#endif  // NTH_ALLOC_H_

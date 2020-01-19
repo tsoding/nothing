@@ -1,13 +1,14 @@
-#include "system/stacktrace.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "system/stacktrace.h"
 
 #include "history.h"
+#include "system/str.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
-#include "system/str.h"
 
-struct History {
+struct History
+{
     Lt *lt;
 
     char **buffer;
@@ -20,7 +21,10 @@ History *create_history(size_t capacity)
 {
     Lt *lt = create_lt();
 
-    History *history = PUSH_LT(lt, nth_calloc(1, sizeof(History)), free);
+    History *history = PUSH_LT(
+        lt,
+        nth_calloc(1, sizeof(History)),
+        free);
     if (history == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -30,7 +34,7 @@ History *create_history(size_t capacity)
     history->begin = 0;
     history->cursor = 0;
 
-    history->buffer = PUSH_LT(lt, nth_calloc(capacity, sizeof(char *)), free);
+    history->buffer = PUSH_LT(lt, nth_calloc(capacity, sizeof(char*)), free);
     if (history->buffer == NULL) {
         RETURN_LT(lt, NULL);
     }

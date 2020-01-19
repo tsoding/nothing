@@ -19,10 +19,11 @@ typedef enum {
     LAYER_PICKER_N
 } LayerPicker;
 
-int layer_picker_render(const LayerPicker *layer_picker, const Camera *camera);
+int layer_picker_render(const LayerPicker *layer_picker,
+                        const Camera *camera);
 int layer_picker_event(LayerPicker *layer_picker,
-    const SDL_Event *event,
-    const Camera *camera,
-    bool *selected);
+                       const SDL_Event *event,
+                       const Camera *camera,
+                       bool *selected);
 
-#endif // LAYER_PICKER_H_
+#endif  // LAYER_PICKER_H_

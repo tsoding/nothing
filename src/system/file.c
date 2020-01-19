@@ -1,15 +1,16 @@
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #include "file.h"
-#include "lt_adapters.h"
 #include "system/nth_alloc.h"
 #include "system/stacktrace.h"
+#include "lt_adapters.h"
 
 #ifdef _WIN32
 
-struct DIR {
+struct DIR
+{
     HANDLE hFind;
     WIN32_FIND_DATA data;
     struct dirent *dirent;
@@ -46,14 +47,15 @@ struct dirent *readdir(DIR *dirp)
     if (dirp->dirent == NULL) {
         dirp->dirent = nth_calloc(1, sizeof(struct dirent));
     } else {
-        if (!FindNextFile(dirp->hFind, &dirp->data)) {
+        if(!FindNextFile(dirp->hFind, &dirp->data)) {
             return NULL;
         }
     }
 
     memset(dirp->dirent->d_name, 0, sizeof(dirp->dirent->d_name));
 
-    strncpy(dirp->dirent->d_name,
+    strncpy(
+        dirp->dirent->d_name,
         dirp->data.cFileName,
         sizeof(dirp->dirent->d_name) - 1);
 
@@ -79,23 +81,18 @@ String read_whole_file(Memory *memory, const char *filepath)
 
     String result = string(0, NULL);
     FILE *f = fopen(filepath, "rb");
-    if (!f)
-        goto end;
-    if (fseek(f, 0, SEEK_END) < 0)
-        goto end;
+    if (!f) goto end;
+    if (fseek(f, 0, SEEK_END) < 0) goto end;
     long m = ftell(f);
-    if (m < 0)
-        goto end;
-    if (fseek(f, 0, SEEK_SET) < 0)
-        goto end;
-    result.count = (size_t)m;
+    if (m < 0) goto end;
+    if (fseek(f, 0, SEEK_SET) < 0) goto end;
+    result.count = (size_t) m;
     char *buffer = memory_alloc(memory, result.count);
     size_t n = fread(buffer, 1, result.count, f);
     trace_assert(n == result.count);
     result.data = buffer;
 
 end:
-    if (f)
-        fclose(f);
+    if (f) fclose(f);
     return result;
 }

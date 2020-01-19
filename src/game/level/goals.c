@@ -1,5 +1,5 @@
-#include <math.h>
 #include <stdio.h>
+#include <math.h>
 
 #include <SDL.h>
 
@@ -47,39 +47,36 @@ Goals *create_goals_from_point_layer(const PointLayer *point_layer)
 
     goals->count = point_layer_count(point_layer);
 
-    goals->ids =
-        PUSH_LT(lt, nth_calloc(1, sizeof(char *) * goals->count), free);
+    goals->ids = PUSH_LT(
+        lt,
+        nth_calloc(1, sizeof(char*) * goals->count),
+        free);
     if (goals->ids == NULL) {
         RETURN_LT(lt, NULL);
     }
     for (size_t i = 0; i < goals->count; ++i) {
-        goals->ids[i] =
-            PUSH_LT(lt, nth_calloc(1, sizeof(char) * ENTITY_MAX_ID_SIZE), free);
+        goals->ids[i] = PUSH_LT(lt, nth_calloc(1, sizeof(char) * ENTITY_MAX_ID_SIZE), free);
         if (goals->ids[i] == NULL) {
             RETURN_LT(lt, NULL);
         }
     }
 
-    goals->positions =
-        PUSH_LT(lt, nth_calloc(1, sizeof(Vec2f) * goals->count), free);
+    goals->positions = PUSH_LT(lt, nth_calloc(1, sizeof(Vec2f) * goals->count), free);
     if (goals->positions == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    goals->colors =
-        PUSH_LT(lt, nth_calloc(1, sizeof(Color) * goals->count), free);
+    goals->colors = PUSH_LT(lt, nth_calloc(1, sizeof(Color) * goals->count), free);
     if (goals->colors == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    goals->cue_states =
-        PUSH_LT(lt, nth_calloc(1, sizeof(int) * goals->count), free);
+    goals->cue_states = PUSH_LT(lt, nth_calloc(1, sizeof(int) * goals->count), free);
     if (goals->cue_states == NULL) {
         RETURN_LT(lt, NULL);
     }
 
-    goals->visible =
-        PUSH_LT(lt, nth_calloc(1, sizeof(bool) * goals->count), free);
+    goals->visible = PUSH_LT(lt, nth_calloc(1, sizeof(bool) * goals->count), free);
     if (goals->visible == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -109,34 +106,41 @@ void destroy_goals(Goals *goals)
     RETURN_LT0(goals->lt);
 }
 
-static int goals_render_core(
-    const Goals *goals, size_t goal_index, const Camera *camera)
+static int goals_render_core(const Goals *goals,
+                             size_t goal_index,
+                             const Camera *camera)
 {
     trace_assert(goals);
     trace_assert(camera);
 
     const Vec2f position = vec_sum(
-        goals->positions[goal_index], vec(0.0f, sinf(goals->angle) * 10.0f));
+        goals->positions[goal_index],
+        vec(0.0f, sinf(goals->angle) * 10.0f));
 
-    if (camera_fill_triangle(camera,
-            triangle_mat3x3_product(equilateral_triangle(),
-                mat3x3_product2(trans_mat(position.x, position.y),
+    if (camera_fill_triangle(
+            camera,
+            triangle_mat3x3_product(
+                equilateral_triangle(),
+                mat3x3_product2(
+                    trans_mat(position.x, position.y),
                     rot_mat(PI * -0.5f + goals->angle),
                     scale_mat(GOAL_RADIUS))),
-            goals->colors[goal_index])
-        < 0) {
+            goals->colors[goal_index]) < 0) {
         return -1;
     }
 
-    if (camera_render_debug_text(camera, goals->ids[goal_index], position)
-        < 0) {
+    if (camera_render_debug_text(
+            camera,
+            goals->ids[goal_index],
+            position) < 0) {
         return -1;
     }
 
     return 0;
 }
 
-int goals_render(const Goals *goals, const Camera *camera)
+int goals_render(const Goals *goals,
+                 const Camera *camera)
 {
     trace_assert(goals);
     trace_assert(camera);
@@ -152,14 +156,16 @@ int goals_render(const Goals *goals, const Camera *camera)
     return 0;
 }
 
-void goals_update(Goals *goals, float delta_time)
+void goals_update(Goals *goals,
+                  float delta_time)
 {
     trace_assert(goals);
     trace_assert(delta_time > 0.0f);
     goals->angle = fmodf(goals->angle + 2.0f * delta_time, 2.0f * PI);
 }
 
-int goals_sound(Goals *goals, Sound_samples *sound_samples)
+int goals_sound(Goals *goals,
+                Sound_samples *sound_samples)
 {
     for (size_t i = 0; i < goals->count; ++i) {
         switch (goals->cue_states[i]) {
@@ -168,40 +174,38 @@ int goals_sound(Goals *goals, Sound_samples *sound_samples)
             goals->cue_states[i] = CUE_STATE_SEEN_NOTHING;
             break;
 
-        default: {
-        }
+        default: {}
         }
     }
 
     return 0;
 }
 
-void goals_cue(Goals *goals, const Camera *camera)
+void goals_cue(Goals *goals,
+               const Camera *camera)
 {
     for (size_t i = 0; i < goals->count; ++i) {
         switch (goals->cue_states[i]) {
         case CUE_STATE_VIRGIN:
-            if (goals_is_goal_hidden(goals, i)
-                && camera_is_point_visible(camera, goals->positions[i])) {
+            if (goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, goals->positions[i])) {
                 goals->cue_states[i] = CUE_STATE_HIT_NOTHING;
             }
 
             break;
 
         case CUE_STATE_SEEN_NOTHING:
-            if (!goals_is_goal_hidden(goals, i)
-                && camera_is_point_visible(camera, goals->positions[i])) {
+            if (!goals_is_goal_hidden(goals, i) && camera_is_point_visible(camera, goals->positions[i])) {
                 goals->cue_states[i] = CUE_STATE_VIRGIN;
             }
             break;
 
-        default: {
-        }
+        default: {}
         }
     }
 }
 
-void goals_checkpoint(const Goals *goals, Player *player)
+void goals_checkpoint(const Goals *goals,
+                      Player *player)
 {
     trace_assert(goals);
     trace_assert(player);

@@ -36,11 +36,15 @@ Rect rect_from_sdl(const SDL_Rect *rect);
 
 Rect rects_overlap_area(Rect rect1, Rect rect2);
 
-static inline Rect rect_boundary2(Rect rect1, Rect rect2)
+static inline
+Rect rect_boundary2(Rect rect1, Rect rect2)
 {
     return rect_from_points(
-        vec(fminf(rect1.x, rect2.x), fminf(rect1.y, rect2.y)),
-        vec(fmaxf(rect1.x + rect1.w, rect2.x + rect2.w),
+        vec(
+            fminf(rect1.x, rect2.x),
+            fminf(rect1.y, rect2.y)),
+        vec(
+            fmaxf(rect1.x + rect1.w, rect2.x + rect2.w),
             fmaxf(rect1.y + rect1.h, rect2.y + rect2.h)));
 }
 
@@ -67,7 +71,9 @@ int rect_contains_point(Rect rect, Vec2f p);
 
 int rects_overlap(Rect rect1, Rect rect2);
 
-void rect_object_impact(Rect object, Rect obstacle, int *sides);
+void rect_object_impact(Rect object,
+                        Rect obstacle,
+                        int *sides);
 
 Line rect_side(Rect rect, Rect_side side);
 
@@ -82,7 +88,8 @@ Vec2f rect_center(Rect rect);
 Vec2f rect_snap(Rect pivot, Rect *rect);
 Vec2f rect_impulse(Rect *r1, Rect *r2);
 
-static inline float rect_side_distance(Rect rect, Vec2f point, Rect_side side)
+static inline
+float rect_side_distance(Rect rect, Vec2f point, Rect_side side)
 {
     switch (side) {
     case RECT_SIDE_LEFT: {
@@ -109,7 +116,8 @@ static inline float rect_side_distance(Rect rect, Vec2f point, Rect_side side)
     return 0;
 }
 
-static inline int segment_overlap(Vec2f a, Vec2f b)
+static inline
+int segment_overlap(Vec2f a, Vec2f b)
 {
     if (a.x > a.y) {
         float t = a.x;
@@ -126,11 +134,12 @@ static inline int segment_overlap(Vec2f a, Vec2f b)
     return a.y >= b.x && b.y >= a.x;
 }
 
-static inline int snap_var(float *x, // the value we are snapping
-    float y, // the target we are snapping x to
-    float xo, // x offset
-    float yo, // y offset
-    float st) // snap threshold
+static inline
+int snap_var(float *x,        // the value we are snapping
+             float y,         // the target we are snapping x to
+             float xo,        // x offset
+             float yo,        // y offset
+             float st)        // snap threshold
 {
     if (fabsf((*x + xo) - (y + yo)) < st) {
         *x = y + yo - xo;
@@ -139,18 +148,22 @@ static inline int snap_var(float *x, // the value we are snapping
     return false;
 }
 
-static inline int snap_var2seg(float *x, float y, float xo, float yo, float st)
+static inline
+int snap_var2seg(float *x, float y,
+               float xo, float yo,
+               float st)
 {
     // note: do not use || because we do *not* want short-circuiting, so use |.
-    return snap_var(x, y, xo, 0, st) | snap_var(x, y, xo, yo, st);
+    return snap_var(x, y, xo,  0, st) | snap_var(x, y, xo, yo, st);
 }
 
-static inline void snap_seg2seg(float *x, float y, float xo, float yo, float st)
+static inline
+void snap_seg2seg(float *x, float y, float xo, float yo, float st)
 {
-    snap_var(x, y, 0, 0, st);
-    snap_var(x, y, 0, yo, st);
-    snap_var(x, y, xo, 0, st);
+    snap_var(x, y,  0,  0, st);
+    snap_var(x, y,  0, yo, st);
+    snap_var(x, y, xo,  0, st);
     snap_var(x, y, xo, yo, st);
 }
 
-#endif // RECT_H_
+#endif  // RECT_H_

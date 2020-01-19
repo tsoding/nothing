@@ -4,4 +4,4 @@
 #define PI 3.14159265359f
 #define PI_2 (2.0f * PI)
 
-#endif // PI_H_
+#endif  // PI_H_

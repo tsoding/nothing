@@ -1,15 +1,15 @@
-#include "system/stacktrace.h"
 #include <SDL.h>
+#include "system/stacktrace.h"
 #include <stdio.h>
 
 #include "color.h"
 #include "game/level/lava/wavy_rect.h"
-#include "game/level/level_editor/rect_layer.h"
 #include "lava.h"
 #include "math/rect.h"
-#include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "system/log.h"
+#include "game/level/level_editor/rect_layer.h"
 
 #define LAVA_BOINGNESS 2500.0f
 
@@ -30,8 +30,7 @@ Lava *create_lava_from_rect_layer(const RectLayer *rect_layer)
     lava->lt = lt;
 
     lava->rects_count = rect_layer_count(rect_layer);
-    lava->rects =
-        PUSH_LT(lt, nth_calloc(lava->rects_count, sizeof(Wavy_rect *)), free);
+    lava->rects = PUSH_LT(lt, nth_calloc(lava->rects_count, sizeof(Wavy_rect*)), free);
     if (lava->rects == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -39,8 +38,7 @@ Lava *create_lava_from_rect_layer(const RectLayer *rect_layer)
     const Rect *rects = rect_layer_rects(rect_layer);
     const Color *colors = rect_layer_colors(rect_layer);
     for (size_t i = 0; i < lava->rects_count; ++i) {
-        lava->rects[i] = PUSH_LT(
-            lt, create_wavy_rect(rects[i], colors[i]), destroy_wavy_rect);
+        lava->rects[i] = PUSH_LT(lt, create_wavy_rect(rects[i], colors[i]), destroy_wavy_rect);
         if (lava->rects[i] == NULL) {
             RETURN_LT(lt, NULL);
         }
@@ -56,7 +54,8 @@ void destroy_lava(Lava *lava)
 }
 
 /* TODO(#449): lava does not render its id in debug mode */
-int lava_render(const Lava *lava, const Camera *camera)
+int lava_render(const Lava *lava,
+                const Camera *camera)
 {
     trace_assert(lava);
     trace_assert(camera);
@@ -83,7 +82,8 @@ int lava_update(Lava *lava, float delta_time)
     return 0;
 }
 
-bool lava_overlaps_rect(const Lava *lava, Rect rect)
+bool lava_overlaps_rect(const Lava *lava,
+                        Rect rect)
 {
     trace_assert(lava);
 
@@ -96,8 +96,7 @@ bool lava_overlaps_rect(const Lava *lava, Rect rect)
     return 0;
 }
 
-void lava_float_rigid_body(
-    Lava *lava, RigidBodies *rigid_bodies, RigidBodyId id)
+void lava_float_rigid_body(Lava *lava, RigidBodies *rigid_bodies, RigidBodyId id)
 {
     trace_assert(lava);
 
@@ -105,12 +104,12 @@ void lava_float_rigid_body(
     for (size_t i = 0; i < lava->rects_count; ++i) {
         const Rect lava_hitbox = wavy_rect_hitbox(lava->rects[i]);
         if (rects_overlap(object_hitbox, lava_hitbox)) {
-            const Rect overlap_area =
-                rects_overlap_area(object_hitbox, lava_hitbox);
-            const float k = overlap_area.w * overlap_area.h
-                / (object_hitbox.w * object_hitbox.h);
+            const Rect overlap_area = rects_overlap_area(object_hitbox, lava_hitbox);
+            const float k = overlap_area.w * overlap_area.h / (object_hitbox.w * object_hitbox.h);
             rigid_bodies_apply_force(
-                rigid_bodies, id, vec(0.0f, -k * LAVA_BOINGNESS));
+                rigid_bodies,
+                id,
+                vec(0.0f, -k * LAVA_BOINGNESS));
             rigid_bodies_damper(rigid_bodies, id, vec(0.0f, -0.9f));
         }
     }

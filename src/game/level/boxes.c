@@ -1,6 +1,5 @@
 #include "system/stacktrace.h"
 
-#include "config.h"
 #include "dynarray.h"
 #include "game/level/boxes.h"
 #include "game/level/level_editor/rect_layer.h"
@@ -11,8 +10,10 @@
 #include "system/lt.h"
 #include "system/nth_alloc.h"
 #include "system/str.h"
+#include "config.h"
 
-struct Boxes {
+struct Boxes
+{
     Lt *lt;
     RigidBodies *rigid_bodies;
     Dynarray boxes_ids;
@@ -20,8 +21,7 @@ struct Boxes {
     Dynarray body_colors;
 };
 
-Boxes *create_boxes_from_rect_layer(
-    const RectLayer *layer, RigidBodies *rigid_bodies)
+Boxes *create_boxes_from_rect_layer(const RectLayer *layer, RigidBodies *rigid_bodies)
 {
     trace_assert(layer);
     trace_assert(rigid_bodies);
@@ -82,8 +82,10 @@ int boxes_render(Boxes *boxes, const Camera *camera)
 
     for (size_t i = 0; i < count; ++i) {
         if (rigid_bodies_render(
-                boxes->rigid_bodies, body_ids[i], body_colors[i], camera)
-            < 0) {
+                boxes->rigid_bodies,
+                body_ids[i],
+                body_colors[i],
+                camera) < 0) {
             return -1;
         }
     }
@@ -91,7 +93,8 @@ int boxes_render(Boxes *boxes, const Camera *camera)
     return 0;
 }
 
-int boxes_update(Boxes *boxes, float delta_time)
+int boxes_update(Boxes *boxes,
+                 float delta_time)
 {
     trace_assert(boxes);
 
@@ -99,8 +102,7 @@ int boxes_update(Boxes *boxes, float delta_time)
     RigidBodyId *body_ids = (RigidBodyId *)boxes->body_ids.data;
 
     for (size_t i = 0; i < count; ++i) {
-        if (rigid_bodies_update(boxes->rigid_bodies, body_ids[i], delta_time)
-            < 0) {
+        if (rigid_bodies_update(boxes->rigid_bodies, body_ids[i], delta_time) < 0) {
             return -1;
         }
     }
@@ -114,7 +116,7 @@ void boxes_float_in_lava(Boxes *boxes, Lava *lava)
     trace_assert(lava);
 
     const size_t count = boxes->body_ids.count;
-    RigidBodyId *body_ids = (RigidBodyId *)boxes->body_ids.data;
+    RigidBodyId *body_ids = (RigidBodyId*)boxes->body_ids.data;
 
     for (size_t i = 0; i < count; ++i) {
         lava_float_rigid_body(lava, boxes->rigid_bodies, body_ids[i]);
@@ -137,11 +139,12 @@ int boxes_delete_at(Boxes *boxes, Vec2f position)
     trace_assert(boxes);
 
     const size_t count = boxes->body_ids.count;
-    RigidBodyId *body_ids = (RigidBodyId *)boxes->body_ids.data;
+    RigidBodyId *body_ids = (RigidBodyId*)boxes->body_ids.data;
 
     for (size_t i = 0; i < count; ++i) {
-        const Rect hitbox =
-            rigid_bodies_hitbox(boxes->rigid_bodies, body_ids[i]);
+        const Rect hitbox = rigid_bodies_hitbox(
+            boxes->rigid_bodies,
+            body_ids[i]);
         if (rect_contains_point(hitbox, position)) {
             rigid_bodies_remove(boxes->rigid_bodies, body_ids[i]);
             dynarray_delete_at(&boxes->body_ids, i);

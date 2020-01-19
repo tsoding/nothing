@@ -1,9 +1,9 @@
 #ifndef COLOR_H_
 #define COLOR_H_
 
-#include "./system/s.h"
-#include <SDL.h>
 #include <stdio.h>
+#include <SDL.h>
+#include "./system/s.h"
 
 #define COLOR_BLACK rgba(0.0f, 0.0f, 0.0f, 1.0f)
 #define COLOR_WHITE rgba(1.0f, 1.0f, 1.0f, 1.0f)
@@ -31,4 +31,4 @@ Color color_invert(Color c);
 
 Color color_scale(Color c, Color fc);
 
-#endif // COLOR_H_
+#endif  // COLOR_H_

@@ -1,8 +1,8 @@
 #ifndef TRIANGLE_H_
 #define TRIANGLE_H_
 
-#include "math/rect.h"
 #include "math/vec.h"
+#include "math/rect.h"
 
 typedef struct Triangle {
     Vec2f p1, p2, p3;
@@ -14,4 +14,4 @@ Triangle random_triangle(float radius);
 Triangle triangle_sorted_by_y(Triangle t);
 void rect_as_triangles(Rect rect, Triangle triangles[2]);
 
-#endif // TRIANGLE_H_
+#endif  // TRIANGLE_H_

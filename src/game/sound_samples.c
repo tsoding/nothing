@@ -1,18 +1,19 @@
-#include "system/stacktrace.h"
 #include <SDL.h>
+#include "system/stacktrace.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "config.h"
 #include "math/pi.h"
 #include "sound_samples.h"
 #include "system/log.h"
 #include "system/lt.h"
 #include "system/nth_alloc.h"
+#include "config.h"
 
 // TODO(#1022): Sound_samples does not implement volume control.
 
-struct Sound_samples {
+struct Sound_samples
+{
     Lt *lt;
     SDL_AudioDeviceID dev;
     uint8_t **audio_buf_array;
@@ -22,11 +23,12 @@ struct Sound_samples {
     int paused;
     float volume;
     // TODO(#1127): A better solution for optional sound support
-    int failed; // This is hackish
+    int failed;                 // This is hackish
 };
 
-static int init_buffer_and_device(
-    Sound_samples *sound_samples, const char *sample_files[])
+static
+int init_buffer_and_device(Sound_samples *sound_samples,
+                           const char *sample_files[])
 {
     // TODO(#1023): init_buffer_and_device uses hard-coded audio specification
     SDL_AudioSpec destination_spec = { // stereo float32 44100Hz
@@ -40,40 +42,28 @@ static int init_buffer_and_device(
         return -1;
     }
 
-    sound_samples->audio_buf_array = PUSH_LT(sound_samples->lt,
-        nth_calloc(sound_samples->samples_count, sizeof(uint8_t *)),
-        free);
+    sound_samples->audio_buf_array = PUSH_LT(sound_samples->lt, nth_calloc(sound_samples->samples_count, sizeof(uint8_t*)), free);
     if (sound_samples->audio_buf_array == NULL) {
         log_fail("Failed to allocate memory for audio buffer pointer array\n");
         return -1;
     }
-    sound_samples->audio_buf_size_array = PUSH_LT(sound_samples->lt,
-        nth_calloc(sound_samples->samples_count, sizeof(uint32_t)),
-        free);
+    sound_samples->audio_buf_size_array = PUSH_LT(sound_samples->lt, nth_calloc(sound_samples->samples_count, sizeof(uint32_t)), free);
     if (sound_samples->audio_buf_size_array == NULL) {
         log_fail("Failed to allocate memory for audio buffer size array\n");
         return -1;
     }
     for (size_t i = 0; i < sound_samples->samples_count; ++i) {
-        uint8_t *wav_buf;
-        uint32_t wav_buf_len;
-        SDL_AudioSpec wav_spec;
+        uint8_t *wav_buf; uint32_t wav_buf_len; SDL_AudioSpec wav_spec;
 
         log_info("Loading audio file %s...\n", sample_files[i]);
-        if (SDL_LoadWAV(sample_files[i], &wav_spec, &wav_buf, &wav_buf_len)
-            == NULL) {
+        if (SDL_LoadWAV(sample_files[i], &wav_spec, &wav_buf, &wav_buf_len) == NULL) {
             log_fail("Load WAV file failed: %s\n", SDL_GetError());
             return -1;
         }
         PUSH_LT(sound_samples->lt, wav_buf, SDL_FreeWAV);
         SDL_AudioCVT cvt;
-        int result = SDL_BuildAudioCVT(&cvt,
-            wav_spec.format,
-            (uint8_t)wav_spec.channels,
-            (int)wav_spec.freq,
-            destination_spec.format,
-            (uint8_t)destination_spec.channels,
-            (int)destination_spec.freq);
+        int result = SDL_BuildAudioCVT(&cvt, wav_spec.format, (uint8_t)wav_spec.channels, (int)wav_spec.freq,
+                          destination_spec.format, (uint8_t)destination_spec.channels, (int)destination_spec.freq);
         if (result < 0) {
             log_fail("SDL_BuildAudioCVT failed: %s\n", SDL_GetError());
             return -1;
@@ -82,9 +72,7 @@ static int init_buffer_and_device(
             sound_samples->audio_buf_size_array[i] = wav_buf_len;
         } else {
             cvt.len = (int)wav_buf_len;
-            cvt.buf = PUSH_LT(sound_samples->lt,
-                malloc((size_t)(cvt.len * cvt.len_mult)),
-                free);
+            cvt.buf = PUSH_LT(sound_samples->lt, malloc((size_t)(cvt.len * cvt.len_mult)), free);
             if (cvt.buf == NULL) {
                 log_fail("Allocating buffer for conversion failed\n");
                 return -1;
@@ -102,28 +90,22 @@ static int init_buffer_and_device(
 
     /* Allocating active audio buffer location*/
     //TODO(#1072): Allocate one huge active audio buffer with length of the maximum of all audio buffer, instead of one active buffer for each audio
-    sound_samples->active_audio_buf_array = PUSH_LT(sound_samples->lt,
-        nth_calloc(sound_samples->samples_count, sizeof(uint8_t *)),
-        free);
+    sound_samples->active_audio_buf_array = PUSH_LT(sound_samples->lt, nth_calloc(sound_samples->samples_count, sizeof(uint8_t*)), free);
     if (sound_samples->active_audio_buf_array == NULL) {
-        log_fail("Failed to allocate memory for active audio buffer pointer "
-                 "array\n");
-        return -1;
+      log_fail("Failed to allocate memory for active audio buffer pointer array\n");
+      return -1;
     }
     for (size_t i = 0; i < sound_samples->samples_count; ++i) {
-        sound_samples->active_audio_buf_array[i] = PUSH_LT(sound_samples->lt,
-            nth_calloc(sound_samples->audio_buf_size_array[i], sizeof(uint8_t)),
-            free);
-        if (sound_samples->active_audio_buf_array == NULL) {
-            log_fail(
-                "Failed to allocate memory for active audio buffer array\n");
-            return -1;
-        }
+      sound_samples->active_audio_buf_array[i] = PUSH_LT(sound_samples->lt, nth_calloc(sound_samples->audio_buf_size_array[i],
+                                                                                       sizeof(uint8_t)), free);
+      if (sound_samples->active_audio_buf_array == NULL) {
+        log_fail("Failed to allocate memory for active audio buffer array\n");
+        return -1;
+      }
     }
 
     /* Opening the device*/
-    sound_samples->dev =
-        SDL_OpenAudioDevice(NULL, 0, &destination_spec, NULL, 0);
+    sound_samples->dev = SDL_OpenAudioDevice(NULL, 0, &destination_spec, NULL, 0);
     if (sound_samples->dev == 0) {
         log_fail("SDL_OpenAudioDevice failed: %s\n", SDL_GetError());
         log_info("The audio device may not support the hardcoded format\n");
@@ -133,16 +115,15 @@ static int init_buffer_and_device(
     return 0;
 }
 
-Sound_samples *create_sound_samples(
-    const char *sample_files[], size_t sample_files_count)
+Sound_samples *create_sound_samples(const char *sample_files[],
+                                    size_t sample_files_count)
 {
     trace_assert(sample_files);
     trace_assert(sample_files_count > 0);
 
     Lt *lt = create_lt();
 
-    Sound_samples *sound_samples =
-        PUSH_LT(lt, nth_calloc(1, sizeof(Sound_samples)), free);
+    Sound_samples *sound_samples = PUSH_LT(lt, nth_calloc(1, sizeof(Sound_samples)), free);
     if (sound_samples == NULL) {
         RETURN_LT(lt, NULL);
     }
@@ -164,44 +145,36 @@ Sound_samples *create_sound_samples(
 void destroy_sound_samples(Sound_samples *sound_samples)
 {
     // TODO(#1025): Use a seperate callback function for audio handling and pass that into SDL_OpenAudioDevice
-    if (sound_samples->failed)
-        return;
+    if (sound_samples->failed) return;
     trace_assert(sound_samples);
     trace_assert(sound_samples->dev);
     SDL_CloseAudioDevice(sound_samples->dev);
     RETURN_LT0(sound_samples->lt);
 }
 
-int sound_samples_play_sound(Sound_samples *sound_samples, size_t sound_index)
+int sound_samples_play_sound(Sound_samples *sound_samples,
+                             size_t sound_index)
 {
     trace_assert(sound_samples);
-    if (sound_samples->failed)
-        return 0;
+    if (sound_samples->failed) return 0;
     trace_assert(sound_index < sound_samples->samples_count);
     trace_assert(sound_samples->dev);
 
     /* Premix the audio volume */
-    memset(sound_samples->active_audio_buf_array[sound_index],
-        0,
-        sound_samples->audio_buf_size_array[sound_index]);
+    memset(sound_samples->active_audio_buf_array[sound_index], 0, sound_samples->audio_buf_size_array[sound_index]);
 
     //TODO(#1073): replace this linear scaling volume with logarithmic scale for better audio perception
     SDL_MixAudioFormat(sound_samples->active_audio_buf_array[sound_index],
-        sound_samples->audio_buf_array[sound_index],
-        AUDIO_F32, //Hardcoded format just like in issue #1023
-        sound_samples->audio_buf_size_array[sound_index],
-        (int)((float)SDL_MIX_MAXVOLUME * sound_samples->volume / 100.0f));
+                       sound_samples->audio_buf_array[sound_index],
+                       AUDIO_F32, //Hardcoded format just like in issue #1023
+                       sound_samples->audio_buf_size_array[sound_index],
+                       (int)((float)SDL_MIX_MAXVOLUME * sound_samples->volume / 100.0f));
 
     /* Play the audio*/
     SDL_ClearQueuedAudio(sound_samples->dev);
-    if (SDL_QueueAudio(sound_samples->dev,
-            sound_samples->active_audio_buf_array[sound_index],
-            sound_samples->audio_buf_size_array[sound_index])
-        < 0) {
-        log_warn(
-            "Failed to queue audio data of sound index %zu to device: %s\n",
-            sound_index,
-            SDL_GetError());
+    if (SDL_QueueAudio(sound_samples->dev, sound_samples->active_audio_buf_array[sound_index],
+                sound_samples->audio_buf_size_array[sound_index]) < 0) {
+        log_warn("Failed to queue audio data of sound index %zu to device: %s\n", sound_index, SDL_GetError());
         return 0;
     }
     SDL_PauseAudioDevice(sound_samples->dev, 0);
@@ -211,18 +184,17 @@ int sound_samples_play_sound(Sound_samples *sound_samples, size_t sound_index)
 int sound_samples_toggle_pause(Sound_samples *sound_samples)
 {
     trace_assert(sound_samples);
-    if (sound_samples->failed)
-        return 0;
+    if (sound_samples->failed) return 0;
     sound_samples->paused = !sound_samples->paused;
     trace_assert(sound_samples->dev);
     SDL_PauseAudioDevice(sound_samples->dev, sound_samples->paused);
     return 0;
 }
 
-void sound_samples_update_volume(Sound_samples *sound_samples, float volume)
+void sound_samples_update_volume(Sound_samples *sound_samples,
+                                 float volume)
 {
     trace_assert(sound_samples);
-    if (sound_samples->failed)
-        return;
+    if (sound_samples->failed) return;
     sound_samples->volume = volume;
 }

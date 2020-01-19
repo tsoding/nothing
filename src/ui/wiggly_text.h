@@ -4,8 +4,8 @@
 #include <math.h>
 
 #include "color.h"
-#include "game/camera.h"
 #include "system/stacktrace.h"
+#include "game/camera.h"
 
 typedef struct {
     const char *text;
@@ -14,8 +14,9 @@ typedef struct {
     float angle;
 } WigglyText;
 
-void wiggly_text_render(
-    const WigglyText *wiggly_text, const Camera *camera, Vec2f position);
+void wiggly_text_render(const WigglyText *wiggly_text,
+                        const Camera *camera,
+                        Vec2f position);
 int wiggly_text_update(WigglyText *wiggly_text, float delta_time);
 Vec2f wiggly_text_size(const WigglyText *wiggly_text);
 
@@ -24,16 +25,20 @@ typedef struct {
     float duration;
 } FadingWigglyText;
 
-static inline void fading_wiggly_text_render(
-    const FadingWigglyText *fading_wiggly_text,
-    const Camera *camera,
-    Vec2f position)
+static inline
+void fading_wiggly_text_render(const FadingWigglyText *fading_wiggly_text,
+                               const Camera *camera,
+                               Vec2f position)
 {
-    wiggly_text_render(&fading_wiggly_text->wiggly_text, camera, position);
+    wiggly_text_render(
+        &fading_wiggly_text->wiggly_text,
+        camera,
+        position);
 }
 
-static inline int fading_wiggly_text_update(
-    FadingWigglyText *fading_wiggly_text, float delta_time)
+static inline
+int fading_wiggly_text_update(FadingWigglyText *fading_wiggly_text,
+                              float delta_time)
 {
     trace_assert(fading_wiggly_text);
 
@@ -46,17 +51,17 @@ static inline int fading_wiggly_text_update(
     return wiggly_text_update(&fading_wiggly_text->wiggly_text, delta_time);
 }
 
-static inline void fading_wiggly_text_reset(
-    FadingWigglyText *fading_wiggly_text)
+static inline
+void fading_wiggly_text_reset(FadingWigglyText *fading_wiggly_text)
 {
     trace_assert(fading_wiggly_text);
     fading_wiggly_text->wiggly_text.color.a = 1.0f;
 }
 
-static inline Vec2f fading_wiggly_text_size(
-    const FadingWigglyText *fading_wiggly_text)
+static inline
+Vec2f fading_wiggly_text_size(const FadingWigglyText *fading_wiggly_text)
 {
     return wiggly_text_size(&fading_wiggly_text->wiggly_text);
 }
 
-#endif // WIGGLY_TEXT_H_
+#endif  // WIGGLY_TEXT_H_

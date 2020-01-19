@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #if defined(__GNUC__) && defined(__linux__)
 #include <execinfo.h>
 #include <unistd.h>
@@ -7,6 +7,7 @@
 #endif
 
 #include "./stacktrace.h"
+
 
 void print_stacktrace(void)
 {
@@ -25,13 +26,12 @@ void print_stacktrace(void)
 #endif
 }
 
-void __trace_assert(
-    const char *file, int line, const char *function, const char *message)
+void __trace_assert(const char *file, int line, const char *function, const char *message)
 {
-    fprintf(stderr,
+    fprintf(
+        stderr,
         "%s:%d: %s: Assertion `%s' failed\n",
-        file,
-        line,
+        file, line,
         function,
         message);
     print_stacktrace();

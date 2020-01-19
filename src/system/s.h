@@ -1,11 +1,11 @@
 #ifndef S_H_
 #define S_H_
 
-#include "system/memory.h"
-#include "system/stacktrace.h"
-#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+#include "system/stacktrace.h"
+#include "system/memory.h"
 
 typedef struct {
     size_t count;
@@ -14,21 +14,30 @@ typedef struct {
 
 #define STRING_LIT(literal) string(sizeof(literal) - 1, literal)
 
-static inline String string(size_t count, const char *data)
+static inline
+String string(size_t count, const char *data)
 {
-    String result = { .count = count, .data = data };
+    String result = {
+        .count = count,
+        .data = data
+    };
 
     return result;
 }
 
-static inline String string_nt(const char *data)
+static inline
+String string_nt(const char *data)
 {
-    String result = { .count = strlen(data), .data = data };
+    String result = {
+        .count = strlen(data),
+        .data = data
+    };
 
     return result;
 }
 
-static inline String chop_by_delim(String *input, char delim)
+static inline
+String chop_by_delim(String *input, char delim)
 {
     trace_assert(input);
 
@@ -38,7 +47,7 @@ static inline String chop_by_delim(String *input, char delim)
 
     if (i < input->count) {
         String result = string(i, input->data);
-        input->data += i + 1;
+        input->data  += i + 1;
         input->count -= i - 1;
         return result;
     }
@@ -49,14 +58,15 @@ static inline String chop_by_delim(String *input, char delim)
     return result;
 }
 
-static inline int string_equal(String a, String b)
+static inline
+int string_equal(String a, String b)
 {
-    if (a.count != b.count)
-        return 0;
+    if (a.count != b.count) return 0;
     return memcmp(a.data, b.data, a.count) == 0;
 }
 
-static inline String trim_begin(String input)
+static inline
+String trim_begin(String input)
 {
     while (input.count > 0 && isspace(*input.data)) {
         input.data += 1;
@@ -66,7 +76,8 @@ static inline String trim_begin(String input)
     return input;
 }
 
-static inline String trim_end(String input)
+static inline
+String trim_end(String input)
 {
     while (input.count > 0 && isspace(*(input.data + input.count - 1))) {
         input.count -= 1;
@@ -75,12 +86,14 @@ static inline String trim_end(String input)
     return input;
 }
 
-static inline String trim(String input)
+static inline
+String trim(String input)
 {
     return trim_end(trim_begin(input));
 }
 
-static inline String chop_word(String *input)
+static inline
+String chop_word(String *input)
 {
     trace_assert(input);
 
@@ -96,7 +109,8 @@ static inline String chop_word(String *input)
     return result;
 }
 
-static inline char *string_to_cstr(Memory *memory, String s)
+static inline
+char *string_to_cstr(Memory *memory, String s)
 {
     trace_assert(memory);
 
@@ -106,7 +120,8 @@ static inline char *string_to_cstr(Memory *memory, String s)
     return result;
 }
 
-static inline char *strdup_to_memory(Memory *memory, const char *s)
+static inline
+char *strdup_to_memory(Memory *memory, const char *s)
 {
     trace_assert(memory);
     trace_assert(s);
@@ -117,4 +132,4 @@ static inline char *strdup_to_memory(Memory *memory, const char *s)
     return d;
 }
 
-#endif // S_H_
+#endif  // S_H_

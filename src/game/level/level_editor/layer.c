@@ -1,10 +1,10 @@
-#include "./layer.h"
-#include "background_layer.h"
 #include "game/camera.h"
-#include "label_layer.h"
-#include "player_layer.h"
-#include "point_layer.h"
 #include "rect_layer.h"
+#include "point_layer.h"
+#include "player_layer.h"
+#include "label_layer.h"
+#include "background_layer.h"
+#include "./layer.h"
 
 int layer_render(LayerPtr layer, const Camera *camera, int active)
 {
@@ -29,9 +29,9 @@ int layer_render(LayerPtr layer, const Camera *camera, int active)
 }
 
 int layer_event(LayerPtr layer,
-    const SDL_Event *event,
-    const Camera *camera,
-    UndoHistory *undo_history)
+                const SDL_Event *event,
+                const Camera *camera,
+                UndoHistory *undo_history)
 {
     switch (layer.type) {
     case LAYER_RECT:
@@ -53,7 +53,8 @@ int layer_event(LayerPtr layer,
     return -1;
 }
 
-int layer_dump_stream(LayerPtr layer, FILE *stream)
+int layer_dump_stream(LayerPtr layer,
+                      FILE *stream)
 {
     switch (layer.type) {
     case LAYER_RECT:

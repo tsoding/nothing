@@ -21,9 +21,9 @@ typedef struct Game Game;
 
 int layer_render(LayerPtr layer, const Camera *camera, int active);
 int layer_event(LayerPtr layer,
-    const SDL_Event *event,
-    const Camera *camera,
-    UndoHistory *undo_history);
+                const SDL_Event *event,
+                const Camera *camera,
+                UndoHistory *undo_history);
 int layer_dump_stream(LayerPtr layer, FILE *stream);
 
-#endif // LAYER_H_
+#endif  // LAYER_H_
