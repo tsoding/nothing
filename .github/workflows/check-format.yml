@@ -1,0 +1,21 @@
+# Stolen from https://github.com/Chatterino/chatterino2/blob/476825dc35c34e72729d07fa5661c53fd9db60d8/.github/workflows/check-formatting.yml
+name: Check formatting
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:19.10
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: apt-get update
+      run: apt-get update
+
+    - name: Install clang-format
+      run: apt-get -y install clang-format
+
+    - name: Check formatting
+      run: ./tools/check-format.sh
