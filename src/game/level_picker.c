@@ -246,6 +246,14 @@ int level_picker_event(LevelPicker *level_picker,
         }
     } break;
 
+    case SDL_MOUSEWHEEL: {
+        if (event->wheel.y < 0) {
+            level_picker_cursor_down(level_picker);
+        } else if (event->wheel.y > 0) {
+            level_picker_cursor_up(level_picker);
+        }
+    } break;
+
     case SDL_MOUSEMOTION: {
         const Vec2f mouse_pos = vec((float) event->motion.x, (float) event->motion.y);
         Vec2f position = vec_sum(
