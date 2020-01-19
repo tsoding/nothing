@@ -254,31 +254,35 @@ int level_picker_event(LevelPicker *level_picker,
         }
     } break;
 
-    case SDL_MOUSEMOTION: {
-        const Vec2f mouse_pos = vec((float) event->motion.x, (float) event->motion.y);
-        Vec2f position = vec_sum(
-            level_picker->items_position,
-            level_picker->items_scroll);
+    case SDL_MOUSEBUTTONDOWN: {
+        switch (event->button.button) {
+        case SDL_BUTTON_LEFT: {
+            const Vec2f mouse_pos = vec((float) event->button.x, (float) event->button.y);
+            Vec2f position = vec_sum(
+                level_picker->items_position,
+                level_picker->items_scroll);
 
-        for (size_t i = 0; i < level_picker->items.count; ++i) {
-            const char *item_text = dynarray_pointer_at(
-                &level_picker->items,
-                i);
+            for (size_t i = 0; i < level_picker->items.count; ++i) {
+                const char *item_text = dynarray_pointer_at(
+                    &level_picker->items,
+                    i);
 
-            Rect boundary_box = sprite_font_boundary_box(
-                position,
-                LEVEL_PICKER_LIST_FONT_SCALE,
-                item_text);
+                Rect boundary_box = sprite_font_boundary_box(
+                    position,
+                    LEVEL_PICKER_LIST_FONT_SCALE,
+                    item_text);
 
-            if (rect_contains_point(boundary_box, mouse_pos)) {
-                level_picker->items_cursor = i;
+                if (rect_contains_point(boundary_box, mouse_pos)) {
+                    level_picker->items_cursor = i;
+                }
+
+                position.y += boundary_box.h + LEVEL_PICKER_LIST_PADDING_BOTTOM;
             }
-
-            position.y += boundary_box.h + LEVEL_PICKER_LIST_PADDING_BOTTOM;
+        } break;
         }
     } break;
 
-    case SDL_MOUSEBUTTONDOWN: {
+    case SDL_MOUSEBUTTONUP: {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
             // check if the click position was actually inside...
