@@ -20,8 +20,7 @@
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
-static void print_usage(FILE *stream)
-{
+static void print_usage(FILE *stream) {
     fprintf(stream, "Usage: nothing [--fps <fps>]\n");
 }
 
