@@ -358,9 +358,7 @@ int level_picker_enter_camera_event(LevelPicker *level_picker,
 void level_picker_cursor_up(LevelPicker *level_picker)
 {
     trace_assert(level_picker);
-    if (level_picker->items_cursor == 0) {
-        level_picker->items_cursor = level_picker->items.count - 1;
-    } else {
+    if (level_picker->items_cursor > 0) {
         level_picker->items_cursor--;
     }
 }
@@ -368,8 +366,7 @@ void level_picker_cursor_up(LevelPicker *level_picker)
 void level_picker_cursor_down(LevelPicker *level_picker)
 {
     trace_assert(level_picker);
-    level_picker->items_cursor++;
-    if (level_picker->items_cursor == level_picker->items.count) {
-        level_picker->items_cursor = 0;
+     if (level_picker->items_cursor + 1 < level_picker->items.count) {
+        level_picker->items_cursor++;
     }
 }
