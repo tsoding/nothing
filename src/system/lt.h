@@ -1,14 +1,14 @@
 #ifndef LT_H_
 #define LT_H_
 
+#include "system/stacktrace.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-#include "system/stacktrace.h"
 
 #define LT_INITIAL_CAPACITY 8
 
-typedef void (*Dtor)(void*);
+typedef void (*Dtor)(void *);
 
 typedef struct {
     void *res;
@@ -45,8 +45,7 @@ static inline void destroy_lt(Lt *lt)
     free(lt);
 }
 
-#define PUSH_LT(lt, res, dtor)                  \
-    lt_push(lt, (void*)res, (Dtor)dtor)
+#define PUSH_LT(lt, res, dtor) lt_push(lt, (void *)res, (Dtor)dtor)
 
 static inline void *lt_push(Lt *lt, void *res, Dtor dtor)
 {
@@ -71,24 +70,23 @@ static inline void *lt_push(Lt *lt, void *res, Dtor dtor)
     return res;
 }
 
-#define RETURN_LT(lt, result)                   \
-    return (destroy_lt(lt), result)
+#define RETURN_LT(lt, result) return (destroy_lt(lt), result)
 
-#define RETURN_LT0(lt)                          \
-    do {                                        \
-        destroy_lt(lt);                         \
-        return;                                 \
+#define RETURN_LT0(lt)                                                         \
+    do {                                                                       \
+        destroy_lt(lt);                                                        \
+        return;                                                                \
     } while (0)
 
-#define RESET_LT(lt, old_res, new_res)          \
-    lt_reset(lt, (void*) old_res, (void*) new_res)
+#define RESET_LT(lt, old_res, new_res)                                         \
+    lt_reset(lt, (void *)old_res, (void *)new_res)
 
 static inline void *lt_reset(Lt *lt, void *old_res, void *new_res)
 {
     trace_assert(lt);
     trace_assert(old_res != new_res);
 
-    for(Slot *p = lt->slots; p < lt->slots_end; ++p) {
+    for (Slot *p = lt->slots; p < lt->slots_end; ++p) {
         if (p->res == old_res) {
             p->dtor(old_res);
             p->res = new_res;
@@ -100,14 +98,13 @@ static inline void *lt_reset(Lt *lt, void *old_res, void *new_res)
     return NULL;
 }
 
-
-#define REPLACE_LT(lt, old_res, new_res)        \
-    lt_replace(lt, (void *)old_res, (void*)new_res)
+#define REPLACE_LT(lt, old_res, new_res)                                       \
+    lt_replace(lt, (void *)old_res, (void *)new_res)
 
 static inline void *lt_replace(Lt *lt, void *old_res, void *new_res)
 {
     trace_assert(lt);
-    for(Slot *p = lt->slots; p < lt->slots_end; ++p) {
+    for (Slot *p = lt->slots; p < lt->slots_end; ++p) {
         if (p->res == old_res) {
             p->res = new_res;
             return new_res;
@@ -118,13 +115,12 @@ static inline void *lt_replace(Lt *lt, void *old_res, void *new_res)
     return NULL;
 }
 
-#define RELEASE_LT(lt, res)                     \
-    lt_release(lt, (void*)res)
+#define RELEASE_LT(lt, res) lt_release(lt, (void *)res)
 
 static inline void *lt_release(Lt *lt, void *res)
 {
     trace_assert(lt);
-    for(Slot *p = lt->slots; p < lt->slots_end; ++p) {
+    for (Slot *p = lt->slots; p < lt->slots_end; ++p) {
         if (p->res == res) {
             memmove(p, p + 1, (size_t)(lt->slots_end - p - 1) * sizeof(Slot));
             lt->slots_end--;
@@ -136,4 +132,4 @@ static inline void *lt_release(Lt *lt, void *res)
     return NULL;
 }
 
-#endif  // LT_H_
+#endif // LT_H_

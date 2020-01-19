@@ -1,8 +1,8 @@
 #ifndef REGIONS_H_
 #define REGIONS_H_
 
-#include "math/rect.h"
 #include "action.h"
+#include "math/rect.h"
 
 typedef struct Regions Regions;
 typedef struct Player Player;
@@ -11,7 +11,8 @@ typedef struct RectLayer RectLayer;
 typedef struct Labels Labels;
 typedef struct Goals Goals;
 
-Regions *create_regions_from_rect_layer(const RectLayer *rect_layer, Labels *labels, Goals *goals);
+Regions *create_regions_from_rect_layer(
+    const RectLayer *rect_layer, Labels *labels, Goals *goals);
 void destroy_regions(Regions *regions);
 
 int regions_render(Regions *regions, const Camera *camera);
@@ -19,4 +20,4 @@ int regions_render(Regions *regions, const Camera *camera);
 void regions_player_enter(Regions *regions, Player *player);
 void regions_player_leave(Regions *regions, Player *player);
 
-#endif  // REGIONS_H_
+#endif // REGIONS_H_

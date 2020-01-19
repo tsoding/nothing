@@ -39,4 +39,4 @@
 
 #define LEVEL_EDITOR_MEMORY_CAPACITY (640 * KILO)
 
-#endif  // CONFIG_H_
+#endif // CONFIG_H_
