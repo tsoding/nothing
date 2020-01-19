@@ -18,4 +18,6 @@ jobs:
       run: apt-get -y install clang-format git
 
     - name: Check formatting
-      run: ./tools/check-format.sh
+      run: |
+        clang-format --version
+        ./tools/check-format.sh
