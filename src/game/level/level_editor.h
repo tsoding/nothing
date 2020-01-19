@@ -1,6 +1,7 @@
 #ifndef LEVEL_EDITOR_H_
 #define LEVEL_EDITOR_H_
 
+#include "game/level/level_editor/background_layer.h"
 #include "game/level/level_editor/label_layer.h"
 #include "game/level/level_editor/layer.h"
 #include "game/level/level_editor/layer_picker.h"
