@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 ./tools/clang-format-all.sh
 
 if [ ! -z "$(git --no-pager diff)" ]; then
