@@ -44,6 +44,8 @@ int level_picker_input(LevelPicker *level_picker,
                        SDL_Joystick *the_stick_of_joy);
 int level_picker_enter_camera_event(LevelPicker *level_picker,
                                     Camera *camera);
+void level_picker_cursor_up(LevelPicker *level_picker);
+void level_picker_cursor_down(LevelPicker *level_picker);
 
 const char *level_picker_selected_level(const LevelPicker *level_picker);
 void level_picker_clean_selection(LevelPicker *level_picker);
