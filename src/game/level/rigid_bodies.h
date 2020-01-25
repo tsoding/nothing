@@ -2,9 +2,9 @@
 #define RIGID_BODIES_H_
 
 #include "math/mat3x3.h"
-#include "game/level/platforms.h"
 
 typedef struct RigidBodies RigidBodies;
+typedef struct Platforms Platforms;
 
 typedef size_t RigidBodyId;
 

@@ -12,32 +12,51 @@
 #include "game/level/level_editor/rect_layer.h"
 #include "math/extrema.h"
 
-Platforms create_platforms_from_rect_layer(const RectLayer *layer)
+struct Platforms {
+    Lt *lt;
+
+    Rect *rects;
+    Color *colors;
+    size_t rects_size;
+};
+
+Platforms *create_platforms_from_rect_layer(const RectLayer *layer)
 {
     trace_assert(layer);
 
-    Platforms platforms = {0};
-    platforms.rects_size = rect_layer_count(layer);
+    Lt *lt = create_lt();
 
-    platforms.rects = nth_calloc(1, sizeof(Rect) * platforms.rects_size);
-    memcpy(
-        platforms.rects,
-        rect_layer_rects(layer),
-        sizeof(Rect) * platforms.rects_size);
+    Platforms *platforms = PUSH_LT(
+        lt,
+        nth_calloc(1, sizeof(Platforms)),
+        free);
+    if (platforms == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    platforms->lt = lt;
 
-    platforms.colors = nth_calloc(1, sizeof(Color) * platforms.rects_size);
-    memcpy(
-        platforms.colors,
-        rect_layer_colors(layer),
-        sizeof(Color) * platforms.rects_size);
+    platforms->rects_size = rect_layer_count(layer);
+
+    platforms->rects = PUSH_LT(lt, nth_calloc(1, sizeof(Rect) * platforms->rects_size), free);
+    if (platforms->rects == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    memcpy(platforms->rects, rect_layer_rects(layer), sizeof(Rect) * platforms->rects_size);
+
+
+    platforms->colors = PUSH_LT(lt, nth_calloc(1, sizeof(Color) * platforms->rects_size), free);
+    if (platforms->colors == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    memcpy(platforms->colors, rect_layer_colors(layer), sizeof(Color) * platforms->rects_size);
 
     return platforms;
 }
 
-void destroy_platforms(Platforms platforms)
+void destroy_platforms(Platforms *platforms)
 {
-    free(platforms.rects);
-    free(platforms.colors);
+    trace_assert(platforms);
+    RETURN_LT0(platforms->lt);
 }
 
 int platforms_render(const Platforms *platforms,

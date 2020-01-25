@@ -41,10 +41,10 @@ struct Level
     Background background;
     RigidBodies *rigid_bodies;
     Player *player;
-    Platforms platforms;
+    Platforms *platforms;
     Goals *goals;
     Lava *lava;
-    Platforms back_platforms;
+    Platforms *back_platforms;
     Boxes *boxes;
     Labels *labels;
     Regions *regions;
@@ -84,7 +84,13 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor)
         RETURN_LT(lt, NULL);
     }
 
-    level->platforms = create_platforms_from_rect_layer(level_editor->platforms_layer);
+    level->platforms = PUSH_LT(
+        lt,
+        create_platforms_from_rect_layer(level_editor->platforms_layer),
+        destroy_platforms);
+    if (level->platforms == NULL) {
+        RETURN_LT(lt, NULL);
+    }
 
     level->goals = PUSH_LT(
         lt,
@@ -102,8 +108,13 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor)
         RETURN_LT(lt, NULL);
     }
 
-    level->back_platforms =
-        create_platforms_from_rect_layer(level_editor->back_platforms_layer);
+    level->back_platforms = PUSH_LT(
+        lt,
+        create_platforms_from_rect_layer(level_editor->back_platforms_layer),
+        destroy_platforms);
+    if (level->back_platforms == NULL) {
+        RETURN_LT(lt, NULL);
+    }
 
     level->boxes = PUSH_LT(
         lt,
@@ -149,7 +160,7 @@ int level_render(const Level *level, const Camera *camera)
         return -1;
     }
 
-    if (platforms_render(&level->back_platforms, camera) < 0) {
+    if (platforms_render(level->back_platforms, camera) < 0) {
         return -1;
     }
 
@@ -165,7 +176,7 @@ int level_render(const Level *level, const Camera *camera)
         return -1;
     }
 
-    if (platforms_render(&level->platforms, camera) < 0) {
+    if (platforms_render(level->platforms, camera) < 0) {
         return -1;
     }
 
@@ -199,7 +210,7 @@ int level_update(Level *level, float delta_time)
     boxes_update(level->boxes, delta_time);
     player_update(level->player, delta_time);
 
-    rigid_bodies_collide(level->rigid_bodies, &level->platforms);
+    rigid_bodies_collide(level->rigid_bodies, level->platforms);
 
     player_die_from_lava(level->player, level->lava);
     regions_player_enter(level->regions, level->player);

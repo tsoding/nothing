@@ -6,16 +6,11 @@
 #include "game/camera.h"
 #include "math/rect.h"
 
+typedef struct Platforms Platforms;
 typedef struct RectLayer RectLayer;
 
-typedef struct {
-    Rect *rects;
-    Color *colors;
-    size_t rects_size;
-} Platforms;
-
-Platforms create_platforms_from_rect_layer(const RectLayer *layer);
-void destroy_platforms(Platforms platforms);
+Platforms *create_platforms_from_rect_layer(const RectLayer *layer);
+void destroy_platforms(Platforms *platforms);
 
 int platforms_render(const Platforms *platforms,
                      const Camera *camera);
