@@ -23,7 +23,7 @@ void destroy_phantom_platforms(Phantom_Platforms pp)
     free(pp.hiding);
 }
 
-void phantom_platforms_render(Phantom_Platforms *pp, Camera *camera)
+void phantom_platforms_render(const Phantom_Platforms *pp, const Camera *camera)
 {
     trace_assert(pp);
     trace_assert(camera);
@@ -33,7 +33,7 @@ void phantom_platforms_render(Phantom_Platforms *pp, Camera *camera)
     }
 }
 
-#define HIDING_SPEED 2.0f
+#define HIDING_SPEED 4.0f
 
 void phantom_platforms_update(Phantom_Platforms *pp, float dt)
 {

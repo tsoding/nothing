@@ -10,6 +10,7 @@
 #include "game/level/labels.h"
 #include "game/level/lava.h"
 #include "game/level/platforms.h"
+#include "game/level/phantom_platforms.h"
 #include "game/level/player.h"
 #include "game/level/regions.h"
 #include "game/level/rigid_bodies.h"
@@ -48,6 +49,7 @@ struct Level
     Boxes *boxes;
     Labels *labels;
     Regions *regions;
+    Phantom_Platforms pp;
 };
 
 Level *create_level_from_level_editor(const LevelEditor *level_editor)
@@ -143,12 +145,15 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor)
         RETURN_LT(lt, NULL);
     }
 
+    level->pp = create_phantom_platforms(level_editor->pp_layer);
+
     return level;
 }
 
 void destroy_level(Level *level)
 {
     trace_assert(level);
+    destroy_phantom_platforms(level->pp);
     RETURN_LT0(level->lt);
 }
 
@@ -163,6 +168,8 @@ int level_render(const Level *level, const Camera *camera)
     if (platforms_render(level->back_platforms, camera) < 0) {
         return -1;
     }
+
+    phantom_platforms_render(&level->pp, camera);
 
     if (player_render(level->player, camera) < 0) {
         return -1;
@@ -221,8 +228,8 @@ int level_update(Level *level, float delta_time)
     labels_update(level->labels, delta_time);
 
     Rect hitbox = player_hitbox(level->player);
-    platforms_hide_platform_at(level->back_platforms, vec(hitbox.x, hitbox.y));
-    platforms_update(level->back_platforms, delta_time);
+    phantom_platforms_hide_at(&level->pp, vec(hitbox.x, hitbox.y));
+    phantom_platforms_update(&level->pp, delta_time);
 
     return 0;
 }

@@ -113,6 +113,7 @@ LevelEditor *create_level_editor_from_file(Memory *memory, Cursor *cursor, const
     rect_layer_load(level_editor->boxes_layer, memory, &input);
     label_layer_load(level_editor->label_layer, memory, &input);
     rect_layer_load(level_editor->regions_layer, memory, &input);
+    rect_layer_load(level_editor->pp_layer, memory, &input);
     undo_history_clean(level_editor->undo_history);
 
     return level_editor;

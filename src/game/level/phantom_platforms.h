@@ -11,7 +11,7 @@ typedef struct {
 Phantom_Platforms create_phantom_platforms(RectLayer *rect_layer);
 void destroy_phantom_platforms(Phantom_Platforms pp);
 
-void phantom_platforms_render(Phantom_Platforms *pp, Camera *camera);
+void phantom_platforms_render(const Phantom_Platforms *pp, const Camera *camera);
 void phantom_platforms_update(Phantom_Platforms *pp, float dt);
 void phantom_platforms_hide_at(Phantom_Platforms *pp, Vec2f position);
 
