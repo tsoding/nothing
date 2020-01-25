@@ -52,7 +52,7 @@ void phantom_platforms_update(Phantom_Platforms *pp, float dt)
     }
 }
 
-// TODO: phantom_platforms_hide_at is O(N)
+// TODO(#1248): phantom_platforms_hide_at is O(N)
 void phantom_platforms_hide_at(Phantom_Platforms *pp, Vec2f position)
 {
     trace_assert(pp);
