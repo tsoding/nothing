@@ -49,3 +49,4 @@
 #include "src/dynarray.c"
 #include "src/system/file.c"
 #include "src/ring_buffer.c"
+#include "src/game/level/phantom_platforms.h"

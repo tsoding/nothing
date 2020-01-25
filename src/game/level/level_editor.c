@@ -50,6 +50,7 @@ LevelEditor *create_level_editor(Memory *memory, Cursor *cursor)
     level_editor->regions_layer = create_rect_layer(memory, "region", cursor);
     level_editor->goals_layer = create_point_layer(memory, "goal");
     level_editor->label_layer = create_label_layer(memory, "label");
+    level_editor->pp_layer = create_rect_layer(memory, "pp", cursor);
 
     level_editor->layers[LAYER_PICKER_BOXES] = rect_layer_as_layer(level_editor->boxes_layer);
     level_editor->layers[LAYER_PICKER_PLATFORMS] = rect_layer_as_layer(level_editor->platforms_layer);
@@ -60,6 +61,7 @@ LevelEditor *create_level_editor(Memory *memory, Cursor *cursor)
     level_editor->layers[LAYER_PICKER_REGIONS] = rect_layer_as_layer(level_editor->regions_layer);
     level_editor->layers[LAYER_PICKER_BACKGROUND] = background_layer_as_layer(&level_editor->background_layer);
     level_editor->layers[LAYER_PICKER_LABELS] = label_layer_as_layer(level_editor->label_layer);
+    level_editor->layers[LAYER_PICKER_PP] = rect_layer_as_layer(level_editor->pp_layer);
 
 
     level_editor->notice = (FadingWigglyText) {
@@ -363,7 +365,8 @@ static LayerPicker level_format_layer_order[LAYER_PICKER_N] = {
     LAYER_PICKER_BACK_PLATFORMS,
     LAYER_PICKER_BOXES,
     LAYER_PICKER_LABELS,
-    LAYER_PICKER_REGIONS
+    LAYER_PICKER_REGIONS,
+    LAYER_PICKER_PP
 };
 
 /* TODO(#904): LevelEditor does not check that the saved level file is modified by external program */
