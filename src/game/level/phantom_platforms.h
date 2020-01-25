@@ -1,6 +1,11 @@
 #ifndef PHANTOM_PLATFORMS_H_
 #define PHANTOM_PLATFORMS_H_
 
+#include <stdlib.h>
+#include "math/rect.h"
+#include "color.h"
+#include "game/level/level_editor/rect_layer.h"
+
 typedef struct {
     size_t size;
     Rect *rects;

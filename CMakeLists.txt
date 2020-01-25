@@ -73,6 +73,8 @@ add_executable(nothing
   src/game/level/lava/wavy_rect.c
   src/game/level/platforms.h
   src/game/level/platforms.c
+  src/game/level/phantom_platforms.h
+  src/game/level/phantom_platforms.c
   src/game/level/player.h
   src/game/level/player.c
   src/game/level/explosion.h
