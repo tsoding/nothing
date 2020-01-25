@@ -35,6 +35,7 @@ void phantom_platforms_render(const Phantom_Platforms *pp, const Camera *camera)
 
 #define HIDING_SPEED 4.0f
 
+// TODO(#1247): phantom_platforms_update is O(N) even when nothing is animated
 void phantom_platforms_update(Phantom_Platforms *pp, float dt)
 {
     trace_assert(pp);
@@ -51,6 +52,7 @@ void phantom_platforms_update(Phantom_Platforms *pp, float dt)
     }
 }
 
+// TODO: phantom_platforms_hide_at is O(N)
 void phantom_platforms_hide_at(Phantom_Platforms *pp, Vec2f position)
 {
     trace_assert(pp);
