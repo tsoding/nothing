@@ -220,6 +220,10 @@ int level_update(Level *level, float delta_time)
     lava_update(level->lava, delta_time);
     labels_update(level->labels, delta_time);
 
+    Rect hitbox = player_hitbox(level->player);
+    platforms_hide_platform_at(level->back_platforms, vec(hitbox.x, hitbox.y));
+    platforms_update(level->back_platforms, delta_time);
+
     return 0;
 }
 

@@ -17,6 +17,7 @@ struct Platforms {
 
     Rect *rects;
     Color *colors;
+    int *hiding;
     size_t rects_size;
 };
 
@@ -49,6 +50,12 @@ Platforms *create_platforms_from_rect_layer(const RectLayer *layer)
         RETURN_LT(lt, NULL);
     }
     memcpy(platforms->colors, rect_layer_colors(layer), sizeof(Color) * platforms->rects_size);
+
+    platforms->hiding = PUSH_LT(lt, nth_calloc(1, sizeof(int) * platforms->rects_size), free);
+    if (platforms->hiding == NULL) {
+        RETURN_LT(lt, NULL);
+    }
+    memset(platforms->hiding, 0, sizeof(int) * platforms->rects_size);
 
     return platforms;
 }
@@ -140,4 +147,33 @@ Vec2f platforms_snap_rect(const Platforms *platforms,
     }
 
     return result;
+}
+
+#define HIDING_SPEED 2.0f
+
+void platforms_update(Platforms *platforms, float dt)
+{
+    trace_assert(platforms);
+    for (size_t i = 0; i < platforms->rects_size; ++i) {
+        if (platforms->hiding[i]) {
+            if (platforms->colors[i].a > 0.0f) {
+                platforms->colors[i].a =
+                    fmaxf(0.0f, platforms->colors[i].a - HIDING_SPEED * dt);
+            } else {
+                platforms->hiding[i] = 0;
+            }
+        }
+    }
+}
+
+void platforms_hide_platform_at(const Platforms *platforms,
+                                Vec2f position)
+{
+    trace_assert(platforms);
+
+    for (size_t i = 0; i < platforms->rects_size; ++i) {
+        if (rect_contains_point(platforms->rects[i], position)) {
+            platforms->hiding[i] = 1;
+        }
+    }
 }
