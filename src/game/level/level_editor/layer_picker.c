@@ -25,6 +25,7 @@ static const Color LAYER_CELL_BACKGROUND_COLORS[LAYER_PICKER_N] = {
     {0.2f, 1.0f, 0.6f, 1.0f}, // LAYER_PICKER_BOXES
     {0.2f, 0.6f, 1.0f, 1.0f}, // LAYER_PICKER_LABELS
     {0.2f, 1.0f, 0.6f, 1.0f}, // LAYER_PICKER_REGIONS
+    {0.2f, 1.0f, 0.6f, 1.0f}, // LAYER_PICKER_PP
 };
 
 static const char *LAYER_CELL_TITLES[LAYER_PICKER_N] = {
@@ -37,6 +38,7 @@ static const char *LAYER_CELL_TITLES[LAYER_PICKER_N] = {
     "Boxes",                   // LAYER_PICKER_BOXES
     "Labels",                  // LAYER_PICKER_LABELS
     "Regions",                 // LAYER_PICKER_REGIONS
+    "Phantom Platforms",       // LAYER_PICKER_PP
 };
 
 inline static float layer_picker_max_width(void)

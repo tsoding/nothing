@@ -36,6 +36,7 @@ struct LevelEditor
     RectLayer *regions_layer;
     BackgroundLayer background_layer;
     LabelLayer *label_layer;
+    RectLayer *pp_layer;
 
     LayerPtr layers[LAYER_PICKER_N];
 

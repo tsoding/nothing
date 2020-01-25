@@ -15,6 +15,7 @@ typedef enum {
     LAYER_PICKER_BOXES,
     LAYER_PICKER_LABELS,
     LAYER_PICKER_REGIONS,
+    LAYER_PICKER_PP,
 
     LAYER_PICKER_N
 } LayerPicker;
