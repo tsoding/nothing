@@ -21,4 +21,7 @@ void platforms_touches_rect_sides(const Platforms *platforms,
 Vec2f platforms_snap_rect(const Platforms *platforms,
                           Rect *object);
 
+int platforms_overlap_with_rect(const Platforms *platforms,
+                                Rect rect);
+
 #endif  // PLATFORMS_H_

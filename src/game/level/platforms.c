@@ -141,3 +141,15 @@ Vec2f platforms_snap_rect(const Platforms *platforms,
 
     return result;
 }
+
+int platforms_overlap_with_rect(const Platforms *platforms,
+                                Rect rect)
+{
+    for (size_t i = 0; i < platforms->rects_size; ++i) {
+        if (rects_overlap(platforms->rects[i], rect)) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
