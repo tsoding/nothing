@@ -13,6 +13,7 @@
 typedef struct {
     bool debug_mode;
     bool blackwhite_mode;
+    bool transparent_mode;
     Vec2f position;
     float scale;
     SDL_Renderer *renderer;

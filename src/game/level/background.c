@@ -35,6 +35,8 @@ int background_render(const Background *background,
         return -1;
     }
 
+    return 0;
+
     camera.scale = 1.0f - BACKGROUND_LAYERS_STEP * BACKGROUND_LAYERS_COUNT;
 
     for (int l = 0; l < BACKGROUND_LAYERS_COUNT; ++l) {

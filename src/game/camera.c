@@ -14,9 +14,17 @@
 static Triangle camera_triangle(const Camera *camera,
                                 const Triangle t);
 
-static SDL_Color camera_sdl_color(const Camera *camera, Color color)
+static Color camera_color(const Camera *camera, Color color)
 {
-    return color_for_sdl(camera->blackwhite_mode ? color_desaturate(color) : color);
+    if (camera->blackwhite_mode) {
+        color = color_desaturate(color);
+    }
+
+    if (camera->transparent_mode) {
+        color.a *= 0.60f;
+    }
+
+    return color;
 }
 
 Camera create_camera(SDL_Renderer *renderer,
@@ -42,7 +50,7 @@ int camera_fill_rect(const Camera *camera,
     const SDL_Rect sdl_rect = rect_for_sdl(
         camera_rect(camera, rect));
 
-    const SDL_Color sdl_color = camera_sdl_color(camera, color);
+    const SDL_Color sdl_color = color_for_sdl(camera_color(camera, color));
 
     if (camera->debug_mode) {
         if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a / 2) < 0) {
@@ -73,7 +81,7 @@ int camera_draw_rect(const Camera *camera,
     const SDL_Rect sdl_rect = rect_for_sdl(
         camera_rect(camera, rect));
 
-    const SDL_Color sdl_color = camera_sdl_color(camera, color);
+    const SDL_Color sdl_color = color_for_sdl(camera_color(camera, color));
 
     if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
         log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());
@@ -95,7 +103,7 @@ int camera_draw_rect_screen(const Camera *camera,
     trace_assert(camera);
 
     const SDL_Rect sdl_rect = rect_for_sdl(rect);
-    const SDL_Color sdl_color = camera_sdl_color(camera, color);
+    const SDL_Color sdl_color = color_for_sdl(camera_color(camera, color));
 
     if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
         log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());
@@ -116,7 +124,7 @@ int camera_draw_triangle(Camera *camera,
 {
     trace_assert(camera);
 
-    const SDL_Color sdl_color = camera_sdl_color(camera, color);
+    const SDL_Color sdl_color = color_for_sdl(camera_color(camera, color));
 
     if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
         log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());
@@ -136,7 +144,7 @@ int camera_fill_triangle(const Camera *camera,
 {
     trace_assert(camera);
 
-    const SDL_Color sdl_color = camera_sdl_color(camera, color);
+    const SDL_Color sdl_color = color_for_sdl(camera_color(camera, color));
 
     if (camera->debug_mode) {
         if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a / 2) < 0) {
@@ -174,7 +182,7 @@ int camera_render_text(const Camera *camera,
         camera->renderer,
         screen_position,
         vec(size.x * scale.x * camera->scale, size.y * scale.y * camera->scale),
-        camera->blackwhite_mode ? color_desaturate(c) : c,
+        camera_color(camera, c),
         text);
 
     return 0;
@@ -206,7 +214,7 @@ int camera_render_debug_text(const Camera *camera,
 int camera_clear_background(const Camera *camera,
                             Color color)
 {
-    const SDL_Color sdl_color = camera_sdl_color(camera, color);
+    const SDL_Color sdl_color = color_for_sdl(camera_color(camera, color));
 
     if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
         log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());
@@ -389,7 +397,7 @@ int camera_fill_rect_screen(const Camera *camera,
     trace_assert(camera);
 
     const SDL_Rect sdl_rect = rect_for_sdl(rect);
-    const SDL_Color sdl_color = camera_sdl_color(camera, color);
+    const SDL_Color sdl_color = color_for_sdl(camera_color(camera, color));
 
     if (camera->debug_mode) {
         if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a / 2) < 0) {
@@ -497,7 +505,7 @@ int camera_draw_line(const Camera *camera,
     const Vec2f camera_begin = camera_point(camera, begin);
     const Vec2f camera_end = camera_point(camera, end);
 
-    const SDL_Color sdl_color = camera_sdl_color(camera, color);
+    const SDL_Color sdl_color = color_for_sdl(camera_color(camera, color));
 
     if (SDL_SetRenderDrawColor(camera->renderer, sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a) < 0) {
         log_fail("SDL_SetRenderDrawColor: %s\n", SDL_GetError());

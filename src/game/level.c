@@ -34,6 +34,9 @@ typedef enum {
     LEVEL_STATE_PAUSE
 } LevelState;
 
+#define PLATFORM_LAYERS_COUNT 2
+#define PLATFORM_LAYERS_SPEED 8.0f
+
 struct Level
 {
     Lt *lt;
@@ -50,6 +53,14 @@ struct Level
     Labels *labels;
     Regions *regions;
     Phantom_Platforms pp;
+
+    Platforms *platform_layers[PLATFORM_LAYERS_COUNT];
+    size_t current_platforms;
+    size_t prev_platform;
+
+    float a;                    // -1.0 <= a <= 1.0
+                                // abs(a) == 1.0
+    float da;
 };
 
 Level *create_level_from_level_editor(const LevelEditor *level_editor)
@@ -147,6 +158,10 @@ Level *create_level_from_level_editor(const LevelEditor *level_editor)
 
     level->pp = create_phantom_platforms(level_editor->pp_layer);
 
+    level->platform_layers[0] = level->back_platforms;
+    level->platform_layers[1] = level->platforms;
+    level->current_platforms = 1;
+
     return level;
 }
 
@@ -165,25 +180,49 @@ int level_render(const Level *level, const Camera *camera)
         return -1;
     }
 
-    if (platforms_render(level->back_platforms, camera) < 0) {
-        return -1;
+    // d could-be-= 1.0 / N, but lets assume d = 0.1
+    //
+    //  0     1     2     3     4
+    //              ^
+    // 0.8   0.9   1.0   1.1   1.2
+    //       ^
+    // 0.9   1.0   1.1   1.2   1.3
+    // 1.0 + (i - current) * 0.1
+
+    for (size_t i = 0; i < PLATFORM_LAYERS_COUNT; ++i) {
+        const float d = 0.2f;
+        Camera camera0 = *camera;
+
+        if (level->da == 0.0f) {
+            camera0.scale =
+                fmaxf(0.0f, 1.0f + ((float) i - (float) level->current_platforms) * d);
+        } else {
+            camera0.scale =
+                fmaxf(0.0f, 1.0f + ((float) i - (float) level->prev_platform + level->a) * d);
+        }
+
+
+        if (i != level->current_platforms) {
+            camera0.transparent_mode = 1;
+        }
+
+        platforms_render(level->platform_layers[i], &camera0);
+
+        if (i == level->current_platforms) {
+            if (player_render(level->player, camera) < 0) {
+                return -1;
+            }
+        }
     }
 
     phantom_platforms_render(&level->pp, camera);
 
-    if (player_render(level->player, camera) < 0) {
-        return -1;
-    }
 
     if (boxes_render(level->boxes, camera) < 0) {
         return -1;
     }
 
     if (lava_render(level->lava, camera) < 0) {
-        return -1;
-    }
-
-    if (platforms_render(level->platforms, camera) < 0) {
         return -1;
     }
 
@@ -217,7 +256,8 @@ int level_update(Level *level, float delta_time)
     boxes_update(level->boxes, delta_time);
     player_update(level->player, delta_time);
 
-    rigid_bodies_collide(level->rigid_bodies, level->platforms);
+    rigid_bodies_collide(level->rigid_bodies,
+                         level->platform_layers[level->current_platforms]);
 
     player_die_from_lava(level->player, level->lava);
     regions_player_enter(level->regions, level->player);
@@ -230,6 +270,14 @@ int level_update(Level *level, float delta_time)
     Rect hitbox = player_hitbox(level->player);
     phantom_platforms_hide_at(&level->pp, vec(hitbox.x, hitbox.y));
     phantom_platforms_update(&level->pp, delta_time);
+
+    if (level->da != 0.0f) {
+        level->a += level->da * delta_time;
+        if (fabsf(level->a) > 1.0f) {
+            level->da = 0.0f;
+            level->a = 0.0f;
+        }
+    }
 
     return 0;
 }
@@ -257,6 +305,24 @@ int level_event_idle(Level *level, const SDL_Event *event,
 
         case SDLK_l: {
             camera_toggle_debug_mode(camera);
+        } break;
+
+        case SDLK_1: {
+            if (level->current_platforms > 0) {
+                level->a = 0.0f;
+                level->da = PLATFORM_LAYERS_SPEED;
+                level->prev_platform = level->current_platforms;
+                level->current_platforms -= 1;
+            }
+        } break;
+
+        case SDLK_2: {
+            if (level->current_platforms + 1 < PLATFORM_LAYERS_COUNT) {
+                level->a = 0.0f;
+                level->da = -PLATFORM_LAYERS_SPEED;
+                level->prev_platform = level->current_platforms;
+                level->current_platforms += 1;
+            }
         } break;
         }
         break;
