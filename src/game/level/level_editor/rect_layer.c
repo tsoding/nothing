@@ -505,6 +505,7 @@ static
 void push_geometry(Geometry *geometry, Rect rect, Color color)
 {
     assert(geometry);
+    // TODO(#1252): push_geometry may fail if there is too many rects produced
     assert(geometry->count < GEOMETRY_CAPACITY);
 
     if ((rect.w * rect.h) > 1e-6f) {
