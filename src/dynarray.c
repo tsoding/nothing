@@ -66,8 +66,14 @@ void dynarray_delete_at(Dynarray *dynarray, size_t index)
 void dynarray_insert_before(Dynarray *dynarray, size_t index, void *element)
 {
     trace_assert(dynarray);
+    trace_assert(dynarray->count < DYNARRAY_CAPACITY);
     trace_assert(element);
-    trace_assert(index < dynarray->count);
+    trace_assert(index <= dynarray->count);
+
+    if (index == dynarray->count) {
+        dynarray_push(dynarray, element);
+        return;
+    }
 
     memmove(
         (uint8_t*) dynarray->data + (index + 1) * dynarray->element_size,
