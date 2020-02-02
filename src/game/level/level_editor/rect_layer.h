@@ -16,7 +16,8 @@ typedef enum {
     RECT_LAYER_RESIZE,
     RECT_LAYER_MOVE,
     RECT_LAYER_ID_RENAME,
-    RECT_LAYER_RECOLOR
+    RECT_LAYER_RECOLOR,
+    RECT_LAYER_SUBTRACT
 } RectLayerState;
 
 struct RectLayer {
