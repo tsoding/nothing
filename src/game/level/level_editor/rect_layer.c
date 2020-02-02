@@ -275,6 +275,32 @@ static int calc_resize_mask(Vec2f point, Rect rect)
     return mask;
 }
 
+#define TOOL_BUTTON_WIDTH 50.0f
+#define TOOL_BUTTON_HEIGHT 50.0f
+#define TOOL_BAR_PADDING 20.0f
+
+static
+Rect subtract_tool_button_rect(const Camera *camera)
+{
+    const Rect view_port = camera_view_port_screen(camera);
+    return rect(
+        TOOL_BAR_PADDING,
+        view_port.h - TOOL_BUTTON_HEIGHT - TOOL_BAR_PADDING,
+        TOOL_BUTTON_WIDTH,
+        TOOL_BUTTON_HEIGHT);
+}
+
+static
+Rect snapping_tool_button_rect(const Camera *camera)
+{
+    const Rect view_port = camera_view_port_screen(camera);
+    return rect(
+        TOOL_BAR_PADDING + TOOL_BUTTON_WIDTH + TOOL_BAR_PADDING,
+        view_port.h - TOOL_BUTTON_HEIGHT - TOOL_BAR_PADDING,
+        TOOL_BUTTON_WIDTH,
+        TOOL_BUTTON_HEIGHT);
+}
+
 static int rect_layer_event_idle(RectLayer *layer,
                                  const SDL_Event *event,
                                  const Camera *camera,
@@ -303,6 +329,19 @@ static int rect_layer_event_idle(RectLayer *layer,
     case SDL_MOUSEBUTTONDOWN: {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
+            Vec2f screen_position =
+                vec((float) event->button.x,
+                    (float) event->button.y);
+            if (rect_contains_point(subtract_tool_button_rect(camera), screen_position)) {
+                layer->subtract_enabled = !layer->subtract_enabled;
+                return 0;
+            }
+
+            if (rect_contains_point(snapping_tool_button_rect(camera), screen_position)) {
+                layer->snapping_enabled = !layer->snapping_enabled;
+                return 0;
+            }
+
             Vec2f position = camera_map_screen(
                 camera,
                 event->button.x,
@@ -335,7 +374,9 @@ static int rect_layer_event_idle(RectLayer *layer,
                 layer->selection = rect_at_position;
 
                 if (layer->selection < 0) {
-                    layer->state = RECT_LAYER_CREATE;
+                    layer->state = layer->subtract_enabled
+                        ? RECT_LAYER_SUBTRACT
+                        : RECT_LAYER_CREATE;
                     layer->create_begin = position;
                     layer->create_end = position;
                 }
@@ -428,14 +469,6 @@ static int rect_layer_event_idle(RectLayer *layer,
                 dynarray_copy_to(&layer->rects, &rect_clipboard_rect, (size_t)layer->selection);
                 dynarray_copy_to(&layer->colors, &rect_clipboard_color, (size_t)layer->selection);
             }
-        } break;
-
-        case SDLK_x: {
-            int x, y;
-            SDL_GetMouseState(&x, &y);
-            layer->create_begin = camera_map_screen(camera, x, y);
-            layer->create_end = layer->create_begin;
-            layer->state = RECT_LAYER_SUBTRACT;
         } break;
 
         case SDLK_v: {
@@ -1147,6 +1180,19 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
 
     if (active && color_picker_render(&layer->color_picker, camera) < 0) {
         return -1;
+    }
+
+    // Tool bar
+    if (active) {
+        // TODO: subtract and snapping tools don't have any icons
+        camera_fill_rect_screen(
+            camera,
+            subtract_tool_button_rect(camera),
+            layer->subtract_enabled ? COLOR_RED : rgba(0.2f, 0.2f, 0.2f, 1.0f));
+        camera_fill_rect_screen(
+            camera,
+            snapping_tool_button_rect(camera),
+            layer->snapping_enabled ? COLOR_RED : rgba(0.2f, 0.2f, 0.2f, 1.0f));
     }
 
     return 0;

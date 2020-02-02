@@ -41,6 +41,7 @@ struct RectLayer {
     Cursor *cursor;
 
     int snapping_enabled;
+    int subtract_enabled;
 };
 
 LayerPtr rect_layer_as_layer(RectLayer *layer);
