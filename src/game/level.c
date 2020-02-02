@@ -307,29 +307,22 @@ int level_event_idle(Level *level, const SDL_Event *event,
             camera_toggle_debug_mode(camera);
         } break;
 
-        case SDLK_1: {
-            if (level->current_platforms > 0
-                && !platforms_overlap_with_rect(
-                    level->platform_layers[level->current_platforms - 1],
+        case SDLK_k: {
+            size_t next_platforms =
+                (level->current_platforms + 1) % PLATFORM_LAYERS_COUNT;
+
+            if (!platforms_overlap_with_rect(
+                    level->platform_layers[next_platforms],
                     player_hitbox(level->player))) {
                 level->a = 0.0f;
-                level->da = PLATFORM_LAYERS_SPEED;
+                level->da = level->current_platforms < next_platforms
+                    ? -PLATFORM_LAYERS_SPEED
+                    : PLATFORM_LAYERS_SPEED;
                 level->prev_platform = level->current_platforms;
-                level->current_platforms -= 1;
+                level->current_platforms = next_platforms;
             }
         } break;
 
-        case SDLK_2: {
-            if (level->current_platforms + 1 < PLATFORM_LAYERS_COUNT
-                && !platforms_overlap_with_rect(
-                    level->platform_layers[level->current_platforms + 1],
-                    player_hitbox(level->player))) {
-                level->a = 0.0f;
-                level->da = -PLATFORM_LAYERS_SPEED;
-                level->prev_platform = level->current_platforms;
-                level->current_platforms += 1;
-            }
-        } break;
         }
         break;
 
