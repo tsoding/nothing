@@ -249,7 +249,7 @@ static void rect_layer_swap_elements(RectLayer *layer, size_t a, size_t b,
     RECT_UNDO_PUSH(undo_history, create_rect_undo_swap_context(layer, a, b));
 }
 
-static int rect_layer_delete_rect_at(RectLayer *layer,
+static int rect_layer_delete_rect_at_index(RectLayer *layer,
                                      size_t i,
                                      UndoHistory *undo_history)
 {
@@ -392,7 +392,10 @@ static int rect_layer_event_idle(RectLayer *layer,
 
         case SDLK_DELETE: {
             if (layer->selection >= 0) {
-                rect_layer_delete_rect_at(layer, (size_t) layer->selection, undo_history);
+                rect_layer_delete_rect_at_index(
+                    layer,
+                    (size_t) layer->selection,
+                    undo_history);
                 layer->selection = -1;
             }
         } break;
