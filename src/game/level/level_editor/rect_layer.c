@@ -1184,7 +1184,7 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
 
     // Tool bar
     if (active) {
-        // TODO: subtract and snapping tools don't have any icons
+        // TODO(#1251): subtract and snapping tools don't have any icons
         camera_fill_rect_screen(
             camera,
             subtract_tool_button_rect(camera),
