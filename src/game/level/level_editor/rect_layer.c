@@ -278,6 +278,8 @@ static int calc_resize_mask(Vec2f point, Rect rect)
 #define TOOL_BUTTON_WIDTH 50.0f
 #define TOOL_BUTTON_HEIGHT 50.0f
 #define TOOL_BAR_PADDING 20.0f
+#define TOOL_BAR_BACKGROUND rgba(0.8f, 0.8f, 0.8f, 1.0f)
+#define TOOL_BAR_FOREGROUND rgba(0.2f, 0.2f, 0.2f, 1.0f)
 
 static
 Rect subtract_tool_button_rect(const Camera *camera)
@@ -1073,6 +1075,30 @@ void rect_layer_load(RectLayer *layer, Memory *memory, String *input)
     }
 }
 
+static
+void render_tool_bar_button(const Camera *camera,
+                            Rect button_rect, const char *text,
+                            Color background_color,
+                            Color foreground_color)
+{
+    const Vec2f text_size = vec(5.0f, 5.0f);
+    const Rect text_rect = sprite_font_boundary_box(
+        vec(0.0f, 0.0f), text_size, text);
+    camera_fill_rect_screen(
+        camera,
+        button_rect,
+        background_color);
+    camera_render_text_screen(
+        camera,
+        text,
+        text_size,
+        foreground_color,
+        vec(
+            button_rect.x + (button_rect.w - text_rect.w) * 0.5f,
+            button_rect.y + (button_rect.h - text_rect.h) * 0.5f));
+}
+
+
 int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
 {
     trace_assert(layer);
@@ -1185,15 +1211,15 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
 
     // Tool bar
     if (active) {
-        // TODO(#1251): subtract and snapping tools don't have any icons
-        camera_fill_rect_screen(
-            camera,
-            subtract_tool_button_rect(camera),
-            layer->subtract_enabled ? COLOR_RED : rgba(0.2f, 0.2f, 0.2f, 1.0f));
-        camera_fill_rect_screen(
-            camera,
-            snapping_tool_button_rect(camera),
-            layer->snapping_enabled ? COLOR_RED : rgba(0.2f, 0.2f, 0.2f, 1.0f));
+        render_tool_bar_button(
+            camera, subtract_tool_button_rect(camera), "/",
+            layer->subtract_enabled ? TOOL_BAR_BACKGROUND : TOOL_BAR_FOREGROUND,
+            layer->subtract_enabled ? TOOL_BAR_FOREGROUND : TOOL_BAR_BACKGROUND);
+
+        render_tool_bar_button(
+            camera, snapping_tool_button_rect(camera), "S",
+            layer->snapping_enabled ? TOOL_BAR_BACKGROUND : TOOL_BAR_FOREGROUND,
+            layer->snapping_enabled ? TOOL_BAR_FOREGROUND : TOOL_BAR_BACKGROUND);
     }
 
     return 0;
