@@ -16,7 +16,8 @@ typedef enum {
     RECT_LAYER_RESIZE,
     RECT_LAYER_MOVE,
     RECT_LAYER_ID_RENAME,
-    RECT_LAYER_RECOLOR
+    RECT_LAYER_RECOLOR,
+    RECT_LAYER_SUBTRACT
 } RectLayerState;
 
 struct RectLayer {
@@ -40,6 +41,7 @@ struct RectLayer {
     Cursor *cursor;
 
     int snapping_enabled;
+    int subtract_enabled;
 };
 
 LayerPtr rect_layer_as_layer(RectLayer *layer);

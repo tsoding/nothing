@@ -93,10 +93,9 @@ RectUndoContext create_rect_undo_add_context(RectLayer *layer, size_t index)
 }
 
 static
-RectUndoContext create_rect_undo_element_context(RectLayer *layer)
+RectUndoContext create_rect_undo_element_context(RectLayer *layer, size_t index)
 {
     trace_assert(layer);
-    size_t index = (size_t) layer->selection;
     trace_assert(index < layer->rects.count);
 
     RectUndoContext undo_context;
@@ -110,17 +109,17 @@ RectUndoContext create_rect_undo_element_context(RectLayer *layer)
 }
 
 static
-RectUndoContext create_rect_undo_update_context(RectLayer *rect_layer)
+RectUndoContext create_rect_undo_update_context(RectLayer *rect_layer, size_t index)
 {
-    RectUndoContext undo_context = create_rect_undo_element_context(rect_layer);
+    RectUndoContext undo_context = create_rect_undo_element_context(rect_layer, index);
     undo_context.type = RECT_UNDO_UPDATE;
     return undo_context;
 }
 
 static
-RectUndoContext create_rect_undo_delete_context(RectLayer *rect_layer)
+RectUndoContext create_rect_undo_delete_context(RectLayer *rect_layer, size_t i)
 {
-    RectUndoContext undo_context = create_rect_undo_element_context(rect_layer);
+    RectUndoContext undo_context = create_rect_undo_element_context(rect_layer, i);
     undo_context.type = RECT_UNDO_DELETE;
     return undo_context;
 }
@@ -249,13 +248,13 @@ static void rect_layer_swap_elements(RectLayer *layer, size_t a, size_t b,
     RECT_UNDO_PUSH(undo_history, create_rect_undo_swap_context(layer, a, b));
 }
 
-static int rect_layer_delete_rect_at(RectLayer *layer,
+static int rect_layer_delete_rect_at_index(RectLayer *layer,
                                      size_t i,
                                      UndoHistory *undo_history)
 {
     trace_assert(layer);
 
-    RECT_UNDO_PUSH(undo_history, create_rect_undo_delete_context(layer));
+    RECT_UNDO_PUSH(undo_history, create_rect_undo_delete_context(layer, i));
 
     dynarray_delete_at(&layer->rects, i);
     dynarray_delete_at(&layer->colors, i);
@@ -274,6 +273,32 @@ static int calc_resize_mask(Vec2f point, Rect rect)
         }
     }
     return mask;
+}
+
+#define TOOL_BUTTON_WIDTH 50.0f
+#define TOOL_BUTTON_HEIGHT 50.0f
+#define TOOL_BAR_PADDING 20.0f
+
+static
+Rect subtract_tool_button_rect(const Camera *camera)
+{
+    const Rect view_port = camera_view_port_screen(camera);
+    return rect(
+        TOOL_BAR_PADDING,
+        view_port.h - TOOL_BUTTON_HEIGHT - TOOL_BAR_PADDING,
+        TOOL_BUTTON_WIDTH,
+        TOOL_BUTTON_HEIGHT);
+}
+
+static
+Rect snapping_tool_button_rect(const Camera *camera)
+{
+    const Rect view_port = camera_view_port_screen(camera);
+    return rect(
+        TOOL_BAR_PADDING + TOOL_BUTTON_WIDTH + TOOL_BAR_PADDING,
+        view_port.h - TOOL_BUTTON_HEIGHT - TOOL_BAR_PADDING,
+        TOOL_BUTTON_WIDTH,
+        TOOL_BUTTON_HEIGHT);
 }
 
 static int rect_layer_event_idle(RectLayer *layer,
@@ -304,6 +329,19 @@ static int rect_layer_event_idle(RectLayer *layer,
     case SDL_MOUSEBUTTONDOWN: {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT: {
+            Vec2f screen_position =
+                vec((float) event->button.x,
+                    (float) event->button.y);
+            if (rect_contains_point(subtract_tool_button_rect(camera), screen_position)) {
+                layer->subtract_enabled = !layer->subtract_enabled;
+                return 0;
+            }
+
+            if (rect_contains_point(snapping_tool_button_rect(camera), screen_position)) {
+                layer->snapping_enabled = !layer->snapping_enabled;
+                return 0;
+            }
+
             Vec2f position = camera_map_screen(
                 camera,
                 event->button.x,
@@ -336,7 +374,9 @@ static int rect_layer_event_idle(RectLayer *layer,
                 layer->selection = rect_at_position;
 
                 if (layer->selection < 0) {
-                    layer->state = RECT_LAYER_CREATE;
+                    layer->state = layer->subtract_enabled
+                        ? RECT_LAYER_SUBTRACT
+                        : RECT_LAYER_CREATE;
                     layer->create_begin = position;
                     layer->create_end = position;
                 }
@@ -392,7 +432,10 @@ static int rect_layer_event_idle(RectLayer *layer,
 
         case SDLK_DELETE: {
             if (layer->selection >= 0) {
-                rect_layer_delete_rect_at(layer, (size_t) layer->selection, undo_history);
+                rect_layer_delete_rect_at_index(
+                    layer,
+                    (size_t) layer->selection,
+                    undo_history);
                 layer->selection = -1;
             }
         } break;
@@ -443,6 +486,144 @@ static int rect_layer_event_idle(RectLayer *layer,
             }
         } break;
         }
+    } break;
+    }
+
+    return 0;
+}
+
+#define GEOMETRY_CAPACITY 256
+
+typedef struct {
+    size_t first;
+    size_t count;
+    Rect rects[GEOMETRY_CAPACITY];
+    Color colors[GEOMETRY_CAPACITY];
+} Geometry;
+
+static
+void push_geometry(Geometry *geometry, Rect rect, Color color)
+{
+    assert(geometry);
+    // TODO(#1252): push_geometry may fail if there is too many rects produced
+    assert(geometry->count < GEOMETRY_CAPACITY);
+
+    if ((rect.w * rect.h) > 1e-6f) {
+        size_t i = (geometry->first + geometry->count) % GEOMETRY_CAPACITY;
+        geometry->rects[i] = rect;
+        geometry->colors[i] = color;
+        geometry->count++;
+    }
+}
+
+static
+void subtract_rect_from_rect(Rect a, Color color_a, Rect c, Geometry *result)
+{
+    assert(result);
+
+    Rect b = rects_overlap_area(a, c);
+
+    if (b.w * b.h < 1e-6) {
+        push_geometry(result, a, color_a);
+        return;
+    }
+
+    push_geometry(result, (Rect) {a.x, a.y, a.w, b.y - a.y}, color_a);
+    push_geometry(result, (Rect) {a.x, b.y, b.x - a.x, b.h}, color_a);
+    push_geometry(result, (Rect) {
+        b.x + b.w,
+        b.y,
+        a.w - (b.x - a.x) - b.w,
+        b.h
+    }, color_a);
+    push_geometry(result, (Rect) {
+        a.x,
+        b.y + b.h,
+        a.w,
+        a.h - (b.y - a.y) - b.h
+    }, color_a);
+}
+
+static
+void subtract_rect_from_geometry(Geometry *result, Rect b)
+{
+    assert(result);
+
+    size_t count = result->count;
+    size_t first = result->first;
+
+    for (size_t i = 0; i < count; ++i) {
+        result->first = (result->first + 1) % GEOMETRY_CAPACITY;
+        result->count -= 1;
+        subtract_rect_from_rect(
+            result->rects[(i + first) % GEOMETRY_CAPACITY],
+            result->colors[(i + first) % GEOMETRY_CAPACITY],
+            b,
+            result);
+    }
+}
+
+static int rect_layer_event_subtract(RectLayer *layer,
+                                     const SDL_Event *event,
+                                     const Camera *camera,
+                                     UndoHistory *undo_history)
+{
+    trace_assert(layer);
+    trace_assert(event);
+    trace_assert(camera);
+    trace_assert(undo_history);
+
+    Rect *rects = layer->rects.data;
+    Color *colors = layer->colors.data;
+
+    switch (event->type) {
+    case SDL_MOUSEBUTTONUP: {
+        switch (event->button.button) {
+        case SDL_BUTTON_LEFT: {
+            const Rect real_rect =
+                rect_from_points(
+                    layer->create_begin,
+                    layer->create_end);
+            const float area = real_rect.w * real_rect.h;
+
+            Geometry geometry = {0};
+
+            if (area >= CREATE_AREA_THRESHOLD) {
+                for (size_t i = 0; i < layer->rects.count;) {
+                    Rect overlap_area = rects_overlap_area(
+                        real_rect,
+                        rects[i]);
+                    if (overlap_area.w * overlap_area.h > 1e-6) {
+                        push_geometry(&geometry, rects[i], colors[i]);
+                        rect_layer_delete_rect_at_index(layer, i, undo_history);
+                    } else {
+                        i++;
+                    }
+                }
+
+                subtract_rect_from_geometry(&geometry, real_rect);
+
+                for (size_t i = 0; i < geometry.count; ++i) {
+                    size_t j = (i + geometry.first) % GEOMETRY_CAPACITY;
+                    rect_layer_add_rect(
+                        layer,
+                        geometry.rects[j],
+                        geometry.colors[j],
+                        undo_history);
+                }
+            } else {
+                log_info("The area is too small %f. Such small box won't be cut.\n", area);
+            }
+            layer->state = RECT_LAYER_IDLE;
+        } break;
+        }
+    } break;
+
+    case SDL_MOUSEMOTION: {
+        layer->create_end = camera_map_screen(
+            camera,
+            event->motion.x,
+            event->motion.y);
     } break;
     }
 
@@ -657,7 +838,11 @@ static int rect_layer_event_resize(RectLayer *layer,
 
     case SDL_MOUSEBUTTONUP: {
         layer->state = RECT_LAYER_IDLE;
-        RECT_UNDO_PUSH(undo_history, create_rect_undo_update_context(layer));
+        RECT_UNDO_PUSH(
+            undo_history,
+            create_rect_undo_update_context(
+                layer,
+                (size_t) layer->selection));
         dynarray_replace_at(&layer->rects, (size_t) layer->selection, &layer->inter_rect);
     } break;
     }
@@ -745,8 +930,14 @@ static int rect_layer_event_move(RectLayer *layer,
                     rect_position(rects[layer->selection])));
 
         if (distance > 1e-6) {
-            RECT_UNDO_PUSH(undo_history, create_rect_undo_update_context(layer));
-            dynarray_replace_at(&layer->rects, (size_t) layer->selection, &layer->inter_rect);
+            RECT_UNDO_PUSH(
+                undo_history,
+                create_rect_undo_update_context(
+                    layer, (size_t) layer->selection));
+            dynarray_replace_at(
+                &layer->rects,
+                (size_t) layer->selection,
+                &layer->inter_rect);
         }
     } break;
     }
@@ -767,7 +958,11 @@ static int rect_layer_event_id_rename(RectLayer *layer,
     case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
         case SDLK_RETURN: {
-            RECT_UNDO_PUSH(undo_history, create_rect_undo_update_context(layer));
+            RECT_UNDO_PUSH(
+                undo_history,
+                create_rect_undo_update_context(
+                    layer,
+                    (size_t) layer->selection));
 
             char *id = dynarray_pointer_at(&layer->ids, (size_t)layer->selection);
             memset(id, 0, ENTITY_MAX_ID_SIZE);
@@ -978,8 +1173,27 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
         }
     }
 
+    if (layer->state == RECT_LAYER_SUBTRACT) {
+        if (camera_draw_rect(camera, rect_from_points(layer->create_begin, layer->create_end), color) < 0) {
+            return -1;
+        }
+    }
+
     if (active && color_picker_render(&layer->color_picker, camera) < 0) {
         return -1;
+    }
+
+    // Tool bar
+    if (active) {
+        // TODO(#1251): subtract and snapping tools don't have any icons
+        camera_fill_rect_screen(
+            camera,
+            subtract_tool_button_rect(camera),
+            layer->subtract_enabled ? COLOR_RED : rgba(0.2f, 0.2f, 0.2f, 1.0f));
+        camera_fill_rect_screen(
+            camera,
+            snapping_tool_button_rect(camera),
+            layer->snapping_enabled ? COLOR_RED : rgba(0.2f, 0.2f, 0.2f, 1.0f));
     }
 
     return 0;
@@ -1006,7 +1220,11 @@ int rect_layer_event_recolor(RectLayer *layer,
         layer->inter_color = color_picker_rgba(&layer->color_picker);
 
         if (!color_picker_drag(&layer->color_picker)) {
-            RECT_UNDO_PUSH(undo_history, create_rect_undo_update_context(layer));
+            RECT_UNDO_PUSH(
+                undo_history,
+                create_rect_undo_update_context(
+                    layer,
+                    (size_t)layer->selection));
             dynarray_replace_at(&layer->colors, (size_t) layer->selection, &layer->inter_color);
             layer->state = RECT_LAYER_IDLE;
         }
@@ -1042,6 +1260,9 @@ int rect_layer_event(RectLayer *layer,
 
     case RECT_LAYER_RECOLOR:
         return rect_layer_event_recolor(layer, event, camera, undo_history);
+
+    case RECT_LAYER_SUBTRACT:
+        return rect_layer_event_subtract(layer, event, camera, undo_history);
     }
 
 
