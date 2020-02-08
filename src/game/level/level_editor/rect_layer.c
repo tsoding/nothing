@@ -39,180 +39,46 @@ static Cursor_Style resize_styles[1 << RECT_SIDE_N] = {
     CURSOR_STYLE_RESIZE_DIAG1  // [12]
 };
 
-typedef enum {
-    RECT_UNDO_ADD,
-    RECT_UNDO_DELETE,
-    RECT_UNDO_UPDATE,
-    RECT_UNDO_SWAP
-} RectUndoType;
-
-// Delete, Update
-typedef struct {
-    RectUndoType type;
-    RectLayer *layer;
-    size_t index;
-    Rect rect;
-    Color color;
-    Action action;
-    char id[ENTITY_MAX_ID_SIZE];
-} UndoElementContext;
-
-// Add
-typedef struct {
-    RectUndoType type;
-    RectLayer *layer;
-    size_t index;
-} UndoAddContext;
-
-// Swap
-typedef struct {
-    RectUndoType type;
-    RectLayer *layer;
-    size_t index1;
-    size_t index2;
-} UndoSwapContext;
-
-typedef union {
-    RectUndoType type;
-    UndoAddContext add;
-    UndoElementContext element;
-    UndoSwapContext swap;
-} RectUndoContext;
-
 static
-RectUndoContext create_rect_undo_add_context(RectLayer *layer, size_t index)
+RectLayerSnapshot *clone_rect_layer_snapshot(Memory *memory, RectLayerSnapshot *snapshot)
+{
+    trace_assert(snapshot);
+
+    RectLayerSnapshot *result = memory_alloc(memory, sizeof(RectLayerSnapshot));
+    result->previous = NULL;
+    result->ids = clone_dynarray(memory, snapshot->ids);
+    result->rects = clone_dynarray(memory, snapshot->rects);
+    result->colors = clone_dynarray(memory, snapshot->colors);
+    result->actions = clone_dynarray(memory, snapshot->actions);
+
+    return result;
+}
+
+static void rect_layer_snapshot_state(RectLayer *layer)
 {
     trace_assert(layer);
-    trace_assert(index < layer->rects.count);
-
-    RectUndoContext undo_context;
-    undo_context.add.type = RECT_UNDO_ADD;
-    undo_context.add.layer = layer;
-    undo_context.add.index = index;
-    return undo_context;
+    RectLayerSnapshot *new_data = clone_rect_layer_snapshot(layer->memory, layer->data);
+    new_data->previous = layer->data;
+    layer->data = new_data;
 }
-
-static
-RectUndoContext create_rect_undo_element_context(RectLayer *layer, size_t index)
-{
-    trace_assert(layer);
-    trace_assert(index < layer->rects.count);
-
-    RectUndoContext undo_context;
-    undo_context.element.layer = layer;
-    undo_context.element.index = index;
-    dynarray_copy_to(&layer->rects, &undo_context.element.rect, index);
-    dynarray_copy_to(&layer->colors, &undo_context.element.color, index);
-    dynarray_copy_to(&layer->ids, undo_context.element.id, index);
-    dynarray_copy_to(&layer->actions, &undo_context.element.action, index);
-    return undo_context;
-}
-
-static
-RectUndoContext create_rect_undo_update_context(RectLayer *rect_layer, size_t index)
-{
-    RectUndoContext undo_context = create_rect_undo_element_context(rect_layer, index);
-    undo_context.type = RECT_UNDO_UPDATE;
-    return undo_context;
-}
-
-static
-RectUndoContext create_rect_undo_delete_context(RectLayer *rect_layer, size_t i)
-{
-    RectUndoContext undo_context = create_rect_undo_element_context(rect_layer, i);
-    undo_context.type = RECT_UNDO_DELETE;
-    return undo_context;
-}
-
-static
-RectUndoContext create_rect_undo_swap_context(RectLayer *rect_layer, size_t index1, size_t index2)
-{
-    RectUndoContext undo_context;
-    undo_context.swap.type = RECT_UNDO_SWAP;
-    undo_context.swap.layer = rect_layer;
-    undo_context.swap.index1 = index1;
-    undo_context.swap.index2 = index2;
-    return undo_context;
-}
-
-static
-void rect_layer_undo(void *context, size_t context_size)
-{
-    trace_assert(context);
-    trace_assert(sizeof(RectUndoContext) == context_size);
-
-    RectUndoContext *undo_context = context;
-
-    switch (undo_context->type) {
-    case RECT_UNDO_ADD: {
-        RectLayer *layer = undo_context->add.layer;
-        dynarray_delete_at(&layer->rects, undo_context->add.index);
-        dynarray_delete_at(&layer->colors, undo_context->add.index);
-        dynarray_delete_at(&layer->ids, undo_context->add.index);
-        dynarray_delete_at(&layer->actions, undo_context->add.index);
-        layer->selection = -1;
-    } break;
-
-    case RECT_UNDO_DELETE: {
-        RectLayer *layer = undo_context->element.layer;
-        dynarray_insert_before(&layer->rects, undo_context->element.index, &undo_context->element.rect);
-        dynarray_insert_before(&layer->colors, undo_context->element.index, &undo_context->element.color);
-        dynarray_insert_before(&layer->ids, undo_context->element.index, &undo_context->element.id);
-        dynarray_insert_before(&layer->actions, undo_context->element.index, &undo_context->element.action);
-        layer->selection = -1;
-    } break;
-
-    case RECT_UNDO_UPDATE: {
-        RectLayer *layer = undo_context->element.layer;
-        dynarray_replace_at(&layer->rects, undo_context->element.index, &undo_context->element.rect);
-        dynarray_replace_at(&layer->colors, undo_context->element.index, &undo_context->element.color);
-        dynarray_replace_at(&layer->ids, undo_context->element.index, &undo_context->element.id);
-        dynarray_replace_at(&layer->actions, undo_context->element.index, &undo_context->element.action);
-    } break;
-
-    case RECT_UNDO_SWAP: {
-        RectLayer *layer = undo_context->element.layer;
-        dynarray_swap(&layer->rects, undo_context->swap.index1, undo_context->swap.index2);
-        dynarray_swap(&layer->colors, undo_context->swap.index1, undo_context->swap.index2);
-        dynarray_swap(&layer->ids, undo_context->swap.index1, undo_context->swap.index2);
-        dynarray_swap(&layer->actions, undo_context->swap.index1, undo_context->swap.index2);
-    } break;
-    }
-}
-
-#define RECT_UNDO_PUSH(HISTORY, CONTEXT)                                     \
-    do {                                                                \
-        RectUndoContext context = (CONTEXT);                                \
-        undo_history_push(                                              \
-            HISTORY,                                                    \
-            rect_layer_undo,                                            \
-            &context,                                                   \
-            sizeof(context));                                           \
-    } while(0)
 
 static int rect_layer_add_rect(RectLayer *layer,
                                Rect rect,
-                               Color color,
-                               UndoHistory *undo_history)
+                               Color color)
 {
     trace_assert(layer);
 
-    dynarray_push(&layer->rects, &rect);
-    dynarray_push(&layer->colors, &color);
+    dynarray_push(&layer->data->rects, &rect);
+    dynarray_push(&layer->data->colors, &color);
 
     char id[ENTITY_MAX_ID_SIZE];
     snprintf(id, ENTITY_MAX_ID_SIZE, "%s_%d",
              layer->id_name_prefix,
              layer->id_name_counter++);
-    dynarray_push(&layer->ids, id);
+    dynarray_push(&layer->data->ids, id);
 
-    dynarray_push_empty(&layer->actions);
-
-    RECT_UNDO_PUSH(
-        undo_history,
-        create_rect_undo_add_context(
-            layer,
-            layer->rects.count - 1));
+    rect_layer_snapshot_state(layer);
+    dynarray_push_empty(&layer->data->actions);
 
     return 0;
 }
@@ -221,8 +87,8 @@ static int rect_layer_rect_at(RectLayer *layer, Vec2f position)
 {
     trace_assert(layer);
 
-    int n = (int) layer->rects.count;
-    Rect *rects = (Rect*)layer->rects.data;
+    int n = (int) layer->data->rects.count;
+    Rect *rects = (Rect*)layer->data->rects.data;
 
     for (int i = n - 1; i >= 0; --i) {
         if (rect_contains_point(rects[i], position)) {
@@ -233,33 +99,28 @@ static int rect_layer_rect_at(RectLayer *layer, Vec2f position)
     return -1;
 }
 
-static void rect_layer_swap_elements(RectLayer *layer, size_t a, size_t b,
-                                     UndoHistory *undo_history)
+static void rect_layer_swap_elements(RectLayer *layer, size_t a, size_t b)
 {
     trace_assert(layer);
-    trace_assert(a < layer->rects.count);
-    trace_assert(b < layer->rects.count);
+    trace_assert(a < layer->data->rects.count);
+    trace_assert(b < layer->data->rects.count);
 
-    dynarray_swap(&layer->rects, a, b);
-    dynarray_swap(&layer->colors, a, b);
-    dynarray_swap(&layer->ids, a, b);
-    dynarray_swap(&layer->actions, a, b);
-
-    RECT_UNDO_PUSH(undo_history, create_rect_undo_swap_context(layer, a, b));
+    rect_layer_snapshot_state(layer);
+    dynarray_swap(&layer->data->rects, a, b);
+    dynarray_swap(&layer->data->colors, a, b);
+    dynarray_swap(&layer->data->ids, a, b);
+    dynarray_swap(&layer->data->actions, a, b);
 }
 
-static int rect_layer_delete_rect_at_index(RectLayer *layer,
-                                     size_t i,
-                                     UndoHistory *undo_history)
+static int rect_layer_delete_rect_at_index(RectLayer *layer, size_t i)
 {
     trace_assert(layer);
 
-    RECT_UNDO_PUSH(undo_history, create_rect_undo_delete_context(layer, i));
-
-    dynarray_delete_at(&layer->rects, i);
-    dynarray_delete_at(&layer->colors, i);
-    dynarray_delete_at(&layer->ids, i);
-    dynarray_delete_at(&layer->actions, i);
+    rect_layer_snapshot_state(layer);
+    dynarray_delete_at(&layer->data->rects, i);
+    dynarray_delete_at(&layer->data->colors, i);
+    dynarray_delete_at(&layer->data->ids, i);
+    dynarray_delete_at(&layer->data->actions, i);
 
     return 0;
 }
@@ -305,8 +166,7 @@ Rect snapping_tool_button_rect(const Camera *camera)
 
 static int rect_layer_event_idle(RectLayer *layer,
                                  const SDL_Event *event,
-                                 const Camera *camera,
-                                 UndoHistory *undo_history)
+                                 const Camera *camera)
 {
     trace_assert(layer);
     trace_assert(event);
@@ -319,13 +179,13 @@ static int rect_layer_event_idle(RectLayer *layer,
 
     if (color_changed) {
         if (layer->selection >= 0) {
-            dynarray_copy_to(&layer->colors, &layer->inter_color, (size_t)layer->selection);
+            dynarray_copy_to(&layer->data->colors, &layer->inter_color, (size_t)layer->selection);
             layer->state = RECT_LAYER_RECOLOR;
         }
         return 0;
     }
 
-    Rect *rects = (Rect*)layer->rects.data;
+    Rect *rects = (Rect*)layer->data->rects.data;
 
     switch (event->type) {
     case SDL_MOUSEBUTTONDOWN: {
@@ -352,7 +212,7 @@ static int rect_layer_event_idle(RectLayer *layer,
                 rect_layer_rect_at(layer, position);
 
 
-            Color *colors = (Color*)layer->colors.data;
+            Color *colors = (Color*)layer->data->colors.data;
 
             if (layer->subtract_enabled) {
                 layer->state = RECT_LAYER_SUBTRACT;
@@ -364,7 +224,7 @@ static int rect_layer_event_idle(RectLayer *layer,
                            vec((float) event->button.x, (float)event->button.y),
                            camera_rect(camera, rects[layer->selection])))) {
                 layer->state = RECT_LAYER_RESIZE;
-                dynarray_copy_to(&layer->rects, &layer->inter_rect, (size_t) layer->selection);
+                dynarray_copy_to(&layer->data->rects, &layer->inter_rect, (size_t) layer->selection);
             } else if (rect_at_position >= 0) {
                 layer->selection = rect_at_position;
                 layer->state = RECT_LAYER_MOVE;
@@ -375,7 +235,7 @@ static int rect_layer_event_idle(RectLayer *layer,
                         rects[layer->selection].y));
                 layer->color_picker =
                     create_color_picker_from_rgba(colors[rect_at_position]);
-                dynarray_copy_to(&layer->rects, &layer->inter_rect, (size_t) rect_at_position);
+                dynarray_copy_to(&layer->data->rects, &layer->inter_rect, (size_t) rect_at_position);
             } else {
                 layer->selection = rect_at_position;
 
@@ -411,12 +271,11 @@ static int rect_layer_event_idle(RectLayer *layer,
         case SDLK_UP: {
             if ((event->key.keysym.mod & KMOD_SHIFT)
                 && (layer->selection >= 0)
-                && ((size_t)(layer->selection + 1) < layer->rects.count)) {
+                && ((size_t)(layer->selection + 1) < layer->data->rects.count)) {
                 rect_layer_swap_elements(
                     layer,
                     (size_t) layer->selection,
-                    (size_t) layer->selection + 1,
-                    undo_history);
+                    (size_t) layer->selection + 1);
                 layer->selection++;
             }
         } break;
@@ -424,12 +283,11 @@ static int rect_layer_event_idle(RectLayer *layer,
         case SDLK_DOWN: {
             if ((event->key.keysym.mod & KMOD_SHIFT)
                 && (layer->selection > 0)
-                && ((size_t) layer->selection < layer->rects.count)) {
+                && ((size_t) layer->selection < layer->data->rects.count)) {
                 rect_layer_swap_elements(
                     layer,
                     (size_t) layer->selection,
-                    (size_t) layer->selection - 1,
-                    undo_history);
+                    (size_t) layer->selection - 1);
                 layer->selection--;
             }
         } break;
@@ -438,8 +296,7 @@ static int rect_layer_event_idle(RectLayer *layer,
             if (layer->selection >= 0) {
                 rect_layer_delete_rect_at_index(
                     layer,
-                    (size_t) layer->selection,
-                    undo_history);
+                    (size_t) layer->selection);
                 layer->selection = -1;
             }
         } break;
@@ -451,8 +308,8 @@ static int rect_layer_event_idle(RectLayer *layer,
 
         case SDLK_F2: {
             if (layer->selection >= 0) {
-                const char *ids = (char*)layer->ids.data;
-                Color *colors = (Color*)layer->colors.data;
+                const char *ids = (char*)layer->data->ids.data;
+                Color *colors = (Color*)layer->data->colors.data;
 
                 edit_field_restyle(
                     &layer->id_edit_field,
@@ -470,8 +327,8 @@ static int rect_layer_event_idle(RectLayer *layer,
         case SDLK_c: {
             if ((event->key.keysym.mod & KMOD_LCTRL) && layer->selection >= 0) {
                 rect_clipboard = 1;
-                dynarray_copy_to(&layer->rects, &rect_clipboard_rect, (size_t)layer->selection);
-                dynarray_copy_to(&layer->colors, &rect_clipboard_color, (size_t)layer->selection);
+                dynarray_copy_to(&layer->data->rects, &rect_clipboard_rect, (size_t)layer->selection);
+                dynarray_copy_to(&layer->data->colors, &rect_clipboard_color, (size_t)layer->selection);
             }
         } break;
 
@@ -485,8 +342,7 @@ static int rect_layer_event_idle(RectLayer *layer,
                     layer,
                     rect(position.x, position.y,
                          rect_clipboard_rect.w, rect_clipboard_rect.h),
-                    rect_clipboard_color,
-                    undo_history);
+                    rect_clipboard_color);
             }
         } break;
         }
@@ -569,16 +425,14 @@ void subtract_rect_from_geometry(Geometry *result, Rect b)
 
 static int rect_layer_event_subtract(RectLayer *layer,
                                      const SDL_Event *event,
-                                     const Camera *camera,
-                                     UndoHistory *undo_history)
+                                     const Camera *camera)
 {
     trace_assert(layer);
     trace_assert(event);
     trace_assert(camera);
-    trace_assert(undo_history);
 
-    Rect *rects = layer->rects.data;
-    Color *colors = layer->colors.data;
+    Rect *rects = layer->data->rects.data;
+    Color *colors = layer->data->colors.data;
 
     switch (event->type) {
     case SDL_MOUSEBUTTONUP: {
@@ -593,13 +447,13 @@ static int rect_layer_event_subtract(RectLayer *layer,
             Geometry geometry = {0};
 
             if (area >= CREATE_AREA_THRESHOLD) {
-                for (size_t i = 0; i < layer->rects.count;) {
+                for (size_t i = 0; i < layer->data->rects.count;) {
                     Rect overlap_area = rects_overlap_area(
                         real_rect,
                         rects[i]);
                     if (overlap_area.w * overlap_area.h > 1e-6) {
                         push_geometry(&geometry, rects[i], colors[i]);
-                        rect_layer_delete_rect_at_index(layer, i, undo_history);
+                        rect_layer_delete_rect_at_index(layer, i);
                     } else {
                         i++;
                     }
@@ -612,8 +466,7 @@ static int rect_layer_event_subtract(RectLayer *layer,
                     rect_layer_add_rect(
                         layer,
                         geometry.rects[j],
-                        geometry.colors[j],
-                        undo_history);
+                        geometry.colors[j]);
                 }
             } else {
                 log_info("The area is too small %f. Such small box won't be cut.\n", area);
@@ -636,8 +489,7 @@ static int rect_layer_event_subtract(RectLayer *layer,
 
 static int rect_layer_event_create(RectLayer *layer,
                                    const SDL_Event *event,
-                                   const Camera *camera,
-                                   UndoHistory *undo_history)
+                                   const Camera *camera)
 {
     trace_assert(layer);
     trace_assert(event);
@@ -657,8 +509,7 @@ static int rect_layer_event_create(RectLayer *layer,
                 rect_layer_add_rect(
                     layer,
                     real_rect,
-                    color_picker_rgba(&layer->color_picker),
-                    undo_history);
+                    color_picker_rgba(&layer->color_picker));
             } else {
                 log_info("The area is too small %f. Such small box won't be created.\n", area);
             }
@@ -686,8 +537,8 @@ void snap_rect_resize_if_enabled(RectLayer *layer, Rect *a, float snapping_thres
 
     if (!layer->snapping_enabled) return;
 
-    Rect *rects = (Rect*)layer->rects.data;
-    size_t rects_size = layer->rects.count;
+    Rect *rects = (Rect*)layer->data->rects.data;
+    size_t rects_size = layer->data->rects.count;
 
     for (size_t i = 0; i < rects_size; ++i) {
         if (i == (size_t) layer->selection) continue;
@@ -706,15 +557,14 @@ void snap_rect_resize_if_enabled(RectLayer *layer, Rect *a, float snapping_thres
 
 static int rect_layer_event_resize(RectLayer *layer,
                                    const SDL_Event *event,
-                                   const Camera *camera,
-                                   UndoHistory *undo_history)
+                                   const Camera *camera)
 {
     trace_assert(layer);
     trace_assert(event);
     trace_assert(camera);
     trace_assert(layer->selection >= 0);
 
-    Rect *rects = (Rect*)layer->rects.data;
+    Rect *rects = (Rect*)layer->data->rects.data;
 
     float scaled_snap_threshold = SNAPPING_THRESHOLD / camera->scale;
 
@@ -842,12 +692,8 @@ static int rect_layer_event_resize(RectLayer *layer,
 
     case SDL_MOUSEBUTTONUP: {
         layer->state = RECT_LAYER_IDLE;
-        RECT_UNDO_PUSH(
-            undo_history,
-            create_rect_undo_update_context(
-                layer,
-                (size_t) layer->selection));
-        dynarray_replace_at(&layer->rects, (size_t) layer->selection, &layer->inter_rect);
+        rect_layer_snapshot_state(layer);
+        dynarray_replace_at(&layer->data->rects, (size_t) layer->selection, &layer->inter_rect);
     } break;
     }
 
@@ -864,8 +710,8 @@ void snap_rect_move_if_enabled(RectLayer *layer, Rect *a,
 
     if (!layer->snapping_enabled) return;
 
-    Rect *rects = (Rect*)layer->rects.data;
-    size_t rects_size = layer->rects.count;
+    Rect *rects = (Rect*)layer->data->rects.data;
+    size_t rects_size = layer->data->rects.count;
 
     for (size_t i = 0; i < rects_size; ++i) {
         if (i == (size_t) layer->selection) continue;
@@ -884,15 +730,14 @@ void snap_rect_move_if_enabled(RectLayer *layer, Rect *a,
 
 static int rect_layer_event_move(RectLayer *layer,
                                  const SDL_Event *event,
-                                 const Camera *camera,
-                                 UndoHistory *undo_history)
+                                 const Camera *camera)
 {
     trace_assert(layer);
     trace_assert(event);
     trace_assert(camera);
     trace_assert(layer->selection >= 0);
 
-    Rect *rects = (Rect*)layer->rects.data;
+    Rect *rects = (Rect*)layer->data->rects.data;
 
     switch (event->type) {
     case SDL_MOUSEMOTION: {
@@ -934,12 +779,9 @@ static int rect_layer_event_move(RectLayer *layer,
                     rect_position(rects[layer->selection])));
 
         if (distance > 1e-6) {
-            RECT_UNDO_PUSH(
-                undo_history,
-                create_rect_undo_update_context(
-                    layer, (size_t) layer->selection));
+            rect_layer_snapshot_state(layer);
             dynarray_replace_at(
-                &layer->rects,
+                &layer->data->rects,
                 (size_t) layer->selection,
                 &layer->inter_rect);
         }
@@ -950,8 +792,7 @@ static int rect_layer_event_move(RectLayer *layer,
 
 static int rect_layer_event_id_rename(RectLayer *layer,
                                       const SDL_Event *event,
-                                      const Camera *camera,
-                                      UndoHistory *undo_history)
+                                      const Camera *camera)
 {
     trace_assert(layer);
     trace_assert(event);
@@ -962,13 +803,8 @@ static int rect_layer_event_id_rename(RectLayer *layer,
     case SDL_KEYDOWN: {
         switch (event->key.keysym.sym) {
         case SDLK_RETURN: {
-            RECT_UNDO_PUSH(
-                undo_history,
-                create_rect_undo_update_context(
-                    layer,
-                    (size_t) layer->selection));
-
-            char *id = dynarray_pointer_at(&layer->ids, (size_t)layer->selection);
+            rect_layer_snapshot_state(layer);
+            char *id = dynarray_pointer_at(&layer->data->ids, (size_t)layer->selection);
             memset(id, 0, ENTITY_MAX_ID_SIZE);
             memcpy(id, edit_field_as_text(&layer->id_edit_field), ENTITY_MAX_ID_SIZE - 1);
             layer->state = RECT_LAYER_IDLE;
@@ -1004,11 +840,15 @@ RectLayer *create_rect_layer(Memory *memory,
     trace_assert(cursor);
 
     RectLayer *rect_layer = memory_alloc(memory, sizeof(RectLayer));
+    rect_layer->memory = memory;
 
-    rect_layer->ids = create_dynarray(memory, sizeof(char) * ENTITY_MAX_ID_SIZE);
-    rect_layer->rects = create_dynarray(memory, sizeof(Rect));
-    rect_layer->colors = create_dynarray(memory, sizeof(Color));
-    rect_layer->actions = create_dynarray(memory, sizeof(Action));
+    rect_layer->data = memory_alloc(memory, sizeof(*rect_layer->data));
+    memset(rect_layer->data, 0, sizeof(*rect_layer->data));
+
+    rect_layer->data->ids = create_dynarray(memory, sizeof(char) * ENTITY_MAX_ID_SIZE);
+    rect_layer->data->rects = create_dynarray(memory, sizeof(Rect));
+    rect_layer->data->colors = create_dynarray(memory, sizeof(Color));
+    rect_layer->data->actions = create_dynarray(memory, sizeof(Action));
     rect_layer->id_edit_field.font_size = RECT_LAYER_ID_LABEL_SIZE;
     rect_layer->id_edit_field.font_color = COLOR_BLACK;
     rect_layer->color_picker = create_color_picker_from_rgba(rgba(1.0f, 0.0f, 0.0f, 1.0f));
@@ -1019,11 +859,18 @@ RectLayer *create_rect_layer(Memory *memory,
     return rect_layer;
 }
 
-void rect_layer_load(RectLayer *layer, Memory *memory, String *input)
+RectLayer *create_rect_layer_from_input(Memory *memory,
+                                        String *input,
+                                        const char *id_name_prefix,
+                                        Cursor *cursor)
 {
-    trace_assert(layer);
     trace_assert(memory);
     trace_assert(input);
+    trace_assert(id_name_prefix);
+    trace_assert(cursor);
+
+    RectLayer *layer = create_rect_layer(memory, id_name_prefix, cursor);
+    layer->memory = memory;
 
     int n = atoi(string_to_cstr(memory, trim(chop_by_delim(input, '\n'))));
     char id[ENTITY_MAX_ID_SIZE];
@@ -1043,9 +890,9 @@ void rect_layer_load(RectLayer *layer, Memory *memory, String *input)
             string_id.data,
             min_size_t(ENTITY_MAX_ID_SIZE - 1, string_id.count));
 
-        dynarray_push(&layer->rects, &rect);
-        dynarray_push(&layer->colors, &color);
-        dynarray_push(&layer->ids, id);
+        dynarray_push(&layer->data->rects, &rect);
+        dynarray_push(&layer->data->colors, &color);
+        dynarray_push(&layer->data->ids, id);
 
         Action action = {
             .type = ACTION_NONE,
@@ -1073,8 +920,10 @@ void rect_layer_load(RectLayer *layer, Memory *memory, String *input)
             }
         }
 
-        dynarray_push(&layer->actions, &action);
+        dynarray_push(&layer->data->actions, &action);
     }
+
+    return layer;
 }
 
 static
@@ -1106,10 +955,10 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
     trace_assert(layer);
     trace_assert(camera);
 
-    const size_t n = layer->rects.count;
-    Rect *rects = (Rect *)layer->rects.data;
-    Color *colors = (Color *)layer->colors.data;
-    const char *ids = (const char *)layer->ids.data;
+    const size_t n = layer->data->rects.count;
+    Rect *rects = (Rect *)layer->data->rects.data;
+    Color *colors = (Color *)layer->data->colors.data;
+    const char *ids = (const char *)layer->data->ids.data;
 
     // The Rectangles
     for (size_t i = 0; i < n; ++i) {
@@ -1230,13 +1079,11 @@ int rect_layer_render(const RectLayer *layer, const Camera *camera, int active)
 static
 int rect_layer_event_recolor(RectLayer *layer,
                              const SDL_Event *event,
-                             const Camera *camera,
-                             UndoHistory *undo_history)
+                             const Camera *camera)
 {
     trace_assert(layer);
     trace_assert(event);
     trace_assert(camera);
-    trace_assert(undo_history);
     trace_assert(layer->selection >= 0);
 
     int color_changed = 0;
@@ -1248,12 +1095,8 @@ int rect_layer_event_recolor(RectLayer *layer,
         layer->inter_color = color_picker_rgba(&layer->color_picker);
 
         if (!color_picker_drag(&layer->color_picker)) {
-            RECT_UNDO_PUSH(
-                undo_history,
-                create_rect_undo_update_context(
-                    layer,
-                    (size_t)layer->selection));
-            dynarray_replace_at(&layer->colors, (size_t) layer->selection, &layer->inter_color);
+            rect_layer_snapshot_state(layer);
+            dynarray_replace_at(&layer->data->colors, (size_t) layer->selection, &layer->inter_color);
             layer->state = RECT_LAYER_IDLE;
         }
     }
@@ -1272,25 +1115,25 @@ int rect_layer_event(RectLayer *layer,
 
     switch (layer->state) {
     case RECT_LAYER_IDLE:
-        return rect_layer_event_idle(layer, event, camera, undo_history);
+        return rect_layer_event_idle(layer, event, camera);
 
     case RECT_LAYER_CREATE:
-        return rect_layer_event_create(layer, event, camera, undo_history);
+        return rect_layer_event_create(layer, event, camera);
 
     case RECT_LAYER_RESIZE:
-        return rect_layer_event_resize(layer, event, camera, undo_history);
+        return rect_layer_event_resize(layer, event, camera);
 
     case RECT_LAYER_MOVE:
-        return rect_layer_event_move(layer, event, camera, undo_history);
+        return rect_layer_event_move(layer, event, camera);
 
     case RECT_LAYER_ID_RENAME:
-        return rect_layer_event_id_rename(layer, event, camera, undo_history);
+        return rect_layer_event_id_rename(layer, event, camera);
 
     case RECT_LAYER_RECOLOR:
-        return rect_layer_event_recolor(layer, event, camera, undo_history);
+        return rect_layer_event_recolor(layer, event, camera);
 
     case RECT_LAYER_SUBTRACT:
-        return rect_layer_event_subtract(layer, event, camera, undo_history);
+        return rect_layer_event_subtract(layer, event, camera);
     }
 
 
@@ -1299,22 +1142,22 @@ int rect_layer_event(RectLayer *layer,
 
 size_t rect_layer_count(const RectLayer *layer)
 {
-    return layer->rects.count;
+    return layer->data->rects.count;
 }
 
 const Rect *rect_layer_rects(const RectLayer *layer)
 {
-    return (const Rect *)layer->rects.data;
+    return (const Rect *)layer->data->rects.data;
 }
 
 const Color *rect_layer_colors(const RectLayer *layer)
 {
-    return (const Color *)layer->colors.data;
+    return (const Color *)layer->data->colors.data;
 }
 
 const char *rect_layer_ids(const RectLayer *layer)
 {
-    return (const char *)layer->ids.data;
+    return (const char *)layer->data->ids.data;
 }
 
 int rect_layer_dump_stream(const RectLayer *layer, FILE *filedump)
@@ -1322,11 +1165,11 @@ int rect_layer_dump_stream(const RectLayer *layer, FILE *filedump)
     trace_assert(layer);
     trace_assert(filedump);
 
-    size_t n = layer->ids.count;
-    char *ids = (char *)layer->ids.data;
-    Rect *rects = (Rect *)layer->rects.data;
-    Color *colors = (Color *)layer->colors.data;
-    Action *actions = (Action *)layer->actions.data;
+    size_t n = layer->data->ids.count;
+    char *ids = (char *)layer->data->ids.data;
+    Rect *rects = (Rect *)layer->data->rects.data;
+    Color *colors = (Color *)layer->data->colors.data;
+    Action *actions = (Action *)layer->data->actions.data;
 
     fprintf(filedump, "%zd\n", n);
     for (size_t i = 0; i < n; ++i) {
@@ -1355,5 +1198,12 @@ int rect_layer_dump_stream(const RectLayer *layer, FILE *filedump)
 
 const Action *rect_layer_actions(const RectLayer *layer)
 {
-    return (const Action *)layer->actions.data;
+    return (const Action *)layer->data->actions.data;
+}
+
+static void rect_layer_undo(RectLayer *layer)
+{
+    if (layer->data->previous) {
+        layer->data = layer->data->previous;
+    }
 }

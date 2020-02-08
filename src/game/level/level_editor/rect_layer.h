@@ -20,13 +20,20 @@ typedef enum {
     RECT_LAYER_SUBTRACT
 } RectLayerState;
 
-struct RectLayer {
-    RectLayerState state;
-    int resize_mask;
+typedef struct RectLayerSnapshot {
+    struct RectLayerSnapshot *previous;
     Dynarray ids;
     Dynarray rects;
     Dynarray colors;
     Dynarray actions;
+} RectLayerSnapshot;
+
+struct RectLayer {
+    Memory *memory;
+
+    RectLayerState state;
+    int resize_mask;
+    RectLayerSnapshot *data;
     ColorPicker color_picker;
     Vec2f create_begin;
     Vec2f create_end;
@@ -51,17 +58,11 @@ LayerPtr rect_layer_as_layer(RectLayer *layer);
 RectLayer *create_rect_layer(Memory *memory,
                              const char *id_name_prefix,
                              Cursor *cursor);
-void rect_layer_load(RectLayer *rect_layer, Memory *memory, String *input);
-
-static inline
-void destroy_rect_layer(RectLayer layer)
-{
-    free(layer.ids.data);
-    free(layer.rects.data);
-    free(layer.colors.data);
-    free(layer.actions.data);
-}
-
+RectLayer *create_rect_layer_from_input(Memory *memory,
+                                        String *input,
+                                        const char *id_name_prefix,
+                                        Cursor *cursor);
+RectLayer *clone_rect_layer(RectLayer *layer);
 
 int rect_layer_render(const RectLayer *layer, const Camera *camera, int active);
 int rect_layer_event(RectLayer *layer,

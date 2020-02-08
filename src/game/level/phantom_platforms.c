@@ -4,12 +4,12 @@ Phantom_Platforms create_phantom_platforms(RectLayer *rect_layer)
 {
     Phantom_Platforms pp;
 
-    pp.size = rect_layer->rects.count;
+    pp.size = rect_layer->data->rects.count;
     pp.rects = malloc(sizeof(pp.rects[0]) * pp.size);
-    memcpy(pp.rects, rect_layer->rects.data, sizeof(pp.rects[0]) * pp.size);
+    memcpy(pp.rects, rect_layer->data->rects.data, sizeof(pp.rects[0]) * pp.size);
 
     pp.colors = malloc(sizeof(pp.colors[0]) * pp.size);
-    memcpy(pp.colors, rect_layer->colors.data, sizeof(pp.colors[0]) * pp.size);
+    memcpy(pp.colors, rect_layer->data->colors.data, sizeof(pp.colors[0]) * pp.size);
 
     pp.hiding = calloc(1, sizeof(pp.hiding[0]) * pp.size);
 

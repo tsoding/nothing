@@ -39,6 +39,19 @@ Dynarray create_dynarray(Memory *memory, size_t element_size)
     return result;
 }
 
+static inline
+Dynarray clone_dynarray(Memory *memory, Dynarray dynarray)
+{
+    trace_assert(memory);
+    Dynarray result = {
+        .element_size = dynarray.element_size,
+        .count = dynarray.count,
+        .data = memory_alloc(memory, DYNARRAY_CAPACITY * dynarray.element_size)
+    };
+    memcpy(result.data, dynarray.data, dynarray.element_size * DYNARRAY_CAPACITY);
+    return result;
+}
+
 void *dynarray_pointer_at(const Dynarray *dynarray, size_t index);
 void dynarray_replace_at(Dynarray *dynarray, size_t index, void *element);
 void dynarray_copy_to(Dynarray *dynarray, void *dest, size_t index);

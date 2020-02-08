@@ -106,14 +106,14 @@ LevelEditor *create_level_editor_from_file(Memory *memory, Cursor *cursor, const
 
     level_editor->background_layer = chop_background_layer(&input);
     level_editor->player_layer = chop_player_layer(memory, &input);
-    rect_layer_load(level_editor->platforms_layer, memory, &input);
+    level_editor->platforms_layer = create_rect_layer_from_input(memory, &input, "", cursor);
     point_layer_load(level_editor->goals_layer, memory, &input);
-    rect_layer_load(level_editor->lava_layer, memory, &input);
-    rect_layer_load(level_editor->back_platforms_layer, memory, &input);
-    rect_layer_load(level_editor->boxes_layer, memory, &input);
+    level_editor->lava_layer = create_rect_layer_from_input(memory, &input, "", cursor);
+    level_editor->back_platforms_layer = create_rect_layer_from_input(memory, &input, "", cursor);
+    level_editor->boxes_layer = create_rect_layer_from_input(memory, &input, "", cursor);
     label_layer_load(level_editor->label_layer, memory, &input);
-    rect_layer_load(level_editor->regions_layer, memory, &input);
-    rect_layer_load(level_editor->pp_layer, memory, &input);
+    level_editor->regions_layer = create_rect_layer_from_input(memory, &input, "", cursor);
+    level_editor->pp_layer = create_rect_layer_from_input(memory, &input, "", cursor);
     undo_history_clean(level_editor->undo_history);
 
     return level_editor;
