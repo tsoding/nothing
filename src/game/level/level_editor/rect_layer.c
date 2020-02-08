@@ -354,11 +354,15 @@ static int rect_layer_event_idle(RectLayer *layer,
 
             Color *colors = (Color*)layer->colors.data;
 
-            if (layer->selection >= 0 &&
-                layer->selection == rect_at_position &&
-                (layer->resize_mask = calc_resize_mask(
-                    vec((float) event->button.x, (float)event->button.y),
-                    camera_rect(camera, rects[layer->selection])))) {
+            if (layer->subtract_enabled) {
+                layer->state = RECT_LAYER_SUBTRACT;
+                layer->create_begin = position;
+                layer->create_end = position;
+            } else if (layer->selection >= 0 &&
+                       layer->selection == rect_at_position &&
+                       (layer->resize_mask = calc_resize_mask(
+                           vec((float) event->button.x, (float)event->button.y),
+                           camera_rect(camera, rects[layer->selection])))) {
                 layer->state = RECT_LAYER_RESIZE;
                 dynarray_copy_to(&layer->rects, &layer->inter_rect, (size_t) layer->selection);
             } else if (rect_at_position >= 0) {
@@ -376,9 +380,7 @@ static int rect_layer_event_idle(RectLayer *layer,
                 layer->selection = rect_at_position;
 
                 if (layer->selection < 0) {
-                    layer->state = layer->subtract_enabled
-                        ? RECT_LAYER_SUBTRACT
-                        : RECT_LAYER_CREATE;
+                    layer->state = RECT_LAYER_CREATE;
                     layer->create_begin = position;
                     layer->create_end = position;
                 }
