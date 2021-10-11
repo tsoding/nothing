@@ -59,12 +59,6 @@ float vec_arg(Vec2f v)
 }
 
 static inline
-float vec_mag(Vec2f v)
-{
-    return sqrtf(v.x * v.x + v.y * v.y);
-}
-
-static inline
 Vec2f vec_sum(Vec2f v1, Vec2f v2)
 {
     Vec2f result = {
